@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveller</title>
+</head>
+<body>
+    <style>
+        fieldset{
+            font-family:'Consolas','Inconsolas','Courier New', Courier, monospace;
+            display:inline-block;
+            vertical-align: text-top;
+        }
+        fieldset legend{
+            cursor:pointer;
+            user-select: none;
+        }
+        fieldset legend:hover{
+            color:red;
+        }
+        fieldset.collapsed *:not(legend){
+            display:none;
+        }
+        fieldset > legend::before{
+            content:"▼ ";
+        }
+        fieldset.collapsed > legend::before{
+            content:"► ";
+        }
+        canvas{
+            border:1px solid black;
+            background-color:white;
+        }
+    </style>
+    <fieldset>
+        <legend>Controls</legend>
+        <fieldset class="collapsed">
+            <legend>Display</legend>
+            <label for="sizeSlider">Scale: <span id="sizeIndicator"></span></label><input type="range" min="4" max="50" id="sizeSlider" />
+            <label for="slctStyle">Style: </label><select name="slctStyle" id="slctStyle" data-canvasbg="black" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
+                <option value="light">light</option>
+                <option value="dark">dark</option>
+                <option value="transparent">transparent</option>
+                <option selected="selected" value="custom">custom</option>
+            </select>
+            <div id="customSettings">
+                <label for="hexBorderColor">Border Color: <input type="text" name="hexBorderColor" id="hexBorderColor" /></label>
+                <label for="hexBackgroundColor">Hex Fill: <input type="text" id="hexBackgroundColor" name="hexBackgroundColor" /></label>
+                <label for="canvasBackgroundColor">Background Color: <input type="text" name="canvasBackgroundColor" id="canvasBackgroundColor" /></label>
+            </div>
+        </fieldset>
+        <fieldset class="collapsed">
+            <legend>Systems</legend>
+            <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Subsector"></label>
+        </fieldset>
+    </fieldset>
+    <br/>
+    <canvas id="canvas"></canvas>
+    <br/>
+    <fieldset>
+        <legend>Data</legend>
+        <textarea name="data" id="data" cols="30" rows="10"></textarea>
+        <input type="button" value="Apply" id="btnApplyData">
+    </fieldset>
+    <script>
+        (function(){
+            //globals
+            var HEX_SIZE = 10,
+                HEX_BORDER_COLOR = "white",
+                HEX_BACKGROUND_COLOR = "rgba(0,0,0,0.7)",
+                HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)",
+                CANVAS_BACKGROUND_COLOR = "rgb(50,50,50)",
+                CANVAS_PADDING = 20,
+                SUBSECTOR_WIDTH = 8,
+                SUBSECTOR_HEIGHT = 10;
+            var HEX_MATH = {
+                radius:HEX_SIZE,
+                xOffset:HEX_SIZE*3,
+                yOffset:HEX_SIZE*4,
+                diameter:HEX_SIZE*2
+            }
+            var _systems = {};
+            var canvas = document.getElementById("canvas");
+            canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
+            canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter + CANVAS_PADDING*2);
+            var ctx = canvas.getContext('2d');
+            var mapContent = [];
+            document.getElementById("sizeSlider").value = HEX_SIZE;
+            mapContent = generateHexes(SUBSECTOR_WIDTH,SUBSECTOR_HEIGHT);
+            updateStyle();
+            drawMap(mapContent);
+            attachEventListeners();
+
+            function attachEventListeners(){
+                canvas.addEventListener("mousemove",function(e){
+                    for(var i = 0, len = mapContent.length; i < len; i++){
+                        var hex = mapContent[i];
+                        if(coordsInHexagon(e.clientX,e.clientY, hex)){
+                            hex.highlighted = true;
+                        }else{
+                            if(hex.highlighted){
+                                hex.highlighted = false;
+                            }
+                        }
+                    }
+                    drawMap(mapContent);
+                });
+                canvas.addEventListener("click",function(e){
+                    for(var i = 0, len = mapContent.length; i < len; i++){
+                        var hex = mapContent[i];
+                        if(coordsInHexagon(e.clientX,e.clientY, hex)){
+                            if(hex.selected){
+                                hex.selected = false;}
+                            else{
+                                hex.selected = true;
+                            }
+                        }else{
+                            if(hex.selected){
+                                hex.selected = false;
+                            }
+                        }
+                    }
+                    drawMap(mapContent);
+                });
+                canvas.addEventListener("mouseout",function(e){
+                    for(var i = 0, len = mapContent.length; i < len; i++){
+                        var hex = mapContent[i];
+                        if(hex.highlighted){
+                            hex.highlighted = false;
+                        }
+                    }
+                    drawMap(mapContent);
+                });
+                var collapserHandles = document.querySelectorAll("fieldset legend");
+                for(var i = 0, len = collapserHandles.length; i < len; i++){
+                    var handle = collapserHandles[i];
+                    handle.addEventListener("click",function(e){
+                        var parent = e.target.parentElement;
+                        if(parent.classList.contains("collapsed")){
+                            parent.classList.remove("collapsed");
+                        }else{
+                            parent.classList.add("collapsed");
+                        }
+                    });
+                }
+                document.getElementById("slctStyle").addEventListener("change",updateStyle);
+                document.getElementById("sizeSlider").addEventListener("change",function(){
+                    updateHexSize(+(document.getElementById("sizeSlider").value));
+                    drawMap(mapContent);
+                });
+                document.getElementById("hexBorderColor").addEventListener("keyup",function(){
+                    var newColor = document.getElementById("hexBorderColor").value;
+                    updateHexBorderColor(newColor);
+                    document.getElementById("slctStyle").setAttribute("data-hexfg",newColor);
+                    drawMap(mapContent);
+                });
+                document.getElementById("hexBackgroundColor").addEventListener("keyup",function(){
+                    var newColor = document.getElementById("hexBackgroundColor").value;
+                    updateHexBackgroundColor(newColor);
+                    document.getElementById("slctStyle").setAttribute("data-hexbg",newColor);
+                    drawMap(mapContent);
+                });
+                document.getElementById("canvasBackgroundColor").addEventListener("keyup",function(){
+                    var newColor = document.getElementById("canvasBackgroundColor").value;
+                    updateCanvasBackgroundColor(newColor);
+                    document.getElementById("slctStyle").setAttribute("data-canvasbg",newColor);
+                    drawMap(mapContent);
+                });
+                document.getElementById("btnApplyData").addEventListener("click",function(){
+                    var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, JSON.parse(document.getElementById("data").value));
+                    drawMap(mapContent);
+                });
+            }
+            function generateHexes(x,y, systems){
+                var systemsPredefined = true;
+                if(typeof systems == "undefined"){
+                    _systems = {};
+                    systemsPredefined = false;
+                }else{
+                    _systems = systems;
+                }
+                mapContent = [];
+                for(var iy = 0; iy < y; iy++){
+                    for(var ix = 0; ix < x; ix++){
+                        var hexLabel = XYCoordToTCoord(ix,iy);
+                        var system = _systems[hexLabel];
+                        addHex(ix,iy,system);
+                    }
+                }
+                return mapContent;
+            }
+            function addHex(x,y,system){
+                mapContent.push({
+                    x:x,
+                    y:y,
+                    system:system
+                });
+            }
+            function coordsInHexagon(x,y,hex){
+                x = x - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().left;
+                y = y - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().top;
+                var numVertices = hex.vertx.length;
+                var isInside = false;
+                for(var i = 0, j = numVertices-1; i < numVertices; j = i++){
+                    if(((hex.verty[i] > y) != (hex.verty[j] > y )) && 
+                    ( x < (hex.vertx[j] - hex.vertx[i]) * (y - hex.verty[i])/(hex.verty[j] -hex.verty[i]) + hex.vertx[i])){
+                        isInside = !isInside;
+                    }
+                }
+                return isInside;
+            }
+            function drawMap(mapContent){
+                var w =canvas.width, h =canvas.height;
+                ctx.clearRect(0,0,w,h);
+                if(CANVAS_BACKGROUND_COLOR !== "transparent"){
+                    ctx.globalCompositeOperation = 'destination-over';
+                    ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
+                    ctx.fillRect(0,0,w,h);
+                }
+                ctx.save();
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.translate(HEX_MATH.diameter + CANVAS_PADDING, HEX_MATH.diameter + CANVAS_PADDING);
+                for(var i = 0, len = mapContent.length; i < len; i++){
+                    mapContent[i] = drawHex(mapContent[i]);
+                }
+                ctx.restore();
+                document.getElementById("data").value = JSON.stringify(_systems);
+            }
+            function TCoordToXYCoord(tcoord){
+                if(tcoord.length && tcoord.length == 4){
+                    var col = tcoord.substring(0,2);
+                    var row = tcoord.substring(2,4);
+                    if(row[0] == "0"){row = row[1];}
+                    if(col[0] == "0"){col = col[1];}
+                    return{x:+(col)-1,y:+(row)-1}
+                }
+            }
+            function XYCoordToTCoord(x,y){
+                var col = (x+1).toString();
+                if(x < 10){col = "0"+col;}
+                var row = (y+1).toString();
+                if(y < 10){row = "0"+row;}
+                return col+row;
+            }
+            function drawHex(hex){
+                var coords = {
+                    x:hex.x*HEX_MATH.xOffset,
+                    y:hex.x%2 == 0 ? hex.y*HEX_MATH.yOffset : hex.y*HEX_MATH.yOffset + HEX_MATH.diameter
+                };
+                var x1 = coords.x - HEX_MATH.radius, 
+                    x2 = coords.x+HEX_MATH.radius;
+                var x0 = x1 - HEX_MATH.radius,
+                    x3 = x2 + HEX_MATH.radius;
+                var y0 = coords.y - HEX_MATH.diameter, 
+                    y1 = coords.y,
+                    y2 = y1 + HEX_MATH.diameter;
+                ctx.strokeStyle = HEX_BORDER_COLOR;
+                var oldLineWidth = ctx.lineWidth;
+                if(hex.selected){                    
+                    ctx.lineWidth = 10;
+                }
+                ctx.beginPath();
+                ctx.moveTo(x1,y2);
+                hex.vertx = [x1,x2,x3,x2,x1,x0,x1];
+                hex.verty = [y2,y2,y1,y0,y0,y1,y2];
+                for(var i = 1; i < hex.vertx.length; i++){
+                    ctx.lineTo(hex.vertx[i], hex.verty[i]);
+                }
+                ctx.stroke();
+                if(hex.highlighted){
+                    ctx.fillStyle = HEX_HIGHLIGHT_BACKGROUND_COLOR;
+                }else{
+                    ctx.fillStyle = HEX_BACKGROUND_COLOR;
+                }
+                
+                if(typeof hex.system !== "undefined" && hex.system !== null){
+                    ctx.fillStyle = "red";
+                }
+                ctx.fill();
+                ctx.lineWidth = oldLineWidth;
+                return hex;
+            }
+            function updateStyle(){
+                var select = document.getElementById("slctStyle");
+                var val = select.value;
+                if(val === "custom"){
+                    document.getElementById("hexBorderColor").value = select.getAttribute("data-hexfg");
+                    document.getElementById("hexBackgroundColor").value = select.getAttribute("data-hexbg");
+                    document.getElementById("canvasBackgroundColor").value = select.getAttribute("data-canvasbg");
+                    HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
+                }else if(val === "light"){
+                    document.getElementById("hexBorderColor").value = "black";
+                    document.getElementById("hexBackgroundColor").value = "transparent";
+                    document.getElementById("canvasBackgroundColor").value = "white";
+                    HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
+                }else if(val === "dark"){
+                    document.getElementById("hexBorderColor").value = "white";
+                    document.getElementById("hexBackgroundColor").value = "transparent";
+                    document.getElementById("canvasBackgroundColor").value = "black";
+                    HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
+                }else if(val === "transparent"){
+                    document.getElementById("hexBorderColor").value = "black";
+                    document.getElementById("hexBackgroundColor").value = "transparent";
+                    document.getElementById("canvasBackgroundColor").value = "transparent";
+                    HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
+                }
+                updateHexBorderColor(document.getElementById("hexBorderColor").value);
+                updateHexBackgroundColor(document.getElementById("hexBackgroundColor").value);
+                updateCanvasBackgroundColor(document.getElementById("canvasBackgroundColor").value);
+                drawMap(mapContent);
+            }
+            function updateHexSize(newSize){
+                HEX_SIZE = newSize;
+                HEX_MATH.radius = HEX_SIZE;
+                HEX_MATH.xOffset = HEX_SIZE*3;
+                HEX_MATH.yOffset = HEX_SIZE*4;
+                HEX_MATH.diameter = HEX_SIZE*2;
+                canvas.setAttribute("width",SUBSECTOR_WIDTH * HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
+                canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter+CANVAS_PADDING*2);
+                document.getElementById("sizeIndicator").innerHTML = newSize;
+            }
+            function updateHexBorderColor(newColor){
+                HEX_BORDER_COLOR = newColor;
+            }
+            function updateHexBackgroundColor(newColor){
+                HEX_BACKGROUND_COLOR = newColor;
+            }
+            function updateCanvasBackgroundColor(newColor){
+                CANVAS_BACKGROUND_COLOR = newColor;
+            }
+        })();
+    </script>
+</body>
+</html>
