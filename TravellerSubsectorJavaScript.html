@@ -87,7 +87,8 @@
                 TEXT_COLOR = "white",
                 CANVAS_PADDING = 20,
                 SUBSECTOR_WIDTH = 8,
-                SUBSECTOR_HEIGHT = 10;
+                SUBSECTOR_HEIGHT = 10,
+                FONT = "sans-serif";
             var HEX_MATH = {
                 radius:HEX_SIZE,
                 xOffset:HEX_SIZE*3,
@@ -101,7 +102,7 @@
             canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
             canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter + CANVAS_PADDING*2);
             var ctx = canvas.getContext('2d');
-            ctx.font = ""+fontSize+"pt Consolas";
+            ctx.font = ""+fontSize+"pt "+FONT;
             var mapContent = [];
             document.getElementById("sizeSlider").value = HEX_SIZE;
             mapContent = generateHexes(SUBSECTOR_WIDTH,SUBSECTOR_HEIGHT);
@@ -341,19 +342,20 @@
                 ctx.fill();
 
                 if(containsSystem){
+                    var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var name = hex.system.name;
                     var maxChars = 10;
                     var lines = [];
-                    if(name.length > maxChars){
+                    if(ctx.measureText(name).width > maxWidth){
                         var words = name.split(" ");
                         var lineSoFar = "";
                         for(var i = words.length-1; i >= 0; i--){
                             var proposal = lineSoFar.length > 0 ? words[i] + " " + lineSoFar : words[i];
-                            if(proposal.length < maxChars){
+                            if(ctx.measureText(proposal).width < maxWidth){
                                 lineSoFar = proposal;
                             }else{
                                 lines.push(lineSoFar);
-                                if(words[i].length > maxChars){
+                                if(ctx.measureText(words[i]).width > maxWidth){
                                     var mid = words[i].length/2>>0
                                     lines.push(words[i].substring(mid))
                                     lineSoFar = words[i].substring(0,mid)+"-";
@@ -361,7 +363,7 @@
                                     lineSoFar = words[i];
                                 }
                             }
-                            maxChars++;
+                            maxWidth += fontSize;
                         }
                         lines.push(lineSoFar);
                     }else{
@@ -369,14 +371,14 @@
                     }
                     ctx.textAlign = "center";
                     ctx.fillStyle = TEXT_COLOR;
-                    var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     
+                    var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var height = y2 - lines.length*fontSize;
                     for(var i = lines.length-1; i >= 0; i--){
                         var altMaxWidth = lines[i].length * fontSize;
                         ctx.fillText(lines[i], x4, height, maxWidth);
                         height += fontSize+(fontSize/4);
-                        maxWidth -= fontSize/2;
+                        maxWidth -= fontSize;
                     }
                     ctx.beginPath();
                     ctx.arc(x4,y1,fontSize,0,2*Math.PI);
@@ -430,7 +432,7 @@
                 canvas.setAttribute("width",SUBSECTOR_WIDTH * HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
                 canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter+CANVAS_PADDING*2);
                 fontSize = (newSize*1/3);
-                ctx.font = ""+fontSize+"pt Consolas";
+                ctx.font = ""+fontSize+"pt " + FONT;
                 document.getElementById("sizeIndicator").innerHTML = newSize;
             }
             function updateHexBorderColor(newColor){
