@@ -38,13 +38,14 @@
         <fieldset class="collapsed">
             <legend>Display</legend>
             <label for="sizeSlider">Scale: <span id="sizeIndicator"></span></label><input type="range" min="4" max="50" id="sizeSlider" />
-            <label for="slctStyle">Style: </label><select name="slctStyle" id="slctStyle" data-canvasbg="black" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
+            <label for="slctStyle">Style: </label><select name="slctStyle" id="slctStyle" data-text="white" data-canvasbg="black" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
                 <option value="light">light</option>
                 <option value="dark">dark</option>
                 <option value="transparent">transparent</option>
                 <option selected="selected" value="custom">custom</option>
             </select>
             <div id="customSettings">
+                <label for="textColor">Text Color: <input type="text" name="textColor" id="textColor" /></label>
                 <label for="hexBorderColor">Border Color: <input type="text" name="hexBorderColor" id="hexBorderColor" /></label>
                 <label for="hexBackgroundColor">Hex Fill: <input type="text" id="hexBackgroundColor" name="hexBackgroundColor" /></label>
                 <label for="canvasBackgroundColor">Background Color: <input type="text" name="canvasBackgroundColor" id="canvasBackgroundColor" /></label>
@@ -78,11 +79,12 @@
         (function(){
             //globals
             var wordMaker;
-            var HEX_SIZE = 10,
+            var HEX_SIZE = 27,
                 HEX_BORDER_COLOR = "white",
                 HEX_BACKGROUND_COLOR = "rgba(0,0,0,0.7)",
                 HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)",
                 CANVAS_BACKGROUND_COLOR = "rgb(50,50,50)",
+                TEXT_COLOR = "white",
                 CANVAS_PADDING = 20,
                 SUBSECTOR_WIDTH = 8,
                 SUBSECTOR_HEIGHT = 10;
@@ -92,12 +94,14 @@
                 yOffset:HEX_SIZE*4,
                 diameter:HEX_SIZE*2
             }
+            var fontSize = HEX_SIZE*1/3;
             var _systems = {};
             NameGenerator("names.jsonc",function(o){wordMaker = o;});
             var canvas = document.getElementById("canvas");
             canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
             canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter + CANVAS_PADDING*2);
             var ctx = canvas.getContext('2d');
+            ctx.font = ""+fontSize+"pt Consolas";
             var mapContent = [];
             document.getElementById("sizeSlider").value = HEX_SIZE;
             mapContent = generateHexes(SUBSECTOR_WIDTH,SUBSECTOR_HEIGHT);
@@ -168,6 +172,11 @@
                     document.getElementById("slctStyle").setAttribute("data-hexfg",newColor);
                     drawMap(mapContent);
                 });
+                document.getElementById("textColor").addEventListener("keyup",function(){
+                    var newColor = document.getElementById("textColor").value;
+                    updateTextColor(newColor);
+                    drawMap(mapContent);
+                });
                 document.getElementById("hexBackgroundColor").addEventListener("keyup",function(){
                     var newColor = document.getElementById("hexBackgroundColor").value;
                     updateHexBackgroundColor(newColor);
@@ -197,11 +206,18 @@
                         case "Cluster": d = 1, target = 5; break;
                         case "Core": d = 2, target = 11; break;
                     }
+                    var namesSoFar = {};
                     for(var x = 0; x < SUBSECTOR_WIDTH; x++){
                         for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
                             if(d6(d) <= target){
-                                systems[XYCoordToTCoord(x,y)] = {
-                                    name: wordMaker.getRandomName("system")
+                                var name = wordMaker.getRandomName("system");
+                                while(Object.keys(namesSoFar).indexOf(name) >= 0){
+                                    name = wordMaker.getRandomName("system");
+                                }
+                                var tcoord = XYCoordToTCoord(x,y);
+                                namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
+                                systems[tcoord] = {                                    
+                                    name: addCaps(name)
                                 };
                             }
                         }
@@ -291,15 +307,16 @@
                 return col+row;
             }
             function drawHex(hex){
+                var containsSystem = typeof hex.system !== "undefined" && hex.system !== null;
                 var coords = {
                     x:hex.x*HEX_MATH.xOffset,
                     y:hex.x%2 == 0 ? hex.y*HEX_MATH.yOffset : hex.y*HEX_MATH.yOffset + HEX_MATH.diameter
                 };
-                var x1 = coords.x - HEX_MATH.radius, 
-                    x2 = coords.x+HEX_MATH.radius;
-                var x0 = x1 - HEX_MATH.radius,
-                    x3 = x2 + HEX_MATH.radius,
-                    x4 = x1 + (x2-x1)/2;
+                var x1 = coords.x - HEX_MATH.radius, // top/bottom left vertex
+                    x2 = coords.x+HEX_MATH.radius; // top/bottom right vertex
+                var x0 = x1 - HEX_MATH.radius, // center left vertex
+                    x3 = x2 + HEX_MATH.radius, // center right vertex
+                    x4 = x1 + (x2-x1)/2; // middle of the bottom edge
                 var y0 = coords.y - HEX_MATH.diameter, 
                     y1 = coords.y,
                     y2 = y1 + HEX_MATH.diameter;
@@ -320,12 +337,53 @@
                     ctx.fillStyle = HEX_HIGHLIGHT_BACKGROUND_COLOR;
                 }else{
                     ctx.fillStyle = HEX_BACKGROUND_COLOR;
-                }
-                
-                if(typeof hex.system !== "undefined" && hex.system !== null){
-                    ctx.fillStyle = "red";
-                }
+                }              
                 ctx.fill();
+
+                if(containsSystem){
+                    var name = hex.system.name;
+                    var maxChars = 10;
+                    var lines = [];
+                    if(name.length > maxChars){
+                        var words = name.split(" ");
+                        var lineSoFar = "";
+                        for(var i = words.length-1; i >= 0; i--){
+                            var proposal = lineSoFar.length > 0 ? words[i] + " " + lineSoFar : words[i];
+                            if(proposal.length < maxChars){
+                                lineSoFar = proposal;
+                            }else{
+                                lines.push(lineSoFar);
+                                if(words[i].length > maxChars){
+                                    var mid = words[i].length/2>>0
+                                    lines.push(words[i].substring(mid))
+                                    lineSoFar = words[i].substring(0,mid)+"-";
+                                }else{
+                                    lineSoFar = words[i];
+                                }
+                            }
+                            maxChars++;
+                        }
+                        lines.push(lineSoFar);
+                    }else{
+                        lines = [name];
+                    }
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = TEXT_COLOR;
+                    var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
+                    
+                    var height = y2 - lines.length*fontSize;
+                    for(var i = lines.length-1; i >= 0; i--){
+                        var altMaxWidth = lines[i].length * fontSize;
+                        ctx.fillText(lines[i], x4, height, maxWidth);
+                        height += fontSize+(fontSize/4);
+                        maxWidth -= fontSize/2;
+                    }
+                    ctx.beginPath();
+                    ctx.arc(x4,y1,fontSize,0,2*Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
                 ctx.lineWidth = oldLineWidth;
                 return hex;
             }
@@ -336,26 +394,31 @@
                     document.getElementById("hexBorderColor").value = select.getAttribute("data-hexfg");
                     document.getElementById("hexBackgroundColor").value = select.getAttribute("data-hexbg");
                     document.getElementById("canvasBackgroundColor").value = select.getAttribute("data-canvasbg");
+                    document.getElementById("textColor").value = select.getAttribute("data-text");
                     HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
                 }else if(val === "light"){
                     document.getElementById("hexBorderColor").value = "black";
                     document.getElementById("hexBackgroundColor").value = "transparent";
                     document.getElementById("canvasBackgroundColor").value = "white";
+                    document.getElementById("textColor").value = "black";
                     HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
                 }else if(val === "dark"){
                     document.getElementById("hexBorderColor").value = "white";
                     document.getElementById("hexBackgroundColor").value = "transparent";
                     document.getElementById("canvasBackgroundColor").value = "black";
+                    document.getElementById("textColor").value = "white";
                     HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
                 }else if(val === "transparent"){
                     document.getElementById("hexBorderColor").value = "black";
                     document.getElementById("hexBackgroundColor").value = "transparent";
                     document.getElementById("canvasBackgroundColor").value = "transparent";
                     HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
+                    document.getElementById("textColor").value = "black";
                 }
                 updateHexBorderColor(document.getElementById("hexBorderColor").value);
                 updateHexBackgroundColor(document.getElementById("hexBackgroundColor").value);
                 updateCanvasBackgroundColor(document.getElementById("canvasBackgroundColor").value);
+                updateTextColor(document.getElementById("textColor").value);
                 drawMap(mapContent);
             }
             function updateHexSize(newSize){
@@ -366,6 +429,8 @@
                 HEX_MATH.diameter = HEX_SIZE*2;
                 canvas.setAttribute("width",SUBSECTOR_WIDTH * HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
                 canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter+CANVAS_PADDING*2);
+                fontSize = (newSize*1/3);
+                ctx.font = ""+fontSize+"pt Consolas";
                 document.getElementById("sizeIndicator").innerHTML = newSize;
             }
             function updateHexBorderColor(newColor){
@@ -376,6 +441,23 @@
             }
             function updateCanvasBackgroundColor(newColor){
                 CANVAS_BACKGROUND_COLOR = newColor;
+            }
+            function updateTextColor(newColor){
+                TEXT_COLOR = newColor;
+            }
+            function addCaps(text) {
+                var capitalizedString = "";
+                var lastCharacter = null, currCharacter = " ";
+                for (var i = 0, len = text.length; i < len; i++) {
+                    lastCharacter = currCharacter;
+                    currCharacter = text[i];
+                    if (lastCharacter === " " || lastCharacter === "-") {
+                        capitalizedString += currCharacter.toUpperCase();
+                    } else {
+                        capitalizedString += currCharacter;
+                    }
+                }
+                return capitalizedString;
             }
         })();
     </script>
