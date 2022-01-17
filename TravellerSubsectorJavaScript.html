@@ -52,6 +52,16 @@
         </fieldset>
         <fieldset class="collapsed">
             <legend>Systems</legend>
+            <label for="slctStellarDensity"><select name="slctStellarDensity" id="slctStellarDensity">
+                <option value="Extra Galactic">Extra Galactic (1%)</option>
+                <option value="Rift">Rift (3%)</option>
+                <option value="Sparse">Sparse (17%)</option>
+                <option value="Scattered">Scattered (33%)</option>
+                <option value="Standard" selected="selected">Standard (50%)</option>
+                <option value="Dense">Dense (66%)</option>
+                <option value="Cluster">Cluster (83%)</option>
+                <option value="Core">Core (91%)</option>
+            </select></label>
             <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Subsector"></label>
         </fieldset>
     </fieldset>
@@ -63,9 +73,11 @@
         <textarea name="data" id="data" cols="30" rows="10"></textarea>
         <input type="button" value="Apply" id="btnApplyData">
     </fieldset>
+    <script src="NameGenerator.js"></script>
     <script>
         (function(){
             //globals
+            var wordMaker;
             var HEX_SIZE = 10,
                 HEX_BORDER_COLOR = "white",
                 HEX_BACKGROUND_COLOR = "rgba(0,0,0,0.7)",
@@ -81,6 +93,7 @@
                 diameter:HEX_SIZE*2
             }
             var _systems = {};
+            NameGenerator("names.jsonc",function(o){wordMaker = o;});
             var canvas = document.getElementById("canvas");
             canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
             canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter + CANVAS_PADDING*2);
@@ -171,6 +184,40 @@
                     var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, JSON.parse(document.getElementById("data").value));
                     drawMap(mapContent);
                 });
+                document.getElementById("btnPopulateSystems").addEventListener("click",function(){
+                    var density = document.getElementById("slctStellarDensity").value;
+                    var d = 1, target = 3, systems = {};
+                    switch(density){
+                        case "Extra Galactic": d = 3, target = 3; break;
+                        case "Rift": d = 2, target = 2; break;
+                        case "Sparse": d = 1, target = 1; break;
+                        case "Scattered": d = 1, target = 2; break;
+                        case "Standard": d = 1, target = 3; break;
+                        case "Dense": d = 1, target = 4; break;
+                        case "Cluster": d = 1, target = 5; break;
+                        case "Core": d = 2, target = 11; break;
+                    }
+                    for(var x = 0; x < SUBSECTOR_WIDTH; x++){
+                        for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
+                            if(d6(d) <= target){
+                                systems[XYCoordToTCoord(x,y)] = {
+                                    name: wordMaker.getRandomName("system")
+                                };
+                            }
+                        }
+                    }
+                    document.getElementById("data").value = JSON.stringify(systems);
+                    var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
+                    drawMap(mapContent);
+                })
+            }
+            function d6(num){
+                if(!num){ num = 1;}
+                var sum = 0;
+                for(var i = 0; i < num; i++){
+                    sum += (Math.random()*6 >>> 0) + 1;
+                }
+                return sum;
             }
             function generateHexes(x,y, systems){
                 var systemsPredefined = true;
