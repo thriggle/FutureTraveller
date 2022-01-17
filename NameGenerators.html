@@ -9,7 +9,30 @@
 </head>
 
 <body>
-    <fieldset>
+    <style>
+        fieldset{
+            font-family:'Consolas','Inconsolas','Courier New', Courier, monospace;
+            display:inline-block;
+            vertical-align: text-top;
+        }
+        fieldset legend{
+            cursor:pointer;
+            user-select: none;
+        }
+        fieldset legend:hover{
+            color:red;
+        }
+        fieldset.collapsed *:not(legend){
+            display:none;
+        }
+        fieldset > legend::before{
+            content:"▼ ";
+        }
+        fieldset.collapsed > legend::before{
+            content:"► ";
+        }
+    </style>
+    <fieldset class="collapsed">
         <legend>Words</legend>
         <input type="button" id="btnWord" name="btnWord" value="Word" data-key="word" /> 
         <label for="btnWord" >Generate a word using English phonotactics</label>
@@ -17,38 +40,44 @@
         <input type="button" id="btnWord1" name="btnWord1" value="One-Syllable Word" data-key="word.1sylword" /> 
         <label for="btnWord1" >Generate a one-syllable word using English phonotactics</label>
         <hr/>
-        <input type="button" id="btnWord2" name="btnWord2" value="One-Syllable Word" data-key="word.2sylword" /> 
+        <input type="button" id="btnWord2" name="btnWord2" value="Two-Syllable Word" data-key="word.2sylword" /> 
         <label for="btnWord2" >Generate a two-syllable word using English phonotactics</label>
-    </fieldset>
-    <fieldset>
+    </fieldset><br/>
+    <fieldset class="collapsed">
         <legend>Human Names</legend>
         <input type="button" id="btnHuman" name="btnHuman" value="Human Name" data-key="human" /> 
         <label for="btnHuman" >Generate a human name</label>
         <hr/>
-        <input type="button" id="btnHumanFemale" name="btnHumanFemale" value="Human Female" data-key="human.femalefirstname" /> 
+        <input type="button" id="btnHumanFemale" name="btnHumanFemale" value="Female" data-key="human.femalefirstname" /> 
         <label for="btnHumanFemale" >Generate a female given name</label>
         <span>&nbsp;</span>
-        <input type="button" id="btnHumanMale" name="btnHumanMale" value="Human Male" data-key="human.malefirstname" /> 
+        <input type="button" id="btnHumanMale" name="btnHumanMale" value="Male" data-key="human.malefirstname" /> 
         <label for="btnHumanMale" >Generate a male given name</label>
         <hr/>
-        <input type="button" id="btnHumanLName" name="btnHumanLName" value="Human Surname" data-key="human.lastname" /> 
+        <input type="button" id="btnHumanLName" name="btnHumanLName" value="Surname" data-key="human.lastname" /> 
         <label for="btnHumanLName" >Generate a human surname</label>
-    </fieldset>
-    <fieldset>
+    </fieldset><br/>
+    <fieldset class="collapsed">
         <legend>System Names</legend>
         <input type="button" id="btnSystem" name="btnSystem" value="System" data-key="system" /> 
         <label for="btnSystem" >Generate a solar system name</label>
         <hr/>
         <input type="button" id="btnSystemwithoutinventedwords" name="btnSystemwithoutinventedwords" value="System Without Invented Words" data-key="system.systemwithoutinventedwords" /> 
         <label for="btnSystemwithoutinventedwords" >Generate a solar system name without invented words</label>
-    </fieldset>
-    <fieldset>
+    </fieldset><br/>
+    <fieldset class="collapsed">
         <legend>Ship Names</legend>
         <input type="button" id="btnShip" name="btnShip" value="Ship" data-key="ship" /> 
         <label for="btnShip" >Generate a starship name</label>
         <hr/>
-        <input type="button" id="btnShipYacht" name="btnShipYacht" value="Punny Ship" data-key="ship.yacht" /> 
+        <input type="button" id="btnShipYacht" name="btnShipYacht" value="Stupid Pun" data-key="ship.yacht" /> 
         <label for="btnShipYacht" >Generate a punny starship name</label>
+        <hr/>
+        <input type="button" id="btnShipNoPun" name="btnShipNoPun" value="No Puns" data-key="ship.nopun" /> 
+        <label for="btnShipNoPun" >Generate a starship name without stupid puns</label>
+        <hr/>
+        <input type="button" id="btnShipNaval" name="btnShipNaval" value="Naval" data-key="ship.navalname" /> 
+        <label for="btnShipNaval" >Generate a likely naval starship name</label>
     </fieldset>
     <script>
         (function (global) {
@@ -148,6 +177,18 @@
                     label.innerText = addCaps(value);
                 });
             }
+            var collapserHandles = document.querySelectorAll("fieldset legend");
+                for(var i = 0, len = collapserHandles.length; i < len; i++){
+                    var handle = collapserHandles[i];
+                    handle.addEventListener("click",function(e){
+                        var parent = e.target.parentElement;
+                        if(parent.classList.contains("collapsed")){
+                            parent.classList.remove("collapsed");
+                        }else{
+                            parent.classList.add("collapsed");
+                        }
+                    });
+                }
         }
         function getRandomName(key) {
             var templates = window.stringtemplates[key];
