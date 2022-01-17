@@ -251,7 +251,8 @@
                 var x1 = coords.x - HEX_MATH.radius, 
                     x2 = coords.x+HEX_MATH.radius;
                 var x0 = x1 - HEX_MATH.radius,
-                    x3 = x2 + HEX_MATH.radius;
+                    x3 = x2 + HEX_MATH.radius,
+                    x4 = x1 + (x2-x1)/2;
                 var y0 = coords.y - HEX_MATH.diameter, 
                     y1 = coords.y,
                     y2 = y1 + HEX_MATH.diameter;
@@ -261,9 +262,9 @@
                     ctx.lineWidth = 10;
                 }
                 ctx.beginPath();
-                ctx.moveTo(x1,y2);
-                hex.vertx = [x1,x2,x3,x2,x1,x0,x1];
-                hex.verty = [y2,y2,y1,y0,y0,y1,y2];
+                ctx.moveTo(x4,y2);
+                hex.vertx = [x4,x2,x3,x2,x1,x0,x1,x4];
+                hex.verty = [y2,y2,y1,y0,y0,y1,y2,y2];
                 for(var i = 1; i < hex.vertx.length; i++){
                     ctx.lineTo(hex.vertx[i], hex.verty[i]);
                 }
