@@ -347,6 +347,7 @@
                     var maxChars = 10;
                     var lines = [];
                     if(ctx.measureText(name).width > maxWidth){
+                        console.log(name);
                         var words = name.split(" ");
                         var lineSoFar = "";
                         for(var i = words.length-1; i >= 0; i--){
@@ -354,7 +355,7 @@
                             if(ctx.measureText(proposal).width < maxWidth){
                                 lineSoFar = proposal;
                             }else{
-                                lines.push(lineSoFar);
+                                if(lineSoFar.length > 0){lines.push(lineSoFar);}
                                 if(ctx.measureText(words[i]).width > maxWidth){
                                     var mid = words[i].length/2>>0
                                     lines.push(words[i].substring(mid))
@@ -365,13 +366,23 @@
                             }
                             maxWidth += fontSize;
                         }
-                        lines.push(lineSoFar);
+                        if(lineSoFar.length > 0){lines.push(lineSoFar);}
+                        if(lines.length >= 3){
+                            console.log(lines);
+                        }
                     }else{
                         lines = [name];
                     }
+
+                    // draw planet
+                    ctx.fillStyle = "gray"; 
+                    ctx.beginPath();
+                    ctx.arc(x4,y1,fontSize,0,2*Math.PI);
+                    ctx.fill();
+
+                    // write text
                     ctx.textAlign = "center";
-                    ctx.fillStyle = TEXT_COLOR;
-                    
+                    ctx.fillStyle = TEXT_COLOR;                    
                     var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var height = y2 - lines.length*fontSize;
                     for(var i = lines.length-1; i >= 0; i--){
@@ -379,11 +390,8 @@
                         ctx.fillText(lines[i], x4, height, maxWidth);
                         height += fontSize+(fontSize/4);
                         maxWidth -= fontSize;
-                    }
-                    ctx.beginPath();
-                    ctx.arc(x4,y1,fontSize,0,2*Math.PI);
-                    ctx.fill();
-                    ctx.stroke();
+                    }                    
+                    
                 }
 
                 ctx.lineWidth = oldLineWidth;
