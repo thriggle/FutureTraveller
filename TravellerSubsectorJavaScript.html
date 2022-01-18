@@ -217,8 +217,15 @@
                                 }
                                 var tcoord = XYCoordToTCoord(x,y);
                                 namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
+                                var details = generateSystemDetails();
                                 systems[tcoord] = {                                    
-                                    name: addCaps(name)
+                                    name: addCaps(name),
+                                    uwp: details.uwp,
+                                    gg:d6(2)>=8 ? Math.max(d6(2)/2>>0-2,1) : 0 ,
+                                    isAsteroidBelt:d6(2)==2,
+                                    planetoidBelts:Math.max(d6()-3,0),
+                                    bases:details.bases,
+                                    stars:details.stars
                                 };
                             }
                         }
@@ -228,6 +235,147 @@
                     drawMap(mapContent);
                 })
             }
+            function generateSystemDetails(){
+                var uwp = "";
+                var stars = {primary:{},primary_companion:false,close:false,near:false, near_companion:false,close_companion:false,far:false, far_companion:false};
+                var primaryType = d6()-d6(),
+                    primaryDecimal = d09(),
+                    primarySize = d6()-d6();
+                stars.primary = getStar(primaryType,primaryDecimal,primarySize);
+                if(d6()-d6()>=3){ 
+                    stars.primary_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
+                    
+                }
+                if(d6()-d6()>=3){ 
+                    stars.close = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
+                    stars.close.orbit = d6()-1;
+                    if(d6()-d6()>=3){ 
+                        stars.close_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
+                    }
+                }
+                if(d6()-d6()>=3){ 
+                    stars.near = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
+                    stars.near.orbit = 5 + d6();
+                    if(d6()-d6()>=3){ 
+                        stars.near_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
+                    }
+                }
+                if(d6()-d6()>=3){ 
+                    stars.far = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
+                    stars.far.orbit = 11 + d6();
+                    if(d6()-d6()>=3){ 
+                        stars.far_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
+                    }
+                }
+                var bases = [];
+                var roll = d6(2);
+                var starport;
+                if(roll <= 4){
+                    uwp = starport = "A";
+                    if(d6(2)<=6){ bases.push("Naval");}
+                    if(d6(2)<=4){ bases.push("Scout");}
+                }
+                else if(roll <= 6){
+                    uwp = starport = "B";
+                    if(d6(2)<=5){ bases.push("Naval");}
+                    if(d6(2)<=5){ bases.push("Scout");}
+                }
+                else if(roll <= 8){
+                    uwp = starport = "C";
+                    if(d6(2)<=6){bases.push("Scout");}
+                }
+                else if(roll == 9){
+                    uwp = starport = "D";
+                    if(d6(2)<=7){bases.push("Scout");}
+                }
+                else if(roll <= 11){
+                    uwp = starport = "E";
+                }
+                else if(roll == 12){
+                    uwp = starport = "X";
+                }
+
+                return {uwp:uwp,bases:bases,stars:stars};
+            }
+            function getStar(type, decimal, size){
+                var star = {};
+                if(type == -6){ 
+                    if(d6() == 1){
+                        star.type =  "O";
+                        if(size <= -5){ star.size = "Ia"; }
+                        else if(size <= -4){ star.size = "Ib"; }
+                        else if(size <= -3){ star.size = "II"; }
+                        else if(size <= 0){ star.size = "III"; }
+                        else if(size <= 3){ star.size = "V"; }
+                        else if(size <= 4){ star.size = "IV";}
+                        else if(size <= 5){ star.size = "D";}
+                        else{ star.size = "IV";}
+                    }else{
+                        star.type = "B";
+                        if(size <= -5){ star.size = "Ia"; }
+                        else if(size <= -4){ star.size = "Ib"; }
+                        else if(size <= -3){ star.size = "II"; }
+                        else if(size <= 1){ star.size = "III"; }
+                        else if(size <= 3){ star.size = "V"; }
+                        else if(size <= 4){ star.size = "IV";}
+                        else if(size <= 5){ star.size = "D";}
+                        else{ star.size = "IV";}
+                    }
+                }
+                else if(type <= -4){ 
+                        star.type = "A"; 
+                        if(size <= -5){ star.size = "Ia"; }
+                        else if(size <= -4){ star.size = "Ib"; }
+                        else if(size <= -3){ star.size = "II"; }
+                        else if(size <= -2){ star.size = "III"; }
+                        else if(size <= -1){ star.size = "IV"; }
+                        else if(size <= 4){ star.size = "V";}
+                        else if(size <= 5){ star.size = "D";}
+                        else{ star.size = "V";}
+                }
+                else if(type <= -2){ 
+                    star.type = "F"; 
+                    if(size <= -5){ star.size = "II"; }
+                    else if(size <= -4){ star.size = "III"; }
+                    else if(size <= -3){ star.size = "IV"; }
+                    else if(size <= 3){ star.size = "V"; }
+                    else if(size <= 4){ star.size = "VI";}
+                    else if(size <= 5){ star.size = "D";}
+                    else{ star.size = "VI";}
+                }
+                else if(type <= 0){ 
+                    star.type = "G"; 
+                    if(size <= -5){ star.size = "II"; }
+                    else if(size <= -4){ star.size = "III"; }
+                    else if(size <= -3){ star.size = "IV"; }
+                    else if(size <= 3){ star.size = "V"; }
+                    else if(size <= 4){ star.size = "VI";}
+                    else if(size <= 5){ star.size = "D";}
+                    else{ star.size = "VI";}
+                }
+                else if(type <= 2){ 
+                    star.type = "K"; 
+                    if(size <= -5){ star.size = "II"; }
+                    else if(size <= -4){ star.size = "III"; }
+                    else if(size <= -3){ star.size = "IV"; }
+                    else if(size <= 3){ star.size = "V"; }
+                    else if(size <= 4){ star.size = "VI";}
+                    else if(size <= 5){ star.size = "D";}
+                    else{ star.size = "VI";}
+                }
+                else if(type <= 5){ 
+                    star.type = "M"; 
+                    if(size <= -3){ star.size = "II"; }
+                    else if(size <= -2){ star.size = "III"; }
+                    else if(size <= 3){ star.size = "V"; }
+                    else if(size <= 4){ star.size = "VI";}
+                    else if(size <= 5){ star.size = "D";}
+                    else{ star.size = "VI";}
+                }
+                else{ star.type = "BD"; }
+                if(star.size !== "D"){star.decimal = decimal;}
+                return star;
+            }
             function d6(num){
                 if(!num){ num = 1;}
                 var sum = 0;
@@ -235,6 +383,14 @@
                     sum += (Math.random()*6 >>> 0) + 1;
                 }
                 return sum;
+            }
+            function d09(){
+                //returns 0-9 even distribution
+                var r1=d6(),r2=d6(),x;
+                while(r1==6){r1=d6();}
+                x = (r1-1) * 2;
+                if(r2 >= 4){x+=1;}
+                return x;
             }
             function generateHexes(x,y, systems){
                 var systemsPredefined = true;
@@ -347,7 +503,6 @@
                     var maxChars = 10;
                     var lines = [];
                     if(ctx.measureText(name).width > maxWidth){
-                        console.log(name);
                         var words = name.split(" ");
                         var lineSoFar = "";
                         for(var i = words.length-1; i >= 0; i--){
@@ -367,9 +522,6 @@
                             maxWidth += fontSize;
                         }
                         if(lineSoFar.length > 0){lines.push(lineSoFar);}
-                        if(lines.length >= 3){
-                            console.log(lines);
-                        }
                     }else{
                         lines = [name];
                     }
