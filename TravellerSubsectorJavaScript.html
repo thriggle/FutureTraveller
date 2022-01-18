@@ -49,6 +49,7 @@
                 <label for="hexBorderColor">Border Color: <input type="text" name="hexBorderColor" id="hexBorderColor" /></label>
                 <label for="hexBackgroundColor">Hex Fill: <input type="text" id="hexBackgroundColor" name="hexBackgroundColor" /></label>
                 <label for="canvasBackgroundColor">Background Color: <input type="text" name="canvasBackgroundColor" id="canvasBackgroundColor" /></label>
+                <label for="fontFamily">Font: <input type="text" id="fontFamily" name="fontFamily" value="Segoe UI, sans-serif"/></label>
             </div>
         </fieldset>
         <fieldset class="collapsed">
@@ -102,11 +103,12 @@
             canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
             canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter + CANVAS_PADDING*2);
             var ctx = canvas.getContext('2d');
-            ctx.font = ""+fontSize+"pt "+FONT;
+            
             var mapContent = [];
             document.getElementById("sizeSlider").value = HEX_SIZE;
             mapContent = generateHexes(SUBSECTOR_WIDTH,SUBSECTOR_HEIGHT);
             updateStyle();
+            ctx.font = ""+fontSize+"pt "+FONT;
             drawMap(mapContent);
             attachEventListeners();
 
@@ -167,6 +169,7 @@
                     updateHexSize(+(document.getElementById("sizeSlider").value));
                     drawMap(mapContent);
                 });
+                document.getElementById("fontFamily").addEventListener("keyup",updateStyle);
                 document.getElementById("hexBorderColor").addEventListener("keyup",function(){
                     var newColor = document.getElementById("hexBorderColor").value;
                     updateHexBorderColor(newColor);
@@ -542,7 +545,9 @@
                         ctx.fillText(lines[i], x4, height, maxWidth);
                         height += fontSize+(fontSize/4);
                         maxWidth -= fontSize;
-                    }                    
+                    }
+                    
+                    ctx.fillText(hex.system.uwp[0],x4,y0 + (y1-y0)/2);
                     
                 }
 
@@ -558,6 +563,7 @@
                     document.getElementById("canvasBackgroundColor").value = select.getAttribute("data-canvasbg");
                     document.getElementById("textColor").value = select.getAttribute("data-text");
                     HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
+                   
                 }else if(val === "light"){
                     document.getElementById("hexBorderColor").value = "black";
                     document.getElementById("hexBackgroundColor").value = "transparent";
@@ -581,7 +587,12 @@
                 updateHexBackgroundColor(document.getElementById("hexBackgroundColor").value);
                 updateCanvasBackgroundColor(document.getElementById("canvasBackgroundColor").value);
                 updateTextColor(document.getElementById("textColor").value);
+                updateFont(document.getElementById("fontFamily").value);
                 drawMap(mapContent);
+            }
+            function updateFont(newFont){
+                FONT = newFont;
+                ctx.font = ""+fontSize+"pt " + newFont;
             }
             function updateHexSize(newSize){
                 HEX_SIZE = newSize;
