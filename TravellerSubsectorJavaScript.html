@@ -239,7 +239,9 @@
                 })
             }
             function generateSystemDetails(){
+                var roll;
                 var uwp = "";
+                var tradeCodes = [];
                 var stars = {primary:{},primary_companion:false,close:false,near:false, near_companion:false,close_companion:false,far:false, far_companion:false};
                 var primaryType = d6()-d6(),
                     primaryDecimal = d09(),
@@ -270,8 +272,15 @@
                         stars.far_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
                     }
                 }
+                roll = d6()-d6(); // roll for mainworld orbit
+                var MWOrbit = stars.primary.HZOrbit;
+                if(roll<=-6){ MWOrbit -= 2; tradeCodes.push("Tr");}
+                else if(roll <= -3){ MWOrbit -=1; tradeCodes.push("Tr");}
+                else if(roll <= 2){ MWOrbit = stars.primary.HZOrbit; }
+                else if(roll <= 5){ MWOrbit += 1; tradeCodes.push("Tu");}
+                else if(roll >= 6){ MWOrbit += 2; tradeCodes.push("Fr");}
                 var bases = [];
-                var roll = d6(2);
+                roll = d6(2); // roll for starport
                 var starport;
                 if(roll <= 4){
                     uwp = starport = "A";
@@ -298,82 +307,82 @@
                     uwp = starport = "X";
                 }
 
-                return {uwp:uwp,bases:bases,stars:stars};
+                return {uwp:uwp,bases:bases,stars:stars,mainWorldOrbit:MWOrbit,tradeCodes:tradeCodes};
             }
             function getStar(type, decimal, size){
                 var star = {};
                 if(type == -6){ 
                     if(d6() == 1){
                         star.type =  "O";
-                        if(size <= -5){ star.size = "Ia"; }
-                        else if(size <= -4){ star.size = "Ib"; }
-                        else if(size <= -3){ star.size = "II"; }
-                        else if(size <= 0){ star.size = "III"; }
-                        else if(size <= 3){ star.size = "V"; }
-                        else if(size <= 4){ star.size = "IV";}
-                        else if(size <= 5){ star.size = "D";}
-                        else{ star.size = "IV";}
+                        if(size <= -5){ star.size = "Ia"; star.HZOrbit = 15;}
+                        else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 15;}
+                        else if(size <= -3){ star.size = "II"; star.HZorbit = 14; }
+                        else if(size <= 0){ star.size = "III"; star.HZOrbit = 13;}
+                        else if(size <= 3){ star.size = "V"; star.HZOrbit = 11;}
+                        else if(size <= 4){ star.size = "IV"; star.HZOrbit = 12;}
+                        else if(size <= 5){ star.size = "D"; star.HZOrbit = 1;}
+                        else{ star.size = "IV"; star.HZOrbit = 12;}
                     }else{
                         star.type = "B";
-                        if(size <= -5){ star.size = "Ia"; }
-                        else if(size <= -4){ star.size = "Ib"; }
-                        else if(size <= -3){ star.size = "II"; }
-                        else if(size <= 1){ star.size = "III"; }
-                        else if(size <= 3){ star.size = "V"; }
-                        else if(size <= 4){ star.size = "IV";}
-                        else if(size <= 5){ star.size = "D";}
-                        else{ star.size = "IV";}
+                        if(size <= -5){ star.size = "Ia"; star.HZOrbit = 13;}
+                        else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 13;}
+                        else if(size <= -3){ star.size = "II"; star.HZOrbit = 12; }
+                        else if(size <= 1){ star.size = "III"; star.HZOrbit = 11; }
+                        else if(size <= 3){ star.size = "V"; star.HZOrbit = 9;}
+                        else if(size <= 4){ star.size = "IV"; star.HZOrbit = 10;}
+                        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
+                        else{ star.size = "IV";star.HZOrbit = 10;}
                     }
                 }
                 else if(type <= -4){ 
                         star.type = "A"; 
-                        if(size <= -5){ star.size = "Ia"; }
-                        else if(size <= -4){ star.size = "Ib"; }
-                        else if(size <= -3){ star.size = "II"; }
-                        else if(size <= -2){ star.size = "III"; }
-                        else if(size <= -1){ star.size = "IV"; }
-                        else if(size <= 4){ star.size = "V";}
-                        else if(size <= 5){ star.size = "D";}
-                        else{ star.size = "V";}
+                        if(size <= -5){ star.size = "Ia"; star.HZOrbit = 12; }
+                        else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 11;}
+                        else if(size <= -3){ star.size = "II";star.HZOrbit = 9; }
+                        else if(size <= -2){ star.size = "III"; star.HZOrbit = 7;}
+                        else if(size <= -1){ star.size = "IV"; star.HZOrbit = 7;}
+                        else if(size <= 4){ star.size = "V";star.HZOrbit = 7;}
+                        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
+                        else{ star.size = "V";star.HZOrbit = 7;}
                 }
                 else if(type <= -2){ 
                     star.type = "F"; 
-                    if(size <= -5){ star.size = "II"; }
-                    else if(size <= -4){ star.size = "III"; }
-                    else if(size <= -3){ star.size = "IV"; }
-                    else if(size <= 3){ star.size = "V"; }
-                    else if(size <= 4){ star.size = "VI";}
-                    else if(size <= 5){ star.size = "D";}
-                    else{ star.size = "VI";}
+                    if(size <= -5){ star.size = "II"; star.HZOrbit = 9;}
+                    else if(size <= -4){ star.size = "III";star.HZOrbit = 6; }
+                    else if(size <= -3){ star.size = "IV"; star.HZOrbit = 6;}
+                    else if(size <= 3){ star.size = "V"; star.HZOrbit = 5;}
+                    else if(size <= 4){ star.size = "VI";star.HZOrbit = 3;}
+                    else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
+                    else{ star.size = "VI";star.HZOrbit = 3;}
                 }
                 else if(type <= 0){ 
                     star.type = "G"; 
-                    if(size <= -5){ star.size = "II"; }
-                    else if(size <= -4){ star.size = "III"; }
-                    else if(size <= -3){ star.size = "IV"; }
-                    else if(size <= 3){ star.size = "V"; }
-                    else if(size <= 4){ star.size = "VI";}
-                    else if(size <= 5){ star.size = "D";}
-                    else{ star.size = "VI";}
+                    if(size <= -5){ star.size = "II"; star.HZOrbit = 9;}
+                    else if(size <= -4){ star.size = "III"; star.HZOrbit = 7;}
+                    else if(size <= -3){ star.size = "IV"; star.HZOrbit = 5;}
+                    else if(size <= 3){ star.size = "V"; star.HZOrbit = 3;}
+                    else if(size <= 4){ star.size = "VI";star.HZOrbit = 2;}
+                    else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
+                    else{ star.size = "VI";star.HZOrbit = 3;}
                 }
                 else if(type <= 2){ 
                     star.type = "K"; 
-                    if(size <= -5){ star.size = "II"; }
-                    else if(size <= -4){ star.size = "III"; }
-                    else if(size <= -3){ star.size = "IV"; }
-                    else if(size <= 3){ star.size = "V"; }
-                    else if(size <= 4){ star.size = "VI";}
-                    else if(size <= 5){ star.size = "D";}
-                    else{ star.size = "VI";}
+                    if(size <= -5){ star.size = "II"; star.HZOrbit = 9;}
+                    else if(size <= -4){ star.size = "III"; star.HZOrbit = 8;}
+                    else if(size <= -3){ star.size = "IV"; star.HZOrbit = 5;}
+                    else if(size <= 3){ star.size = "V"; star.HZOrbit = 2;}
+                    else if(size <= 4){ star.size = "VI";star.HZOrbit = 1;}
+                    else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
+                    else{ star.size = "VI";star.HZOrbit = 1;}
                 }
                 else if(type <= 5){ 
                     star.type = "M"; 
-                    if(size <= -3){ star.size = "II"; }
-                    else if(size <= -2){ star.size = "III"; }
-                    else if(size <= 3){ star.size = "V"; }
-                    else if(size <= 4){ star.size = "VI";}
-                    else if(size <= 5){ star.size = "D";}
-                    else{ star.size = "VI";}
+                    if(size <= -3){ star.size = "II"; star.HZOrbit = 10;}
+                    else if(size <= -2){ star.size = "III"; star.HZOrbit = 9;}
+                    else if(size <= 3){ star.size = "V"; star.HZOrbit = 0;}
+                    else if(size <= 4){ star.size = "VI";star.HZOrbit = 0;}
+                    else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
+                    else{ star.size = "VI";star.HZOrbit = 0;}
                 }
                 else{ star.type = "BD"; }
                 if(star.size !== "D"){star.decimal = decimal;}
@@ -484,6 +493,8 @@
                 var oldLineWidth = ctx.lineWidth;
                 if(hex.selected){                    
                     ctx.lineWidth = 10;
+                }else if(hex.highlighted){
+                    ctx.lineWidth = 5;
                 }
                 ctx.beginPath();
                 ctx.moveTo(x4,y2);
@@ -493,11 +504,11 @@
                     ctx.lineTo(hex.vertx[i], hex.verty[i]);
                 }
                 ctx.stroke();
-                if(hex.highlighted){
-                    ctx.fillStyle = HEX_HIGHLIGHT_BACKGROUND_COLOR;
-                }else{
+                //if(hex.highlighted){
+                //    ctx.fillStyle = HEX_HIGHLIGHT_BACKGROUND_COLOR;
+                //}else{
                     ctx.fillStyle = HEX_BACKGROUND_COLOR;
-                }              
+                //}              
                 ctx.fill();
 
                 if(containsSystem){
@@ -530,10 +541,53 @@
                     }
 
                     // draw planet
-                    ctx.fillStyle = "gray"; 
-                    ctx.beginPath();
-                    ctx.arc(x4,y1,fontSize,0,2*Math.PI);
-                    ctx.fill();
+                    if(hex.system.isAsteroidBelt){
+                        ctx.fillStyle = TEXT_COLOR; //"orange"; 
+                        ctx.beginPath();
+                        ctx.arc(x4 - (x4 - x1)/2.5,y1 - (y1-y0)/8,fontSize/6,0,2*Math.PI);
+                        ctx.fill();
+
+                        //ctx.fillStyle = "yellow";
+                        ctx.beginPath();
+                        ctx.arc(x4 - (x4 - x1)/9,y1,fontSize/6,0,2*Math.PI);
+                        ctx.fill();
+
+                        //ctx.fillStyle = "magenta";
+                        ctx.beginPath();
+                        ctx.arc(x4 + (x4 - x1)/5,y1 - (y1-y0)/11,fontSize/6,0,2*Math.PI);
+                        ctx.fill();
+
+                        //ctx.fillStyle = "cyan";
+                        ctx.beginPath();
+                        ctx.arc(x4 + (x4 - x1)/6,y1 + (y1-y0)/9,fontSize/6,0,2*Math.PI);
+                        ctx.fill();
+
+                        //ctx.fillStyle = "yellow";
+                        ctx.beginPath();
+                        ctx.arc(x4 + (x4 - x1)/2.5,y1 + (y1-y0)/18,fontSize/6,0,2*Math.PI);
+                        ctx.fill();
+
+                        //ctx.fillStyle = "black";
+                        ctx.beginPath();
+                        ctx.arc(x4 - (x4 - x1)/2,y1 ,fontSize/6,0,2*Math.PI);
+                        ctx.fill();
+
+                        //ctx.fillStyle = "orange";
+                        ctx.beginPath();
+                        ctx.arc(x4 - (x4 - x1)/8,y1 - (y1-y0)/6,fontSize/6,0,2*Math.PI);
+                        ctx.fill();
+
+                        //ctx.fillStyle = "red";
+                        ctx.beginPath();
+                        ctx.arc(x4 - (x4 - x1)/7,y1 + (y1-y0)/8,fontSize/6,0,2*Math.PI);
+                        ctx.fill();
+                    }else{
+                        ctx.fillStyle = TEXT_COLOR; //"gray"; 
+                        ctx.beginPath();
+                        ctx.arc(x4,y1,fontSize,0,2*Math.PI);
+                        ctx.fill();
+                    }
+                    
 
                     // write text
                     ctx.textAlign = "center";
