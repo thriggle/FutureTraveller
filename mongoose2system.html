@@ -29,6 +29,11 @@
         fieldset.collapsed > legend::before{
             content:"► ";
         }
+        #warning{
+            color:red;
+            font-family: 'Consolas','Inconsolas','Courier New', Courier, monospace;
+            font-weight:bold;
+        }
     </style>
     <script src="NameGenerator.js"></script>
     <h1 id="uwp">Universal World Profile</h1>
@@ -47,8 +52,7 @@
     Gas Giant Present: <span id="gg"></span><br/>    
     Orbit: <span id="orbit"></span> <br/>
     Temperature: <span id="temperature"></span><br/><br/>
-    
-    
+    <span id="warning"></span><br/>
     <fieldset>
         <legend>Parameters</legend>
         <fieldset>
@@ -280,6 +284,7 @@
             }
             //tech;
             tech = d6() + techDM;
+            document.getElementById("warning").innerText = "";
             if(document.getElementById("applyAtmosphericMinimums").checked){
 
                 if(atmo <= 1){ tech = Math.max(tech,8);}
@@ -290,6 +295,19 @@
                 else if(atmo === 12){ tech = Math.max(tech,10);}
                 else if(atmo === 13 || atmo === 14){ tech = Math.max(tech,5);}
                 else if(atmo === 15){ tech = Math.max(tech,8);}
+            }else{
+                var warning = false;
+                if(atmo <= 1 && tech < 8){ warning = true;}
+                else if(atmo <= 3 && tech < 5){ warning = true;}
+                else if((atmo === 5 || atmo === 7 || atmo === 9) && tech <3){ warning = true;}
+                else if(atmo === 10 && tech < 8){ warning = true;}
+                else if(atmo === 11 && tech < 9){ warning = true;}
+                else if(atmo === 12 && tech < 10){ warning = true;}
+                else if(atmo === 13 && tech < 5){ warning = true;}
+                else if(atmo === 15 && tech < 8){ warning = true;}
+                if(warning){
+                    document.getElementById("warning").innerText = "Warning: tech level insufficient for local enivronment";
+                }
             }
         }
             document.getElementById("government").innerText = gov+ " ("+getGovDesc(gov)+")";
@@ -305,7 +323,7 @@
                 pop.toString(16) +
                 gov.toString(16) +
                 law.toString(16) +
-                "-" + tech
+                "-" + tech.toString(16)
             ).toUpperCase();
 
             var trade = "", tr = "";
