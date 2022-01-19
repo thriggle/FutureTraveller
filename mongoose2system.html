@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mongoose 2nd Edition Traveller System Generator</title>
+</head>
+<body>
+    <h1 id="uwp">Universal World Profile</h1>
+    <h2 id="name">System Name</h2>
+    Starport: <span id="starport"></span><br/>
+    Size: <span id="size"></span><br/>
+    Atmo: <span id="atmosphere"></span><br/>
+    Hydro: <span id="hydrographics"></span><br/>
+    Pop: <span id="population"></span><br/>
+    Gov: <span id="government"></span><br/>
+    Law Level: <span id="law"></span><br/>
+    Tech Level: <span id="tech"></span> min:<input style="max-width:3em;" type="number" id="mintech" min=0 value=0> max:<input id="maxtech" style="max-width:3em;" type="number" min=0 value=15> <br/>
+    Gas Giant Present: <span id="gg"></span><br/>
+    Bases: <span id="bases"></span><br/>
+    Orbit: <span id="orbit"></span> <select name="slctHZ" id="slctHZ">
+        <option value="Random (usually HZ)">Random (usually HZ)</option>
+        <option value="Random (even distribution)">Random (even distribution)</option>
+        <option value="Hot">Hot edge of Habitable Zone</option>
+        <option value="HZ" selected="selected">Middle of Habitable Zone</option>
+        <option value="Cold">Cold edge of Habitable Zone</option>
+    </select><br/>
+    Temperature: <span id="temperature"></span><br/>
+    
+    <input type="button" value="generate system" id="btnGenerate" />
+    <script>
+        document.getElementById("btnGenerate").addEventListener("click",generateSystem);
+        function generateSystem(){
+            var techDM = 0;
+            // gas giant?
+            if(d6(2) < 10){ document.getElementById("gg").innerText = "Yes";}else{document.getElementById("gg").innerText = "No";}
+            // size
+            var size = d6(2) - 2; 
+            if(size<=1){techDM +=2;}else if(size <=4){techDM +=1;}
+            document.getElementById("size").innerText = size + (size <= 6 ? " (low gravity)" : (size >= 10 ? " (high gravity)" : ""));
+            // atmo
+            var atmo = d6(2)-7+size;
+            if(atmo < 0){atmo = 0;}
+            if(atmo<=3 || atmo >= 10){techDM +=1;}
+            document.getElementById("atmosphere").innerText = atmo + " ("+getAtmoDesc(atmo)+")";
+            // temperature
+            var temp;
+            if(atmo <= 1){ temp = "Swings between roasting and freezing";}
+            else{
+                var hzChoice = document.getElementById("slctHZ").value;
+                var hzMod = 0;
+                if(hzChoice === "Random (usually HZ)"){ 
+                    var roll = d6();
+                    if(roll <=1){
+                        hzChoice = "Hot";
+                    }else if(roll <= 5){
+                        hzChoice = "HZ";
+                    }else if(roll <=6){
+                        hzChoice = "Cold";
+                    }
+                }else if(hzChoice === "Random (even distribution)"){ 
+                    var roll = d6();
+                    if(roll <=2){
+                        hzChoice = "Hot";
+                    }else if(roll <= 4){
+                        hzChoice = "HZ";
+                    }else if(roll <=6){
+                        hzChoice = "Cold";
+                    }
+                }
+                if(hzChoice === "Hot"){ 
+                    hzMod = 4;
+                     document.getElementById("orbit").innerText = "Hot edge";}
+                else if(hzChoice === "Cold"){ 
+                    hzMod = -4;
+                    document.getElementById("orbit").innerText = "Cold edge";
+                }
+                else{
+                    hzMod = 0;
+                    document.getElementById("orbit").innerText = "HZ";
+                }
+                if(atmo <= 3){atmoMod = -2;}
+                else if(atmo <= 5 || atmo === 14){atmoMod = -1;}
+                else if(atmo <= 7){atmoMod = 0;}
+                else if(atmo <= 9){atmoMod = 1;}
+                else if(atmo === 10 || atmo === 13 || atmo === 15){atmoMod =2;}
+                else{atmoMod = 6;}
+                var tempRoll = d6(2) + hzMod + atmoMod;
+                if(tempRoll <= 2){
+                    temp = "Frozen";
+                }else if(tempRoll <= 4){
+                    temp = "Cold";
+                }else if(tempRoll <= 9){
+                    temp = "Temperate";
+                }else if(tempRoll <= 11){
+                    temp = "Hot";
+                }else{
+                    temp = "Boiling";
+                }
+            }
+            document.getElementById("temperature").innerText = temp;
+            // hydro
+            var hydro;
+            if(size <= 1){ hydro = 0;}
+            else{
+                var hydroDM = 0;
+                var atmoDM = atmo;
+                if(atmo <= 1 || atmo >= 10){ atmoDM = -4;}
+                if(atmo!==13){
+                    if(temp === "Hot"){hydroDM -= 2;}
+                    else if(temp === "Boiling"){ hydroDM -=4;}
+                }
+                hydro = d6(2)-7+atmoDM+hydroDM;
+                if(hydro < 0){hydro = 0;}
+            }
+            if(hydro=== 0 || hydro===9){techDM +=1;}
+            else if(hydro === 10){techDM += 2;}
+            document.getElementById("hydrographics").innerText = hydro;
+            // pop
+            var pop = d6(2)-2;
+            if(pop <= 5 || techDM === 8){techDM +=1;}
+            else if(pop === 9){techDM += 2;}
+            else if(pop == 10){techDM += 4;}
+            document.getElementById("population").innerText = pop;
+            var gov, law, starport, tech, bases = "";
+            if(pop === 0){ gov = 0; law = 0; tech = 0; starport = "X";}
+            else{
+            // gov;
+            gov = d6(2)-7+pop;
+            if(gov < 0){gov = 0;}
+            // law            
+            law = d6(2)-7+gov;
+            if(law < 0){law = 0;}
+            if(law === 0 || law === 5){
+                techDM += 1;
+            }else if(law === 7){ techDM +=2; }
+            else if(law === 13 || law ===14){ techDM -=2;}
+            // starport
+            var starportDM = 0;
+            if(pop === 8 || pop === 9){
+                starportDM = 1;
+            }else if(pop >= 10){
+                starportDM = 2;
+            }else if(pop <= 2){
+                starportDM = -2;
+            }else if(pop <= 4){
+                starportDM = -1;
+            }
+            var starportRoll = d6(2)+starportDM;
+            if(starportRoll <= 2){
+                starport = "X";
+                techDM -= 4;
+                if(d6(2)>=10){
+                    bases += "Corsair ";
+                }
+            }else if(starportRoll <= 4){
+                starport = "E";
+                if(d6(2)>=10){
+                    bases += "Corsair ";
+                }
+            }else if(starportRoll <= 6){
+                starport = "D";
+                if(d6(2)>=8){
+                    bases += "Scout ";
+                }
+                if(d6(2)>=12){
+                    bases += "Corsair ";
+                }
+                
+            }else if(starportRoll <= 8){
+                starport = "C";
+                techDM += 2;
+                if(d6(2)>=10){
+                    bases += "Military ";
+                }
+                if(d6(2)>=9){
+                    bases += "Scout ";
+                }
+            }else if(starportRoll <= 10){
+                starport = "B";
+                techDM += 4;
+                if(d6(2)>=8){
+                    bases += "Military ";
+                }
+                if(d6(2)>=8){
+                    bases += "Naval ";
+                }
+                if(d6(2)>=9){
+                    bases += "Scout ";
+                }
+            }else if(starportRoll >= 11){
+                starport = "A";
+                techDM += 6;
+                if(d6(2)>=8){
+                    bases += "Military ";
+                }
+                if(d6(2)>=8){
+                    bases += "Naval ";
+                }
+                if(d6(2)>=10){
+                    bases += "Scout ";
+                }
+            }
+            //tech;
+            tech = d6() + techDM;
+            }
+            document.getElementById("government").innerText = gov;
+            document.getElementById("law").innerText = law;
+            document.getElementById("starport").innerText = starport;
+            document.getElementById("tech").innerText = tech;
+            document.getElementById("bases").innerText = bases.length > 0 ? bases : "None";
+            document.getElementById("uwp").innerText = (
+                starport + 
+                size.toString(16) +
+                atmo.toString(16) + 
+                hydro.toString(16) +
+                pop.toString(16) +
+                gov.toString(16) +
+                law.toString(16) +
+                "-" + tech
+            ).toUpperCase();
+            if(tech < document.getElementById("mintech").value || 
+                tech > document.getElementById("maxtech").value){
+                    generateSystem();
+            }
+        }
+        function getAtmoDesc(atmo){
+            var desc = "";
+            switch(atmo){
+                case 0: desc = "None"; break;
+                case 1: desc = "Trace"; break;
+                case 2: desc = "Very Thin, Tainted"; break;
+                case 3: desc = "Very Thin"; break;
+                case 4: desc = "Thin, Tainted"; break;
+                case 5: desc = "Thin"; break;
+                case 6: desc = "Standard"; break;
+                case 7: desc = "Standard, Tainted"; break;
+                case 8: desc = "Dense";break;
+                case 9: desc = "Dense, Tainted"; break;
+                case 10: desc = "Exotic"; break;
+                case 11: desc = "Corrosive"; break;
+                case 12: desc = "Insidious"; break;
+                case 13: desc = "Very Dense"; break;
+                case 14: desc = "Low"; break;
+                case 15: desc = "Unusual"; break;
+            }
+            return desc;
+        }
+        function d6(num){
+                if(!num){ num = 1;}
+                var sum = 0;
+                for(var i = 0; i < num; i++){
+                    sum += (Math.random()*6 >>> 0) + 1;
+                }
+                return sum;
+            }
+    </script>
+</body>
+</html>
