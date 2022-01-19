@@ -33,6 +33,7 @@
     <script src="NameGenerator.js"></script>
     <h1 id="uwp">Universal World Profile</h1>
     <h2 id="name">System Name</h2>
+    <input type="button" value="Generate new system" id="btnGenerate" /><br/><br/>
     Starport: <span id="starport"></span><br/>
     Size: <span id="size"></span><br/>
     Atmo: <span id="atmosphere"></span><br/>
@@ -40,12 +41,14 @@
     Pop: <span id="population"></span><br/>
     Gov: <span id="government"></span><br/>
     Law Level: <span id="law"></span><br/>
-    Tech Level: <span id="tech"></span> <br/>
-    Gas Giant Present: <span id="gg"></span><br/>
-    Bases: <span id="bases"></span><br/>
+    Tech Level: <span id="tech"></span> <br/><br/>
+    Trade Codes: <span id="trade"></span><br/>
+    Bases: <span id="bases"></span><br/><br/>
+    Gas Giant Present: <span id="gg"></span><br/>    
     Orbit: <span id="orbit"></span> <br/>
-    Temperature: <span id="temperature"></span><br/>
-    <input type="button" value="generate system" id="btnGenerate" /><br/><br/>
+    Temperature: <span id="temperature"></span><br/><br/>
+    
+    
     <fieldset>
         <legend>Parameters</legend>
         <fieldset>
@@ -189,13 +192,13 @@
             }
             if(hydro=== 0 || hydro===9){techDM +=1;}
             else if(hydro === 10){techDM += 2;}
-            document.getElementById("hydrographics").innerText = hydro;
+            document.getElementById("hydrographics").innerText = hydro +" ("+getHydroDesc(hydro)+" surface liquid)";
             // pop
             var pop = d6(2)-2;
             if(pop <= 5 || techDM === 8){techDM +=1;}
             else if(pop === 9){techDM += 2;}
             else if(pop == 10){techDM += 4;}
-            document.getElementById("population").innerText = pop;
+            document.getElementById("population").innerText = pop + " (" + getPopDesc(pop) +")";
             var gov, law, starport, tech, bases = "";
             if(pop === 0){ gov = 0; law = 0; tech = 0; starport = "X";}
             else{
@@ -289,8 +292,8 @@
                 else if(atmo === 15){ tech = Math.max(tech,8);}
             }
         }
-            document.getElementById("government").innerText = gov;
-            document.getElementById("law").innerText = law;
+            document.getElementById("government").innerText = gov+ " ("+getGovDesc(gov)+")";
+            document.getElementById("law").innerText = law ;
             document.getElementById("starport").innerText = starport;
             document.getElementById("tech").innerText = tech;
             document.getElementById("bases").innerText = bases.length > 0 ? bases : "None";
@@ -304,6 +307,82 @@
                 law.toString(16) +
                 "-" + tech
             ).toUpperCase();
+
+            var trade = "", tr = "";
+            if(atmo >=4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >=5 && pop <=7){
+                trade += "Agricultural, ";
+                tr += "Ag "
+            }
+            if(size === 0 && atmo === 0 && hydro === 0){
+                trade += "Asteroid, ";
+                tr += "As ";
+            }
+            
+            if(atmo >=2 && atmo <= 9 && hydro === 0){
+                trade += "Desert, ";
+                tr += "De ";
+            }
+            if(atmo >=10 && hydro >= 1){
+                trade +="Fluid Oceans, ";
+                tr += "Fl ";
+            }
+            if(size >= 6 && size <= 8 && (atmo === 5 || atmo === 6 || atmo === 8) && hydro >= 5 && hydro <= 7){
+                trade += "Garden, ";
+                tr += "Ga ";
+            }
+            if(pop === 0){
+                trade += "Barren, ";
+                tr += "Ba ";
+            }else if(pop >= 9){
+                trade += "High Population, ";
+                tr += "Hi ";
+            }else if(pop<=3){
+                trade += "Low Population, ";
+                tr += "Lo ";
+            }else if(pop >= 6 && pop <= 8 && gov >= 4 && gov <= 9 && (atmo === 6 || atmo === 8)){
+                trade += "Rich, ";
+                tr += "Ri ";
+            }
+            if(tech >= 12){
+                trade += "High Tech, ";
+                tr += "Ht ";
+            }else if(tech <= 5){
+                trade += "Low Tech, ";
+                tr += "Lt ";
+            }
+            if(atmo <= 1 && hydro >= 1){
+                trade += "Ice-Capped, ";
+                tr += "Ic ";
+            }
+            if(pop >= 9 && (atmo <= 2 || atmo === 4 || atmo === 7 || (atmo >= 9 && atmo <= 12))){
+                trade += "Industrial, ";
+                tr += "In ";
+            }
+            if(atmo <= 3 && hydro <= 3 && pop >= 6){
+                trade += "Non-Agricultural, ";
+                tr += "Na ";
+            }
+            if(pop >= 4 && pop <= 6){
+                trade += "Non-Industrial, ";
+                tr += "Ni ";
+            }
+            if(atmo >= 2 && atmo <= 5 && hydro <=3){
+                trade += "Poor, ";
+                tr += "Po ";
+            }
+            if(atmo === 0){
+                trade += "Vacuum, ";
+                tr += "Va ";
+            }
+            if(hydro >= 10 && (atmo >= 13 || (atmo >= 3 && atmo <= 9))){
+                trade += "Waterworld, ";
+                tr += "Wa ";
+            }
+            if(trade.length === 0){trade = "None";}else{
+                trade = trade.substring(0,trade.length-2);
+            }
+            document.getElementById("trade").innerHTML = tr+ "<br/>(" + trade + ")";
+            document.getElementById("uwp").appendChild(document.createTextNode(" "+tr));
             var minTech = document.getElementById("mintech").value, maxTech = document.getElementById("maxtech").value,
                 minPop = document.getElementById("minpop").value, maxPop = document.getElementById("maxpop").value;
             if(minTech < 0){minTech = 0;} if(minTech > 15){minTech = 15;}
@@ -329,6 +408,64 @@
                     generateSystem();
                 }
             }
+        }
+        function getHydroDesc(num){
+            var desc = "";
+            switch(num){
+                case 0: desc = "0-5%"; break;
+                case 1: desc = "6-15%"; break;
+                case 2: desc = "16-25%"; break;
+                case 3: desc = "26-35%"; break;
+                case 4: desc = "36-45%"; break;
+                case 5: desc = "46-55%"; break;
+                case 6: desc = "56-65%"; break;
+                case 7: desc = "66-75%"; break;
+                case 8: desc = "76-85%";break;
+                case 9: desc = "86-95%"; break;
+                case 10: desc = "96-100%"; break;
+            }
+            return desc;
+        }
+        function getPopDesc(num){
+            var desc = "";
+            switch(num){
+                case 0: desc = "None"; break;
+                case 1: desc = "Few"; break;
+                case 2: desc = "Hundreds"; break;
+                case 3: desc = "Thousands"; break;
+                case 4: desc = "Tens of thousands"; break;
+                case 5: desc = "Hundreds of thousands"; break;
+                case 6: desc = "Millions"; break;
+                case 7: desc = "Tens of Mmillions"; break;
+                case 8: desc = "Hundreds of millions";break;
+                case 9: desc = "Billions"; break;
+                case 10: desc = "Tens of billions"; break;
+                case 11: desc = "Hundreds of billions"; break;
+                case 12: desc = "Trillions"; break;
+            }
+            return desc;
+        }
+        function getGovDesc(num){
+            var desc = "";
+            switch(num){
+                case 0: desc = "None"; break;
+                case 1: desc = "Company/Corporation"; break;
+                case 2: desc = "Participating Democracy"; break;
+                case 3: desc = "Self-Perpetuating Oligarchy"; break;
+                case 4: desc = "Representative Democracy"; break;
+                case 5: desc = "Feudal Technocracy"; break;
+                case 6: desc = "Captive Government"; break;
+                case 7: desc = "Balkanisation"; break;
+                case 8: desc = "Civil Service Bureaucracy";break;
+                case 9: desc = "Impersonal Bureaucracy"; break;
+                case 10: desc = "Charismatic Dictator"; break;
+                case 11: desc = "Non-Charismatic Leader"; break;
+                case 12: desc = "Charismatic Oligarchy"; break;
+                case 13: desc = "Religious Dictatorship"; break;
+                case 14: desc = "Religious Autocracy"; break;
+                case 15: desc = "Totalitarian Oligarchy"; break;
+            }
+            return desc;
         }
         function getAtmoDesc(atmo){
             var desc = "";
