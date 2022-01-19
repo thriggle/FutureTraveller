@@ -60,8 +60,13 @@
         </fieldset>
         <br/>
         <fieldset>
+            <legend>Population</legend>
+            min:<input style="max-width:3em;" type="number" id="minpop" min=0 value=0> max:<input id="maxpop" style="max-width:3em;" type="number" min=0 value=10>
+        </fieldset><br/>
+        <fieldset>
             <legend>Tech Level</legend>
-            min:<input style="max-width:3em;" type="number" id="mintech" min=0 value=0> max:<input id="maxtech" style="max-width:3em;" type="number" min=0 value=15>
+            min:<input style="max-width:3em;" type="number" id="mintech" min=0 value=0> max:<input id="maxtech" style="max-width:3em;" type="number" min=0 value=15><br/>
+            <input type="checkbox" checked="checked" id="applyAtmosphericMinimums"> Apply atmospheric minimums (raise TL to minimum needed for atmo)
         </fieldset>
     </fieldset>
     
@@ -272,7 +277,18 @@
             }
             //tech;
             tech = d6() + techDM;
+            if(document.getElementById("applyAtmosphericMinimums").checked){
+
+                if(atmo <= 1){ tech = Math.max(tech,8);}
+                else if(atmo <= 3){ tech = Math.max(tech,5);}
+                else if(atmo === 5 || atmo === 7 || atmo === 9){ tech = Math.max(tech,3);}
+                else if(atmo === 10){ tech = Math.max(tech,8);}
+                else if(atmo === 11){ tech = Math.max(tech,9);}
+                else if(atmo === 12){ tech = Math.max(tech,10);}
+                else if(atmo === 13 || atmo === 14){ tech = Math.max(tech,5);}
+                else if(atmo === 15){ tech = Math.max(tech,8);}
             }
+        }
             document.getElementById("government").innerText = gov;
             document.getElementById("law").innerText = law;
             document.getElementById("starport").innerText = starport;
@@ -288,9 +304,23 @@
                 law.toString(16) +
                 "-" + tech
             ).toUpperCase();
-            if(tech < document.getElementById("mintech").value || 
-                tech > document.getElementById("maxtech").value){
+            var minTech = document.getElementById("mintech").value, maxTech = document.getElementById("maxtech").value,
+                minPop = document.getElementById("minpop").value, maxPop = document.getElementById("maxpop").value;
+            if(tech < minTech || 
+                tech > maxTech){
+                if(minTech <= maxTech){
                     generateSystem();
+                }else{
+                    document.getElementById("maxtech").value = minTech;
+                }
+            }
+            if(pop < minPop || 
+                pop > maxPop){
+                if(minPop <= maxPop){
+                    generateSystem();
+                }else{
+                    document.getElementById("maxpop").value = minPop;
+                }
             }
         }
         function getAtmoDesc(atmo){
