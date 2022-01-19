@@ -61,11 +61,11 @@
         <br/>
         <fieldset>
             <legend>Population</legend>
-            min:<input style="max-width:3em;" type="number" id="minpop" min=0 value=0> max:<input id="maxpop" style="max-width:3em;" type="number" min=0 value=10>
+            min:<input style="max-width:3em;" type="number" id="minpop" min=0 value=0 max=10> max:<input id="maxpop" style="max-width:3em;" type="number" min=0 max=10 value=10>
         </fieldset><br/>
         <fieldset>
             <legend>Tech Level</legend>
-            min:<input style="max-width:3em;" type="number" id="mintech" min=0 value=0> max:<input id="maxtech" style="max-width:3em;" type="number" min=0 value=15><br/>
+            min:<input style="max-width:3em;" type="number" id="mintech" min=0 value=0 max=15> max:<input id="maxtech" style="max-width:3em;" type="number" min=0 max=15 value=15><br/>
             <input type="checkbox" checked="checked" id="applyAtmosphericMinimums"> Apply atmospheric minimums (raise TL to minimum needed for atmo)
         </fieldset>
     </fieldset>
@@ -310,7 +310,7 @@
             if(maxTech < 0){maxTech = 0;} if(maxTech > 15){maxTech = 15;}
             if(minPop < 0){minPop = 0;} if(minPop > 15){minPop = 15;}
             if(maxPop < 0){maxPop = 0;} if(maxPop > 10){maxPop = 10;}
-            
+
             if(tech < minTech || 
                 tech > maxTech){
                 if(minTech <= maxTech){
