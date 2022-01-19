@@ -7,6 +7,30 @@
     <title>Mongoose 2nd Edition Traveller System Generator</title>
 </head>
 <body>
+    <style>
+        fieldset{
+            font-family:'Consolas','Inconsolas','Courier New', Courier, monospace;
+            display:inline-block;
+            vertical-align: text-top;
+        }
+        fieldset legend{
+            cursor:pointer;
+            user-select: none;
+        }
+        fieldset legend:hover{
+            color:red;
+        }
+        fieldset.collapsed *:not(legend){
+            display:none;
+        }
+        fieldset > legend::before{
+            content:"▼ ";
+        }
+        fieldset.collapsed > legend::before{
+            content:"► ";
+        }
+    </style>
+    <script src="NameGenerator.js"></script>
     <h1 id="uwp">Universal World Profile</h1>
     <h2 id="name">System Name</h2>
     Starport: <span id="starport"></span><br/>
@@ -16,22 +40,66 @@
     Pop: <span id="population"></span><br/>
     Gov: <span id="government"></span><br/>
     Law Level: <span id="law"></span><br/>
-    Tech Level: <span id="tech"></span> min:<input style="max-width:3em;" type="number" id="mintech" min=0 value=0> max:<input id="maxtech" style="max-width:3em;" type="number" min=0 value=15> <br/>
+    Tech Level: <span id="tech"></span> <br/>
     Gas Giant Present: <span id="gg"></span><br/>
     Bases: <span id="bases"></span><br/>
-    Orbit: <span id="orbit"></span> <select name="slctHZ" id="slctHZ">
-        <option value="Random (usually HZ)">Random (usually HZ)</option>
-        <option value="Random (even distribution)">Random (even distribution)</option>
-        <option value="Hot">Hot edge of Habitable Zone</option>
-        <option value="HZ" selected="selected">Middle of Habitable Zone</option>
-        <option value="Cold">Cold edge of Habitable Zone</option>
-    </select><br/>
+    Orbit: <span id="orbit"></span> <br/>
     Temperature: <span id="temperature"></span><br/>
+    <input type="button" value="generate system" id="btnGenerate" /><br/><br/>
+    <fieldset>
+        <legend>Parameters</legend>
+        <fieldset>
+            <legend>Location within system</legend>
+            <select name="slctHZ" id="slctHZ">
+                <option value="Random (usually HZ)">Random (usually HZ)</option>
+                <option value="Random (even distribution)">Random (even distribution)</option>
+                <option value="Hot">Hot edge of Habitable Zone</option>
+                <option value="HZ" selected="selected">Middle of Habitable Zone</option>
+                <option value="Cold">Cold edge of Habitable Zone</option>
+            </select>
+        </fieldset>
+        <br/>
+        <fieldset>
+            <legend>Tech Level</legend>
+            min:<input style="max-width:3em;" type="number" id="mintech" min=0 value=0> max:<input id="maxtech" style="max-width:3em;" type="number" min=0 value=15>
+        </fieldset>
+    </fieldset>
     
-    <input type="button" value="generate system" id="btnGenerate" />
     <script>
-        document.getElementById("btnGenerate").addEventListener("click",generateSystem);
+        var wordMaker;
+        NameGenerator("names.jsonc",function(o){
+            wordMaker = o;
+            generateSystem();
+            document.getElementById("btnGenerate").addEventListener("click",generateSystem);
+        });
+        var collapserHandles = document.querySelectorAll("fieldset legend");
+        for(var i = 0, len = collapserHandles.length; i < len; i++){
+            var handle = collapserHandles[i];
+            handle.addEventListener("click",function(e){
+                var parent = e.target.parentElement;
+                if(parent.classList.contains("collapsed")){
+                    parent.classList.remove("collapsed");
+                }else{
+                    parent.classList.add("collapsed");
+                }
+            });
+        }
+        function addCaps(text) {
+                var capitalizedString = "";
+                var lastCharacter = null, currCharacter = " ";
+                for (var i = 0, len = text.length; i < len; i++) {
+                    lastCharacter = currCharacter;
+                    currCharacter = text[i];
+                    if (lastCharacter === " " || lastCharacter === "-") {
+                        capitalizedString += currCharacter.toUpperCase();
+                    } else {
+                        capitalizedString += currCharacter;
+                    }
+                }
+                return capitalizedString;
+            }
         function generateSystem(){
+            document.getElementById("name").innerText = addCaps(wordMaker.getRandomName("system"));
             var techDM = 0;
             // gas giant?
             if(d6(2) < 10){ document.getElementById("gg").innerText = "Yes";}else{document.getElementById("gg").innerText = "No";}
