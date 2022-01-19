@@ -82,7 +82,21 @@
         NameGenerator("names.jsonc",function(o){
             wordMaker = o;
             generateSystem();
-            document.getElementById("btnGenerate").addEventListener("click",generateSystem);
+            document.getElementById("btnGenerate").addEventListener("click",function(){
+                var success = false, counter = 0;
+                while(!success && counter < 4000){
+                    success = generateSystem(counter);
+                    counter += 1;
+
+                }
+                if(!success){
+                    document.getElementById("warning").appendChild(document.createElement("br"));
+                    document.getElementById("warning").appendChild(document.createTextNode(" Aborted after " + counter +" system generation attempts."));
+                }else{
+                   // document.getElementById("warning").appendChild(document.createElement("br"));
+                    //document.getElementById("warning").appendChild(document.createTextNode(" Executed " + counter +" system generation attempts."));
+                }
+            });
         });
         var collapserHandles = document.querySelectorAll("fieldset legend");
         for(var i = 0, len = collapserHandles.length; i < len; i++){
@@ -110,7 +124,10 @@
                 }
                 return capitalizedString;
             }
-        function generateSystem(){
+        function generateSystem(attempts){
+            if(typeof attempts === "undefined"){
+                attempts = 0;
+            }
             document.getElementById("name").innerText = addCaps(wordMaker.getRandomName("system"));
             var techDM = 0;
             // gas giant?
@@ -299,7 +316,7 @@
                 var warning = false;
                 if(atmo <= 1 && tech < 8){ warning = true;}
                 else if(atmo <= 3 && tech < 5){ warning = true;}
-                else if((atmo === 5 || atmo === 7 || atmo === 9) && tech <3){ warning = true;}
+                else if((atmo === 5 || atmo === 7 || atmo === 9) && tech < 3){ warning = true;}
                 else if(atmo === 10 && tech < 8){ warning = true;}
                 else if(atmo === 11 && tech < 9){ warning = true;}
                 else if(atmo === 12 && tech < 10){ warning = true;}
@@ -408,24 +425,27 @@
             if(minPop < 0){minPop = 0;} if(minPop > 15){minPop = 15;}
             if(maxPop < 0){maxPop = 0;} if(maxPop > 10){maxPop = 10;}
 
+            
             if(tech < minTech || 
                 tech > maxTech){
                 if(minTech <= maxTech){
-                    generateSystem();
+                    return false
                 }else{
                     document.getElementById("maxtech").value = minTech;
-                    generateSystem();
+                    return false
                 }
             }
             if(pop < minPop || 
                 pop > maxPop){
                 if(minPop <= maxPop){
-                    generateSystem();
+                    return false
                 }else{
                     document.getElementById("maxpop").value = minPop;
-                    generateSystem();
+                    return false
                 }
             }
+            
+            return true;
         }
         function getHydroDesc(num){
             var desc = "";
