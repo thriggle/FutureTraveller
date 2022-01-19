@@ -223,10 +223,11 @@
                                 var details = generateSystemDetails();
                                 systems[tcoord] = {                                    
                                     name: addCaps(name),
+                                    mainworld:details.mainworld,
                                     uwp: details.uwp,
-                                    gg:d6(2)>=8 ? Math.max(d6(2)/2>>0-2,1) : 0 ,
-                                    isAsteroidBelt:d6(2)==2,
-                                    planetoidBelts:Math.max(d6()-3,0),
+                                    gg:details.gg,
+                                    isAsteroidBelt:details.mainworld.isAsteroidBelt,
+                                    planetoidBelts:details.planetoidBelts,
                                     bases:details.bases,
                                     stars:details.stars
                                 };
@@ -239,6 +240,9 @@
                 })
             }
             function generateSystemDetails(){
+                var isAsteroidBelt = d6(2) == 2;
+                var planetoidBelts = Math.max(d6()-3,0);
+                var gg = d6(2)>=8 ? Math.max(d6(2)/2>>0-2,1) : 0;
                 var roll;
                 var uwp = "";
                 var tradeCodes = [];
@@ -273,12 +277,17 @@
                     }
                 }
                 roll = d6()-d6(); // roll for mainworld orbit
-                var MWOrbit = stars.primary.HZOrbit;
-                if(roll<=-6){ MWOrbit -= 2; tradeCodes.push("Tr");}
-                else if(roll <= -3){ MWOrbit -=1; tradeCodes.push("Tr");}
-                else if(roll <= 2){ MWOrbit = stars.primary.HZOrbit; }
-                else if(roll <= 5){ MWOrbit += 1; tradeCodes.push("Tu");}
-                else if(roll >= 6){ MWOrbit += 2; tradeCodes.push("Fr");}
+                
+                var MWOrbit = stars.primary.HZOrbit; var climate = "";
+                
+                if(stars.primary.type === "M"){roll += 2;}
+                else if(stars.primary.type === "O" || stars.primary.type === "B"){ roll -= 2;}
+
+                if(roll<=-6){ MWOrbit -= 2; tradeCodes.push("Tr"); climate = "Hot. Tropic.";}
+                else if(roll <= -3){ MWOrbit -=1; tradeCodes.push("Tr"); climate = "Hot. Tropic.";}
+                else if(roll <= 2){ MWOrbit = stars.primary.HZOrbit; climate = "Temperate."; }
+                else if(roll <= 5){ MWOrbit += 1; tradeCodes.push("Tu"); climate = "Cold. Tundra.";}
+                else if(roll >= 6){ MWOrbit += 2; tradeCodes.push("Fr"); climate = "Frozen.";}
                 var bases = [];
                 roll = d6(2); // roll for starport
                 var starport;
@@ -306,8 +315,103 @@
                 else if(roll == 12){
                     uwp = starport = "X";
                 }
+                // roll for size
+                var size = d6(2)-2; 
+                if(size === 10){ size = d6()+9; }
+                uwp += size.toString(16);
+                //roll for atmosphere
+                var atmo = d6()-d6()+size;
+                if(atmo < 0 || size === 0){ atmo = 0;}
+                if(atmo > 15){atmo = 15;}
+                uwp += atmo.toString(16);
+                //roll for hydro
+                var hydroMods = 0;
+                if(atmo < 2 || atmo > 9){hydroMods = 4;}
+                var hydro = d6()-d6()+atmo+hydroMods;
+                if(size < 2 || hydro < 0){hydro = 0;}
+                if(hydro > 10){hydro = 10;}
+                uwp += hydro.toString(16);
+                // roll for pop
+                var pop = d6(2)-2;
+                if(pop === 10){ pop = d6(2)+3;}
+                uwp += pop.toString(16);
+                // roll for gov
+                var gov = d6()-d6()+pop;
+                if(gov > 15){gov = 15;}
+                if(gov < 0){gov = 0;}
+                if(pop === 0){gov = 0;}
+                uwp += gov.toString(16);
+                // roll for law
+                var law = d6()-d6()+gov;
+                if(law < 0){law = 0;}
+                if(law > 18){law = 18;}
+                if(law === 0){gov = 0;}
+                uwp += law.toString(16);
+                // roll for TL
+                var tech = d6();
+                if(starport === "A"){tech+=6;}
+                else if(starport === "B"){tech+=4;}
+                else if(starport === "C"){tech+=2;}
 
-                return {uwp:uwp,bases:bases,stars:stars,mainWorldOrbit:MWOrbit,tradeCodes:tradeCodes};
+                if(size <= 1){tech += 2;}
+                else if(size <= 4){tech += 1;}
+
+                if(atmo <= 3){tech += 1;}
+                else if(atmo >= 10){tech += 1;}
+
+                if(hydro === 9){tech += 1;}
+                else if(hydro === 10){tech += 2;}
+                
+                if(pop <= 5){ tech += 1; }
+                else if(pop === 9){ tech += 2;}
+                else if(pop >= 10){ tech += 4;}
+
+                if(gov === 0 || gov === 5){ tech += 1;}
+                else if(gov === 13){ tech -= 2;}
+                if(pop === 0 || tech < 0){tech = 0;}
+                
+                uwp += "-"+tech.toString(16);
+                // roll to see if the world is a satellite
+                roll = d6()-d6();
+                var MWType, MWPrimary, MWOrbitAroundPrimary;
+                if(roll <=4){ 
+                    MWType = "Far Satellite";
+                    roll = d6() - d6();
+                    if(roll === -5){ MWOrbitAroundPrimary = "Oh"; }
+                    else if(roll === -4){ MWOrbitAroundPrimary = "Pee"; }
+                    else if(roll === -3){ MWOrbitAroundPrimary = "Que"; }
+                    else if(roll === -2){ MWOrbitAroundPrimary = "Arr"; }
+                    else if(roll === -1){ MWOrbitAroundPrimary = "Ess"; }
+                    else if(roll === 0){ MWOrbitAroundPrimary = "Tee"; }
+                    else if(roll === 1){ MWOrbitAroundPrimary = "Yu"; }
+                    else if(roll === 2){ MWOrbitAroundPrimary = "Vee"; }
+                    else if(roll === 3){ MWOrbitAroundPrimary = "Dub"; }
+                    else if(roll === 4){ MWOrbitAroundPrimary = "Ex"; }
+                    else if(roll === 5){ MWOrbitAroundPrimary = "Wye"; }
+                }
+                else if(roll <= 3){ 
+                    MWType = "Close Satellite";
+                    if(roll === -5){ MWOrbitAroundPrimary = "Bee"; }
+                    else if(roll === -4){ MWOrbitAroundPrimary = "Cee"; }
+                    else if(roll === -3){ MWOrbitAroundPrimary = "Dee"; }
+                    else if(roll === -2){ MWOrbitAroundPrimary = "Ee"; }
+                    else if(roll === -1){ MWOrbitAroundPrimary = "Eff"; }
+                    else if(roll === 0){ MWOrbitAroundPrimary = "Gee"; }
+                    else if(roll === 1){ MWOrbitAroundPrimary = "Aitch"; }
+                    else if(roll === 2){ MWOrbitAroundPrimary = "Eye"; }
+                    else if(roll === 3){ MWOrbitAroundPrimary = "Jay"; }
+                    else if(roll === 4){ MWOrbitAroundPrimary = "Kay"; }
+                    else if(roll === 5){ MWOrbitAroundPrimary = "Ell"; }
+                }
+                else{ MWType = "Planet"; MWPrimary = "Star"; MWOrbitAroundPrimary = MWOrbit; }
+                if(MWType !== "Planet"){
+                    if(gg >= 1 && d6()-d6() <= 0){
+                            MWPrimary = "Gas Giant";
+                    }else{
+                        MWPrimary = "Planet";
+                    }
+                }
+                return {uwp:uwp,bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts, mainworld:{size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:isAsteroidBelt,orbit:MWOrbit,starport:starport},tradeCodes:tradeCodes};
             }
             function getStar(type, decimal, size){
                 var star = {};
