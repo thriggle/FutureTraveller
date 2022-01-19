@@ -122,10 +122,22 @@
             document.getElementById("atmosphere").innerText = atmo + " ("+getAtmoDesc(atmo)+")";
             // temperature
             var temp;
+            var hzChoice = document.getElementById("slctHZ").value;
+            var hzMod = 0;
+            if(hzChoice === "Hot"){ 
+                    hzMod = 4;
+                     document.getElementById("orbit").innerText = "Hot edge of habitable zone";}
+            else if(hzChoice === "Cold"){ 
+                hzMod = -4;
+                document.getElementById("orbit").innerText = "Cold edge of habitable zone";
+            }
+            else{
+                hzMod = 0;
+                document.getElementById("orbit").innerText = "Habitable zone";
+            }
             if(atmo <= 1){ temp = "Swings between roasting and freezing";}
             else{
-                var hzChoice = document.getElementById("slctHZ").value;
-                var hzMod = 0;
+                
                 if(hzChoice === "Random (usually HZ)"){ 
                     var roll = d6();
                     if(roll <=1){
@@ -145,17 +157,7 @@
                         hzChoice = "Cold";
                     }
                 }
-                if(hzChoice === "Hot"){ 
-                    hzMod = 4;
-                     document.getElementById("orbit").innerText = "Hot edge";}
-                else if(hzChoice === "Cold"){ 
-                    hzMod = -4;
-                    document.getElementById("orbit").innerText = "Cold edge";
-                }
-                else{
-                    hzMod = 0;
-                    document.getElementById("orbit").innerText = "HZ";
-                }
+                
                 if(atmo <= 3){atmoMod = -2;}
                 else if(atmo <= 5 || atmo === 14){atmoMod = -1;}
                 else if(atmo <= 7){atmoMod = 0;}
