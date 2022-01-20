@@ -37,20 +37,21 @@
         <legend>Controls</legend>
         <fieldset class="collapsed">
             <legend>Display</legend>
-            <label for="sizeSlider">Scale: <span id="sizeIndicator"></span></label><input type="range" min="4" max="50" id="sizeSlider" />
             <label for="slctStyle">Style: </label><select name="slctStyle" id="slctStyle" data-text="white" data-canvasbg="black" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
                 <option value="light">light</option>
                 <option value="dark">dark</option>
                 <option value="transparent">transparent</option>
                 <option selected="selected" value="custom">custom</option>
             </select>
-            <div id="customSettings">
-                <label for="textColor">Text Color: <input type="text" name="textColor" id="textColor" /></label>
-                <label for="hexBorderColor">Border Color: <input type="text" name="hexBorderColor" id="hexBorderColor" /></label>
-                <label for="hexBackgroundColor">Hex Fill: <input type="text" id="hexBackgroundColor" name="hexBackgroundColor" /></label>
-                <label for="canvasBackgroundColor">Background Color: <input type="text" name="canvasBackgroundColor" id="canvasBackgroundColor" /></label>
+            <label for="sizeSlider">Scale: <span id="sizeIndicator"></span></label><input type="range" min="4" max="50" id="sizeSlider" />
+            <br/><br/><fieldset id="customSettings" class="collapsed">
+                <legend>Custom Display Settings</legend>
+                <label for="textColor">Text Color: <input type="text" name="textColor" id="textColor" /></label><br/>
+                <label for="hexBorderColor">Border Color: <input type="text" name="hexBorderColor" id="hexBorderColor" /></label><br/>
+                <label for="hexBackgroundColor">Hex Fill: <input type="text" id="hexBackgroundColor" name="hexBackgroundColor" /></label><br/>
+                <label for="canvasBackgroundColor">Background Color: <input type="text" name="canvasBackgroundColor" id="canvasBackgroundColor" /></label><br/>
                 <label for="fontFamily">Font: <input type="text" id="fontFamily" name="fontFamily" value="Segoe UI, sans-serif"/></label>
-            </div>
+            </fieldset>
         </fieldset>
         <fieldset class="collapsed">
             <legend>Systems</legend>
@@ -643,6 +644,12 @@
                     }else{
                         lines = [name];
                     }
+                    if(hex.system.gg > 0){
+                        ctx.fillStyle = TEXT_COLOR;
+                        ctx.beginPath();
+                        ctx.arc(x2,y1-(y1-y0)/2,fontSize/2,0,2*Math.PI);
+                        ctx.fill();
+                    }
 
                     // draw planet
                     if(hex.system.isAsteroidBelt){
@@ -685,11 +692,18 @@
                         ctx.beginPath();
                         ctx.arc(x4 - (x4 - x1)/7,y1 + (y1-y0)/8,fontSize/6,0,2*Math.PI);
                         ctx.fill();
-                    }else{
-                        ctx.fillStyle = TEXT_COLOR; //"gray"; 
+                    }else if(hex.system.mainworld.hydro > 0){
+                        ctx.fillStyle = TEXT_COLOR;
                         ctx.beginPath();
                         ctx.arc(x4,y1,fontSize,0,2*Math.PI);
                         ctx.fill();
+                    }else{
+                        ctx.strokeStyle = TEXT_COLOR; 
+                        ctx.lineWidth  = HEX_SIZE/10;
+                        ctx.beginPath();
+                        ctx.arc(x4,y1,fontSize,0,2*Math.PI);
+                        ctx.stroke();
+                        ctx.lineWidth = oldLineWidth;
                     }
                     
 
@@ -705,7 +719,26 @@
                         maxWidth -= fontSize;
                     }
                     
+                    // write starport
+                    var oldFont = ctx.font;
+                    ctx.font = ""+(fontSize*1.2)+"pt "+FONT;
                     ctx.fillText(hex.system.uwp[0],x4,y0 + (y1-y0)/2);
+                    ctx.font = oldFont;
+
+                    if(hex.selected || hex.highlighted){
+                        // write UWP
+                        ctx.beginPath();
+                        var oldGlobalCompositeOperation = ctx.globalCompositeOperation;
+                        ctx.globalCompositeOperation = 'source-over';
+                        var uwp = hex.system.uwp.toUpperCase();
+                        var uwpSize = ctx.measureText(uwp);
+                        ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
+                        var fontHeight = uwpSize.fontBoundingBoxAscent + uwpSize.fontBoundingBoxDescent;
+                        ctx.fillRect(x4-uwpSize.width/2,y1-fontHeight/2-2,uwpSize.width,fontSize+2);
+                        ctx.fillStyle = TEXT_COLOR; 
+                        ctx.fillText(uwp,x4,y1);
+                        ctx.globalCompositeOperation = oldGlobalCompositeOperation;
+                    }
                     
                 }
 
