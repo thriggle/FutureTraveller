@@ -233,7 +233,7 @@
                             }
                             var tcoord = XYCoordToTCoord(x,y);
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
-                            var details = generateSystemDetails();
+                            var details = generateSystemDetails(addCaps(name));
                             systems[tcoord] = {                                    
                                 name: addCaps(name),
                                 mainworld:details.mainworld,
@@ -251,7 +251,7 @@
                 var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
                 drawMap(mapContent);                
             }
-            function generateSystemDetails(){
+            function generateSystemDetails(name){
                 var isAsteroidBelt = d6(2) == 2;
                 var planetoidBelts = Math.max(d6()-3,0);
                 var gg = d6(2)>=8 ? Math.max(d6(2)/2>>0-2,1) : 0;
@@ -345,6 +345,7 @@
                 uwp += hydro.toString(16);
                 // roll for pop
                 var pop = d6(2)-2;
+                if(pop===0){uwp = "X"+uwp.substring(1); starport = "X";}
                 if(pop === 10){ pop = d6(2)+3;}
                 uwp += pop.toString(16);
                 // roll for gov
@@ -357,7 +358,7 @@
                 var law = d6()-d6()+gov;
                 if(law < 0){law = 0;}
                 if(law > 18){law = 18;}
-                if(law === 0){gov = 0;}
+                if(pop === 0){ law = 0;}
                 uwp += law.toString(16);
                 // roll for TL
                 var tech = d6();
@@ -423,7 +424,7 @@
                         MWPrimary = "Planet";
                     }
                 }
-                return {uwp:uwp,bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts, mainworld:{size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:isAsteroidBelt,orbit:MWOrbit,starport:starport},tradeCodes:tradeCodes};
+                return {uwp:uwp,bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts, mainworld:{size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport},tradeCodes:tradeCodes};
             }
             function getStar(type, decimal, size){
                 var star = {};
