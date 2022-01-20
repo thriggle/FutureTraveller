@@ -53,7 +53,7 @@
                 <label for="fontFamily">Font: <input type="text" id="fontFamily" name="fontFamily" value="Segoe UI, sans-serif"/></label>
             </fieldset>
         </fieldset>
-        <fieldset class="collapsed">
+        <fieldset>
             <legend>Systems</legend>
             <label for="slctStellarDensity"><select name="slctStellarDensity" id="slctStellarDensity">
                 <option value="Extra Galactic">Extra Galactic (1%)</option>
@@ -66,6 +66,7 @@
                 <option value="Core">Core (91%)</option>
             </select></label>
             <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Subsector"></label>
+            <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Subsector"></label>
         </fieldset>
     </fieldset>
     <br/>
@@ -99,7 +100,7 @@
             }
             var fontSize = HEX_SIZE*1/3;
             var _systems = {};
-            NameGenerator("names.jsonc",function(o){wordMaker = o;});
+            
             var canvas = document.getElementById("canvas");
             canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
             canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter + CANVAS_PADDING*2);
@@ -111,6 +112,7 @@
             updateStyle();
             ctx.font = ""+fontSize+"pt "+FONT;
             drawMap(mapContent);
+            NameGenerator("names.jsonc",function(o){wordMaker = o; populateSubsector();});
             attachEventListeners();
 
             function attachEventListeners(){
@@ -198,49 +200,58 @@
                     var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, JSON.parse(document.getElementById("data").value));
                     drawMap(mapContent);
                 });
-                document.getElementById("btnPopulateSystems").addEventListener("click",function(){
-                    var density = document.getElementById("slctStellarDensity").value;
-                    var d = 1, target = 3, systems = {};
-                    switch(density){
-                        case "Extra Galactic": d = 3, target = 3; break;
-                        case "Rift": d = 2, target = 2; break;
-                        case "Sparse": d = 1, target = 1; break;
-                        case "Scattered": d = 1, target = 2; break;
-                        case "Standard": d = 1, target = 3; break;
-                        case "Dense": d = 1, target = 4; break;
-                        case "Cluster": d = 1, target = 5; break;
-                        case "Core": d = 2, target = 11; break;
-                    }
-                    var namesSoFar = {};
-                    for(var x = 0; x < SUBSECTOR_WIDTH; x++){
-                        for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
-                            if(d6(d) <= target){
-                                var name = wordMaker.getRandomName("system");
-                                while(Object.keys(namesSoFar).indexOf(name) >= 0){
-                                    name = wordMaker.getRandomName("system");
-                                }
-                                var tcoord = XYCoordToTCoord(x,y);
-                                namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
-                                var details = generateSystemDetails();
-                                systems[tcoord] = {                                    
-                                    name: addCaps(name),
-                                    mainworld:details.mainworld,
-                                    uwp: details.uwp,
-                                    gg:details.gg,
-                                    isAsteroidBelt:details.mainworld.isAsteroidBelt,
-                                    planetoidBelts:details.planetoidBelts,
-                                    bases:details.bases,
-                                    stars:details.stars
-                                };
-                            }
-                        }
-                    }
-                    document.getElementById("data").value = JSON.stringify(systems);
-                    var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
+                document.getElementById("btnPopulateSystems").addEventListener("click",populateSubsector);
+                document.getElementById("btnClearSystems").addEventListener("click",function(){
+                    //var mapContent = [];
+                    //document.getElementById("sizeSlider").value = HEX_SIZE;
+                    mapContent = generateHexes(SUBSECTOR_WIDTH,SUBSECTOR_HEIGHT);
+                    //updateStyle();
+                    //ctx.font = ""+fontSize+"pt "+FONT;
                     drawMap(mapContent);
                 })
             }
-            function generateSystemDetails(){
+            function populateSubsector(){
+                var density = document.getElementById("slctStellarDensity").value;
+                var d = 1, target = 3, systems = {};
+                switch(density){
+                    case "Extra Galactic": d = 3, target = 3; break;
+                    case "Rift": d = 2, target = 2; break;
+                    case "Sparse": d = 1, target = 1; break;
+                    case "Scattered": d = 1, target = 2; break;
+                    case "Standard": d = 1, target = 3; break;
+                    case "Dense": d = 1, target = 4; break;
+                    case "Cluster": d = 1, target = 5; break;
+                    case "Core": d = 2, target = 11; break;
+                }
+                var namesSoFar = {};
+                for(var x = 0; x < SUBSECTOR_WIDTH; x++){
+                    for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
+                        if(d6(d) <= target){
+                            var name = wordMaker.getRandomName("system");
+                            while(Object.keys(namesSoFar).indexOf(name) >= 0){
+                                name = wordMaker.getRandomName("system");
+                            }
+                            var tcoord = XYCoordToTCoord(x,y);
+                            namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
+                            var details = generateSystemDetails(addCaps(name));
+                            systems[tcoord] = {                                    
+                                name: addCaps(name),
+                                mainworld:details.mainworld,
+                                uwp: details.uwp,
+                                gg:details.gg,
+                                isAsteroidBelt:details.mainworld.isAsteroidBelt,
+                                planetoidBelts:details.planetoidBelts,
+                                bases:details.bases,
+                                stars:details.stars
+                            };
+                        }
+                    }
+                }
+                document.getElementById("data").value = JSON.stringify(systems);
+                var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
+                drawMap(mapContent);                
+            }
+            function generateSystemDetails(name){
                 var isAsteroidBelt = d6(2) == 2;
                 var planetoidBelts = Math.max(d6()-3,0);
                 var gg = d6(2)>=8 ? Math.max(d6(2)/2>>0-2,1) : 0;
@@ -334,6 +345,7 @@
                 uwp += hydro.toString(16);
                 // roll for pop
                 var pop = d6(2)-2;
+                if(pop===0){uwp = "X"+uwp.substring(1); starport = "X";}
                 if(pop === 10){ pop = d6(2)+3;}
                 uwp += pop.toString(16);
                 // roll for gov
@@ -346,7 +358,7 @@
                 var law = d6()-d6()+gov;
                 if(law < 0){law = 0;}
                 if(law > 18){law = 18;}
-                if(law === 0){gov = 0;}
+                if(pop === 0){ law = 0;}
                 uwp += law.toString(16);
                 // roll for TL
                 var tech = d6();
@@ -412,7 +424,7 @@
                         MWPrimary = "Planet";
                     }
                 }
-                return {uwp:uwp,bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts, mainworld:{size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:isAsteroidBelt,orbit:MWOrbit,starport:starport},tradeCodes:tradeCodes};
+                return {uwp:uwp,bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts, mainworld:{size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport},tradeCodes:tradeCodes};
             }
             function getStar(type, decimal, size){
                 var star = {};
