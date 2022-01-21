@@ -102,14 +102,51 @@ function NameGenerator(sourceJson,callback){
         UnpackedStringTemplates.names[key] = phrases;
         var phrase = phrases[(phrases.length * Math.random()) >>> 0];
         var currentText = "";
+        var references = [];
+        var checkNot = -1;
         for (var i = 0, len = phrase.length; i < len; i++) { // process each segment of the selected phrase
             var segment = phrase[i];
+            var piece = "";
             if (segment.text) {
-                currentText += segment.text;
+                piece = segment.text;                
+                if(piece.endsWith(">") && references.length > 0){
+                var matches = piece.match(/<!\d>/g);
+                   if(matches.length > 0){
+                      var number = +(matches[matches.length-1].match(/\d/)[0]);
+                      checkNot = number;
+                      var regex = new RegExp("<!"+number.toString() + ">","g");
+                      piece = piece.replace(regex,"");
+                   }else{
+                       checkNot = -1;
+                   }
+                }else{
+                    checkNot = -1;
+                }
+                currentText += piece;
             } else if (segment.reference) {
-                currentText += this.getRandomName(segment.reference);
+                piece = this.getRandomName(segment.reference);
+                if(checkNot >= 0){
+                    while(piece == references[checkNot]){
+                        piece = this.getRandomName(segment.reference);
+                    }
+                }
+                currentText += piece;
+                references.push(piece);
             } else if (segment.references) {
-                currentText += this.getRandomName(segment.references[(segment.references.length * Math.random()) >>> 0]);
+                piece = this.getRandomName(segment.references[(segment.references.length * Math.random()) >>> 0]);;
+                if(checkNot >= 0){
+                    while(piece == references[checkNot]){
+                        piece = this.getRandomName(segment.reference);
+                    }
+                }
+                currentText += piece;
+                references.push(piece);
+            }
+        }
+        if(currentText.indexOf("<") > 0 && currentText.indexOf("&") > 0 && currentText.indexOf(">") > 0){
+            for(var i = 0, len = references.length; i < len; i++){
+                var regex = new RegExp("\<\&"+i+">","g");
+                currentText = currentText.replace(regex,references[i]);
             }
         }
         return currentText;
