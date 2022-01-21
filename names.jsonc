@@ -20,7 +20,7 @@
         "patterns": [
             "1:{ept.initialfinalsyl}",
             "14:{ept.initialsyl}{ept.finalsyllable}",
-            "1:{ept.initialsyl}-{ept.syllable} {ept.finalsyllable}|{ept.initialsyl} {ept.syllable}-{ept.finalsyllable}|{ept.initialsyl}{ept.syllable}{ept.finalsyllable}|{ept.initialsyl} {ept.syllable}{ept.finalsyllable}|{ept.initialsyl}{ept.syllable} {ept.finalsyllable}|{ept.initialsyl} {ept.syllable} {ept.finalsyllable}|{ept.initialsyl}-{ept.syllable}-{ept.finalsyllable}"
+            "1:{ept.initialsyl}{ept.syllable}'{ept.finalsyllable}|{ept.initialsyl}'{ept.syllable}{ept.finalsyllable}|{ept.initialsyl}'{ept.syllable}'{ept.finalsyllable}|{ept.initialsyl}-{ept.syllable} {ept.finalsyllable}|{ept.initialsyl} {ept.syllable}-{ept.finalsyllable}|{ept.initialsyl}{ept.syllable}{ept.finalsyllable}|{ept.initialsyl} {ept.syllable}{ept.finalsyllable}|{ept.initialsyl}{ept.syllable} {ept.finalsyllable}|{ept.initialsyl} {ept.syllable} {ept.finalsyllable}|{ept.initialsyl}-{ept.syllable}-{ept.finalsyllable}"
         ],
         "initialfinalsyl": [
             "2:{ept.onset}{ept.nucleus}{ept.finalcoda}",
@@ -112,7 +112,7 @@
             "6:kl|cl",
             "2:gl",
             "6:br",
-            "21:tr",
+            "20:tr",
             "12:dr",
             "9:kr|cr",
             "4:gr",
@@ -128,7 +128,7 @@
         ],
         "initialconsonant": [
             "9:{ept.nasalnotng}",
-            "29:{ept.plosive}",
+            "27:{ept.plosive}",
             "{ept.affricate}",
             "16:{ept.fricative}",
             "14:{ept.approximant}",
@@ -136,10 +136,10 @@
         ],
         "consonant": [
             "10:{ept.nasal}",
-            "29:{ept.plosive}",
+            "25:{ept.plosive}",
             "{ept.affricate}",
-            "16:{ept.fricative}",
-            "14:{ept.approximant}"
+            "14:{ept.fricative}",
+            "12:{ept.approximant}"
         ],
         "nasalnotng": [
             "2:m",
@@ -150,12 +150,12 @@
             "ng"
         ],
         "plosive": [
-            "12:{ept.fortisplosive}",
+            "10:{ept.fortisplosive}",
             "7:{ept.lenisplosive}"
         ],
         "fortisplosive": [
             "2:p",
-            "7:t",
+            "6:t",
             "2:k",
             "1:k|c"
         ],
@@ -241,12 +241,12 @@
             "5:the",
             "th",
             //"ð",
-            "6:z|z|ze"
+            "6:s|z|z|ze"
         ],
         "voicedfricativewithoutv": [
             "6:th",
             //"ð",
-            "6:z",
+            "6:s|z",
             "zh" //|ž
         ],
         "voicedfricative": [
@@ -278,8 +278,8 @@
             "1:ph"
         ],
         "finalfsound": [
-            "4:f",
-            "4:ff",
+            "7:f",
+            "1:ff",
             "2:ph"
         ],
         "initialvowelsound": [
@@ -1174,18 +1174,19 @@
             "10:{word} {word}",
             "7:{word} {system.greekletter}|{word} {system.greekletter}|{system.greekletter} {word}",
             "10:{word} {system.relativeimportance}|{word} {system.relativeimportance}|{system.relativeimportanceprefix} {word}",
-            "24:{word}'s {system.noun}",
+            "22:{word}'s {system.noun}",
             "4:{system.mythologicalname}",
             "4:{ship.navalname}",
-            "10:{system.systemwithoutinventedwords}",
+            "11:{system.systemwithoutinventedwords}",
             "16:{system.propernounprefix} {word}",
+            "2:{system.propernounprefix} {word}'s",
             "9:{system.noun} of {word}",
-            "10:The {system.celestialbody} of {word}|{word}'s {system.celestialbody}",
-            "10:{system.settlement|system.noun|system.bodypart|system.landmark|system.mythologicalfigure|system.feeling} of {word}|{word}'s {system.settlement|system.noun|system.feeling|system.bodypart|system.landmark}",
-            "6:{word}'s {system.celestialbody|system.settlement|system.noun|system.feeling|system.bodypart|system.landmark}",
-            "6:{word} {system.settlement}",
-            "4:{human.firstname|human.lastname}'s {system.noun}",
-            "4:{human.firstname|human.lastname}'s {system.celestialbody|system.settlement|system.noun|system.feeling|system.bodypart|system.landmark|system.mythologicalfigure}|{system.celestialbody|system.settlement|system.noun|system.feeling|system.bodypart|system.landmark|system.mythologicalfigure} of {human.firstname}",
+            "8:The {system.celestialbody} of {word}|{word}'s {system.celestialbody}",
+            "8:{system.settlement|system.noun|system.bodypart|system.landmark|system.mythologicalfigure|system.feeling} of {word}|{word}'s {system.settlement|system.noun|system.feeling|system.bodypart|system.landmark}",
+            "5:{word}'s {system.celestialbody|system.settlement|system.noun|system.feeling|system.bodypart|system.landmark}",
+            "5:{word} {system.settlement}",
+            "3:{human.firstname|human.lastname}'s {system.noun}",
+            "3:{human.firstname|human.lastname}'s {system.celestialbody|system.settlement|system.noun|system.feeling|system.bodypart|system.landmark|system.mythologicalfigure}|{system.celestialbody|system.settlement|system.noun|system.feeling|system.bodypart|system.landmark|system.mythologicalfigure} of {human.firstname}",
             "1:{word|word|human.firstname|human.lastname}'s {system.adjective} {system.noun}|The {system.adjective} {system.noun} of {word|word|human.firstname|human.lastname}|{word|word|human.firstname|human.lastname}'s {system.noun} of {system.feeling|system.material}",
             "2:{system.adjective} {word|word|system.latinized}",
             "1:{system.noun} of {word} the {system.mythologicalfigure}|The {system.celestialbody} of {word} the {system.mythologicalfigure}|{system.settlement|system.noun|system.bodypart|system.landmark|system.feeling} of {word} the {system.mythologicalfigure}",
@@ -1248,7 +1249,7 @@
             "10:{system.mythologicalname}",
             "3:{ship.navalname}",
             "1:{system.propernounprefix} {system.mythologicalname|ship.navalname}", 
-            "100:{system.pastoral}"
+            "120:{system.pastoral}"
         ],
         "latinized":[
             "8:{word.1sylword}ia",
@@ -1892,7 +1893,7 @@
             "3:post",
             "precaria|precarium",
             "prison",
-            "proving ground",
+            " proving ground",
             "quarters",
             "resort",
             "ranch",
@@ -1931,6 +1932,7 @@
             "crystal",
             "dark",
             "dart",
+            "day",
             "dead",
             "deep",
             "diamond",
@@ -1955,6 +1957,7 @@
             "grey",
             "green",
             "grim|grims",
+            "haven",
             "high",
             "hill",
             "iron",
@@ -1968,6 +1971,7 @@
             "moss",
             "mourn",
             "mud",
+            "night",
             "nova",
             "pine",
             "prairie",
@@ -1992,7 +1996,10 @@
             "tangle",
             "tin",
             "valley",
+            "vista",
+            "well",
             "white",
+            "willow",
             "wind",
             "{system.pastoral1}|yellow"
         ],
@@ -2003,6 +2010,7 @@
             "borne",
             "borough|burrow",
             "bridge",
+            "burn",
             "bury",
             "castle",
             "cliff",
@@ -2012,7 +2020,7 @@
             "deep",
             "dome",
             "edge",
-            "faire",
+            "fair|faire|fare",
             "fall|falls",
             "fell",
             "fen",
@@ -2023,11 +2031,14 @@
             "gate",
             "glen",
             "grove",
+            "gulf",
             "hall",
             "ham",
+            "haven",
             "head",
             "hill",
             "harbor",
+            "hold",
             "holm",
             "home",
             "hook",
@@ -2039,8 +2050,10 @@
             "ledge",
             "mill",
             "mire",
+            "moon",
             "moor|more",
             "mount|mont",
+            "mouth",
             "peak",
             "point",
             "pool",
@@ -2049,6 +2062,8 @@
             "ring",
             "rock",
             "run",
+            "shade|shadow",
+            "spall",
             "spring|springs",
             "stead",
             "stone",
@@ -2060,7 +2075,8 @@
             "vista",
             "water",
             "well",
-            "wood"
+            "wood",
+            "works"
         ],
         "feeling": [ // not necessarily emotions, fits the patterns "tower of [feeling]" or "Someone's [feeling]"
             "accomplishment",
