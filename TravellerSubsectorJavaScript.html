@@ -330,36 +330,36 @@
                 // roll for size
                 var size = d6(2)-2; 
                 if(size === 10){ size = d6()+9; }
-                uwp += size.toString(16);
+                uwp += size.toString(36);
                 //roll for atmosphere
                 var atmo = d6()-d6()+size;
                 if(atmo < 0 || size === 0){ atmo = 0;}
                 if(atmo > 15){atmo = 15;}
-                uwp += atmo.toString(16);
+                uwp += atmo.toString(36);
                 //roll for hydro
                 var hydroMods = 0;
                 if(atmo < 2 || atmo > 9){hydroMods = 4;}
                 var hydro = d6()-d6()+atmo+hydroMods;
                 if(size < 2 || hydro < 0){hydro = 0;}
                 if(hydro > 10){hydro = 10;}
-                uwp += hydro.toString(16);
+                uwp += hydro.toString(36);
                 // roll for pop
                 var pop = d6(2)-2;
                 if(pop===0){uwp = "X"+uwp.substring(1); starport = "X"; bases = [];}
                 if(pop === 10){ pop = d6(2)+3;}
-                uwp += pop.toString(16);
+                uwp += pop.toString(36);
                 // roll for gov
                 var gov = d6()-d6()+pop;
                 if(gov > 15){gov = 15;}
                 if(gov < 0){gov = 0;}
                 if(pop === 0){gov = 0;}
-                uwp += gov.toString(16);
+                uwp += gov.toString(36);
                 // roll for law
                 var law = d6()-d6()+gov;
                 if(law < 0){law = 0;}
                 if(law > 18){law = 18;}
                 if(pop === 0){ law = 0;}
-                uwp += law.toString(16);
+                uwp += law.toString(36);
                 // roll for TL
                 var tech = d6();
                 if(starport === "A"){tech+=6;}
@@ -383,7 +383,7 @@
                 else if(gov === 13){ tech -= 2;}
                 if(pop === 0 || tech < 0){tech = 0;}
                 
-                uwp += "-"+tech.toString(16);
+                uwp += "-"+tech.toString(36);
                 // roll to see if the world is a satellite
                 roll = d6()-d6();
                 var MWType, MWPrimary, MWOrbitAroundPrimary;
