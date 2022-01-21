@@ -345,7 +345,7 @@
                 uwp += hydro.toString(16);
                 // roll for pop
                 var pop = d6(2)-2;
-                if(pop===0){uwp = "X"+uwp.substring(1); starport = "X";}
+                if(pop===0){uwp = "X"+uwp.substring(1); starport = "X"; bases = [];}
                 if(pop === 10){ pop = d6(2)+3;}
                 uwp += pop.toString(16);
                 // roll for gov
