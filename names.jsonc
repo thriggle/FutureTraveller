@@ -45,7 +45,7 @@
         "onset": [
             "89:{ept.initialconsonant}",
             "25:{ept.initialplosiveplusapproximant}", //{ept.plosive}{ept.approximantnoty}",
-            "5:qu",
+            "5:qu|kw",
             "6:{ept.voicelessfricativewithouts}{ept.approximantnoty}",
             "3:sl",
             "2:sw",
@@ -55,14 +55,15 @@
             "2:s{ept.fsound}",
             "2:s{ept.fortisplosive}r",
             "1:sp{ept.lateralapproximant}",
-            "2:squ",
+            "2:squ|skw",
             "s{ept.fortisplosive}w",
             //"5:s{ept.fortisplosive}{ept.approximantnoty}", 
-            "sph"
+            "sph",
+            "x"
         ],
         "noninitialonset": [
             "85:{ept.onset}",
-            "zh|s|s|j|g|ž|s{ept.voicelessfricativewithouts}"
+            "zh|s|s|j|g|s{ept.voicelessfricativewithouts}" //ž|
         ],
         "nucleus": [
             "{ept.vowelsound}"
@@ -81,7 +82,8 @@
             "3:{ept.fortisplosive}{ept.voicelessfricative}|x",
             "1:{ept.lateralapproximant}{ept.twovoicelessstops}|{ept.lateralapproximant}{ept.plosive}s|{ept.lateralapproximant}{ept.plosive}z",
             "3:{ept.organicnasalplosiveplusstop}|{ept.organicnasalplosive}{ept.voicelessfricative}",
-            "1:xt|xt|kst"
+            "1:x",
+            "1:xt|xt|xt|kst|ckst"
         ],
         "finalcoda": [
             "134:{ept.nasal}|{ept.plosive}|{ept.finalaffricate}|{ept.finalvoicedfricative}|{ept.finalvoicelessfricative}|{ept.lateralapproximant}",
@@ -101,7 +103,8 @@
             //"1:{ept.lateralapproximant}{ept.twovoicelessstops}s",
             "3:{ept.organicnasalplosiveplusstop}|{ept.organicnasalplosive}{ept.finalvoicelessfricative}",
             "1:{ept.organicnasalplosiveplusstop}s|{ept.organicnasalplosiveplusstop}z",
-            "1:xt|xt|kst"
+            "1:x",
+            "1:xt|xt|xt|kst|ckst"
         ],
         "initialplosiveplusapproximant": [
             "4:pl",
@@ -153,7 +156,8 @@
         "fortisplosive": [
             "2:p",
             "7:t",
-            "3:k"
+            "2:k",
+            "1:k|c"
         ],
         "lenisplosive": [
             "2:b",
@@ -162,24 +166,24 @@
         ],
         "organicnasalplosiveplusstop": [
             "mpt",
-            "nkt",
+            "nkt|nct",
             "ngt"
         ],
         "organicnasalplosive": [
             "mp",
             "nd",
             "nt",
-            "nk"
+            "nk|nk|nc"
         ], //mb excluded because you can't end a syllable with it
         "finalorganicnasalaffricate": [
-            "nch|nch|ntch",
-            "ndge|nge|nge",
-            "nsh|nsh|nche"
+            "nch|nch|nch|ntch",
+            "ndge|nge|nge|nge|nj",
+            "nsh|nsh|nsh|nche"
         ],
         "organicnasalaffricate": [
-            "nch|ntch|nt",
+            "nch|nch|ntch|nt|nt|nt",
             "nj|nj|ng",
-            "nsh|ns"
+            "nsh|ns|ns"
         ],
         "organicnasalaffricateplosivefricative": [
             "mpt",
@@ -235,14 +239,15 @@
         "finalvoicedfricative": [
             "4:ve",
             "5:the",
+            "th",
             //"ð",
             "6:z|z|ze"
         ],
         "voicedfricativewithoutv": [
-            "5:th",
-            "ð",
+            "6:th",
+            //"ð",
             "6:z",
-            "zh|ž"
+            "zh" //|ž
         ],
         "voicedfricative": [
             "2:v",
@@ -265,8 +270,8 @@
             "j"
         ],
         "finalaffricate": [
-            "ch|tch",
-            "dge"
+            "ch|ch|tch",
+            "dge|dge|ge|ge|j|jj"
         ],
         "fsound": [
             "18:f",
@@ -279,65 +284,74 @@
         ],
         "initialvowelsound": [
             "16:u",
-            "ŭ", // u as in cut - ʌ 10.84%, ʌ / 1.74%
+            "u", //"ŭ", // u as in cut - ʌ 10.84%, ʌ / 1.74%
             "20:i", // i as in pit - ɪ 6.28%
             "12:ea|ee",
-            "ē",
+            "e",//"ē",
             "2:y|ea|ea|ea|ea|ee", // ee as in see - i 3.33%
             "12:e",
-            "ĕ", // e as in dress - ɛ 3.11%
+            "e",//"ĕ", // e as in dress - ɛ 3.11%
             "12:o",
-            "2:a|o|o|o|au|aw|ô", // o as in cot, au as in caught (cot-caught merger to keep things simple) - ɑ 1.94% ɔ 1.53%
-            "13:a",
-            "ă", // a as in cat - æ 2.51%
+            //"ô",
+            "2:a|o|o|o|o|o|au|aw|a", // o as in cot, au as in caught (cot-caught merger to keep things simple) - ɑ 1.94% ɔ 1.53%
+            "14:a",
+            //"ă", // a as in cat - æ 2.51%
             "7:er",
-            "er|ur|ər", // er as in cur - ɝ 2.51%
+            // "ər",
+            "er|ur|ur", // er as in cur - ɝ 2.51%
             "6:u|oo",
             "eu|u|u|oo|oo", // oo as in soon - u 1.93%
-            "6:ae",
-            "ey|ay|a|ā|ei", // ei as in lay - eɪ 1.61%
-            "8:i|i|ai|ī", // ai as in lie - aɪ 1.55%
-            "4:o",
-            "ō", // o as in code - oʊ 1.21%
-            "ou|ow|au", // ow as in cow - aʊ 0.51%
-            "oi", // oi as in coil - ɔɪ 0.10%
+            "4:ae","2:a",
+            //"ā",
+            "ey|ay|a|a|a|a|ei", // ei as in lay - eɪ 1.61%
+            //"ī",
+            "8:i|i|ai|y", // ai as in lie - aɪ 1.55%
+            "5:o",
+            //"ō", // o as in code - oʊ 1.21%
+            "ou|ow|ow|ou|au", // ow as in cow - aʊ 0.51%
+            "oi|oi|oy", // oi as in coil - ɔɪ 0.10%
             "6:ar",
-            "ar|ar|är", // ar as in car
+            //"är",
+            "ar|ar|ar", // ar as in car
             "2:or", // or as in lore
-            "5:ir|ir|ear|eer|ier|ēr", // eer as in leer
-            "ar|aer|air|ayr|ār", // ar as in lair
-            "ur|u̇r|oor|oor|oor|eur" // oor as in lure
+            // "ēr",
+            "5:ir|ir|ear|eer|ier|yr", // eer as in leer
+            //"ār",
+            "ar|aer|air|ayr|air", // ar as in lair
+            // "u̇r",
+            "ur|ur|ur|oor|oor|oor|eur" // oor as in lure
         ],
         "vowelsound": [
-            "26:u",
-            "ŭ", // u as in cut - ʌ 10.84%, ʌ / 1.74%
+            "27:u",
+            //"ŭ", // u as in cut - ʌ 10.84%, ʌ / 1.74%
             "26:i", // i as in pit - ɪ 6.28%
-            "14:i|ie|ea|ee",
-            "ē", // ee as in see - i 3.33%
-            "12:e",
-            "ĕ", // e as in dress - ɛ 3.11%
+            "15:i|ie|ea|ee|y",
+            //"ē", // ee as in see - i 3.33%
+            "13:e",
+            //"ĕ", // e as in dress - ɛ 3.11%
             "12:o",
-            "2:a|o|o|o|au|aw|ô", // o as in cot, au as in caught (cot-caught merger to keep things simple) - ɑ 1.94% ɔ 1.53%
-            "8:a",
-            "ă", // a as in cat - æ 2.51%
+            //"ô",
+            "2:a|o|o|o|au|aw|o", // o as in cot, au as in caught (cot-caught merger to keep things simple) - ɑ 1.94% ɔ 1.53%
+            "9:a",
+            //"ă", // a as in cat - æ 2.51%
             "6:er",
-            "er|ur|ər", // er as in cur - ɝ 2.51%
+            // "ər",
+            "er|ur", // er as in cur - ɝ 2.51%
             "6:u|oo",
             "eu|u|u|oo|oo", // oo as in soon - u 1.93%
-            "6:ae",
-            "ey|ay|a|ā|ei", // ei as in lay - eɪ 1.61%
-            "4:y",
-            "4:i|i|ai|ī", // ai as in lie - aɪ 1.55%
-            "4:o",
-            "ō", // o as in code - oʊ 1.21%
+            "6:ae", // "ā",
+            "ey|ay|a|ei|ai|a", // ei as in lay - eɪ 1.61%
+            "4:y",// "ī",
+            "4:i|i|ai|i", // ai as in lie - aɪ 1.55%
+            "5:o","oe",
+            //"ō", // o as in code - oʊ 1.21%
             "ou|ow|au", // ow as in cow - aʊ 0.51%
             "oi", // oi as in coil - ɔɪ 0.10%
-            "6:ar",
-            "ar|ar|är", // ar as in car
-            "2:or", // or as in lore
-            "5:ir|ir|ear|eer|ier|ēr", // eer as in leer
-            "ar|aer|air|ayr|ār", // ar as in lair
-            "ur|u̇r|oor|oor|oor|eur" // oor as in lure
+            "7:ar", // är as in car
+            "3:or", // or as in lore
+            "5:ir|ir|ir|ear|eer|ier", // ēr eer as in leer
+            "ar|aer|air|air|ayr", // ār ar as in lair
+            "ur|ur|ur|oor|oor|oor|eur" // u̇r oor as in lure
         ]
     },
     "human": {
