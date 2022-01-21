@@ -76,7 +76,11 @@
                         {}
 );
 
-function NameGenerator(sourceJson,callback){
+function NameGenerator(sourceJson,callback,forbiddenWords){
+    var forbiddenWords = forbiddenWords;
+    if(typeof forbiddenWords === "undefined"){
+        forbiddenWords = ["anus"];
+    }
     this.getRandomName = getRandomName;
     this.keys = [];
     var me = this;
@@ -149,7 +153,10 @@ function NameGenerator(sourceJson,callback){
                 currentText = currentText.replace(regex,references[i]);
             }
         }
-        return currentText;
+        if(forbiddenWords.indexOf(currentText) > 0){
+            currentText = getRandomName(key);
+        }
+        return currentText.replace(/\s+/g," ");
     }
     function addCaps(text) {
         var capitalizedString = "";
