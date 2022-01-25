@@ -67,6 +67,17 @@
             </select></label>
             <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Subsector"></label>
             <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Subsector"></label>
+            <select name="slcHeatMap" id="slcHeatMap">
+                <option value="-1" selected=selected>No Heatmap</option>
+                <option value="0">Starport</option>
+                <option value="1">Size</option>
+                <option value="2">Atmosphere</option>
+                <option value="3">Hydrography</option>
+                <option value="4">Population</option>
+                <option value="5">Government Type</option>
+                <option value="6">Law Level</option>
+                <option value="7">Tech Level</option>
+            </select>
         </fieldset>
     </fieldset>
     <br/>
@@ -99,6 +110,9 @@
                 diameter:HEX_SIZE*2
             }
             var fontSize = HEX_SIZE*1/3;
+            var mins = [-1,-1,-1,-1,-1,-1,-1,-1], 
+            maxes = [0,0,0,0,0,0,0,0], 
+            labels = ["starport","size","atmo","hydro","pop","gov","law","tech"];
             var _systems = {};
             
             var canvas = document.getElementById("canvas");
@@ -208,6 +222,9 @@
                     //updateStyle();
                     //ctx.font = ""+fontSize+"pt "+FONT;
                     drawMap(mapContent);
+                });
+                document.getElementById("slcHeatMap").addEventListener("change",function(){
+                    drawMap(mapContent);
                 })
             }
             function populateSubsector(){
@@ -224,6 +241,7 @@
                     case "Core": d = 2, target = 11; break;
                 }
                 var namesSoFar = {};
+                mins = [-1,-1,-1,-1,-1,-1,-1,-1], maxes = [0,0,0,0,0,0,0,0];
                 for(var x = 0; x < SUBSECTOR_WIDTH; x++){
                     for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
                         if(d6(d) <= target){
@@ -234,6 +252,12 @@
                             var tcoord = XYCoordToTCoord(x,y);
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
                             var details = generateSystemDetails(addCaps(name));
+                            for(var i = 0, len = mins.length; i < len; i++){
+                                var currValue = details.mainworld[labels[i]];
+                                var currMin = mins[i], currMax = maxes[i];
+                                if(currMin === -1 || currValue < currMin){ mins[i] = currValue;}
+                                if(currValue > currMax){ maxes[i] = currValue;}
+                            }
                             systems[tcoord] = {                                    
                                 name: addCaps(name),
                                 mainworld:details.mainworld,
@@ -559,7 +583,8 @@
                 }
                 return isInside;
             }
-            function drawMap(mapContent){
+            function drawMap(mapContent, options){
+                if(typeof options === "undefined"){options = { heatMap: +(document.getElementById("slcHeatMap").value)};}
                 var w =canvas.width, h =canvas.height;
                 ctx.clearRect(0,0,w,h);
                 if(CANVAS_BACKGROUND_COLOR !== "transparent"){
@@ -571,7 +596,7 @@
                 ctx.globalCompositeOperation = 'source-over';
                 ctx.translate(HEX_MATH.diameter + CANVAS_PADDING, HEX_MATH.diameter + CANVAS_PADDING);
                 for(var i = 0, len = mapContent.length; i < len; i++){
-                    mapContent[i] = drawHex(mapContent[i]);
+                    mapContent[i] = drawHex(mapContent[i], options);
                 }
                 ctx.restore();
                 document.getElementById("data").value = JSON.stringify(_systems);
@@ -592,7 +617,9 @@
                 if(y < 10){row = "0"+row;}
                 return col+row;
             }
-            function drawHex(hex){
+            function drawHex(hex, options){
+                var drawMode = -1;
+                if(typeof options.heatMap !== "undefined"){ drawMode = options.heatMap; }
                 var containsSystem = typeof hex.system !== "undefined" && hex.system !== null;
                 var coords = {
                     x:hex.x*HEX_MATH.xOffset,
@@ -629,6 +656,42 @@
                 ctx.fill();
 
                 if(containsSystem){
+                    if(drawMode >= 0){
+                        var heatMapValue = 0;
+                        var bgColor = "black";
+                        var minValue = mins[drawMode], maxValue = maxes[drawMode];
+                        switch(drawMode){
+                            case 0: // starport
+                                switch(hex.system.mainworld.starport){
+                                    case "A": bgColor = "rgb(255,0,0)"; break; 
+                                    case "B": bgColor = "rgb(200,0,50)"; break; 
+                                    case "C": bgColor = "rgb(150,0,100)"; break; 
+                                    case "D": bgColor = "rgb(100,0,150)"; break; 
+                                    case "E": bgColor = "rgb(50,0,200)"; break; 
+                                    case "X": bgColor = "rgb(0,0,205)";  break; 
+                                }
+                                
+                            break;
+                            case 1: heatMapValue = hex.system.mainworld.size; 
+                            break;
+                            case 2: heatMapValue = hex.system.mainworld.atmo; 
+                            break;
+                            case 3: heatMapValue = hex.system.mainworld.hydro; 
+                            break;
+                            case 4: heatMapValue = hex.system.mainworld.pop; break;
+                            case 5: heatMapValue = hex.system.mainworld.gov; break;
+                            case 6: heatMapValue = hex.system.mainworld.law; break;
+                            case 7: heatMapValue = hex.system.mainworld.tech; break;
+                        }
+                        if(drawMode > 0){
+                            var bValue = 200 - 200*((heatMapValue - minValue) / (maxValue - minValue)) >>> 0; 
+                            var rValue = 255*((heatMapValue - minValue) / (maxValue - minValue)) >>> 0; 
+                            bgColor = "rgb("+rValue+",0,"+bValue+")";
+                        }
+                        ctx.fillStyle = bgColor;
+                        ctx.fill();
+                    }
+                    ctx.stroke();
                     var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var name = hex.system.name;
                     var maxChars = 10;
