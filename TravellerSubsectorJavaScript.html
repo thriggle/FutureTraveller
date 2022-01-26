@@ -19,6 +19,15 @@
         fieldset legend:hover{
             color:red;
         }
+        label{
+            user-select: none;
+        }
+        fieldset > fieldset{
+            background-color:rgba(0,0,0,0.05);
+        }
+        fieldset *{
+            line-height:1.5em;
+        }
         fieldset.collapsed *:not(legend){
             display:none;
         }
@@ -32,20 +41,33 @@
             border:1px solid black;
             background-color:white;
         }
+        .travelcodepickers select option[value="Amber"] {
+            background: rgb(255, 255, 127);
+        }
+        .travelcodepickers select[data-color="Amber"]{
+            background-color: rgb(255, 255, 127);;
+        }
+        .travelcodepickers select option[value="Red"] {
+            background: pink;
+        }
+        .travelcodepickers select[data-color="Red"]{
+            background-color: pink;
+        }
     </style>
     <fieldset>
         <legend>Controls</legend>
         <fieldset class="collapsed">
-            <legend>Display</legend>
-            <label for="slctStyle">Style: </label><select name="slctStyle" id="slctStyle" data-text="white" data-canvasbg="black" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
+            <legend>Appearance</legend>                
+            <label for="sizeSlider">Scale: <span id="sizeIndicator"></span></label><input type="range" min="4" max="50" id="sizeSlider" />
+            <label for="slctStyle">Theme: </label><select name="slctStyle" id="slctStyle" data-text="white" data-canvasbg="black" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
                 <option value="light">light</option>
                 <option value="dark">dark</option>
                 <option value="transparent">transparent</option>
                 <option selected="selected" value="custom">custom</option>
             </select>
-            <label for="sizeSlider">Scale: <span id="sizeIndicator"></span></label><input type="range" min="4" max="50" id="sizeSlider" />
-            <br/><br/><fieldset id="customSettings" class="collapsed">
-                <legend>Custom Display Settings</legend>
+            <br/>                
+            <fieldset id="customSettings" class="collapsed">
+                <legend>Advanced</legend>
                 <label for="textColor">Text Color: <input type="text" name="textColor" id="textColor" /></label><br/>
                 <label for="hexBorderColor">Border Color: <input type="text" name="hexBorderColor" id="hexBorderColor" /></label><br/>
                 <label for="hexBackgroundColor">Hex Fill: <input type="text" id="hexBackgroundColor" name="hexBackgroundColor" /></label><br/>
@@ -53,21 +75,9 @@
                 <label for="fontFamily">Font: <input type="text" id="fontFamily" name="fontFamily" value="Segoe UI, sans-serif"/></label>
             </fieldset>
         </fieldset>
-        <fieldset>
-            <legend>Systems</legend>
-            <label for="slctStellarDensity"><select name="slctStellarDensity" id="slctStellarDensity">
-                <option value="Extra Galactic">Extra Galactic (1%)</option>
-                <option value="Rift">Rift (3%)</option>
-                <option value="Sparse">Sparse (17%)</option>
-                <option value="Scattered">Scattered (33%)</option>
-                <option value="Standard" selected="selected">Standard (50%)</option>
-                <option value="Dense">Dense (66%)</option>
-                <option value="Cluster">Cluster (83%)</option>
-                <option value="Core">Core (91%)</option>
-            </select></label>
-            <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Subsector"></label>
-            <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Subsector"></label>
-            <select name="slcHeatMap" id="slcHeatMap">
+        <fieldset class="collapsed">
+            <legend>Overlays</legend>
+            <label for="slcHeatMap">Heat Map: <select name="slcHeatMap" id="slcHeatMap">
                 <option value="-1" selected=selected>No Heatmap</option>
                 <option value="0">Starport</option>
                 <option value="1">Size</option>
@@ -78,6 +88,129 @@
                 <option value="6">Law Level</option>
                 <option value="7">Tech Level</option>
             </select>
+        </label><br/>
+        <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes" checked="checked"/> Show Travel Codes</label>
+        </fieldset>        
+        <fieldset>
+            <legend>Systems</legend>          
+            <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Subsector"></label>
+            <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Subsector"></label>
+            <br/><fieldset class="collapsed">
+                <legend>Configuration</legend>
+                <fieldset class="collapsed">
+                    <legend>Astrographics</legend>
+                    <label for="slctMainworldRules">System Gen Ruleset: 
+                        <select name="slctMainworldRules" id="slctMainworldRules">
+                            <option value="T5">T5</option>
+                        </select></label><br/>
+                    <label for="slctStellarDensity">Stellar Density: <select name="slctStellarDensity" id="slctStellarDensity">
+                        <option value="Extra Galactic">Extra Galactic (1%)</option>
+                        <option value="Rift">Rift (3%)</option>
+                        <option value="Sparse">Sparse (17%)</option>
+                        <option value="Scattered">Scattered (33%)</option>
+                        <option value="Standard" selected="selected">Standard (50%)</option>
+                        <option value="Dense">Dense (66%)</option>
+                        <option value="Cluster">Cluster (83%)</option>
+                        <option value="Core">Core (91%)</option>
+                    </select></label><br/>
+                    <label for="slctGGFrequency">Gas Giant Occurrence: <select name="slctGGFrequency" id="slctGGFrequency">
+                        <option selected=selected value=8>8- on 2D (T5) 72%</option>
+                        <option value=9>9- on 2D (CE) 83%</option>
+                    </select></label>
+                </fieldset>
+                <fieldset class="collapsed travelcodepickers">
+                    <legend>Travel Codes</legend>
+                    <fieldset>
+                        <legend>Automatic Assignment</legend>
+                        <fieldset>
+                            <legend>Starport Presence</legend>
+                            <label for="slctRedZoneX"><select data-color="Red" name="slctRedZoneX" checked="checked" id="slctRedZoneX">
+                                <option value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option selected="selected" value="Red">Red</option>
+                            </select> Inhabited Worlds w/out Starport</label><br/>
+                            <label for="slctAmberZoneBa"><select data-color="Amber" name="slctAmberZoneBa" checked="checked" id="slctAmberZoneBa">
+                                <option value="N/A">N/A</option>
+                                <option selected="selected" value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Barren Worlds </label><br/>
+                            <label for="slctAmberZoneX"><select data-color="N/A" name="slctAmberZoneX" id="slctAmberZoneX">
+                                <option value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Worlds w/out Starport </label><br/>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Atmosphere</legend>
+                            <label for="slctAmberZoneAtmo"><select data-color="N/A" name="slctAmberZoneAtmo" id="slctAmberZoneAtmo">
+                                <option value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Dangerous Atmospheres</label><br/>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Law Level</legend>
+                            <label for="slctAmberZoneLL"><select name="slctAmberZoneLL" data-color="Amber" checked="checked" id="slctAmberZoneLL">
+                                <option value="N/A">N/A</option>
+                                <option selected="selected" value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Highest LL World(s) (min <select id="slctMaxLawLevelThreshold">
+                                <option value=15>15</option>
+                                <option value=14>14</option>
+                                <option value=13>13</option>
+                                <option value=12>12</option>
+                                <option value=11>11</option>
+                                <option value=10>10</option>
+                                <option selected=selected value=9>9</option>
+                                <option value=8>8</option>
+                            </select>+)</label><br/>
+                            <label for="slctAmberZone9LL"><select data-color="N/A" name="slctAmberZone9LL" id="slctAmberZone9LL">
+                                <option value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> High Law (<select id="slctLawLevelThreshold">
+                                <option value=15>15</option>
+                                <option value=14>14</option>
+                                <option value=13>13</option>
+                                <option value=12>12</option>
+                                <option value=11>11</option>
+                                <option value=10>10</option>
+                                <option selected=selected value=9>9</option>
+                                <option value=8>8</option>
+                            </select>+) Worlds </label><br/>
+                            <label for="slctAmberZone0LL"><select data-color="N/A" name="slctAmberZone0LL" id="slctAmberZone0LL">
+                                <option value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Lawless Worlds</label><br/>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Government</legend>
+                            <label for="slctAmberZoneGov0"><select data-color="N/A" name="slctAmberZoneGov0" id="slctAmberZoneGov0">
+                                <option value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Ungoverned Worlds</label><br/>
+                            <label for="slctAmberZoneGov7"><select data-color="N/A" name="slctAmberZoneGov7" id="slctAmberZoneGov7">
+                                <option value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Balkanized Worlds</label><br/>
+                            <label for="slctAmberZoneGov10"><select data-color="N/A" name="slctAmberZoneGov10" id="slctAmberZoneGov10">
+                                <option value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Charismatic Dictatorships</label><br/>
+                        </fieldset>
+                        <br/>
+                        <input type="button" disabled=true value="Assign travel codes" id="btnApplyTravelCodes" />
+                        <input type="button" disabled=true value="Restore defaults" id="btnResetTravelCodes">
+                        <input type="button" value="CE Defaults" id="btnCETravelCodes">
+                    </fieldset>
+                    <input type="button" value="Remove travel codes" id="btnClearTravelCodes" />
+                </fieldset>
+            </fieldset>
+            
         </fieldset>
     </fieldset>
     <br/>
@@ -225,9 +358,41 @@
                 });
                 document.getElementById("slcHeatMap").addEventListener("change",function(){
                     drawMap(mapContent);
-                })
+                });
+                document.getElementById("chkShowTravelCodes").addEventListener("change",function(){
+                    drawMap(mapContent);
+                });
+                document.getElementById("btnApplyTravelCodes").addEventListener("click",function(){
+                    applyTravelCodes(mapContent);
+                    drawMap(mapContent);
+                    document.getElementById("btnApplyTravelCodes").disabled = true;
+                });
+                document.getElementById("btnClearTravelCodes").addEventListener("click",function(){
+                    clearTravelCodes(mapContent);
+                    drawMap(mapContent);
+                    document.getElementById("btnApplyTravelCodes").disabled = false;
+                });
+                document.getElementById("btnResetTravelCodes").addEventListener("click",resetTravelCodes);
+                document.getElementById("btnCETravelCodes").addEventListener("click",selectCETravelCodes);
+                var zonePickers = document.querySelectorAll("select[data-color]");
+                for(var i = 0, len = zonePickers.length; i < len; i++){
+                    zonePickers[i].addEventListener("change",function(e){
+                        e.target.setAttribute("data-color",e.target.value);
+                        document.getElementById("btnApplyTravelCodes").disabled = false;
+                        document.getElementById("btnResetTravelCodes").disabled = false;
+                    });
+                }
+                document.getElementById("slctMaxLawLevelThreshold").addEventListener("change",function(){
+                    document.getElementById("btnApplyTravelCodes").disabled = false; 
+                    document.getElementById("btnResetTravelCodes").disabled = false;
+                });
+                document.getElementById("slctLawLevelThreshold").addEventListener("change",function(){
+                    document.getElementById("btnApplyTravelCodes").disabled = false; 
+                    document.getElementById("btnResetTravelCodes").disabled = false;
+                });
             }
             function populateSubsector(){
+                var ggFrequency = document.getElementById("slctGGFrequency").value;
                 var density = document.getElementById("slctStellarDensity").value;
                 var d = 1, target = 3, systems = {};
                 switch(density){
@@ -251,7 +416,7 @@
                             }
                             var tcoord = XYCoordToTCoord(x,y);
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
-                            var details = generateSystemDetails(addCaps(name));
+                            var details = generateSystemDetails(addCaps(name),ggFrequency);
                             for(var i = 0, len = mins.length; i < len; i++){
                                 var currValue = details.mainworld[labels[i]];
                                 var currMin = mins[i], currMax = maxes[i];
@@ -273,12 +438,13 @@
                 }
                 document.getElementById("data").value = JSON.stringify(systems);
                 var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
+                applyTravelCodes(mapContent);
                 drawMap(mapContent);                
             }
-            function generateSystemDetails(name){
+            function generateSystemDetails(name, gasGiantFrequency){
                 var isAsteroidBelt = d6(2) == 2;
                 var planetoidBelts = Math.max(d6()-3,0);
-                var gg = d6(2)>=8 ? Math.max(d6(2)/2>>0-2,1) : 0;
+                var gg = d6(2) <= gasGiantFrequency ? Math.max(d6(2)/2>>0-2,1) : 0;
                 var roll;
                 var uwp = "";
                 var tradeCodes = [];
@@ -584,7 +750,12 @@
                 return isInside;
             }
             function drawMap(mapContent, options){
-                if(typeof options === "undefined"){options = { heatMap: +(document.getElementById("slcHeatMap").value)};}
+                if(typeof options === "undefined"){
+                    options = { 
+                        heatMap: +(document.getElementById("slcHeatMap").value),
+                        travelCodes: document.getElementById("chkShowTravelCodes").checked
+                    };
+                }
                 var w =canvas.width, h =canvas.height;
                 ctx.clearRect(0,0,w,h);
                 if(CANVAS_BACKGROUND_COLOR !== "transparent"){
@@ -600,6 +771,164 @@
                 }
                 ctx.restore();
                 document.getElementById("data").value = JSON.stringify(_systems);
+            }
+            function selectCETravelCodes(){
+                document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "N/A");
+                document.getElementById("slctAmberZoneX").setAttribute("data-color",document.getElementById("slctAmberZoneX").value = "N/A");
+                document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "N/A");
+                document.getElementById("slctAmberZoneAtmo").setAttribute("data-color",document.getElementById("slctAmberZoneAtmo").value= "Amber");
+                document.getElementById("slctAmberZoneLL").setAttribute("data-color",document.getElementById("slctAmberZoneLL").value= "N/A");
+                document.getElementById("slctAmberZone9LL").setAttribute("data-color",document.getElementById("slctAmberZone9LL").value= "Amber");
+                document.getElementById("slctLawLevelThreshold").value= 9;
+                document.getElementById("slctMaxLawLevelThreshold").value = 9;
+                document.getElementById("slctAmberZone0LL").setAttribute("data-color",document.getElementById("slctAmberZone0LL").value= "Amber");
+                document.getElementById("slctAmberZoneGov0").setAttribute("data-color",document.getElementById("slctAmberZoneGov0").value= "Amber");
+                document.getElementById("slctAmberZoneGov7").setAttribute("data-color",document.getElementById("slctAmberZoneGov7").value= "Amber");
+                document.getElementById("slctAmberZoneGov10").setAttribute("data-color",document.getElementById("slctAmberZoneGov10").value= "Amber");
+                document.getElementById("btnApplyTravelCodes").disabled = false;
+                document.getElementById("btnResetTravelCodes").disabled = false;
+            }
+            function resetTravelCodes(){
+                document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "Red");
+                document.getElementById("slctAmberZoneX").setAttribute("data-color",document.getElementById("slctAmberZoneX").value = "N/A");
+                document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Amber");
+                document.getElementById("slctAmberZoneAtmo").setAttribute("data-color",document.getElementById("slctAmberZoneAtmo").value= "N/A");
+                document.getElementById("slctAmberZoneLL").setAttribute("data-color",document.getElementById("slctAmberZoneLL").value= "Amber");
+                document.getElementById("slctAmberZone9LL").setAttribute("data-color",document.getElementById("slctAmberZone9LL").value= "N/A");
+                document.getElementById("slctLawLevelThreshold").value= 9;
+                document.getElementById("slctMaxLawLevelThreshold").value = 9;
+                document.getElementById("slctAmberZone0LL").setAttribute("data-color",document.getElementById("slctAmberZone0LL").value= "N/A");
+                document.getElementById("slctAmberZoneGov0").setAttribute("data-color",document.getElementById("slctAmberZoneGov0").value= "N/A");
+                document.getElementById("slctAmberZoneGov7").setAttribute("data-color",document.getElementById("slctAmberZoneGov7").value= "N/A");
+                document.getElementById("slctAmberZoneGov10").setAttribute("data-color",document.getElementById("slctAmberZoneGov10").value= "N/A");
+                document.getElementById("btnApplyTravelCodes").disabled = false;
+                document.getElementById("btnResetTravelCodes").disabled = true;
+            }
+            function applyTravelCodes(mapContent, highestLawLevel){
+                var RedZoneX = document.getElementById("slctRedZoneX").value;
+                var AmberZoneX = document.getElementById("slctAmberZoneX").value;
+                var AmberZoneBa = document.getElementById("slctAmberZoneBa").value;
+                var AmberZoneAtmo = document.getElementById("slctAmberZoneAtmo").value;
+                var AmberZoneLL = document.getElementById("slctAmberZoneLL").value;
+                var AmberZone9LL = document.getElementById("slctAmberZone9LL").value;
+                var LLThreshold = document.getElementById("slctLawLevelThreshold").value;
+                var MaxLLThreshold = document.getElementById("slctMaxLawLevelThreshold").value;
+                var AmberZone0LL = document.getElementById("slctAmberZone0LL").value;
+                var AmberZoneGov0 = document.getElementById("slctAmberZoneGov0").value;
+                var AmberZoneGov7 = document.getElementById("slctAmberZoneGov7").value;
+                var AmberZoneGov10 = document.getElementById("slctAmberZoneGov10").value;
+                for(var i = 0, len = mapContent.length; i < len; i++){
+                    if(typeof mapContent[i].system !== "undefined" && mapContent[i].system !== null){
+                        mapContent[i].system.isAmber = false;
+                        mapContent[i].system.isRed = false;
+                        mapContent[i].system.travelCodeNotes = "";
+                        if(mapContent[i].system.mainworld.pop > 0){
+                            if(AmberZoneLL !== "N/A"){ // amber zone highest law level
+                                if(mapContent[i].system.mainworld.law === maxes[6] && maxes[6] >= MaxLLThreshold) {
+                                    if(AmberZoneLL === "Red"){
+                                        mapContent[i].system.isRed = true; 
+                                    }else{
+                                        mapContent[i].system.isAmber = true; 
+                                    }
+                                    mapContent[i].system.travelCodeNotes += "Among strictest law levels in the subsector.  ";
+                                }
+                            }
+                            if(AmberZone9LL !== "N/A"){ // amber zone 9+ law level 
+                                if(mapContent[i].system.mainworld.law >= LLThreshold) {
+                                    if(AmberZone9LL === "Red"){
+                                        mapContent[i].system.isRed = true; 
+                                    }else{
+                                        mapContent[i].system.isAmber = true; 
+                                    }
+                                    mapContent[i].system.travelCodeNotes += "Law levels "+LLThreshold.toString()+"+.  ";
+                                }
+                            }
+                            if(AmberZone0LL !== "N/A"){ // amber zone 0 law level
+                                if(mapContent[i].system.mainworld.law === 0) {
+                                    if(AmberZone0LL === "Red"){
+                                        mapContent[i].system.isRed = true; 
+                                    }else{
+                                        mapContent[i].system.isAmber = true; 
+                                    }
+                                    mapContent[i].system.travelCodeNotes += "No law level enforced.  ";
+                                }
+                            }
+                            if(AmberZoneAtmo !== "N/A"){ // amber 10+ atmo
+                                if(mapContent[i].system.mainworld.atmo >= 10) {
+                                    if(AmberZoneAtmo === "Red"){
+                                        mapContent[i].system.isRed = true; 
+                                    }else{
+                                        mapContent[i].system.isAmber = true; 
+                                    }
+                                    mapContent[i].system.travelCodeNotes += "Dangerous atmosphere.  ";
+                                }
+                            }
+                            if(AmberZoneGov0 !== "N/A"){ // amber ungoverned
+                                if(mapContent[i].system.mainworld.gov === 0) {
+                                    if(AmberZoneGov0 === "Red"){
+                                        mapContent[i].system.isRed = true; 
+                                    }else{
+                                        mapContent[i].system.isAmber = true; 
+                                    }
+                                    mapContent[i].system.travelCodeNotes += "Anarchy.  ";
+                                }
+                            }
+                            if(AmberZoneGov7 !== "N/A"){ // amber balkanized
+                                if(mapContent[i].system.mainworld.gov === 7) {
+                                    if(AmberZoneGov7 === "Red"){
+                                        mapContent[i].system.isRed = true; 
+                                    }else{
+                                        mapContent[i].system.isAmber = true; 
+                                    }
+                                    mapContent[i].system.travelCodeNotes += "Balkanized local governments.  ";
+                                }
+                            }
+                            if(AmberZoneGov0 !== "N/A"){ // amber charismatic dictatorship
+                                if(mapContent[i].system.mainworld.gov === 10) {
+                                    if(AmberZoneGov0 === "Red"){
+                                        mapContent[i].system.isRed = true; 
+                                    }else{
+                                        mapContent[i].system.isAmber = true; 
+                                    }
+                                    mapContent[i].system.travelCodeNotes += "Ruled by charismatic dictatorship.  ";
+                                }
+                            }
+                            if(AmberZoneX !== "N/A" && mapContent[i].system.mainworld.starport.toUpperCase() === "X"){ // amber no starport
+                                if(AmberZoneX === "Red"){
+                                    mapContent[i].system.isRed = true; 
+                                }else{
+                                    mapContent[i].system.isAmber = true; 
+                                }
+                                mapContent[i].system.travelCodeNotes += "No established starport.  ";
+                            }
+                            if(RedZoneX !== "N/A" && mapContent[i].system.mainworld.starport.toUpperCase() === "X"){ // red no starport
+                                if(RedZoneX === "Red"){
+                                    mapContent[i].system.isRed = true; 
+                                }else{
+                                    mapContent[i].system.isAmber = true; 
+                                }
+                                mapContent[i].system.travelCodeNotes += "Population under interdiction.  ";
+                            }
+                        }else{
+                            if(AmberZoneBa !== "N/A"){ // amber zone uninhabited
+                                if(AmberZoneBa === "Red"){
+                                    mapContent[i].system.isRed = true; 
+                                }else{
+                                    mapContent[i].system.isAmber = true; 
+                                }
+                                mapContent[i].system.travelCodeNotes += "Uninhabited.  ";
+                            }
+                        }
+                    }
+                }
+            }
+            function clearTravelCodes(mapContent){
+                for(var i = 0, len = mapContent.length; i < len; i++){
+                    if(typeof mapContent[i].system !== "undefined" && mapContent[i].system !== null){
+                        mapContent[i].system.isRed = false;
+                        mapContent[i].system.isAmber = false;
+                    }
+                }
             }
             function TCoordToXYCoord(tcoord){
                 if(tcoord.length && tcoord.length == 4){
@@ -648,11 +977,7 @@
                     ctx.lineTo(hex.vertx[i], hex.verty[i]);
                 }
                 ctx.stroke();
-                //if(hex.highlighted){
-                //    ctx.fillStyle = HEX_HIGHLIGHT_BACKGROUND_COLOR;
-                //}else{
-                    ctx.fillStyle = HEX_BACKGROUND_COLOR;
-                //}              
+                ctx.fillStyle = HEX_BACKGROUND_COLOR;           
                 ctx.fill();
 
                 if(containsSystem){
@@ -692,6 +1017,26 @@
                         ctx.fill();
                     }
                     ctx.stroke();
+                    var zoneRadius = fontSize*5;
+                    if(options.travelCodes && (hex.system.isRed || hex.system.isAmber)){
+
+                        if(hex.system.isRed){
+                            ctx.strokeStyle = "red";
+                        }else if(hex.system.isAmber){
+                            ctx.strokeStyle = "yellow";
+                        }
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(x4,y1,zoneRadius,-Math.PI/2,Math.PI/4);
+                        ctx.stroke();
+            
+                        ctx.beginPath();
+                        ctx.arc(x4,y1,zoneRadius,-5*Math.PI/4,-Math.PI/2);
+                        ctx.stroke();
+                        ctx.strokeStyle = HEX_BORDER_COLOR;
+                        
+                    }
+
                     var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var name = hex.system.name;
                     var maxChars = 10;
@@ -729,45 +1074,30 @@
                         var base = hex.system.bases[i];
                         drawBase(base, x4, y1);
                     }
-
+                    
                     // draw planet
                     if(hex.system.isAsteroidBelt){
-                        ctx.fillStyle = TEXT_COLOR; //"orange"; 
+                        ctx.fillStyle = TEXT_COLOR;
                         ctx.beginPath();
                         ctx.arc(x4 - (x4 - x1)/2.5,y1 - (y1-y0)/8,fontSize/6,0,2*Math.PI);
                         ctx.fill();
-
-                        //ctx.fillStyle = "yellow";
                         ctx.beginPath();
                         ctx.arc(x4 - (x4 - x1)/9,y1,fontSize/6,0,2*Math.PI);
-                        ctx.fill();
-
-                        //ctx.fillStyle = "magenta";
                         ctx.beginPath();
                         ctx.arc(x4 + (x4 - x1)/5,y1 - (y1-y0)/11,fontSize/6,0,2*Math.PI);
                         ctx.fill();
-
-                        //ctx.fillStyle = "cyan";
                         ctx.beginPath();
                         ctx.arc(x4 + (x4 - x1)/6,y1 + (y1-y0)/9,fontSize/6,0,2*Math.PI);
                         ctx.fill();
-
-                        //ctx.fillStyle = "yellow";
                         ctx.beginPath();
                         ctx.arc(x4 + (x4 - x1)/2.5,y1 + (y1-y0)/18,fontSize/6,0,2*Math.PI);
                         ctx.fill();
-
-                        //ctx.fillStyle = "black";
                         ctx.beginPath();
                         ctx.arc(x4 - (x4 - x1)/2,y1 ,fontSize/6,0,2*Math.PI);
                         ctx.fill();
-
-                        //ctx.fillStyle = "orange";
                         ctx.beginPath();
                         ctx.arc(x4 - (x4 - x1)/8,y1 - (y1-y0)/6,fontSize/6,0,2*Math.PI);
                         ctx.fill();
-
-                        //ctx.fillStyle = "red";
                         ctx.beginPath();
                         ctx.arc(x4 - (x4 - x1)/7,y1 + (y1-y0)/8,fontSize/6,0,2*Math.PI);
                         ctx.fill();
@@ -783,8 +1113,7 @@
                         ctx.arc(x4,y1,fontSize,0,2*Math.PI);
                         ctx.stroke();
                         ctx.lineWidth = oldLineWidth;
-                    }
-                    
+                    }                    
 
                     // write text
                     ctx.textAlign = "center";
@@ -820,7 +1149,6 @@
                     }
                     
                 }
-
                 ctx.lineWidth = oldLineWidth;
                 return hex;
             }
