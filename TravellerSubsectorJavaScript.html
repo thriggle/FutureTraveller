@@ -120,8 +120,12 @@
                 </fieldset>
                 <fieldset class="collapsed travelcodepickers">
                     <legend>Travel Codes</legend>
+                    <input type="button" value="Remove travel codes" id="btnClearTravelCodes" />
                     <fieldset>
                         <legend>Automatic Assignment</legend>
+                        <input type="button" disabled=true value="Assign travel codes" id="btnApplyTravelCodes" />
+                        <input type="button" disabled=true value="Restore defaults" id="btnResetTravelCodes">
+                        <input type="button" value="CE Defaults" id="btnCETravelCodes">
                         <fieldset>
                             <legend>Starport Presence</legend>
                             <label for="slctRedZoneX"><select data-color="Red" name="slctRedZoneX" checked="checked" id="slctRedZoneX">
@@ -202,12 +206,9 @@
                                 <option value="Red">Red</option>
                             </select> Charismatic Dictatorships</label><br/>
                         </fieldset>
-                        <br/>
-                        <input type="button" disabled=true value="Assign travel codes" id="btnApplyTravelCodes" />
-                        <input type="button" disabled=true value="Restore defaults" id="btnResetTravelCodes">
-                        <input type="button" value="CE Defaults" id="btnCETravelCodes">
+                        
                     </fieldset>
-                    <input type="button" value="Remove travel codes" id="btnClearTravelCodes" />
+                   
                 </fieldset>
             </fieldset>
             
