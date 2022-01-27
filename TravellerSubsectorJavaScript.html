@@ -87,6 +87,7 @@
                 <option value="5">Government Type</option>
                 <option value="6">Law Level</option>
                 <option value="7">Tech Level</option>
+                <option value="8">Importance</option>
             </select>
         </label><br/>
         <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes" checked="checked"/> Show Travel Codes</label>
@@ -124,9 +125,11 @@
                     <fieldset>
                         <legend>Automatic Assignment</legend>
                         <input type="button" disabled=true value="Assign travel codes" id="btnApplyTravelCodes" />
-                        <input type="button" disabled=true value="Restore defaults" id="btnResetTravelCodes">
-                        <input type="button" value="CE Defaults" id="btnCETravelCodes"><br/>
-                        <fieldset>
+                        <input type="button" disabled=true value="Thriggle Defaults" id="btnResetTravelCodes">
+                        <input type="button" value="CE Defaults" id="btnCETravelCodes">
+                        <input type="button" value="T5 Defaults" id="btnT5TravelCodes">
+                        <br/>
+                        <fieldset class="collapsed">
                             <legend>Starport Presence</legend>
                             <label for="slctRedZoneX"><select data-color="Red" name="slctRedZoneX" checked="checked" id="slctRedZoneX">
                                 <option value="N/A">N/A</option>
@@ -138,13 +141,8 @@
                                 <option selected="selected" value="Amber">Amber</option>
                                 <option value="Red">Red</option>
                             </select> Barren Worlds </label><br/>
-                            <label for="slctAmberZoneX"><select data-color="N/A" name="slctAmberZoneX" id="slctAmberZoneX">
-                                <option value="N/A">N/A</option>
-                                <option value="Amber">Amber</option>
-                                <option value="Red">Red</option>
-                            </select> Worlds w/out Starport </label><br/>
                         </fieldset>
-                        <fieldset>
+                        <fieldset class="collapsed">
                             <legend>Atmosphere</legend>
                             <label for="slctAmberZoneAtmo"><select data-color="N/A" name="slctAmberZoneAtmo" id="slctAmberZoneAtmo">
                                 <option value="N/A">N/A</option>
@@ -152,11 +150,47 @@
                                 <option value="Red">Red</option>
                             </select> Dangerous Atmospheres</label><br/>
                         </fieldset>
-                        <fieldset>
+                        <fieldset class="collapsed">
                             <legend>Law Level</legend>
-                            <label for="slctAmberZoneLL"><select name="slctAmberZoneLL" data-color="Amber" checked="checked" id="slctAmberZoneLL">
+                            <label for="slctRedGovLaw"><select name="slctRedGovLaw" data-color="Amber" id="slctRedGovLaw">
                                 <option value="N/A">N/A</option>
                                 <option selected="selected" value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Law + Government >= <select id="slctRedGovLawThreshold">
+                                <option value=30>30</option>
+                                <option value=29>29</option>
+                                <option value=28>28</option>
+                                <option value=27>27</option>
+                                <option value=26>26</option>
+                                <option value=25>25</option>
+                                <option value=24>24</option>
+                                <option value=23>23</option>
+                                <option selected=selected value=22>22</option>
+                                <option value=21>21</option>
+                                <option value=20>20</option>
+                                <option value=19>19</option>
+                            </select></label><br/>
+                            <label for="slctAmberGovLaw"><select name="slctAmberGovLaw" data-color="N/A" id="slctAmberGovLaw">
+                                <option selected="selected" value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Law + Government >= <select id="slctAmberGovLawThreshold">
+                                <option value=30>30</option>
+                                <option value=29>29</option>
+                                <option value=28>28</option>
+                                <option value=27>27</option>
+                                <option value=26>26</option>
+                                <option value=25>25</option>
+                                <option value=24>24</option>
+                                <option value=23>23</option>
+                                <option value=22>22</option>
+                                <option value=21>21</option>
+                                <option selected=selected value=20>20</option>
+                                <option value=19>19</option>
+                            </select></label><br/>
+                            <label for="slctAmberZoneLL"><select name="slctAmberZoneLL" data-color="N/A" id="slctAmberZoneLL">
+                                <option selected="selected" value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
                                 <option value="Red">Red</option>
                             </select> Highest LL World(s) (min <select id="slctMaxLawLevelThreshold">
                                 <option value=15>15</option>
@@ -188,7 +222,7 @@
                                 <option value="Red">Red</option>
                             </select> Lawless Worlds</label><br/>
                         </fieldset>
-                        <fieldset>
+                        <fieldset class="collapsed">
                             <legend>Government</legend>
                             <label for="slctAmberZoneGov0"><select data-color="N/A" name="slctAmberZoneGov0" id="slctAmberZoneGov0">
                                 <option value="N/A">N/A</option>
@@ -244,8 +278,8 @@
                 diameter:HEX_SIZE*2
             }
             var fontSize = HEX_SIZE*1/3;
-            var mins = [-1,-1,-1,-1,-1,-1,-1,-1], 
-            maxes = [0,0,0,0,0,0,0,0], 
+            var mins = [-1,-1,-1,-1,-1,-1,-1,-1,-1], 
+            maxes = [0,0,0,0,0,0,0,0,0], 
             labels = ["starport","size","atmo","hydro","pop","gov","law","tech"];
             var _systems = {};
             
@@ -375,6 +409,7 @@
                 });
                 document.getElementById("btnResetTravelCodes").addEventListener("click",resetTravelCodes);
                 document.getElementById("btnCETravelCodes").addEventListener("click",selectCETravelCodes);
+                document.getElementById("btnT5TravelCodes").addEventListener("click",selectT5TravelCodes);
                 var zonePickers = document.querySelectorAll("select[data-color]");
                 for(var i = 0, len = zonePickers.length; i < len; i++){
                     zonePickers[i].addEventListener("change",function(e){
@@ -383,6 +418,22 @@
                         document.getElementById("btnResetTravelCodes").disabled = false;
                     });
                 }
+                document.getElementById("slctAmberGovLaw").addEventListener("change",function(){
+                    document.getElementById("btnApplyTravelCodes").disabled = false; 
+                    document.getElementById("btnResetTravelCodes").disabled = false;
+                });
+                document.getElementById("slctRedGovLaw").addEventListener("change",function(){
+                    document.getElementById("btnApplyTravelCodes").disabled = false; 
+                    document.getElementById("btnResetTravelCodes").disabled = false;
+                });
+                document.getElementById("slctAmberGovLawThreshold").addEventListener("change",function(){
+                    document.getElementById("btnApplyTravelCodes").disabled = false; 
+                    document.getElementById("btnResetTravelCodes").disabled = false;
+                });
+                document.getElementById("slctRedGovLawThreshold").addEventListener("change",function(){
+                    document.getElementById("btnApplyTravelCodes").disabled = false; 
+                    document.getElementById("btnResetTravelCodes").disabled = false;
+                });
                 document.getElementById("slctMaxLawLevelThreshold").addEventListener("change",function(){
                     document.getElementById("btnApplyTravelCodes").disabled = false; 
                     document.getElementById("btnResetTravelCodes").disabled = false;
@@ -407,7 +458,7 @@
                     case "Core": d = 2, target = 11; break;
                 }
                 var namesSoFar = {};
-                mins = [-1,-1,-1,-1,-1,-1,-1,-1], maxes = [0,0,0,0,0,0,0,0];
+                mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3], maxes = [0,0,0,0,0,0,0,0,0];
                 for(var x = 0; x < SUBSECTOR_WIDTH; x++){
                     for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
                         if(d6(d) <= target){
@@ -419,20 +470,26 @@
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
                             var details = generateSystemDetails(addCaps(name),ggFrequency);
                             for(var i = 0, len = mins.length; i < len; i++){
-                                var currValue = details.mainworld[labels[i]];
+                                var currValue;
+                                if(i === 8){
+                                    currValue = details.importance.extension;
+                                }else{
+                                    currValue = details.mainworld[labels[i]];
+                                }
                                 var currMin = mins[i], currMax = maxes[i];
-                                if(currMin === -1 || currValue < currMin){ mins[i] = currValue;}
+                                if(currValue < currMin){ mins[i] = currValue;}
                                 if(currValue > currMax){ maxes[i] = currValue;}
                             }
                             systems[tcoord] = {                                    
                                 name: addCaps(name),
                                 mainworld:details.mainworld,
-                                uwp: details.uwp,
+                                uwp: details.uwp.toUpperCase(),
                                 gg:details.gg,
                                 isAsteroidBelt:details.mainworld.isAsteroidBelt,
                                 planetoidBelts:details.planetoidBelts,
                                 bases:details.bases,
-                                stars:details.stars
+                                stars:details.stars,
+                                importance: details.importance
                             };
                         }
                     }
@@ -479,25 +536,14 @@
                         stars.far_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
                     }
                 }
-                roll = d6()-d6(); // roll for mainworld orbit
                 
-                var MWOrbit = stars.primary.HZOrbit; var climate = "";
-                
-                if(stars.primary.type === "M"){roll += 2;}
-                else if(stars.primary.type === "O" || stars.primary.type === "B"){ roll -= 2;}
-
-                if(roll<=-6){ MWOrbit -= 2; tradeCodes.push("Tr"); climate = "Hot. Tropic.";}
-                else if(roll <= -3){ MWOrbit -=1; tradeCodes.push("Tr"); climate = "Hot. Tropic.";}
-                else if(roll <= 2){ MWOrbit = stars.primary.HZOrbit; climate = "Temperate."; }
-                else if(roll <= 5){ MWOrbit += 1; tradeCodes.push("Tu"); climate = "Cold. Tundra.";}
-                else if(roll >= 6){ MWOrbit += 2; tradeCodes.push("Fr"); climate = "Frozen.";}
                 var bases = [];
                 roll = d6(2); // roll for starport
                 var starport;
                 if(roll <= 4){
                     uwp = starport = "A";
-                    if(d6(2)<=6){ bases.push("Naval");}
-                    if(d6(2)<=4){ bases.push("Scout");}
+                    if(d6(2)<=6){ bases.push("Naval Depot");}
+                    if(d6(2)<=4){ bases.push("Way Station");}
                 }
                 else if(roll <= 6){
                     uwp = starport = "B";
@@ -615,7 +661,123 @@
                         MWPrimary = "Planet";
                     }
                 }
-                return {uwp:uwp,bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts, mainworld:{size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport},tradeCodes:tradeCodes};
+
+                
+                roll = d6()-d6(); // roll for mainworld orbit
+                
+                var MWOrbit = stars.primary.HZOrbit; var climate = "";
+                if(stars.primary.type === "M"){roll += 2;}
+                else if(stars.primary.type === "O" || stars.primary.type === "B"){ roll -= 2;}
+
+                if(roll<=-6){ 
+                    MWOrbit -= 2; tradeCodes.push("Tr"); climate = "Hot. Tropic.";
+                }
+                else if(roll <= -3){ 
+                    MWOrbit -=1; 
+                    if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                        tradeCodes.push("Tr"); climate = "Tropic.";
+                    }else{
+                        tradeCodes.push("Ho"); climate = "Hot.";
+                    }
+                }
+                else if(roll <= 2){ MWOrbit = stars.primary.HZOrbit; climate = "Temperate."; }
+                else if(roll <= 5){ 
+                    MWOrbit += 1; 
+                    if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                        tradeCodes.push("Tu"); climate = "Tundra.";
+                    }else{
+                        tradeCodes.push("Co"); climate = "Cold.";
+                    }
+                }
+                else if(roll >= 6){ 
+                    MWOrbit += 2; 
+                    if(size >= 2 && size <= 9){
+                        tradeCodes.push("Fr"); 
+                        climate = "Frozen.";
+                    }
+                }
+                if(MWOrbit <= 1){ tradeCodes.push("Tz");}
+                // trade codes
+                if(size === 0 && atmo === 0 && hydro === 0){ tradeCodes.push("As"); }
+                if(atmo >= 2 && atmo <= 9 && hydro === 0){ tradeCodes.push("De"); }
+                if(atmo >= 10 && atmo <= 12 && hydro >= 1){ tradeCodes.push("Fl"); }
+                if(size >= 6 && size <= 8 && 
+                    (atmo === 5 || atmo === 6 || atmo === 8) &&
+                    (hydro >= 5 && hydro <= 7)
+                ){ 
+                    tradeCodes.push("Ga"); 
+                }
+                if(size >= 3 && 
+                    (atmo === 2 || atmo === 4 || atmo === 7 || atmo === 9 || atmo === 10 || atmo === 11 || atmo === 12) &&
+                    (hydro <= 2)
+                ){
+                    tradeCodes.push("He");
+                }
+                if( atmo <= 1 && hydro >= 1){ tradeCodes.push("Ic"); }
+                if(size >= 10 && hydro === 10 && (
+                    (atmo >= 3 && atmo <=9) || (atmo >= 13)
+                )){ tradeCodes.push("Oc");}
+                if(size <= 9 && hydro === 10 && (
+                    (atmo >= 3 && atmo <=9) || (atmo >= 13)
+                )){ tradeCodes.push("Wa");}
+                if(atmo === 0){tradeCodes.push("Va");}
+                if(MWType === "Far Satellite"){ tradeCodes.push("Sa"); }
+                if(MWType === "Close Satellite"){ tradeCodes.push("Lk"); }
+                if(pop === 0){
+                    tradeCodes.push("Ba");
+                    if(tech > 0){ tradeCodes.push("Di");}
+                }
+                else if(pop <= 3){
+                    tradeCodes.push("Lo");
+                }else if(pop <= 6){
+                    tradeCodes.push("Ni");
+                }else if(pop === 8){
+                    tradeCodes.push("Ph");
+                }else if(pop >= 9){
+                    tradeCodes.push("Hi");
+                }
+                if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop === 4 || pop === 8)){ tradeCodes.push("Pa"); }
+                if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop >= 5 || pop <= 7)){ tradeCodes.push("Ag"); }
+                if(atmo <= 3 && hydro <= 3 && pop >= 6){ tradeCodes.push("Na"); }
+                if( (atmo === 2 || atmo === 3 || atmo === 10 || atmo === 11) &&
+                    hydro <= 5 && pop >=3 && pop <= 6 && law >= 6 && law <= 9
+                ){
+                    tradeCodes.push("Px");
+                }
+                if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9) && (pop === 7 || pop === 8)){ tradeCodes.push("Pi");}
+                if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9 || atmo === 10 || atmo === 11 || atmo === 12) 
+                    && (pop >= 9)){ tradeCodes.push("In");
+                }
+                if(atmo >= 2 && atmo <= 5 && hydro <= 3){
+                    tradeCodes.push("Po");
+                }
+                if(atmo === 6 || atmo === 8){
+                    if(pop === 5 || pop === 9){ tradeCodes.push("Pr"); }
+                    else if(pop >= 6 && pop <= 8){ tradeCodes.push("Ri"); }
+                }
+
+
+                var importance = 0, importanceDesc = "";
+                if(starport === "A" || starport === "B"){ importance +=1; }
+                else if(starport === "D" || starport === "E" || starport === "X"){ importance -= 1;}
+                if(tech >= 16){importance += 1;}
+                if(tech >= 10){importance += 1;}
+                if(tech <= 8){importance -= 1;}
+                if(tradeCodes.indexOf("Ag")>=0){ importance += 1;}
+                if(tradeCodes.indexOf("Hi")>=0){ importance += 1;}
+                if(tradeCodes.indexOf("In")>=0){ importance += 1;}
+                if(tradeCodes.indexOf("Ri")>=0){ importance += 1;}
+                if(pop <= 6){ importance -=1;}
+                if(bases.indexOf("Naval") >= 0 && bases.indexOf("Scout") >= 0){ importance += 1;}
+                if(bases.indexOf("Way Station") >= 0){ importance += 1;}
+                var isImportant = importance >= 4;
+                var isUnimportant = importance <= 0;
+                if(importance <= -2){ importanceDesc = "Very Unimportant"; }
+                else if(importance <= 0){ importanceDesc = "Unimportant"; }
+                else if(importance <= 3){ importanceDesc = "Ordinary"; }
+                else if(importance <= 4){ importanceDesc = "Important"; }
+                else if(importance >= 5){ importanceDesc = "Very Important";}
+                return {uwp:uwp,bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:{tradeCodes:tradeCodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport},tradeCodes:tradeCodes};
             }
             function getStar(type, decimal, size){
                 var star = {};
@@ -773,9 +935,33 @@
                 ctx.restore();
                 document.getElementById("data").value = JSON.stringify(_systems);
             }
+            function selectT5TravelCodes(){
+                document.getElementById("slctAmberGovLaw").setAttribute("data-color",document.getElementById("slctAmberGovLaw").value = "Amber");
+                document.getElementById("slctRedGovLaw").setAttribute("data-color",document.getElementById("slctRedGovLaw").value = "Red");
+                document.getElementById("slctAmberGovLawThreshold").setAttribute("data-color",document.getElementById("slctAmberGovLawThreshold").value = 20);
+                document.getElementById("slctRedGovLawThreshold").setAttribute("data-color",document.getElementById("slctRedGovLawThreshold").value = 22);
+                document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "Red");
+           
+                document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Red");
+                document.getElementById("slctAmberZoneAtmo").setAttribute("data-color",document.getElementById("slctAmberZoneAtmo").value= "N/A");
+                document.getElementById("slctAmberZoneLL").setAttribute("data-color",document.getElementById("slctAmberZoneLL").value= "N/A");
+                document.getElementById("slctAmberZone9LL").setAttribute("data-color",document.getElementById("slctAmberZone9LL").value= "N/A");
+                document.getElementById("slctLawLevelThreshold").value= 9;
+                document.getElementById("slctMaxLawLevelThreshold").value = 9;
+                document.getElementById("slctAmberZone0LL").setAttribute("data-color",document.getElementById("slctAmberZone0LL").value= "N/A");
+                document.getElementById("slctAmberZoneGov0").setAttribute("data-color",document.getElementById("slctAmberZoneGov0").value= "N/A");
+                document.getElementById("slctAmberZoneGov7").setAttribute("data-color",document.getElementById("slctAmberZoneGov7").value= "N/A");
+                document.getElementById("slctAmberZoneGov10").setAttribute("data-color",document.getElementById("slctAmberZoneGov10").value= "N/A");
+                document.getElementById("btnApplyTravelCodes").disabled = false;
+                document.getElementById("btnResetTravelCodes").disabled = false;
+            }
             function selectCETravelCodes(){
+                document.getElementById("slctAmberGovLaw").setAttribute("data-color",document.getElementById("slctAmberGovLaw").value = "N/A");
+                document.getElementById("slctRedGovLaw").setAttribute("data-color",document.getElementById("slctRedGovLaw").value = "N/A");
+                document.getElementById("slctAmberGovLawThreshold").setAttribute("data-color",document.getElementById("slctAmberGovLawThreshold").value = 20);
+                document.getElementById("slctRedGovLawThreshold").setAttribute("data-color",document.getElementById("slctRedGovLawThreshold").value = 22);
                 document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "N/A");
-                document.getElementById("slctAmberZoneX").setAttribute("data-color",document.getElementById("slctAmberZoneX").value = "N/A");
+                
                 document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Amber");
                 document.getElementById("slctAmberZoneAtmo").setAttribute("data-color",document.getElementById("slctAmberZoneAtmo").value= "Amber");
                 document.getElementById("slctAmberZoneLL").setAttribute("data-color",document.getElementById("slctAmberZoneLL").value= "N/A");
@@ -790,11 +976,15 @@
                 document.getElementById("btnResetTravelCodes").disabled = false;
             }
             function resetTravelCodes(){
+                document.getElementById("slctAmberGovLaw").setAttribute("data-color",document.getElementById("slctAmberGovLaw").value = "N/A");
+                document.getElementById("slctRedGovLaw").setAttribute("data-color",document.getElementById("slctRedGovLaw").value = "Amber");
+                document.getElementById("slctAmberGovLawThreshold").setAttribute("data-color",document.getElementById("slctAmberGovLawThreshold").value = 20);
+                document.getElementById("slctRedGovLawThreshold").setAttribute("data-color",document.getElementById("slctRedGovLawThreshold").value = 22);
                 document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "Red");
-                document.getElementById("slctAmberZoneX").setAttribute("data-color",document.getElementById("slctAmberZoneX").value = "N/A");
+               
                 document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Amber");
                 document.getElementById("slctAmberZoneAtmo").setAttribute("data-color",document.getElementById("slctAmberZoneAtmo").value= "N/A");
-                document.getElementById("slctAmberZoneLL").setAttribute("data-color",document.getElementById("slctAmberZoneLL").value= "Amber");
+                document.getElementById("slctAmberZoneLL").setAttribute("data-color",document.getElementById("slctAmberZoneLL").value= "N/A");
                 document.getElementById("slctAmberZone9LL").setAttribute("data-color",document.getElementById("slctAmberZone9LL").value= "N/A");
                 document.getElementById("slctLawLevelThreshold").value= 9;
                 document.getElementById("slctMaxLawLevelThreshold").value = 9;
@@ -806,8 +996,11 @@
                 document.getElementById("btnResetTravelCodes").disabled = true;
             }
             function applyTravelCodes(mapContent, highestLawLevel){
+                var RedGovLaw = document.getElementById("slctRedGovLaw").value;
+                var AmberGovLaw = document.getElementById("slctAmberGovLaw").value;
+                var RedGovLawThreshold = document.getElementById("slctRedGovLawThreshold").value;
+                var AmberGovLawThreshold = document.getElementById("slctAmberGovLawThreshold").value;
                 var RedZoneX = document.getElementById("slctRedZoneX").value;
-                var AmberZoneX = document.getElementById("slctAmberZoneX").value;
                 var AmberZoneBa = document.getElementById("slctAmberZoneBa").value;
                 var AmberZoneAtmo = document.getElementById("slctAmberZoneAtmo").value;
                 var AmberZoneLL = document.getElementById("slctAmberZoneLL").value;
@@ -894,14 +1087,6 @@
                                     mapContent[i].system.travelCodeNotes += "Ruled by charismatic dictatorship.  ";
                                 }
                             }
-                            if(AmberZoneX !== "N/A" && mapContent[i].system.mainworld.starport.toUpperCase() === "X"){ // amber no starport
-                                if(AmberZoneX === "Red"){
-                                    mapContent[i].system.isRed = true; 
-                                }else{
-                                    mapContent[i].system.isAmber = true; 
-                                }
-                                mapContent[i].system.travelCodeNotes += "No established starport.  ";
-                            }
                             if(RedZoneX !== "N/A" && mapContent[i].system.mainworld.starport.toUpperCase() === "X"){ // red no starport
                                 if(RedZoneX === "Red"){
                                     mapContent[i].system.isRed = true; 
@@ -909,6 +1094,28 @@
                                     mapContent[i].system.isAmber = true; 
                                 }
                                 mapContent[i].system.travelCodeNotes += "Population under interdiction.  ";
+                            }
+                            if(RedGovLaw !== "N/A"){
+                                if(mapContent[i].system.mainworld.gov + mapContent[i].system.mainworld.law > RedGovLawThreshold){
+                                    if(RedGovLaw === "Red"){
+                                        mapContent[i].system.isRed = true; 
+                                    }else{
+                                        mapContent[i].system.isAmber = true; 
+                                    }
+                                    mapContent[i].system.travelCodeNotes += "Oppressive government.  ";
+                                }
+                                
+                            }
+                            if(AmberGovLaw !== "N/A"){
+                                if(mapContent[i].system.mainworld.gov + mapContent[i].system.mainworld.law > AmberGovLawThreshold){
+                                    if(AmberGovLaw === "Red"){
+                                        mapContent[i].system.isRed = true; 
+                                    }else{
+                                        mapContent[i].system.isAmber = true; 
+                                    }
+                                    mapContent[i].system.travelCodeNotes += "Oppressive government.  ";
+                                }
+                                
                             }
                         }else{
                             if(AmberZoneBa !== "N/A"){ // amber zone uninhabited
@@ -965,11 +1172,7 @@
                     y2 = y1 + HEX_MATH.diameter;
                 ctx.strokeStyle = HEX_BORDER_COLOR;
                 var oldLineWidth = ctx.lineWidth;
-                if(hex.selected){                    
-                    ctx.lineWidth = 10;
-                }else if(hex.highlighted){
-                    ctx.lineWidth = 5;
-                }
+                
                 ctx.beginPath();
                 ctx.moveTo(x4,y2);
                 hex.vertx = [x4,x2,x3,x2,x1,x0,x1,x4];
@@ -980,7 +1183,7 @@
                 ctx.stroke();
                 ctx.fillStyle = HEX_BACKGROUND_COLOR;           
                 ctx.fill();
-
+                
                 if(containsSystem){
                     if(drawMode >= 0){
                         var heatMapValue = 0;
@@ -1008,6 +1211,7 @@
                             case 5: heatMapValue = hex.system.mainworld.gov; break;
                             case 6: heatMapValue = hex.system.mainworld.law; break;
                             case 7: heatMapValue = hex.system.mainworld.tech; break;
+                            case 8: heatMapValue = hex.system.importance.extension; break;
                         }
                         if(drawMode > 0){
                             var bValue = 200 - 200*((heatMapValue - minValue) / (maxValue - minValue)) >>> 0; 
@@ -1017,7 +1221,41 @@
                         ctx.fillStyle = bgColor;
                         ctx.fill();
                     }
-                    ctx.stroke();
+                    
+                    if(hex.selected || hex.highlighted){
+                        ctx.strokeStyle = HEX_BORDER_COLOR;
+                        if(ctx.strokeStyle.length === 7){
+                            ctx.strokeStyle = ctx.strokeStyle + "80";
+                        }
+                        var inc = HEX_SIZE / 6 >>> 0;
+                        if(hex.selected){                    
+                            ctx.lineWidth = inc;
+                        }else if(hex.highlighted){
+                            ctx.lineWidth = inc/2;
+                        }
+                        var tx1 = x1 + inc;
+                        var tx2 = x2 - inc;
+                        var tx0 = x0 + inc;
+                        var tx3 = x3 - inc;
+                        var ty0 = y0;
+                        var ty2 = y2;
+                        var vertx = [tx2,tx3,tx2,];//tx1,tx0,tx1];
+                        var verty = [ty2,y1,ty0,];//ty0,y1,ty2];
+                        ctx.moveTo(tx2, ty2);
+                        ctx.beginPath();
+                        for(var i = 0; i < vertx.length; i++){
+                            ctx.lineTo(vertx[i], verty[i]);
+                        }
+                        ctx.stroke();
+                        var vertx = [tx1,tx0,tx1];
+                        var verty = [ty0,y1,ty2];
+                        ctx.moveTo(tx1, ty0);
+                        ctx.beginPath();
+                        for(var i = 0; i < vertx.length; i++){
+                            ctx.lineTo(vertx[i], verty[i]);
+                        }
+                        ctx.stroke();
+                    }
                     var zoneRadius = fontSize*5;
                     if(options.travelCodes && (hex.system.isRed || hex.system.isAmber)){
 
@@ -1040,6 +1278,7 @@
 
                     var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var name = hex.system.name;
+                    if(hex.system.importance.isImportant){ name = name.toUpperCase();}
                     var maxChars = 10;
                     var lines = [];
                     if(ctx.measureText(name).width > maxWidth){
@@ -1052,7 +1291,7 @@
                             }else{
                                 if(lineSoFar.length > 0){lines.push(lineSoFar);}
                                 if(ctx.measureText(words[i]).width > maxWidth){
-                                    var mid = words[i].length/2>>0
+                                    var mid = words[i].length/2 >> 0
                                     lines.push(words[i].substring(mid))
                                     lineSoFar = words[i].substring(0,mid)+"-";
                                 }else{
@@ -1150,6 +1389,43 @@
                     }
                     
                 }
+                else{
+                    if(hex.selected || hex.highlighted){
+                        ctx.strokeStyle = HEX_BORDER_COLOR;
+                        if(ctx.strokeStyle.length === 7){
+                            ctx.strokeStyle = ctx.strokeStyle + "80";
+                        }
+                        var inc = HEX_SIZE / 6 >>> 0;
+                        if(hex.selected){                    
+                            ctx.lineWidth = inc;
+                        }else if(hex.highlighted){
+                            ctx.lineWidth = inc/2;
+                        }
+                        var tx1 = x1 + inc;
+                        var tx2 = x2 - inc;
+                        var tx0 = x0 + inc;
+                        var tx3 = x3 - inc;
+                        var ty0 = y0;
+                        var ty2 = y2;
+                        var vertx = [tx2,tx3,tx2,];//tx1,tx0,tx1];
+                        var verty = [ty2,y1,ty0,];//ty0,y1,ty2];
+                        ctx.moveTo(tx2, ty2);
+                        ctx.beginPath();
+                        for(var i = 0; i < vertx.length; i++){
+                            ctx.lineTo(vertx[i], verty[i]);
+                        }
+                        ctx.stroke();
+                        var vertx = [tx1,tx0,tx1];
+                        var verty = [ty0,y1,ty2];
+                        ctx.moveTo(tx1, ty0);
+                        ctx.beginPath();
+                        for(var i = 0; i < vertx.length; i++){
+                            ctx.lineTo(vertx[i], verty[i]);
+                        }
+                        ctx.stroke();
+                    }
+                }
+                
                 ctx.lineWidth = oldLineWidth;
                 return hex;
             }
@@ -1167,8 +1443,27 @@
                         ctx.fill();
                         break;
                     case "Naval":
-                    var scale = fontSize/2;
+                        var scale = fontSize/2;
                         drawStar(hexX - scale*5, hexY - scale*5, 5, scale*0.7, scale*1.7);
+                        break;
+                    case "Naval Depot":
+                        var scale = fontSize/2;
+                        strokeStar(hexX - scale*5, hexY - scale*5, 5, scale*0.7, scale*1.7);
+                        break;
+                    case "Way Station":
+                    var scale = fontSize/2;
+                        ctx.beginPath();
+                        ctx.fillStyle = TEXT_COLOR;
+                        ctx.moveTo(hexX - scale*8, hexY + scale*4);
+                        ctx.lineTo(hexX - scale*6, hexY + scale*4);
+                        ctx.lineTo(hexX - scale*7, hexY + scale*2);
+                        ctx.lineTo(hexX - scale*8, hexY + scale*4);
+                        ctx.closePath();
+                        var oldLineWidth = ctx.lineWidth;
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle =TEXT_COLOR;
+                        ctx.stroke();
+                        ctx.lineWidth = oldLineWidth;
                         break;
                 }
             }
@@ -1197,6 +1492,35 @@
                 ctx.closePath();
                 ctx.fillStyle=TEXT_COLOR;
                 ctx.fill();
+            }
+            function strokeStar(cx, cy, spikes, outerRadius, innerRadius) {
+                var rot = Math.PI / 2 * 3;
+                var x = cx;
+                var y = cy;
+                var step = Math.PI / spikes;
+                ctx.strokeSyle = "#000";
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - outerRadius);
+                rot += step;
+                for (i = 0; i < spikes; i++) {
+                    x = cx + Math.cos(rot) * outerRadius;
+                    y = cy + Math.sin(rot) * outerRadius;
+                    
+                    ctx.lineTo(x, y)
+                    rot += step
+
+                    x = cx + Math.cos(rot) * innerRadius;
+                    y = cy + Math.sin(rot) * innerRadius;
+                    ctx.lineTo(x, y)                    
+                    rot += step
+                }
+                ctx.lineTo(cx + Math.cos(rot) * outerRadius, cy + Math.sin(rot) * outerRadius)
+                ctx.closePath();
+                var oldLineWidth = ctx.lineWidth;
+                ctx.lineWidth = 1;
+                ctx.strokeStyle =TEXT_COLOR;
+                ctx.stroke();
+                ctx.lineWidth = oldLineWidth;
             }
             function updateStyle(){
                 var select = document.getElementById("slctStyle");
