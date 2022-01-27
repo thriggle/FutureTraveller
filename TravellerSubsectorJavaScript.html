@@ -582,7 +582,10 @@
                 uwp += hydro.toString(36);
                 // roll for pop
                 var pop = d6(2)-2;
-                if(pop===0){uwp = "X"+uwp.substring(1); starport = "X"; bases = [];}
+                if(pop===0){
+                    //uwp = "X"+uwp.substring(1); 
+                    //starport = "X"; 
+                    bases = [];}
                 if(pop === 10){ pop = d6(2)+3;}
                 uwp += pop.toString(36);
                 // roll for gov
@@ -618,7 +621,7 @@
 
                 if(gov === 0 || gov === 5){ tech += 1;}
                 else if(gov === 13){ tech -= 2;}
-                if(pop === 0 || tech < 0){tech = 0;}
+                if(tech < 0){tech = 0;}
                 
                 uwp += "-"+tech.toString(36);
                 // roll to see if the world is a satellite
@@ -737,7 +740,7 @@
                     tradeCodes.push("Hi");
                 }
                 if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop === 4 || pop === 8)){ tradeCodes.push("Pa"); }
-                if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop >= 5 || pop <= 7)){ tradeCodes.push("Ag"); }
+                if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop >= 5 && pop <= 7)){ tradeCodes.push("Ag"); }
                 if(atmo <= 3 && hydro <= 3 && pop >= 6){ tradeCodes.push("Na"); }
                 if( (atmo === 2 || atmo === 3 || atmo === 10 || atmo === 11) &&
                     hydro <= 5 && pop >=3 && pop <= 6 && law >= 6 && law <= 9
