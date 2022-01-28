@@ -801,7 +801,7 @@
                 if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop >= 5 && pop <= 7)){ tradeCodes.push("Ag"); }
                 if(atmo <= 3 && hydro <= 3 && pop >= 6){ tradeCodes.push("Na"); }
                 if( (atmo === 2 || atmo === 3 || atmo === 10 || atmo === 11) &&
-                    hydro <= 5 && pop >=3 && pop <= 6 && law >= 6 && law <= 9
+                    hydro <= 5 && pop >=3 && pop <= 6 && law >= 6 && law <= 9 && gov === 6
                 ){
                     tradeCodes.push("Px");
                 }
@@ -816,7 +816,7 @@
                     if(pop === 5 || pop === 9){ tradeCodes.push("Pr"); }
                     else if(pop >= 6 && pop <= 8){ tradeCodes.push("Ri"); }
                 }
-
+                if(pop >= 5 && pop <= 10 && gov === 6 && law <= 3){ tradeCodes.push("Cy");}
                 // throw in the Mongoose tech codes for good measure
                 if(tech >= 12){ tradeCodes.push("Ht");}
                 else if(tech <= 5 ){ tradeCodes.push("Lt");}
@@ -1469,15 +1469,18 @@
                     ctx.font = ""+(fontSize*1.2)+"pt "+FONT;
                     ctx.fillText(hex.system.uwp[0],x4,y0 + (y1-y0)/2);
                     ctx.font = oldFont;
-
+                    
                     if(hex.selected || hex.highlighted){
+                        ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
+                        var backStyle = ctx.fillStyle;
+                        //backStyle += "C0";
                         // write UWP
                         ctx.beginPath();
                         var oldGlobalCompositeOperation = ctx.globalCompositeOperation;
                         ctx.globalCompositeOperation = 'source-over';
                         var uwp = hex.system.uwp.toUpperCase();
                         var uwpSize = ctx.measureText(uwp);
-                        ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
+                        ctx.fillStyle = backStyle;
                         var fontHeight = uwpSize.fontBoundingBoxAscent + uwpSize.fontBoundingBoxDescent;
                         ctx.fillRect(x4-uwpSize.width/2,y1-fontHeight/2-2,uwpSize.width,fontSize+2);
                         ctx.fillStyle = TEXT_COLOR; 
@@ -1496,7 +1499,7 @@
                         var blockHeight = y1 + fontHeight/2 - 2;
                         for(var i = lines.length-1; i >= 0; i--){ 
                             var lineWidth = ctx.measureText(lines[i]).width;
-                            ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
+                            ctx.fillStyle = backStyle;
                             ctx.fillRect(x4-lineWidth/2,blockHeight,lineWidth,fontSize+2);
                             ctx.fillStyle = TEXT_COLOR; 
                             ctx.fillText(lines[i], x4, height, maxWidth);
