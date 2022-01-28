@@ -129,11 +129,11 @@
                     </select></label>
                 </fieldset>
                 <fieldset class="collapsed travelcodepickers">
-                    <legend>Travel Codes</legend>
+                    <legend>Travel Zones</legend>
                     <input type="button" value="Remove travel codes" id="btnClearTravelCodes" />
                     <fieldset>
                         <legend>Automatic Assignment</legend>
-                        <input type="button" disabled=true value="Assign travel codes" id="btnApplyTravelCodes" />
+                        <input type="button" disabled=true value="Apply travel zones" id="btnApplyTravelCodes" />
                         <input type="button" disabled=true value="Thriggle Defaults" id="btnResetTravelCodes">
                         <input type="button" value="CE Defaults" id="btnCETravelCodes">
                         <input type="button" value="T5 Defaults" id="btnT5TravelCodes">
@@ -629,7 +629,7 @@
                 if(starport === "A"){tech+=6;}
                 else if(starport === "B"){tech+=4;}
                 else if(starport === "C"){tech+=2;}
-                else if(starport === "X"){tech -= 4;}
+                else if(starport === "X"){if(tech>=5){tech -= 4;}}
 
                 if(pop > 0){
                     if(size <= 1 ){tech += 2;}
@@ -652,9 +652,9 @@
                     tech -= reduction;
                     if(reduction > 0){
                         if(tech <= 8 && starport === "A"){ starport = "B"; uwp = "B"+uwp.substring(1);}
-                        if(tech <= 7 && starport === "B"){ starport = "C"; uwp = "C"+uwp.substring(1);}
-                        if(tech <= 3 && starport === "C"){ starport = "D"; uwp = "D"+uwp.substring(1);}
-                        if(tech === 1 && starport === "D"){ starport = "E"; uwp = "E"+uwp.substring(1);}
+                        else if(tech <= 7 && starport === "B"){ starport = "C"; uwp = "C"+uwp.substring(1);}
+                        else if(tech <= 3 && starport === "C"){ starport = "D"; uwp = "D"+uwp.substring(1);}
+                        else if(tech === 1 && starport === "D"){ starport = "E"; uwp = "E"+uwp.substring(1);}
                     }
                     if(tech > 0){
                         // This will be a dieback world. Give them the tech bonuses for planet features.
