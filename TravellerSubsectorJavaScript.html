@@ -117,7 +117,8 @@
                     <label for="slctGGFrequency">Gas Giant Occurrence: <select name="slctGGFrequency" id="slctGGFrequency">
                         <option selected=selected value=8>8- on 2D (T5) 72%</option>
                         <option value=9>9- on 2D (CE) 83%</option>
-                    </select></label>
+                    </select></label><br/>
+                    <label for="chkPermitDieback" title="Dieback worlds have 0 population but TL>0"><input type="checkbox" name="chkPermitDieback" id="chkPermitDieback" /> Permit Dieback Worlds</label>
                 </fieldset>
                 <fieldset class="collapsed travelcodepickers">
                     <legend>Travel Codes</legend>
@@ -130,25 +131,39 @@
                         <input type="button" value="T5 Defaults" id="btnT5TravelCodes">
                         <br/>
                         <fieldset class="collapsed">
-                            <legend>Starport Presence</legend>
-                            <label for="slctRedZoneX"><select data-color="Red" name="slctRedZoneX" checked="checked" id="slctRedZoneX">
+                            <legend>Habitation</legend>
+                            <label for="slctRedZoneX" title="Pop>0 but Starport=X"><select data-color="Red" name="slctRedZoneX"  id="slctRedZoneX">
                                 <option value="N/A">N/A</option>
                                 <option value="Amber">Amber</option>
                                 <option selected="selected" value="Red">Red</option>
-                            </select> Inhabited Worlds w/out Starport</label><br/>
-                            <label for="slctAmberZoneBa"><select data-color="Amber" name="slctAmberZoneBa" checked="checked" id="slctAmberZoneBa">
+                            </select> Inhabited w/out Starport</label><br/>
+                            <label for="slctAmberZoneBa" title="Barren worlds have 0 population and TL=0"><select data-color="Amber" name="slctAmberZoneBa"  id="slctAmberZoneBa">
                                 <option value="N/A">N/A</option>
                                 <option selected="selected" value="Amber">Amber</option>
                                 <option value="Red">Red</option>
                             </select> Barren Worlds </label><br/>
-                        </fieldset>
-                        <fieldset class="collapsed">
-                            <legend>Atmosphere</legend>
-                            <label for="slctAmberZoneAtmo"><select data-color="N/A" name="slctAmberZoneAtmo" id="slctAmberZoneAtmo">
+                            <label for="slctAmberZoneBaX" title="Pop=0 and Starport=X"><select data-color="N/A" name="slctAmberZoneBaX"  id="slctAmberZoneBaX">
                                 <option value="N/A">N/A</option>
                                 <option value="Amber">Amber</option>
                                 <option value="Red">Red</option>
-                            </select> Dangerous Atmospheres</label><br/>
+                            </select> Uninhabited w/out Starport</label><br/>
+                            <label for="slctAmberDieback" title="Dieback worlds have 0 population but TL>0"><select data-color="Red" name="slctAmberDieback" id="slctAmberDieback">
+                                <option value="N/A">N/A</option>
+                                <option value="Amber">Amber</option>
+                                <option selected="selected" value="Red">Red</option>
+                            </select> Dieback Worlds </label><br/>
+                        </fieldset>
+                        <fieldset class="collapsed">
+                            <legend>Atmosphere</legend>
+                            <label for="slctAmberZoneAtmo"><select data-color="Amber" name="slctAmberZoneAtmo" id="slctAmberZoneAtmo">
+                                <option value="N/A">N/A</option>
+                                <option selected="selected" value="Amber">Amber</option>
+                                <option value="Red">Red</option>
+                            </select> Dangerous Atmospheres (<select id="slctDangerousAtmoThreshold">
+                                <option value=10>10</option>
+                                <option value=11>11</option>
+                                <option selected="selected" value=12>12</option>
+                            </select>+)</label><br/>
                         </fieldset>
                         <fieldset class="collapsed">
                             <legend>Law Level</legend>
@@ -418,15 +433,12 @@
                         document.getElementById("btnResetTravelCodes").disabled = false;
                     });
                 }
-                document.getElementById("slctAmberGovLaw").addEventListener("change",function(){
-                    document.getElementById("btnApplyTravelCodes").disabled = false; 
-                    document.getElementById("btnResetTravelCodes").disabled = false;
-                });
-                document.getElementById("slctRedGovLaw").addEventListener("change",function(){
-                    document.getElementById("btnApplyTravelCodes").disabled = false; 
-                    document.getElementById("btnResetTravelCodes").disabled = false;
-                });
+
                 document.getElementById("slctAmberGovLawThreshold").addEventListener("change",function(){
+                    document.getElementById("btnApplyTravelCodes").disabled = false; 
+                    document.getElementById("btnResetTravelCodes").disabled = false;
+                });
+                document.getElementById("slctDangerousAtmoThreshold").addEventListener("change",function(){
                     document.getElementById("btnApplyTravelCodes").disabled = false; 
                     document.getElementById("btnResetTravelCodes").disabled = false;
                 });
@@ -446,6 +458,7 @@
             function populateSubsector(){
                 var ggFrequency = document.getElementById("slctGGFrequency").value;
                 var density = document.getElementById("slctStellarDensity").value;
+                var permitDieback = document.getElementById("chkPermitDieback").checked;
                 var d = 1, target = 3, systems = {};
                 switch(density){
                     case "Extra Galactic": d = 3, target = 3; break;
@@ -468,11 +481,12 @@
                             }
                             var tcoord = XYCoordToTCoord(x,y);
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
-                            var details = generateSystemDetails(addCaps(name),ggFrequency);
+                            var details = generateSystemDetails(addCaps(name),ggFrequency,permitDieback);
                             for(var i = 0, len = mins.length; i < len; i++){
                                 var currValue;
                                 if(i === 8){
                                     currValue = details.importance.extension;
+                                    //if(currValue > currMax){ maxes[i] = currValue;}
                                 }else{
                                     currValue = details.mainworld[labels[i]];
                                     var currMin = mins[i], currMax = maxes[i];
@@ -500,7 +514,7 @@
                 applyTravelCodes(mapContent);
                 drawMap(mapContent);                
             }
-            function generateSystemDetails(name, gasGiantFrequency){
+            function generateSystemDetails(name, gasGiantFrequency, permitDieback){
                 var isAsteroidBelt = d6(2) == 2;
                 var planetoidBelts = Math.max(d6()-3,0);
                 var gg = d6(2) <= gasGiantFrequency ? Math.max(d6(2)/2>>0-2,1) : 0;
@@ -586,7 +600,8 @@
                 if(pop===0){
                     //uwp = "X"+uwp.substring(1); 
                     //starport = "X"; 
-                    bases = [];}
+                    bases = [];
+                }
                 if(pop === 10){ pop = d6(2)+3;}
                 uwp += pop.toString(36);
                 // roll for gov
@@ -619,16 +634,31 @@
                 if(pop <= 5){ tech += 1; }
                 else if(pop === 9){ tech += 2;}
                 else if(pop >= 10){ tech += 4;}
+                
 
                 if(gov === 0 || gov === 5){ tech += 1;}
                 else if(gov === 13){ tech -= 2;}
                 if(tech < 0){tech = 0;}
-                
+                if(pop === 0){ 
+                    if(!permitDieback){ 
+                        tech = 0;
+                        if(starport !== "E"){
+                            starport = "X";
+                            uwp = "X" + uwp.substring(1);
+                        }
+                    }else if(tech===0){ // barren worlds require starport E or X
+                        if(starport !== "E"){
+                            starport = "X";
+                            uwp = "X" + uwp.substring(1);
+                        }
+                    }
+                }
+
                 uwp += "-"+tech.toString(36);
                 // roll to see if the world is a satellite
                 roll = d6()-d6();
                 var MWType, MWPrimary, MWOrbitAroundPrimary;
-                if(roll <=4){ 
+                if(roll <=-4){ 
                     MWType = "Far Satellite";
                     roll = d6() - d6();
                     if(roll === -5){ MWOrbitAroundPrimary = "Oh"; }
@@ -643,7 +673,7 @@
                     else if(roll === 4){ MWOrbitAroundPrimary = "Ex"; }
                     else if(roll === 5){ MWOrbitAroundPrimary = "Wye"; }
                 }
-                else if(roll <= 3){ 
+                else if(roll <= -3){ 
                     MWType = "Close Satellite";
                     if(roll === -5){ MWOrbitAroundPrimary = "Bee"; }
                     else if(roll === -4){ MWOrbitAroundPrimary = "Cee"; }
@@ -700,7 +730,7 @@
                         climate = "Frozen.";
                     }
                 }
-                if(MWOrbit <= 1){ tradeCodes.push("Tz");}
+                if(MWOrbit <= 1){ tradeCodes.push("Tz"); }
                 // trade codes
                 if(size === 0 && atmo === 0 && hydro === 0){ tradeCodes.push("As"); }
                 if(atmo >= 2 && atmo <= 9 && hydro === 0){ tradeCodes.push("De"); }
@@ -726,7 +756,7 @@
                 )){ tradeCodes.push("Wa");}
                 if(atmo === 0){tradeCodes.push("Va");}
                 if(MWType === "Far Satellite"){ tradeCodes.push("Sa"); }
-                if(MWType === "Close Satellite"){ tradeCodes.push("Lk"); }
+                else if(MWType === "Close Satellite"){ tradeCodes.push("Lk"); }
                 if(pop === 0){
                     tradeCodes.push("Ba");
                     if(tech > 0){ tradeCodes.push("Di");}
@@ -773,6 +803,7 @@
                 if(tradeCodes.indexOf("Ri")>=0){ importance += 1;}
                 if(pop <= 6){ importance -=1;}
                 if(bases.indexOf("Naval") >= 0 && bases.indexOf("Scout") >= 0){ importance += 1;}
+                if(bases.indexOf("Naval Depot") >= 0 && bases.indexOf("Way Station") >= 0){ importance += 1;}
                 if(bases.indexOf("Way Station") >= 0){ importance += 1;}
                 var isImportant = importance >= 4;
                 var isUnimportant = importance <= 0;
@@ -781,6 +812,7 @@
                 else if(importance <= 3){ importanceDesc = "Ordinary"; }
                 else if(importance <= 4){ importanceDesc = "Important"; }
                 else if(importance >= 5){ importanceDesc = "Very Important";}
+                tradeCodes.sort();
                 return {uwp:uwp,bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:{tradeCodes:tradeCodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport},tradeCodes:tradeCodes};
             }
             function getStar(type, decimal, size){
@@ -944,9 +976,12 @@
                 document.getElementById("slctRedGovLaw").setAttribute("data-color",document.getElementById("slctRedGovLaw").value = "Red");
                 document.getElementById("slctAmberGovLawThreshold").setAttribute("data-color",document.getElementById("slctAmberGovLawThreshold").value = 20);
                 document.getElementById("slctRedGovLawThreshold").setAttribute("data-color",document.getElementById("slctRedGovLawThreshold").value = 22);
+                //document.getElementById("slctDangerousAtmoThreshold").setAttribute("data-color",document.getElementById("slctDangerousAtmoThreshold").value = 10);
                 document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "Red");
            
-                document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Red");
+                document.getElementById("slctAmberDieback").setAttribute("data-color",document.getElementById("slctAmberDieback").value= "N/A");
+                document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Amber");
+                document.getElementById("slctAmberZoneBaX").setAttribute("data-color",document.getElementById("slctAmberZoneBaX").value= "Red");
                 document.getElementById("slctAmberZoneAtmo").setAttribute("data-color",document.getElementById("slctAmberZoneAtmo").value= "N/A");
                 document.getElementById("slctAmberZoneLL").setAttribute("data-color",document.getElementById("slctAmberZoneLL").value= "N/A");
                 document.getElementById("slctAmberZone9LL").setAttribute("data-color",document.getElementById("slctAmberZone9LL").value= "N/A");
@@ -964,9 +999,11 @@
                 document.getElementById("slctRedGovLaw").setAttribute("data-color",document.getElementById("slctRedGovLaw").value = "N/A");
                 document.getElementById("slctAmberGovLawThreshold").setAttribute("data-color",document.getElementById("slctAmberGovLawThreshold").value = 20);
                 document.getElementById("slctRedGovLawThreshold").setAttribute("data-color",document.getElementById("slctRedGovLawThreshold").value = 22);
+                document.getElementById("slctDangerousAtmoThreshold").setAttribute("data-color",document.getElementById("slctDangerousAtmoThreshold").value = 10);
                 document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "N/A");
-                
+                document.getElementById("slctAmberDieback").setAttribute("data-color",document.getElementById("slctAmberDieback").value= "N/A");
                 document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Amber");
+                document.getElementById("slctAmberZoneBaX").setAttribute("data-color",document.getElementById("slctAmberZoneBaX").value= "N/A");
                 document.getElementById("slctAmberZoneAtmo").setAttribute("data-color",document.getElementById("slctAmberZoneAtmo").value= "Amber");
                 document.getElementById("slctAmberZoneLL").setAttribute("data-color",document.getElementById("slctAmberZoneLL").value= "N/A");
                 document.getElementById("slctAmberZone9LL").setAttribute("data-color",document.getElementById("slctAmberZone9LL").value= "Amber");
@@ -984,10 +1021,12 @@
                 document.getElementById("slctRedGovLaw").setAttribute("data-color",document.getElementById("slctRedGovLaw").value = "Amber");
                 document.getElementById("slctAmberGovLawThreshold").setAttribute("data-color",document.getElementById("slctAmberGovLawThreshold").value = 20);
                 document.getElementById("slctRedGovLawThreshold").setAttribute("data-color",document.getElementById("slctRedGovLawThreshold").value = 22);
+                document.getElementById("slctDangerousAtmoThreshold").setAttribute("data-color",document.getElementById("slctDangerousAtmoThreshold").value = 12);
                 document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "Red");
-               
+                document.getElementById("slctAmberDieback").setAttribute("data-color",document.getElementById("slctAmberDieback").value= "Red");
                 document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Amber");
-                document.getElementById("slctAmberZoneAtmo").setAttribute("data-color",document.getElementById("slctAmberZoneAtmo").value= "N/A");
+                document.getElementById("slctAmberZoneBaX").setAttribute("data-color",document.getElementById("slctAmberZoneBaX").value= "N/A");
+                document.getElementById("slctAmberZoneAtmo").setAttribute("data-color",document.getElementById("slctAmberZoneAtmo").value= "Amber");
                 document.getElementById("slctAmberZoneLL").setAttribute("data-color",document.getElementById("slctAmberZoneLL").value= "N/A");
                 document.getElementById("slctAmberZone9LL").setAttribute("data-color",document.getElementById("slctAmberZone9LL").value= "N/A");
                 document.getElementById("slctLawLevelThreshold").value= 9;
@@ -1001,11 +1040,14 @@
             }
             function applyTravelCodes(mapContent, highestLawLevel){
                 var RedGovLaw = document.getElementById("slctRedGovLaw").value;
+                var AmberDieback = document.getElementById("slctAmberDieback").value;
                 var AmberGovLaw = document.getElementById("slctAmberGovLaw").value;
                 var RedGovLawThreshold = document.getElementById("slctRedGovLawThreshold").value;
+                var DangerousAtmoThreshold = document.getElementById("slctDangerousAtmoThreshold").value;
                 var AmberGovLawThreshold = document.getElementById("slctAmberGovLawThreshold").value;
                 var RedZoneX = document.getElementById("slctRedZoneX").value;
                 var AmberZoneBa = document.getElementById("slctAmberZoneBa").value;
+                var AmberZoneBaX = document.getElementById("slctAmberZoneBaX").value;
                 var AmberZoneAtmo = document.getElementById("slctAmberZoneAtmo").value;
                 var AmberZoneLL = document.getElementById("slctAmberZoneLL").value;
                 var AmberZone9LL = document.getElementById("slctAmberZone9LL").value;
@@ -1051,16 +1093,7 @@
                                     mapContent[i].system.travelCodeNotes += "No law level enforced.  ";
                                 }
                             }
-                            if(AmberZoneAtmo !== "N/A"){ // amber 10+ atmo
-                                if(mapContent[i].system.mainworld.atmo >= 10) {
-                                    if(AmberZoneAtmo === "Red"){
-                                        mapContent[i].system.isRed = true; 
-                                    }else{
-                                        mapContent[i].system.isAmber = true; 
-                                    }
-                                    mapContent[i].system.travelCodeNotes += "Dangerous atmosphere.  ";
-                                }
-                            }
+                           
                             if(AmberZoneGov0 !== "N/A"){ // amber ungoverned
                                 if(mapContent[i].system.mainworld.gov === 0) {
                                     if(AmberZoneGov0 === "Red"){
@@ -1122,13 +1155,43 @@
                                 
                             }
                         }else{
-                            if(AmberZoneBa !== "N/A"){ // amber zone uninhabited
+                            if(AmberZoneBa !== "N/A" && mapContent[i].system.mainworld.tech === 0){ // amber zone uninhabited
+                                
                                 if(AmberZoneBa === "Red"){
                                     mapContent[i].system.isRed = true; 
                                 }else{
                                     mapContent[i].system.isAmber = true; 
                                 }
-                                mapContent[i].system.travelCodeNotes += "Uninhabited.  ";
+                                mapContent[i].system.travelCodeNotes += "Barren/Uninhabited.  ";
+                                
+                            }
+                            if(AmberZoneBaX !== "N/A" && mapContent[i].system.starport === "X"){ // amber zone uninhabited
+                                
+                                if(AmberZoneBaX === "Red"){
+                                    mapContent[i].system.isRed = true; 
+                                }else{
+                                    mapContent[i].system.isAmber = true; 
+                                }
+                                mapContent[i].system.travelCodeNotes += "No starport facilities.  ";
+                                
+                            }
+                            if(AmberDieback !== "N/A" && mapContent[i].system.mainworld.tech > 0){
+                                if(AmberDieback === "Red"){
+                                    mapContent[i].system.isRed = true; 
+                                }else{
+                                    mapContent[i].system.isAmber = true; 
+                                }
+                                mapContent[i].system.travelCodeNotes += "Dieback world.  ";
+                            }
+                        }
+                        if(AmberZoneAtmo !== "N/A"){ // amber 10+ atmo
+                            if(mapContent[i].system.mainworld.atmo >= DangerousAtmoThreshold) {
+                                if(AmberZoneAtmo === "Red"){
+                                    mapContent[i].system.isRed = true; 
+                                }else{
+                                    mapContent[i].system.isAmber = true; 
+                                }
+                                mapContent[i].system.travelCodeNotes += "Dangerous atmosphere.  ";
                             }
                         }
                     }
@@ -1389,6 +1452,12 @@
                         ctx.fillRect(x4-uwpSize.width/2,y1-fontHeight/2-2,uwpSize.width,fontSize+2);
                         ctx.fillStyle = TEXT_COLOR; 
                         ctx.fillText(uwp,x4,y1);
+                        var codes = hex.system.mainworld.tradeCodes.join(" ");
+                        var codesSize = ctx.measureText(codes);
+                        ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
+                        ctx.fillRect(x4-codesSize.width/2,y1+fontHeight/2-2,codesSize.width,fontSize+2);
+                        ctx.fillStyle = TEXT_COLOR; 
+                        ctx.fillText(codes,x4,y1+fontHeight);
                         ctx.globalCompositeOperation = oldGlobalCompositeOperation;
                     }
                     
