@@ -118,7 +118,15 @@
                         <option selected=selected value=8>8- on 2D (T5) 72%</option>
                         <option value=9>9- on 2D (CE) 83%</option>
                     </select></label><br/>
-                    <label for="chkPermitDieback" title="Dieback worlds have 0 population but TL>0"><input type="checkbox" name="chkPermitDieback" id="chkPermitDieback" /> Permit Dieback Worlds</label>
+                    <label for="chkPermitDieback" title="Dieback worlds have 0 population but TL>0"><input checked="checked" type="checkbox" name="chkPermitDieback" id="chkPermitDieback" /> Permit Dieback Worlds</label>
+                    <br/><label for="slctDiebackTLPenalty">Uninhabited world TL -<select name="slctDiebackTLPenalty" id="slctDiebackTLPenalty">
+                        <option value=5>5</option>
+                        <option value=4>4</option>
+                        <option value=3>3</option>
+                        <option selected="selected" value=2>2</option>
+                        <option value=1>1</option>
+                        <option value=0>0</option>
+                    </select></label>
                 </fieldset>
                 <fieldset class="collapsed travelcodepickers">
                     <legend>Travel Codes</legend>
@@ -621,32 +629,51 @@
                 if(starport === "A"){tech+=6;}
                 else if(starport === "B"){tech+=4;}
                 else if(starport === "C"){tech+=2;}
+                else if(starport === "X"){tech -= 4;}
 
-                if(size <= 1){tech += 2;}
-                else if(size <= 4){tech += 1;}
+                if(pop > 0){
+                    if(size <= 1 ){tech += 2;}
+                    else if(size <= 4 ){tech += 1;}
 
-                if(atmo <= 3){tech += 1;}
-                else if(atmo >= 10){tech += 1;}
+                    if(atmo <= 3 ){tech += 1;}
+                    else if(atmo >= 10 ){tech += 1;}
 
-                if(hydro === 9){tech += 1;}
-                else if(hydro === 10){tech += 2;}
-                
-                if(pop <= 5){ tech += 1; }
-                else if(pop === 9){ tech += 2;}
-                else if(pop >= 10){ tech += 4;}
-                
-
-                if(gov === 0 || gov === 5){ tech += 1;}
+                    if(hydro === 9 ){tech += 1;}
+                    else if(hydro === 10 ){tech += 2;}
+                    
+                    if(pop <= 5 ){ tech += 1; }
+                    else if(pop === 9){ tech += 2;}
+                    else if(pop >= 10){ tech += 4;}
+                }
+                if((pop > 0 && gov === 0) || gov === 5){ tech += 1;}
                 else if(gov === 13){ tech -= 2;}
+                if(pop === 0){ // reduce tech level on dieback worlds
+                    var reduction = document.getElementById("slctDiebackTLPenalty").value;
+                    tech -= reduction;
+                    if(reduction > 0){
+                        if(tech <= 8 && starport === "A"){ starport = "B"; uwp = "B"+uwp.substring(1);}
+                        if(tech <= 7 && starport === "B"){ starport = "C"; uwp = "C"+uwp.substring(1);}
+                        if(tech <= 3 && starport === "C"){ starport = "D"; uwp = "D"+uwp.substring(1);}
+                        if(tech === 1 && starport === "D"){ starport = "E"; uwp = "E"+uwp.substring(1);}
+                    }
+                    if(tech > 0){
+                        // This will be a dieback world. Give them the tech bonuses for planet features.
+                        if(size <= 1 ){tech += 2;}
+                        else if(size <= 4 ){tech += 1;}
+
+                        if(atmo <= 3 ){tech += 1;}
+                        else if(atmo >= 10 ){tech += 1;}
+
+                        if(hydro === 9 ){tech += 1;}
+                        else if(hydro === 10 ){tech += 2;}
+                    }
+                } 
                 if(tech < 0){tech = 0;}
                 if(pop === 0){ 
                     if(!permitDieback){ 
                         tech = 0;
-                        if(starport !== "E"){
-                            starport = "X";
-                            uwp = "X" + uwp.substring(1);
-                        }
-                    }else if(tech===0){ // barren worlds require starport E or X
+                    }
+                    if(tech===0){ // barren worlds require starport E or X
                         if(starport !== "E"){
                             starport = "X";
                             uwp = "X" + uwp.substring(1);
@@ -790,6 +817,9 @@
                     else if(pop >= 6 && pop <= 8){ tradeCodes.push("Ri"); }
                 }
 
+                // throw in the Mongoose tech codes for good measure
+                if(tech >= 12){ tradeCodes.push("Ht");}
+                else if(tech <= 5 ){ tradeCodes.push("Lt");}
 
                 var importance = 0, importanceDesc = "";
                 if(starport === "A" || starport === "B"){ importance +=1; }
@@ -1346,7 +1376,7 @@
                     var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var name = hex.system.name;
                     if(hex.system.importance.isImportant){ name = name.toUpperCase();}
-                    var maxChars = 10;
+
                     var lines = [];
                     if(ctx.measureText(name).width > maxWidth){
                         var words = name.split(" ");
@@ -1425,10 +1455,10 @@
                     // write text
                     ctx.textAlign = "center";
                     ctx.fillStyle = TEXT_COLOR;                    
-                    var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
+                    maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var height = y2 - lines.length*fontSize;
                     for(var i = lines.length-1; i >= 0; i--){
-                        var altMaxWidth = lines[i].length * fontSize;
+                        
                         ctx.fillText(lines[i], x4, height, maxWidth);
                         height += fontSize+(fontSize/4);
                         maxWidth -= fontSize;
@@ -1452,12 +1482,27 @@
                         ctx.fillRect(x4-uwpSize.width/2,y1-fontHeight/2-2,uwpSize.width,fontSize+2);
                         ctx.fillStyle = TEXT_COLOR; 
                         ctx.fillText(uwp,x4,y1);
+                        // write trade codes
+                        maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                         var codes = hex.system.mainworld.tradeCodes.join(" ");
                         var codesSize = ctx.measureText(codes);
-                        ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
-                        ctx.fillRect(x4-codesSize.width/2,y1+fontHeight/2-2,codesSize.width,fontSize+2);
-                        ctx.fillStyle = TEXT_COLOR; 
-                        ctx.fillText(codes,x4,y1+fontHeight);
+                        lines = [codes];
+                        if(codesSize.width > maxWidth){
+                            var line1 = hex.system.mainworld.tradeCodes.slice(0,hex.system.mainworld.tradeCodes.length/2>>0).join(" ");
+                            var line2 = hex.system.mainworld.tradeCodes.slice(hex.system.mainworld.tradeCodes.length/2>>0).join(" ");
+                            lines = [line1, line2]
+                        }
+                        height = y1 + fontHeight;
+                        var blockHeight = y1 + fontHeight/2 - 2;
+                        for(var i = lines.length-1; i >= 0; i--){ 
+                            var lineWidth = ctx.measureText(lines[i]).width;
+                            ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
+                            ctx.fillRect(x4-lineWidth/2,blockHeight,lineWidth,fontSize+2);
+                            ctx.fillStyle = TEXT_COLOR; 
+                            ctx.fillText(lines[i], x4, height, maxWidth);
+                            height += fontSize+(fontSize/3);
+                            blockHeight += fontSize+(fontSize/3);
+                        }
                         ctx.globalCompositeOperation = oldGlobalCompositeOperation;
                     }
                     
