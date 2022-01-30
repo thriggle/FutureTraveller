@@ -565,8 +565,16 @@
                 var starport;
                 if(roll <= 4){
                     uwp = starport = "A";
-                    if(d6(2)<=6){ bases.push("Naval Depot");}
-                    if(d6(2)<=4){ bases.push("Way Station");}
+                    if(d6(2)<=6){ 
+                        if(d6(2)<=4){
+                            bases.push("Naval Depot");
+                        }else{ bases.push("Naval");}
+                    }
+                    if(d6(2)<=4){ 
+                        if(d6(2)<=7){
+                            bases.push("Way Station");
+                        }else{ bases.push("Scout");}
+                    }
                 }
                 else if(roll <= 6){
                     uwp = starport = "B";
@@ -832,8 +840,7 @@
                 if(tradeCodes.indexOf("In")>=0){ importance += 1;}
                 if(tradeCodes.indexOf("Ri")>=0){ importance += 1;}
                 if(pop <= 6){ importance -=1;}
-                if(bases.indexOf("Naval") >= 0 && bases.indexOf("Scout") >= 0){ importance += 1;}
-                if(bases.indexOf("Naval Depot") >= 0 && bases.indexOf("Way Station") >= 0){ importance += 1;}
+                if((bases.indexOf("Naval") >= 0 || bases.indexOf("Naval Depot") >=0) && (bases.indexOf("Scout") || bases.indexOf("Way Station") >= 0) >= 0){ importance += 1;}
                 if(bases.indexOf("Way Station") >= 0){ importance += 1;}
                 var isImportant = importance >= 4;
                 var isUnimportant = importance <= 0;
@@ -1163,7 +1170,7 @@
                                 mapContent[i].system.travelCodeNotes += "Population under interdiction.  ";
                             }
                             if(RedGovLaw !== "N/A"){
-                                if(mapContent[i].system.mainworld.gov + mapContent[i].system.mainworld.law > RedGovLawThreshold){
+                                if(mapContent[i].system.mainworld.gov + mapContent[i].system.mainworld.law >= RedGovLawThreshold){
                                     if(RedGovLaw === "Red"){
                                         mapContent[i].system.isRed = true; 
                                     }else{
@@ -1174,7 +1181,7 @@
                                 
                             }
                             if(AmberGovLaw !== "N/A"){
-                                if(mapContent[i].system.mainworld.gov + mapContent[i].system.mainworld.law > AmberGovLawThreshold){
+                                if(mapContent[i].system.mainworld.gov + mapContent[i].system.mainworld.law >= AmberGovLawThreshold){
                                     if(AmberGovLaw === "Red"){
                                         mapContent[i].system.isRed = true; 
                                     }else{
@@ -1373,10 +1380,16 @@
                         
                     }
 
-                    var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize;
+                    var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var name = hex.system.name;
-                    if(hex.system.importance.isImportant){ name = name.toUpperCase();}
-
+                    var oldFontStyle = ctx.font;
+                    if(hex.system.importance.isImportant){ 
+                        ctx.font = "bold "+ oldFontStyle;
+                    }
+                    if(hex.system.mainworld.pop >= 9){
+                        //ctx.font = "small-caps "+ oldFontStyle;
+                        name = name.toUpperCase();
+                    }
                     var lines = [];
                     if(ctx.measureText(name).width > maxWidth){
                         var words = name.split(" ");
@@ -1463,7 +1476,7 @@
                         height += fontSize+(fontSize/4);
                         maxWidth -= fontSize;
                     }
-                    
+                    ctx.font = oldFontStyle;
                     // write starport
                     var oldFont = ctx.font;
                     ctx.font = ""+(fontSize*1.2)+"pt "+FONT;
