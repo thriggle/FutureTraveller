@@ -1242,7 +1242,11 @@
                                 }else{
                                     mapContent[i].system.isAmber = true; 
                                 }
-                                mapContent[i].system.travelCodeNotes += "No starport facilities.  ";
+                                if(mapContent[i].system.mainworld.tech <=5){
+                                    mapContent[i].system.travelCodeNotes += "Protected population. No starport facilities.  ";
+                                }else{
+                                    mapContent[i].system.travelCodeNotes += "Under interdiction. No starport facilities.  ";
+                                }
                                 
                             }
                             if(AmberDieback !== "N/A" && mapContent[i].system.mainworld.tech > 0){
@@ -1251,7 +1255,11 @@
                                 }else{
                                     mapContent[i].system.isAmber = true; 
                                 }
-                                mapContent[i].system.travelCodeNotes += "Dieback world.  ";
+                                if(mapContent[i].system.mainworld.starport === "E"){
+                                    mapContent[i].system.travelCodeNotes += "Archaeological site (dieback world).  ";
+                                }else{
+                                    mapContent[i].system.travelCodeNotes += "Dieback world.  ";
+                                }
                             }
                         }
                         if(AmberZoneAtmo !== "N/A"){ // amber 10+ atmo
