@@ -93,9 +93,14 @@
         <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes" checked="checked"/> Show Travel Codes</label>
         </fieldset>        
         <fieldset class="collapsed">
-            <legend>Systems</legend>          
-            <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Subsector"></label>
-            <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Subsector"></label>
+            <legend>Systems</legend>
+            <select name="slctMapSize" id="slctMapSize">
+                <option value="Subsector">Subsector (8x10)</option>
+                <option value="Quadrant">Quadrant (16x20)</option>
+                <option value="Sector">Sector (32x40)</option>
+            </select>         
+            <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Map"></label>
+            <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Map"></label>
             <br/><fieldset class="collapsed">
                 <legend>Configuration</legend>
                 <fieldset class="collapsed">
@@ -300,7 +305,7 @@
                 yOffset:HEX_SIZE*4,
                 diameter:HEX_SIZE*2
             }
-            var fontSize = HEX_SIZE*1/3;
+            
             var mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3], 
             maxes = [0,0,0,0,0,0,0,0,5], 
             labels = ["starport","size","atmo","hydro","pop","gov","law","tech"];
@@ -315,6 +320,7 @@
             document.getElementById("sizeSlider").value = HEX_SIZE;
             mapContent = generateHexes(SUBSECTOR_WIDTH,SUBSECTOR_HEIGHT);
             updateStyle();
+            var fontSize = HEX_SIZE*1/3;
             ctx.font = ""+fontSize+"pt "+FONT;
             drawMap(mapContent);
             NameGenerator("names.jsonc",function(o){wordMaker = o; populateSubsector();});
@@ -372,6 +378,18 @@
                         }
                     });
                 }
+                document.getElementById("slctMapSize").addEventListener("change",function(){
+                    var choice = document.getElementById("slctMapSize").value;
+                    switch(choice){
+                        case "Subsector": SUBSECTOR_HEIGHT = 10; SUBSECTOR_WIDTH = 8; break;
+                        case "Quadrant": SUBSECTOR_HEIGHT = 20; SUBSECTOR_WIDTH = 16; break;
+                        case "Sector": SUBSECTOR_HEIGHT = 40; SUBSECTOR_WIDTH = 32; break;
+                    }
+                    //updateHexSize(+(document.getElementById("sizeSlider").value));
+                    canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
+                    canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter + CANVAS_PADDING*2);
+                    drawMap(mapContent);
+                });
                 document.getElementById("slctStyle").addEventListener("change",updateStyle);
                 document.getElementById("sizeSlider").addEventListener("change",function(){
                     updateHexSize(+(document.getElementById("sizeSlider").value));
@@ -992,6 +1010,8 @@
                         travelCodes: document.getElementById("chkShowTravelCodes").checked
                     };
                 }
+                var fontSize = HEX_SIZE*1/3;
+                ctx.font = ""+fontSize+"pt "+FONT;
                 var w =canvas.width, h =canvas.height;
                 ctx.clearRect(0,0,w,h);
                 if(CANVAS_BACKGROUND_COLOR !== "transparent"){
@@ -1252,10 +1272,10 @@
                 }
             }
             function XYCoordToTCoord(x,y){
-                var col = (x+1).toString();
-                if(x < 10){col = "0"+col;}
-                var row = (y+1).toString();
-                if(y < 10){row = "0"+row;}
+                var col = (+(x)+1).toString();
+                if(+(x)+1 < 10){col = "0"+col;}
+                var row = (+(y)+1).toString();
+                if(+(y)+1 < 10){row = "0"+row;}
                 return col+row;
             }
             function drawHex(hex, options){
@@ -1384,7 +1404,8 @@
                     var name = hex.system.name;
                     var oldFontStyle = ctx.font;
                     if(hex.system.importance.isImportant){ 
-                        ctx.font = "bold "+ oldFontStyle;
+                        //ctx.font = "bold "+ oldFontStyle;
+                        name = name.toUpperCase();
                     }
                     if(hex.system.mainworld.pop >= 9){
                         //ctx.font = "small-caps "+ oldFontStyle;
