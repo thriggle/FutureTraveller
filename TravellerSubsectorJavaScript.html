@@ -118,6 +118,7 @@
                         <option value="Dense">Dense (66%)</option>
                         <option value="Cluster">Cluster (83%)</option>
                         <option value="Core">Core (91%)</option>
+                        <option value="Clump">Dense in middle</option>
                     </select></label><br/>
                     <label for="slctGGFrequency">Gas Giant Occurrence: <select name="slctGGFrequency" id="slctGGFrequency">
                         <option selected=selected value=8>8- on 2D (T5) 72%</option>
@@ -495,11 +496,23 @@
                     case "Dense": d = 1, target = 4; break;
                     case "Cluster": d = 1, target = 5; break;
                     case "Core": d = 2, target = 11; break;
+                    case "Clump": d = 1, target = 2; break;
                 }
                 var namesSoFar = {};
                 mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3], maxes = [0,0,0,0,0,0,0,0,5];
                 for(var x = 0; x < SUBSECTOR_WIDTH; x++){
                     for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
+                        if(density === "Clump"){
+                            if(x >= SUBSECTOR_WIDTH/3 && x <= SUBSECTOR_WIDTH*2/3 && y >= SUBSECTOR_HEIGHT/3 && y <= SUBSECTOR_HEIGHT*2/3){
+                                target = 4;
+                            }else if(x >= SUBSECTOR_WIDTH/4 && x <= SUBSECTOR_WIDTH*3/4 && y >= SUBSECTOR_HEIGHT/4 && y <= SUBSECTOR_HEIGHT*3/4){
+                                target = 3;
+                            }else if(x >= SUBSECTOR_WIDTH/8 && x <= SUBSECTOR_WIDTH*7/8 && y >= SUBSECTOR_HEIGHT/8 && y <= SUBSECTOR_HEIGHT*7/8){
+                                target = 2;
+                            }else{
+                                target = 1;
+                            }
+                        }
                         if(d6(d) <= target){
                             var name = wordMaker.getRandomName("system");
                             while(Object.keys(namesSoFar).indexOf(name) >= 0){
