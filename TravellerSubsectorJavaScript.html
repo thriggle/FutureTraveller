@@ -295,6 +295,7 @@
                 HEX_BACKGROUND_COLOR = "rgba(0,0,0,0.7)",
                 HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)",
                 CANVAS_BACKGROUND_COLOR = "rgb(50,50,50)",
+                CAPITAL_TEXT_COLOR = "rgb(255,50,50)",
                 TEXT_COLOR = "white",
                 CANVAS_PADDING = 20,
                 SUBSECTOR_WIDTH = 8,
@@ -521,6 +522,7 @@
                 }
                 var namesSoFar = {};
                 mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3], maxes = [0,0,0,0,0,0,0,0,5];
+                var systemArray = [];
                 for(var x = 0; x < SUBSECTOR_WIDTH; x++){
                     for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
                         if(density === "Clump"){
@@ -555,7 +557,7 @@
                                 }
                                 
                             }
-                            systems[tcoord] = {                                    
+                            var system = {                                    
                                 name: addCaps(name),
                                 mainworld:details.mainworld,
                                 uwp: details.uwp.toUpperCase(),
@@ -566,13 +568,82 @@
                                 stars:details.stars,
                                 importance: details.importance
                             };
+                            systems[tcoord] = system;
+                            systemArray.push(system);
                         }
                     }
                 }
+                
+                analyzeMap(systemArray);
                 document.getElementById("data").value = JSON.stringify(systems);
                 var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
                 applyTravelCodes(mapContent);
                 drawMap(mapContent);                
+            }
+            function analyzeMap(systemArray){
+                var capital, maxImportance = -4, tradeCodeCount = 0;
+                var uwpSums = [0,0,0,0,0,0,0], 
+                uwpMins = [null,null,null,null,null,null,null], 
+                uwpMaxes = [null,null,null,null,null,null,null];
+                var ixSum = 0, ixMin = 5, ixMax = -3;
+                var labels = ["size","atmo","hydro","pop","gov","law","tech"];
+                var tracker = {"size":{},"atmo":{},"hydro":{},"pop":{},"gov":{},"law":{},"tech":{}};
+                for(var i = 0, len = systemArray.length; i < len; i++){
+                    var system = systemArray[i];
+                    var mainworld = system.mainworld;
+                    for(var j = 0, jlen = labels.length; j < jlen; j++){
+                        var label = labels[j];
+                        var value = mainworld[label];
+                        uwpSums[j] += value;
+                        if(tracker[label][value]){
+                            tracker[label][value] += 1;
+                        }else{
+                            tracker[label][value] = 1;
+                        }
+                        if(uwpMins[j] === null || value < uwpMins[j]){ uwpMins[j] = value; }
+                        if(uwpMaxes[j] === null || value > uwpMaxes[j]){ uwpMaxes[j] = value; }
+                    }
+                    if(system.importance.isImportant){
+                        var importance = system.importance.extension;
+                        if(system.isRed){importance -= 3; }
+                        if(system.isAmber){importance -= 1; }
+                        if(mainworld.starport === "A"){ importance += 1; }
+                        if(importance > maxImportance){
+                            capital = system;
+                            maxImportance = importance;
+                            tradeCodeCount = capital.mainworld.tradeCodes.length | 0;
+                        }else if(importance === maxImportance){
+                            if(system.tradeCodes && system.tradeCodes.length > tradeCodeCount){
+                                capital = system;
+                                maxImportance = importance;
+                            }
+                        }
+                    }
+                    // throw in the Mongoose tech codes for good measure
+                    var tech = mainworld.tech;
+                    if(tech >= 12){ system.mainworld.tradeCodes.push("Ht");}
+                    else if(tech <= 5 ){ system.mainworld.tradeCodes.push("Lt");}    
+                    if(mainworld.tradeCodes.indexOf("Cy") > 0){
+                        // figure out the colony owner here!
+                    }              
+                }
+                if(capital){
+                    capital.isCapital = true;
+                    capital.mainworld.tradeCodes.push("Cp");
+                }
+                /*
+                for(var j = 0, jlen = labels.length; j < jlen; j++){
+                    var label = labels[j];
+                    var avg = (uwpSums[j]/systemArray.length)>>0;
+                    console.log(label + " " +
+                     "min:"+uwpMins[j]+" ("+tracker[label][uwpMins[j]]+" times), "+
+                     "max:"+ uwpMaxes[j]+ " ("+tracker[label][uwpMaxes[j]]+" times), "+
+                     "avg:"+ avg+" ("+tracker[label][avg]+" times)");
+                     
+                }
+                //console.log(tracker);
+                //console.log(systemArray.length + " systems total");
+                */
             }
             function generateSystemDetails(name, gasGiantFrequency, permitDieback){
                 var isAsteroidBelt = d6(2) == 2;
@@ -877,9 +948,7 @@
                     else if(pop >= 6 && pop <= 8){ tradeCodes.push("Ri"); }
                 }
                 if(pop >= 5 && pop <= 10 && gov === 6 && law <= 3){ tradeCodes.push("Cy");}
-                // throw in the Mongoose tech codes for good measure
-                if(tech >= 12){ tradeCodes.push("Ht");}
-                else if(tech <= 5 ){ tradeCodes.push("Lt");}
+                
 
                 var importance = 0, importanceDesc = "";
                 if(starport === "A" || starport === "B"){ importance +=1; }
@@ -1500,6 +1569,7 @@
                     // write starport
                     var oldFont = ctx.font;
                     ctx.font = ""+(fontSize*1.2)+"pt "+FONT;
+                    ctx.fillStyle = TEXT_COLOR; 
                     ctx.fillText(hex.system.uwp[0],x4,y0 + (y1-y0)/2);
                     ctx.font = oldFont;
                     
@@ -1604,7 +1674,7 @@
                     var name = hex.system.name;
                     var oldFontStyle = ctx.font;
                     if(hex.system.importance.isImportant){ 
-                        //ctx.font = "bold "+ oldFontStyle;
+                        ctx.font = "bold "+ oldFontStyle;
                         name = name.toUpperCase();
                     }
                     if(hex.system.mainworld.pop >= 9){
@@ -1633,7 +1703,12 @@
                     }
                     // write text
                     ctx.textAlign = "center";
-                    ctx.fillStyle = TEXT_COLOR;                    
+                    if(hex.system.isCapital){
+                        ctx.fillStyle = CAPITAL_TEXT_COLOR;                    
+                        ctx.font = "bold "+ oldFontStyle;
+                    }else{
+                        ctx.fillStyle = TEXT_COLOR;
+                    }
                     maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var height = y2 - lines.length*fontSize;
                     for(var i = lines.length-1; i >= 0; i--){                     
