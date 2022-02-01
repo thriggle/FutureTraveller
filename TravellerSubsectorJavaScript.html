@@ -325,26 +325,47 @@
             ctx.font = ""+fontSize+"pt "+FONT;
             drawMap(mapContent);
             NameGenerator("names.jsonc",function(o){wordMaker = o; populateSubsector();});
+            var lastHighlightedHex;
             attachEventListeners();
+            
 
             function attachEventListeners(){
                 canvas.addEventListener("mousemove",function(e){
-                    for(var i = 0, len = mapContent.length; i < len; i++){
-                        var hex = mapContent[i];
-                        if(coordsInHexagon(e.clientX,e.clientY, hex)){
-                            hex.highlighted = true;
+                    var hexIdentified = false;
+                    var x = e.clientX - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().left;
+                    var y = e.clientY - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().top;
+                    if(lastHighlightedHex){
+                        if(coordsInHexagon(x,y,lastHighlightedHex)){
+                            hexIdentified = true;
                         }else{
-                            if(hex.highlighted){
-                                hex.highlighted = false;
-                            }
+                            lastHighlightedHex.highlighted = false;
                         }
                     }
-                    drawMap(mapContent);
+                    if(!hexIdentified){
+                        for(var i = 0, len = mapContent.length; i < len; i++){
+                            var hex = mapContent[i];
+                            if(!hexIdentified){
+                                if(coordsInHexagon(x,y, hex)){
+                                    hex.highlighted = true;
+                                    hexIdentified = true;
+                                    if(lastHighlightedHex){
+                                        lastHighlightedHex.highlighted = false;
+                                    }
+                                    lastHighlightedHex = hex;
+                                    drawMap(mapContent);
+                                    break;
+                                }
+                            }
+                        }
+                        
+                    }
                 });
                 canvas.addEventListener("click",function(e){
+                    var x = e.clientX - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().left;
+                    var y = e.clientY - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().top;
                     for(var i = 0, len = mapContent.length; i < len; i++){
                         var hex = mapContent[i];
-                        if(coordsInHexagon(e.clientX,e.clientY, hex)){
+                        if(coordsInHexagon(x,y, hex)){
                             if(hex.selected){
                                 hex.selected = false;}
                             else{
@@ -1004,8 +1025,7 @@
                 });
             }
             function coordsInHexagon(x,y,hex){
-                x = x - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().left;
-                y = y - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().top;
+                
                 var numVertices = hex.vertx.length;
                 var isInside = false;
                 for(var i = 0, j = numVertices-1; i < numVertices; j = i++){
@@ -1023,6 +1043,7 @@
                         travelCodes: document.getElementById("chkShowTravelCodes").checked
                     };
                 }
+                ctx.textAlign = "center";
                 var fontSize = HEX_SIZE*1/3;
                 ctx.font = ""+fontSize+"pt "+FONT;
                 var w =canvas.width, h =canvas.height;
@@ -1037,6 +1058,9 @@
                 ctx.translate(HEX_MATH.diameter + CANVAS_PADDING, HEX_MATH.diameter + CANVAS_PADDING);
                 for(var i = 0, len = mapContent.length; i < len; i++){
                     mapContent[i] = drawHex(mapContent[i], options);
+                }
+                for(var i = 0, len = mapContent.length; i < len; i++){
+                    drawFinal(mapContent[i], options);
                 }
                 ctx.restore();
                 document.getElementById("data").value = JSON.stringify(_systems);
@@ -1421,41 +1445,7 @@
                         
                     }
 
-                    var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
-                    var name = hex.system.name;
-                    var oldFontStyle = ctx.font;
-                    if(hex.system.importance.isImportant){ 
-                        //ctx.font = "bold "+ oldFontStyle;
-                        name = name.toUpperCase();
-                    }
-                    if(hex.system.mainworld.pop >= 9){
-                        //ctx.font = "small-caps "+ oldFontStyle;
-                        name = name.toUpperCase();
-                    }
-                    var lines = [];
-                    if(ctx.measureText(name).width > maxWidth){
-                        var words = name.split(" ");
-                        var lineSoFar = "";
-                        for(var i = words.length-1; i >= 0; i--){
-                            var proposal = lineSoFar.length > 0 ? words[i] + " " + lineSoFar : words[i];
-                            if(ctx.measureText(proposal).width < maxWidth){
-                                lineSoFar = proposal;
-                            }else{
-                                if(lineSoFar.length > 0){lines.push(lineSoFar);}
-                                if(ctx.measureText(words[i]).width > maxWidth){
-                                    var mid = words[i].length/2 >> 0
-                                    lines.push(words[i].substring(mid))
-                                    lineSoFar = words[i].substring(0,mid)+"-";
-                                }else{
-                                    lineSoFar = words[i];
-                                }
-                            }
-                            maxWidth += fontSize;
-                        }
-                        if(lineSoFar.length > 0){lines.push(lineSoFar);}
-                    }else{
-                        lines = [name];
-                    }
+                    
                     if(hex.system.gg > 0){
                         ctx.fillStyle = TEXT_COLOR;
                         ctx.beginPath();
@@ -1507,18 +1497,6 @@
                         ctx.lineWidth = oldLineWidth;
                     }                    
 
-                    // write text
-                    ctx.textAlign = "center";
-                    ctx.fillStyle = TEXT_COLOR;                    
-                    maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
-                    var height = y2 - lines.length*fontSize;
-                    for(var i = lines.length-1; i >= 0; i--){
-                        
-                        ctx.fillText(lines[i], x4, height, maxWidth);
-                        height += fontSize+(fontSize/4);
-                        maxWidth -= fontSize;
-                    }
-                    ctx.font = oldFontStyle;
                     // write starport
                     var oldFont = ctx.font;
                     ctx.font = ""+(fontSize*1.2)+"pt "+FONT;
@@ -1528,7 +1506,8 @@
                     if(hex.selected || hex.highlighted){
                         ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
                         var backStyle = ctx.fillStyle;
-                        //backStyle += "C0";
+                        
+                        ctx.fillStyle = TEXT_COLOR; 
                         // write UWP
                         ctx.beginPath();
                         var oldGlobalCompositeOperation = ctx.globalCompositeOperation;
@@ -1604,6 +1583,65 @@
                 
                 ctx.lineWidth = oldLineWidth;
                 return hex;
+            }
+            function drawFinal(hex, options){
+                var containsSystem = typeof hex.system !== "undefined" && hex.system !== null;
+                if(containsSystem){
+
+                    var coords = {
+                        x:hex.x*HEX_MATH.xOffset,
+                        y:hex.x%2 == 0 ? hex.y*HEX_MATH.yOffset : hex.y*HEX_MATH.yOffset + HEX_MATH.diameter
+                    };
+                    var x1 = coords.x - HEX_MATH.radius, // top/bottom left vertex
+                    x2 = coords.x+HEX_MATH.radius; // top/bottom right vertex
+                    var x0 = x1 - HEX_MATH.radius, // center left vertex
+                    x3 = x2 + HEX_MATH.radius, // center right vertex
+                    x4 = x1 + (x2-x1)/2; // middle of the bottom edge
+                    var y0 = coords.y - HEX_MATH.diameter, 
+                    y1 = coords.y,
+                    y2 = y1 + HEX_MATH.diameter;
+                    var maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
+                    var name = hex.system.name;
+                    var oldFontStyle = ctx.font;
+                    if(hex.system.importance.isImportant){ 
+                        //ctx.font = "bold "+ oldFontStyle;
+                        name = name.toUpperCase();
+                    }
+                    if(hex.system.mainworld.pop >= 9){
+                        //ctx.font = "small-caps "+ oldFontStyle;
+                        name = name.toUpperCase();
+                    }
+                    var lines = [];
+                    if(ctx.measureText(name).width > maxWidth){
+                        var words = name.split(" ");
+                        var lineSoFar = "";
+                        for(var i = words.length-1; i >= 0; i--){
+                            var proposal = lineSoFar.length > 0 ? words[i] + " " + lineSoFar : words[i];
+                            if(ctx.measureText(proposal).width < maxWidth){
+                                lineSoFar = proposal;
+                            }else{
+                                if(lineSoFar.length > 0){
+                                    lines.push(lineSoFar);
+                                }
+                                lineSoFar = words[i];
+                            }
+                            maxWidth += fontSize;
+                        }
+                        if(lineSoFar.length > 0){lines.push(lineSoFar);}
+                    }else{
+                        lines = [name];
+                    }
+                    // write text
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = TEXT_COLOR;                    
+                    maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
+                    var height = y2 - lines.length*fontSize;
+                    for(var i = lines.length-1; i >= 0; i--){                     
+                        ctx.fillText(lines[i], x4, height, maxWidth);
+                        height += fontSize+(fontSize/4);
+                    }
+                    ctx.font = oldFontStyle;
+                }
             }
             function drawBase(baseType, hexX, hexY){
                 switch(baseType){
