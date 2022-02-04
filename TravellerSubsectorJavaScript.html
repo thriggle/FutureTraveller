@@ -599,7 +599,8 @@
                                 planetoidBelts:details.planetoidBelts,
                                 bases:details.bases,
                                 stars:details.stars,
-                                importance: details.importance
+                                importance: details.importance,
+                                tcoord: tcoord
                             };
                             systems[tcoord] = system;
                             systemArray.push(system);
@@ -641,6 +642,24 @@
                         if(system.isRed){importance -= 3; }
                         if(system.isAmber){importance -= 1; }
                         if(mainworld.starport === "A"){ importance += 1; }
+                        var xy = TCoordToXYCoord(system.tcoord);
+                        var desiredXFromBorder = SUBSECTOR_WIDTH/8;
+                        var desiredYFromBorder = SUBSECTOR_HEIGHT/8;
+                        var withinDesiredXRange = (xy.x > desiredXFromBorder && xy.x < SUBSECTOR_WIDTH - desiredXFromBorder);
+                        var withinDesiredYRange = (xy.y > desiredYFromBorder && xy.y < SUBSECTOR_HEIGHT - desiredYFromBorder);
+                        if(withinDesiredXRange){
+                            importance += 1;
+                        }else{
+                            importance -=1;
+                        }
+                        if(withinDesiredYRange){
+                                importance += 1;
+                        }else{
+                            importance -= 1;
+                        }
+                        if(withinDesiredXRange && withinDesiredYRange){
+                            importance += 1;
+                        }
                         if(importance > maxImportance){
                             capital = system;
                             maxImportance = importance;
