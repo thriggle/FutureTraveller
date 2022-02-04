@@ -3,23 +3,28 @@
 {
     "word": {
         "patterns": [
-            "1:{ept}",
+            "2:{ept}",
             // one-syllable words
-            "1:{word.1sylword}",
+            "3:{word.1sylword}",
             // two-syllable words
-            "14:{word.2sylword}"
+            "28:{word.2sylword}",
+            "1:{word.3sylword}"
         ],
         "1sylword": [
             "{ept.initialfinalsyl}"
         ],
         "2sylword": [
             "{ept.initialsyl}{ept.finalsyllable}"
+        ],
+        "3sylword":[
+            "{ept.initialsyl}{ept.syllable}{ept.finalsyllable}"
         ]
     },
     "ept": { // English Phonotactics
         "patterns": [
-            "1:{ept.initialfinalsyl}",
-            "14:{ept.initialsyl}{ept.finalsyllable}",
+            "2:{ept.initialfinalsyl}",
+            "28:{ept.initialsyl}{ept.finalsyllable}",
+            "1:{ept.initialsyl}{ept.syllable}{ept.finalsyllable}",
             "1:{ept.initialsyl}{ept.syllable}'{ept.finalsyllable}|{ept.initialsyl}'{ept.syllable}{ept.finalsyllable}|{ept.initialsyl}'{ept.syllable}'{ept.finalsyllable}|{ept.initialsyl}-{ept.syllable} {ept.finalsyllable}|{ept.initialsyl} {ept.syllable}-{ept.finalsyllable}|{ept.initialsyl}{ept.syllable}{ept.finalsyllable}|{ept.initialsyl} {ept.syllable}{ept.finalsyllable}|{ept.initialsyl}{ept.syllable} {ept.finalsyllable}|{ept.initialsyl} {ept.syllable} {ept.finalsyllable}|{ept.initialsyl}-{ept.syllable}-{ept.finalsyllable}"
         ],
         "initialfinalsyl": [

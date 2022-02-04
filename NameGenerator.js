@@ -79,7 +79,7 @@
 function NameGenerator(sourceJson,callback,forbiddenWords){
     var forbiddenWords = forbiddenWords;
     if(typeof forbiddenWords === "undefined"){
-        forbiddenWords = ["anus"];
+        forbiddenWords = ["anus","ass"];
     }
     this.getRandomName = getRandomName;
     this.keys = [];
@@ -92,13 +92,12 @@ function NameGenerator(sourceJson,callback,forbiddenWords){
     xhr.open("GET", sourceJson);
     xhr.addEventListener("load", function loadStrings(evt) {
         var rawJson = xhr.responseText;
-        var templates = getWeightedPatternsFromJSON({}, JSON.parse(JSON.minify(rawJson)));
+        templates = getWeightedPatternsFromJSON({}, JSON.parse(JSON.minify(rawJson)));
         var keys = Object.keys(templates);
         var generator = {templates:templates,keys:keys,getRandomName:getRandomName, unpackStringTemplate:unpackStringTemplate};
         callback(generator);
     });
     xhr.send();
-
     function getRandomName(key) {
         var templatesSubset = this.templates[key];
         var template = templatesSubset[(templatesSubset.length * Math.random()) >>> 0];
@@ -154,7 +153,7 @@ function NameGenerator(sourceJson,callback,forbiddenWords){
             }
         }
         if(forbiddenWords.indexOf(currentText) > 0){
-            currentText = getRandomName(key);
+            currentText = this.getRandomName(key);
         }
         return currentText.replace(/\s+/g," ");
     }
