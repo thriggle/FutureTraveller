@@ -1259,8 +1259,8 @@
         ],
         "latinized":[
             "8:{word.1sylword}ia",
-            "8:{word.1sylword}ius",
-            "8:{word.1sylword}us",
+            "8:{word.1sylword}ius|{word.1sylword}ios",
+            "8:{word.1sylword}us|{word.1sylword}os",
             "6:{word.1sylword}ian",
             "4:{word.1sylword}is",
             "4:{word.1sylword}ion|{word.1sylword}on",
@@ -1268,17 +1268,17 @@
             "2:{word.1sylword}onius",
             "2:{word.1sylword}io",
             "2:{word.1sylword}ium",
-            "2:{word.1sylword}usia",
+            "2:{word.1sylword}usia|{word.1sylword}osia",
             "2:{word.1sylword}usian|{word.1sylword}usion|{word.1sylword}usium|{word.1sylword}usius",
             "3:{word.2sylword}ia",
-            "3:{word.2sylword}ius",
-            "3:{word.2sylword}us",
+            "3:{word.2sylword}ius|{word.2sylword}ios",
+            "3:{word.2sylword}us|{word.2sylword}os",
             "2:{word.2sylword}ian",
             "1:{word.2sylword}is",
             "1:{word.2sylword}ion|{word.2sylword}on",
             "1:{word.2sylword}onia",
             "1:{word.2sylword}onius|{word.2sylword}io|{word.2sylword}ium",
-            "1:{word.2sylword}usia|{word.2sylword}usian|{word.2sylword}usion|{word.2sylword}usium|{word.2sylword}usius"
+            "1:{word.2sylword}usia|{word.2sylword}osia|{word.2sylword}usian|{word.2sylword}usion|{word.2sylword}usium|{word.2sylword}usius"
         ],
         "relativeimportanceprefix": [
             "grand|minor",
