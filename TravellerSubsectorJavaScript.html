@@ -295,7 +295,8 @@
                 HEX_BACKGROUND_COLOR = "rgba(0,0,0,0.7)",
                 HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)",
                 CANVAS_BACKGROUND_COLOR = "rgb(50,50,50)",
-                CAPITAL_TEXT_COLOR = "rgb(255,50,50)",
+                CAPITAL_TEXT_COLOR = "rgb(255,100,100)",
+                CAPITAL_BACKGROUND_COLOR = "black",
                 TEXT_COLOR = "white",
                 CANVAS_PADDING = 20,
                 SUBSECTOR_WIDTH = 8,
@@ -1573,45 +1574,7 @@
                     ctx.fillText(hex.system.uwp[0],x4,y0 + (y1-y0)/2);
                     ctx.font = oldFont;
                     
-                    if(hex.selected || hex.highlighted){
-                        ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
-                        var backStyle = ctx.fillStyle;
-                        
-                        ctx.fillStyle = TEXT_COLOR; 
-                        // write UWP
-                        ctx.beginPath();
-                        var oldGlobalCompositeOperation = ctx.globalCompositeOperation;
-                        ctx.globalCompositeOperation = 'source-over';
-                        var uwp = hex.system.uwp.toUpperCase();
-                        var uwpSize = ctx.measureText(uwp);
-                        ctx.fillStyle = backStyle;
-                        var fontHeight = uwpSize.fontBoundingBoxAscent + uwpSize.fontBoundingBoxDescent;
-                        ctx.fillRect(x4-uwpSize.width/2,y1-fontHeight/2-2,uwpSize.width,fontSize+2);
-                        ctx.fillStyle = TEXT_COLOR; 
-                        ctx.fillText(uwp,x4,y1);
-                        // write trade codes
-                        maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
-                        var codes = hex.system.mainworld.tradeCodes.join(" ");
-                        var codesSize = ctx.measureText(codes);
-                        lines = [codes];
-                        if(codesSize.width > maxWidth){
-                            var line1 = hex.system.mainworld.tradeCodes.slice(0,hex.system.mainworld.tradeCodes.length/2>>0).join(" ");
-                            var line2 = hex.system.mainworld.tradeCodes.slice(hex.system.mainworld.tradeCodes.length/2>>0).join(" ");
-                            lines = [line1, line2]
-                        }
-                        height = y1 + fontHeight;
-                        var blockHeight = y1 + fontHeight/2 - 2;
-                        for(var i = lines.length-1; i >= 0; i--){ 
-                            var lineWidth = ctx.measureText(lines[i]).width;
-                            ctx.fillStyle = backStyle;
-                            ctx.fillRect(x4-lineWidth/2,blockHeight,lineWidth,fontSize+2);
-                            ctx.fillStyle = TEXT_COLOR; 
-                            ctx.fillText(lines[i], x4, height, maxWidth);
-                            height += fontSize+(fontSize/3);
-                            blockHeight += fontSize+(fontSize/3);
-                        }
-                        ctx.globalCompositeOperation = oldGlobalCompositeOperation;
-                    }
+                    
                     
                 }
                 else{
@@ -1706,16 +1669,64 @@
                     if(hex.system.isCapital){
                         ctx.fillStyle = CAPITAL_TEXT_COLOR;                    
                         ctx.font = "bold "+ oldFontStyle;
+                        ctx.strokeStyle = CAPITAL_BACKGROUND_COLOR;
+                        ctx.lineWidth = fontSize/8;
                     }else{
                         ctx.fillStyle = TEXT_COLOR;
                     }
                     maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
                     var height = y2 - lines.length*fontSize;
-                    for(var i = lines.length-1; i >= 0; i--){                     
+                    var oldLineWidth = ctx.lineWidth;
+                    for(var i = lines.length-1; i >= 0; i--){    
+                        if(hex.system.isCapital){
+                            ctx.lineWidth = fontSize/8;
+                            ctx.strokeText(lines[i], x4, height, maxWidth);
+                            ctx.lineWidth = oldLineWidth;
+                        }                 
                         ctx.fillText(lines[i], x4, height, maxWidth);
+                        
                         height += fontSize+(fontSize/4);
                     }
                     ctx.font = oldFontStyle;
+                    if(hex.selected || hex.highlighted){
+                        ctx.fillStyle = CANVAS_BACKGROUND_COLOR;
+                        var backStyle = ctx.fillStyle;
+                        
+                        ctx.fillStyle = TEXT_COLOR; 
+                        // write UWP
+                        ctx.beginPath();
+                        var oldGlobalCompositeOperation = ctx.globalCompositeOperation;
+                        ctx.globalCompositeOperation = 'source-over';
+                        var uwp = hex.system.uwp.toUpperCase();
+                        var uwpSize = ctx.measureText(uwp);
+                        ctx.fillStyle = backStyle;
+                        var fontHeight = uwpSize.fontBoundingBoxAscent + uwpSize.fontBoundingBoxDescent;
+                        ctx.fillRect(x4-uwpSize.width/2,y1-fontHeight/2-2,uwpSize.width,fontSize+2);
+                        ctx.fillStyle = TEXT_COLOR; 
+                        ctx.fillText(uwp,x4,y1);
+                        // write trade codes
+                        maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
+                        var codes = hex.system.mainworld.tradeCodes.join(" ");
+                        var codesSize = ctx.measureText(codes);
+                        lines = [codes];
+                        if(codesSize.width > maxWidth){
+                            var line1 = hex.system.mainworld.tradeCodes.slice(0,hex.system.mainworld.tradeCodes.length/2>>0).join(" ");
+                            var line2 = hex.system.mainworld.tradeCodes.slice(hex.system.mainworld.tradeCodes.length/2>>0).join(" ");
+                            lines = [line1, line2]
+                        }
+                        height = y1 + fontHeight;
+                        var blockHeight = y1 + fontHeight/2 - 2;
+                        for(var i = lines.length-1; i >= 0; i--){ 
+                            var lineWidth = ctx.measureText(lines[i]).width;
+                            ctx.fillStyle = backStyle;
+                            ctx.fillRect(x4-lineWidth/2,blockHeight,lineWidth,fontSize+2);
+                            ctx.fillStyle = TEXT_COLOR; 
+                            ctx.fillText(lines[i], x4, height, maxWidth);
+                            height += fontSize+(fontSize/3);
+                            blockHeight += fontSize+(fontSize/3);
+                        }
+                        ctx.globalCompositeOperation = oldGlobalCompositeOperation;
+                    }
                 }
             }
             function drawBase(baseType, hexX, hexY){
