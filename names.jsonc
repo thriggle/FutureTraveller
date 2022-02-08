@@ -1267,7 +1267,7 @@
             "4:{word.1sylword}onia",
             "2:{word.1sylword}onius",
             "2:{word.1sylword}io",
-            "2:{word.1sylword}ium",
+            "2:{word.1sylword}ium|{word.1sylword}eum",
             "2:{word.1sylword}usia|{word.1sylword}osia",
             "2:{word.1sylword}usian|{word.1sylword}usion|{word.1sylword}usium|{word.1sylword}usius",
             "3:{word.2sylword}ia",
@@ -1277,7 +1277,7 @@
             "1:{word.2sylword}is",
             "1:{word.2sylword}ion|{word.2sylword}on",
             "1:{word.2sylword}onia",
-            "1:{word.2sylword}onius|{word.2sylword}io|{word.2sylword}ium",
+            "1:{word.2sylword}onius|{word.2sylword}io|{word.2sylword}ium|{word.2sylword}eum",
             "1:{word.2sylword}usia|{word.2sylword}osia|{word.2sylword}usian|{word.2sylword}usion|{word.2sylword}usium|{word.2sylword}usius"
         ],
         "relativeimportanceprefix": [
