@@ -6,6 +6,7 @@
     <title>Traveller</title>
 </head>
 <body>
+    <script src="SystemGenerator.js"></script>
     <style>
         fieldset{
             font-family:'Consolas','Inconsolas','Courier New', Courier, monospace;
@@ -52,6 +53,16 @@
         }
         .travelcodepickers select[data-color="Red"]{
             background-color: pink;
+        }
+        #SystemDetailsContainer{
+            display:inline-block;
+            max-width:400px;
+            position:absolute;
+            border:1px solid black;
+            background-color:white;
+        }
+        #SystemDetails{
+            position:relative;
         }
     </style>
     <fieldset>
@@ -316,6 +327,15 @@
         <textarea name="data" id="data" cols="30" rows="10"></textarea>
         <input type="button" value="Apply" id="btnApplyData">
     </fieldset>
+    <div id="SystemDetailsContainer" style="display:none;">
+        <div id="SystemDetails">
+            <h1 data-system="name">System Name</h1>
+            <h2 data-system="uwp">Mainworld</h2>
+            <h3>Importance: <span data-importance="description">System Importance</span> (<span data-importance="dailytraffic"></span> ships/day, <span data-importance="weeklytraffic"></span> ships/week)</h3>
+            <h3>System Map:</h3>
+            <ul id="maplist"></ul>
+        </div>
+    </div>
     <script src="NameGenerator.js"></script>
     <script>
         (function(){
@@ -400,9 +420,21 @@
                         var hex = mapContent[i];
                         if(coordsInHexagon(x,y, hex)){
                             if(hex.selected){
-                                hex.selected = false;}
+                                hex.selected = false;
+                                var detailBlock = document.getElementById("SystemDetailsContainer");
+                                detailBlock.style.display = "none";
+                            }
                             else{
                                 hex.selected = true;
+                                var detailBlock = document.getElementById("SystemDetailsContainer");
+                                if(hex.system){
+                                    renderSystem(hex.system);
+                                    detailBlock.style.left = e.clientX  - canvas.getBoundingClientRect().left +"px";
+                                    detailBlock.style.top = e.clientY- canvas.getBoundingClientRect().top+"px";
+                                    detailBlock.style.display = "inline-block";
+                                }else{
+                                    detailBlock.style.display = "none";
+                                }                                
                             }
                         }else{
                             if(hex.selected){
@@ -576,7 +608,7 @@
                             }
                             var tcoord = XYCoordToTCoord(x,y);
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
-                            var details = generateSystemDetails(addCaps(name),ggFrequency,permitDieback,maxTechLevel);
+                            var details = generateSystemDetails(addCaps(name), ggFrequency,permitDieback,maxTechLevel);
                             for(var i = 0, len = mins.length; i < len; i++){
                                 var currValue;
                                 if(i === 8){
@@ -682,6 +714,7 @@
                 if(capital){
                     capital.isCapital = true;
                     capital.mainworld.tradeCodes.push("Cp");
+                    capital.mainworld.tradeCodes.sort();
                 }
                 /*
                 for(var j = 0, jlen = labels.length; j < jlen; j++){
@@ -697,6 +730,7 @@
                 //console.log(systemArray.length + " systems total");
                 */
             }
+            /*
             function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel){
                 var isAsteroidBelt = d6(2) == 2;
                 var planetoidBelts = Math.max(d6()-3,0);
@@ -1131,6 +1165,7 @@
                 if(r2 >= 4){x+=1;}
                 return x;
             }
+            */
             function generateHexes(x,y, systems){
                 var systemsPredefined = true;
                 if(typeof systems == "undefined"){
@@ -1962,6 +1997,86 @@
                 }
                 return capitalizedString;
             }
+            function renderSystem(system){
+            var systemTokens = document.querySelectorAll("[data-system]");
+            for(var i = 0, len = systemTokens.length; i < len; i++){
+                var el = systemTokens[i];
+                var key = el.getAttribute("data-system");
+                el.innerHTML = system[key];
+            }
+            var mainworldTokens = document.querySelectorAll("[data-mainworld]");
+            for(var i = 0, len = mainworldTokens.length; i < len; i++){
+                var el = mainworldTokens[i];
+                var key = el.getAttribute("data-mainworld");
+                el.innerHTML = system.mainworld[key];
+            }
+            var importanceTokens = document.querySelectorAll("[data-importance]");
+            for(var i = 0, len = importanceTokens.length; i < len; i++){
+                var el = importanceTokens[i];
+                var key = el.getAttribute("data-importance");
+                el.innerHTML = system.importance[key];
+                
+            }
+            var list = document.getElementById("maplist");
+            clearElement(list);
+            var description = system.stars.primary.type + (typeof system.stars.primary.decimal === "undefined" ? "" : system.stars.primary.decimal.toString()) + system.stars.primary.size;
+            list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                "Primary Star: " + description
+            ))
+            for(var i = 0, len = system.stars.primary.orbits.length; i < len; i++){
+                var slot = system.stars.primary.orbits[i];
+                if(slot){
+                    var description = "";
+                    if(slot.type==="star"){
+                        if(slot.details.type === "BD"){
+                            description = "Brown Dwarf";
+                        }else{
+                            description = slot.details.type + (typeof slot.details.decimal === "undefined" ? "" : slot.details.decimal.toString()) + slot.details.size ;
+                        }
+                    }else{
+                        description = slot.details.uwp;
+                    }
+                    list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                        "Orbit "+i+": "+addCaps(slot.type) + " ("+ description + ")"+(slot.details.isMainworld?"**":"")
+                    ));
+                    if(slot.details.satellites){
+                        var sublist = list.appendChild(document.createElement("ul"));
+                        for(var j = 0, jlen = slot.details.satellites.length; j < jlen; j++){
+                            sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                "Orbit " +slot.details.satellites[j].orbitAroundPrimary +": " + addCaps(slot.details.satellites[j].worldtype) + " ("+slot.details.satellites[j].uwp+")"+(slot.details.satellites[j].isMainworld?"**":"")
+                            ));
+                        }
+                    }
+                    if(slot.details.numOrbits > 0){
+                        var starlist = list.appendChild(document.createElement("ul"));
+                        for(var j = 0, jlen = slot.details.orbits.length; j < jlen; j++){
+                            if(typeof slot.details.orbits[j] !== "undefined"){
+                                var subslot = slot.details.orbits[j];
+                                var desc = "";
+                                if(subslot.type === "star"){
+                                    if(subslot.details.type === "BD"){
+                                        desc = "BD";
+                                    }else{
+                                        desc = subslot.details.type + (typeof subslot.details.decimal === "undefined" ? "" : subslot.details.decimal.toString()) + subslot.details.size ;
+                                    }
+                                }else{
+                                    desc = subslot.details.uwp;
+                                }
+                                starlist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                    "Orbit " +j+": " + addCaps(subslot.type) +" ("+desc+")" +(subslot.details.isMainworld?"**":"")
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            console.log(system);
+        }
+        function clearElement(el){
+            while(el.children.length > 0){
+                el.removeChild(el.children[el.children.length-1]);
+            }
+        }
         })();
     </script>
 </body>

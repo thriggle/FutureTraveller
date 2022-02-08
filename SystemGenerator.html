@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Generator</title>
+</head>
+<body>
+    <div>
+        <input type="button" value="Generate System" id="btnGenerateSystem" />
+        <div id="SystemDetails">
+            <h1 data-system="name">System Name</h1>
+            <h2 data-system="uwp">Mainworld</h2>
+            <h3>Importance: <span data-importance="description">System Importance</span> (<span data-importance="dailytraffic"></span> ships/day, <span data-importance="weeklytraffic"></span> ships/week)</h3>
+            <h3>System Map:</h3>
+            <ul id="maplist"></ul>
+        </div>
+    </div>
+    <script src="NameGenerator.js"></script>
+    <script src="SystemGenerator.js"></script>
+    <script>
+        NameGenerator("names.jsonc",function(generator){
+            document.getElementById("btnGenerateSystem").addEventListener("click",function(){
+                console.clear();
+                var gasGiantFrequency = 8, permitDieback = false, maxTechLevel = 16;
+                var system = generateSystemDetails(
+                    addCaps(generator.getRandomName("system")), 
+                    gasGiantFrequency,
+                    maxTechLevel
+                );
+                renderSystem(system);
+            });
+            var gasGiantFrequency = 8, permitDieback = false, maxTechLevel = 16;
+            var system = generateSystemDetails(
+                addCaps(generator.getRandomName("system")), 
+                gasGiantFrequency,
+                maxTechLevel
+            );
+            renderSystem(system);
+        });
+        function renderSystem(system){
+            var systemTokens = document.querySelectorAll("[data-system]");
+            for(var i = 0, len = systemTokens.length; i < len; i++){
+                var el = systemTokens[i];
+                var key = el.getAttribute("data-system");
+                el.innerHTML = system[key];
+            }
+            var mainworldTokens = document.querySelectorAll("[data-mainworld]");
+            for(var i = 0, len = mainworldTokens.length; i < len; i++){
+                var el = mainworldTokens[i];
+                var key = el.getAttribute("data-mainworld");
+                el.innerHTML = system.mainworld[key];
+            }
+            var importanceTokens = document.querySelectorAll("[data-importance]");
+            for(var i = 0, len = importanceTokens.length; i < len; i++){
+                var el = importanceTokens[i];
+                var key = el.getAttribute("data-importance");
+                el.innerHTML = system.importance[key];
+                
+            }
+            var list = document.getElementById("maplist");
+            clearElement(list);
+            var description = system.stars.primary.type + (typeof system.stars.primary.decimal === "undefined" ? "" : system.stars.primary.decimal.toString()) + system.stars.primary.size;
+            list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                "Primary Star: " + description
+            ))
+            for(var i = 0, len = system.stars.primary.orbits.length; i < len; i++){
+                var slot = system.stars.primary.orbits[i];
+                if(slot){
+                    var description = "";
+                    if(slot.type==="star"){
+                        if(slot.details.type === "BD"){
+                            description = "Brown Dwarf";
+                        }else{
+                            description = slot.details.type + (typeof slot.details.decimal === "undefined" ? "" : slot.details.decimal.toString()) + slot.details.size ;
+                        }
+                    }else{
+                        description = slot.details.uwp;
+                    }
+                    list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                        "Orbit "+i+": "+addCaps(slot.type) + " ("+ description + ")"+(slot.details.isMainworld?"**":"")
+                    ));
+                    if(slot.details.satellites){
+                        var sublist = list.appendChild(document.createElement("ul"));
+                        for(var j = 0, jlen = slot.details.satellites.length; j < jlen; j++){
+                            sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                "Orbit " +slot.details.satellites[j].orbitAroundPrimary +": " + addCaps(slot.details.satellites[j].worldtype) + " ("+slot.details.satellites[j].uwp+")"+(slot.details.satellites[j].isMainworld?"**":"")
+                            ));
+                        }
+                    }
+                    if(slot.details.numOrbits > 0){
+                        var starlist = list.appendChild(document.createElement("ul"));
+                        for(var j = 0, jlen = slot.details.orbits.length; j < jlen; j++){
+                            if(typeof slot.details.orbits[j] !== "undefined"){
+                                var subslot = slot.details.orbits[j];
+                                var desc = "";
+                                if(subslot.type === "star"){
+                                    if(subslot.details.type === "BD"){
+                                        desc = "BD";
+                                    }else{
+                                        desc = subslot.details.type + (typeof subslot.details.decimal === "undefined" ? "" : subslot.details.decimal.toString()) + subslot.details.size ;
+                                    }
+                                }else{
+                                    desc = subslot.details.uwp;
+                                }
+                                starlist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                    "Orbit " +j+": " + addCaps(subslot.type) +" ("+desc+")" +(subslot.details.isMainworld?"**":"")
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            console.log(system);
+        }
+        function clearElement(el){
+            while(el.children.length > 0){
+                el.removeChild(el.children[el.children.length-1]);
+            }
+        }
+        function addCaps(text) {
+            var capitalizedString = "";
+            var lastCharacter = null, currCharacter = " ";
+            if(typeof text === "undefined"){return text;}
+            for (var i = 0, len = text.length; i < len; i++) {
+                lastCharacter = currCharacter;
+                currCharacter = text[i];
+                if (lastCharacter === " " || lastCharacter === "-") {
+                    capitalizedString += currCharacter.toUpperCase();
+                } else {
+                    capitalizedString += currCharacter;
+                }
+            }
+            return capitalizedString;
+        }
+    </script>
+</body>
+</html>
