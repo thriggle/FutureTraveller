@@ -598,7 +598,7 @@ function createBelt(maxPop){
     return {worldtype:"Planetoid Belt", uwp:planet.uwp}
 }
 function createRing(){
-    var uwp = "xxY000000-0";
+    var uwp = "Y000000-0"; // TODO Rings?
     var distanceRoll = d6(2);
     var orbit = "??";
     if(distanceRoll <= 7){
