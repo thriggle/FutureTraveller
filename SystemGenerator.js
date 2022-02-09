@@ -539,13 +539,43 @@ function placeWorlds(stars, mainworld, gg, belts, other){
             if(typeof star.orbits[orbit] === "undefined"){
                 if(planet.worldtype === "Other World"){
                     planet = createOtherWorld(orbit, star.HZOrbit, mainworld.pop-1);
+                }else if(planet.worldtype.indexOf("Giant") > 0){
+                    // add gas giant moons
+                    var moons = typeof planet.satellites === "undefined" ? [] : planet.satellites;
+                    var numAdditionalMoons = d6() - 1 - moons.length;
+                    if(numAdditionalMoons > 0){
+                        var diff = orbit - star.HZOrbit;
+                        var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
+                        for(var m = 0; m < numAdditionalMoons; m++){
+                            moons.push(moonMaker(planet.size,mainworld.pop-1));
+                        }
+                        planet.satellites = moons;
+                    }
+                }else if(planet.worldtype === "BigWorld"){
+                    // add bigworld moons
+                    var moons = typeof planet.satellites === "undefined" ? [] : planet.satellites;
+                    var diff = orbit - star.HZOrbit;
+                    var numAdditionalMoons = 0;
+                    if(diff < -1){
+                        numAdditionalMoons = d6() - 5 - moons.length;
+                    }else if(diff <= 1){
+                        numAdditionalMoons = d6() - 4 - moons.length;
+                    }else{
+                        numAdditionalMoons = d6() - 3 - moons.length;
+                    }
+                    if(numAdditionalMoons > 0){
+                        var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
+                        for(var m = 0; m < numAdditionalMoons; m++){
+                            moons.push(moonMaker(planet.size,mainworld.pop-1));
+                        }
+                        planet.satellites = moons;
+                    }
                 }
                 star.orbits[orbit] = {type:planet.worldtype, details:planet};
                 planetsToPlace.splice(0,1);
                 availableOrbits -= 1;
             }else{
                 var amp = 0, placedSuccessfully = false;
-                // TO DO add logic to alternate between negative and positive, and increment until we find a spot or run out
                 while(!placedSuccessfully && amp < star.orbits.length){
                     amp++;
                     if(orbit-amp >= 0 && typeof star.orbits[orbit-amp] === "undefined"){
@@ -584,7 +614,6 @@ function createBigWorld(maxPop){
     return {worldtype: "BigWorld", uwp:planet.uwp}
 }
 function createGasGiant(){
-    
     var roll = d6(2);
     if(roll <= 3){type = "Small Gas Giant";}
     else{type = "Large Gas Giant";}
@@ -875,7 +904,7 @@ function createOtherWorld(orbit, hzorbit, maxPop){
                 type = "Hospitable";
             }
             planet = createPlanet(type,-1,maxPop);
-            if(type = "Hospitable"){
+            if(diff === 0){
                 while(moonRoll - 4 === 0){
                     moons.push(createRing());
                     moonRoll = d6();
