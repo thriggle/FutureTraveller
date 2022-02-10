@@ -70,9 +70,10 @@
             display:inline-block;
             text-align:left;
         }
-        #SystemDetails h1, #SystemDetails h2, #SystemDetails h3{
+        #SystemDetails h1, #SystemDetails h2, #SystemDetails h3,  #SystemDetails h4{
             text-align:center;
             font-family:'Candara','Eras Demi ITC','Eras Demi','Eras','Segoe UI',sans-serif;
+            margin-top:0; margin-bottom:0;
         }
     </style>
     <fieldset>
@@ -339,9 +340,11 @@
     </fieldset>
     <div id="SystemDetailsContainer" style="display:none;">
         <div id="SystemDetails">
-            <h1 data-system="name">System Name</h1>
-            <h2 data-system="uwp">Mainworld</h2>
+            <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span> <span data-system="uwp"></span></h1>
             <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
+            <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
+            <h4>Bases: <span data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
+            <h4><span data-system="travelcodenotes"></span></h4>
             <h3>System Map:</h3>
             <ul id="maplist"></ul>
         </div>
@@ -439,8 +442,8 @@
                                 var detailBlock = document.getElementById("SystemDetailsContainer");
                                 if(hex.system){
                                     renderSystem(hex.system);
-                                    detailBlock.style.left = e.clientX  - canvas.getBoundingClientRect().left +"px";
-                                    detailBlock.style.top = e.clientY- canvas.getBoundingClientRect().top+"px";
+                                    detailBlock.style.left = e.clientX + "px";// - canvas.getBoundingClientRect().left +"px";
+                                    detailBlock.style.top = e.clientY + "px";//- canvas.getBoundingClientRect().top+"px";
                                     detailBlock.style.display = "inline-block";
                                 }else{
                                     detailBlock.style.display = "none";
@@ -705,9 +708,9 @@
                         if(importance > maxImportance){
                             capital = system;
                             maxImportance = importance;
-                            tradeCodeCount = capital.mainworld.tradeCodes.length | 0;
+                            tradeCodeCount = capital.mainworld.tradecodes.length | 0;
                         }else if(importance === maxImportance){
-                            if(system.tradeCodes && system.tradeCodes.length > tradeCodeCount){
+                            if(system.tradecodes && system.tradecodes.length > tradeCodeCount){
                                 capital = system;
                                 maxImportance = importance;
                             }
@@ -715,16 +718,16 @@
                     }
                     // throw in the Mongoose tech codes for good measure
                     var tech = mainworld.tech;
-                    if(tech >= 12){ system.mainworld.tradeCodes.push("Ht");}
-                    else if(tech <= 5 ){ system.mainworld.tradeCodes.push("Lt");}    
-                    if(mainworld.tradeCodes.indexOf("Cy") > 0){
+                    if(tech >= 12){ system.mainworld.tradecodes.push("Ht");}
+                    else if(tech <= 5 ){ system.mainworld.tradecodes.push("Lt");}    
+                    if(mainworld.tradecodes.indexOf("Cy") > 0){
                         // figure out the colony owner here!
                     }              
                 }
                 if(capital){
                     capital.isCapital = true;
-                    capital.mainworld.tradeCodes.push("Cp");
-                    capital.mainworld.tradeCodes.sort();
+                    capital.mainworld.tradecodes.push("Cp");
+                    capital.mainworld.tradecodes.sort();
                 }
                
             }
@@ -885,7 +888,7 @@
                     if(typeof mapContent[i].system !== "undefined" && mapContent[i].system !== null){
                         mapContent[i].system.isAmber = false;
                         mapContent[i].system.isRed = false;
-                        mapContent[i].system.travelCodeNotes = "";
+                        mapContent[i].system.travelcodenotes = "";
                         if(mapContent[i].system.mainworld.pop > 0){
                             if(AmberZoneLL !== "N/A"){ // amber zone highest law level
                                 if(mapContent[i].system.mainworld.law === maxes[6] && maxes[6] >= MaxLLThreshold) {
@@ -894,7 +897,7 @@
                                     }else{
                                         mapContent[i].system.isAmber = true; 
                                     }
-                                    mapContent[i].system.travelCodeNotes += "Among strictest law levels in the subsector.  ";
+                                    mapContent[i].system.travelcodenotes += "Among strictest law levels in the subsector.  ";
                                 }
                             }
                             if(AmberZone9LL !== "N/A"){ // amber zone 9+ law level 
@@ -904,7 +907,7 @@
                                     }else{
                                         mapContent[i].system.isAmber = true; 
                                     }
-                                    mapContent[i].system.travelCodeNotes += "Law levels "+LLThreshold.toString()+"+.  ";
+                                    mapContent[i].system.travelcodenotes += "Law levels "+LLThreshold.toString()+"+.  ";
                                 }
                             }
                             if(AmberZone0LL !== "N/A"){ // amber zone 0 law level
@@ -914,7 +917,7 @@
                                     }else{
                                         mapContent[i].system.isAmber = true; 
                                     }
-                                    mapContent[i].system.travelCodeNotes += "No law level enforced.  ";
+                                    mapContent[i].system.travelcodenotes += "No law level enforced.  ";
                                 }
                             }
                            
@@ -925,7 +928,7 @@
                                     }else{
                                         mapContent[i].system.isAmber = true; 
                                     }
-                                    mapContent[i].system.travelCodeNotes += "Anarchy.  ";
+                                    mapContent[i].system.travelcodenotes += "Anarchy.  ";
                                 }
                             }
                             if(AmberZoneGov7 !== "N/A"){ // amber balkanized
@@ -935,7 +938,7 @@
                                     }else{
                                         mapContent[i].system.isAmber = true; 
                                     }
-                                    mapContent[i].system.travelCodeNotes += "Balkanized local governments.  ";
+                                    mapContent[i].system.travelcodenotes += "Balkanized local governments.  ";
                                 }
                             }
                             if(AmberZoneGov0 !== "N/A"){ // amber charismatic dictatorship
@@ -945,7 +948,7 @@
                                     }else{
                                         mapContent[i].system.isAmber = true; 
                                     }
-                                    mapContent[i].system.travelCodeNotes += "Ruled by charismatic dictatorship.  ";
+                                    mapContent[i].system.travelcodenotes += "Ruled by charismatic dictatorship.  ";
                                 }
                             }
                             if(RedZoneX !== "N/A" && mapContent[i].system.mainworld.starport.toUpperCase() === "X"){ // red no starport
@@ -954,7 +957,7 @@
                                 }else{
                                     mapContent[i].system.isAmber = true; 
                                 }
-                                mapContent[i].system.travelCodeNotes += "Population under interdiction.  ";
+                                mapContent[i].system.travelcodenotes += "Population under interdiction.  ";
                             }
                             if(RedGovLaw !== "N/A"){
                                 if(mapContent[i].system.mainworld.gov + mapContent[i].system.mainworld.law >= RedGovLawThreshold){
@@ -963,7 +966,7 @@
                                     }else{
                                         mapContent[i].system.isAmber = true; 
                                     }
-                                    mapContent[i].system.travelCodeNotes += "Oppressive government.  ";
+                                    mapContent[i].system.travelcodenotes += "Oppressive government.  ";
                                 }
                                 
                             }
@@ -974,7 +977,7 @@
                                     }else{
                                         mapContent[i].system.isAmber = true; 
                                     }
-                                    mapContent[i].system.travelCodeNotes += "Oppressive government.  ";
+                                    mapContent[i].system.travelcodenotes += "Oppressive government.  ";
                                 }
                                 
                             }
@@ -986,7 +989,7 @@
                                 }else{
                                     mapContent[i].system.isAmber = true; 
                                 }
-                                mapContent[i].system.travelCodeNotes += "Barren/Uninhabited.  ";
+                                mapContent[i].system.travelcodenotes += "Barren/Uninhabited.  ";
                                 
                             }
                             if(AmberZoneBaX !== "N/A" && mapContent[i].system.starport === "X"){ // amber zone uninhabited
@@ -997,9 +1000,9 @@
                                     mapContent[i].system.isAmber = true; 
                                 }
                                 if(mapContent[i].system.mainworld.tech <=5){
-                                    mapContent[i].system.travelCodeNotes += "Protected population. No starport facilities.  ";
+                                    mapContent[i].system.travelcodenotes += "Protected population. No starport facilities.  ";
                                 }else{
-                                    mapContent[i].system.travelCodeNotes += "Under interdiction. No starport facilities.  ";
+                                    mapContent[i].system.travelcodenotes += "Under interdiction. No starport facilities.  ";
                                 }
                                 
                             }
@@ -1010,9 +1013,9 @@
                                     mapContent[i].system.isAmber = true; 
                                 }
                                 if(mapContent[i].system.mainworld.starport === "E"){
-                                    mapContent[i].system.travelCodeNotes += "Archaeological site (dieback world).  ";
+                                    mapContent[i].system.travelcodenotes += "Archaeological site (dieback world).  ";
                                 }else{
-                                    mapContent[i].system.travelCodeNotes += "Dieback world.  ";
+                                    mapContent[i].system.travelcodenotes += "Dieback world.  ";
                                 }
                             }
                         }
@@ -1023,8 +1026,13 @@
                                 }else{
                                     mapContent[i].system.isAmber = true; 
                                 }
-                                mapContent[i].system.travelCodeNotes += "Dangerous atmosphere.  ";
+                                mapContent[i].system.travelcodenotes += "Dangerous atmosphere.  ";
                             }
+                        }
+                        if(mapContent[i].system.isRed){
+                            mapContent[i].system.travelcodenotes = "RED ZONE: "+mapContent[i].system.travelcodenotes;
+                        }else if(mapContent[i].system.isAmber){
+                            mapContent[i].system.travelcodenotes = "AMBER ZONE: "+mapContent[i].system.travelcodenotes;
                         }
                     }
                 }
@@ -1366,12 +1374,12 @@
                         ctx.fillText(uwp,x4,y1);
                         // write trade codes
                         maxWidth = x3 - x0 - (x1-x0)/2 - (x3-x2)/2 - fontSize*2;
-                        var codes = hex.system.mainworld.tradeCodes.join(" ");
+                        var codes = hex.system.mainworld.tradecodes.join(" ");
                         var codesSize = ctx.measureText(codes);
                         lines = [codes];
                         if(codesSize.width > maxWidth){
-                            var line1 = hex.system.mainworld.tradeCodes.slice(0,hex.system.mainworld.tradeCodes.length/2>>0).join(" ");
-                            var line2 = hex.system.mainworld.tradeCodes.slice(hex.system.mainworld.tradeCodes.length/2>>0).join(" ");
+                            var line1 = hex.system.mainworld.tradecodes.slice(0,hex.system.mainworld.tradecodes.length/2>>0).join(" ");
+                            var line2 = hex.system.mainworld.tradecodes.slice(hex.system.mainworld.tradecodes.length/2>>0).join(" ");
                             lines = [line1, line2]
                         }
                         height = y1 + fontHeight;
@@ -1562,17 +1570,102 @@
             }
         
             function renderSystem(system){
+                var lookups = {
+                    tradecode:{
+                        "As":"Asteroid Belt",
+                        "De":"Desert",
+                        "Fl":"Fluid Oceans",
+                        "Ga":"Garden World",
+                        "He":"Hellworld",
+                        "Ic":"Ice-Capped",
+                        "Oc":"Ocean World",
+                        "Va":"Vacuum",
+                        "Wa":"Water World",
+                        "Sa":"Satellite (far satellite)",
+                        "Lk":"Locked (close satellite)",
+                        "Di":"Dieback",
+                        "Ba":"Barren",
+                        "Lo":"Low Population",
+                        "Ni":"Non-Industrial",
+                        "Ph":"Pre-High Population",
+                        "Hi":"High Population",
+                        "Pa":"Pre-Agricultural",
+                        "Ag":"Agricultural",
+                        "Na":"Non-Agricultural",
+                        "Px":"Prison or Exile Camp",
+                        "Pi":"Pre-Industrial",
+                        "In":"Industrial",
+                        "Po":"Poor",
+                        "Pr":"Pre-Rich",
+                        "Ri":"Rich",
+                        "Fr":"Frozen",
+                        "Ho":"Hot",
+                        "Co":"Cold",
+                        "Tr":"Tropic",
+                        "Tu":"Tundra",
+                        "Tz":"Twilight Zone",
+                        "Cp":"Capital",
+                        "Cy":"Colony",
+                        "Lt":"Low Tech",
+                        "Ht":"High Tech"
+                    }
+                };
             var systemTokens = document.querySelectorAll("[data-system]");
             for(var i = 0, len = systemTokens.length; i < len; i++){
                 var el = systemTokens[i];
                 var key = el.getAttribute("data-system");
-                el.innerHTML = system[key];
+                var val = {};
+                if(typeof system[key] === "string"){
+                    val = system[key];
+                }else{
+                    Object.assign(val,system[key]);
+                    if(el.getAttribute("data-lookup")){
+                        var keys = Object.keys(val);
+                        for(var i = 0, len = keys.length; i < len; i++){
+                            if(lookups[el.getAttribute("data-lookup")][val[keys[i]]]){
+                                val[keys[i]] = lookups[el.getAttribute("data-lookup")][val[keys[i]]];
+                            }
+                        }
+                    }
+                    if(el.getAttribute("data-join")){
+                        if(!val.join){
+                            val = Object.values(val);
+                        }
+                        val = val.join(el.getAttribute("data-join"));
+                    }
+                }
+                if(val.toString() === ""){
+                    if(el.getAttribute("data-ifblank")){
+                        val = el.getAttribute("data-ifblank");
+                    }
+                }
+                el.innerHTML = val;
             }
             var mainworldTokens = document.querySelectorAll("[data-mainworld]");
             for(var i = 0, len = mainworldTokens.length; i < len; i++){
                 var el = mainworldTokens[i];
                 var key = el.getAttribute("data-mainworld");
-                el.innerHTML = system.mainworld[key];
+                var val = {};
+                if(typeof system.mainworld[key] === "string"){
+                    val = system.mainworld[key];
+                }else{
+                    Object.assign(val,system.mainworld[key]);
+                    if(el.getAttribute("data-lookup")){
+                        var keys = Object.keys(val);
+                        for(var i = 0, len = keys.length; i < len; i++){
+                            if(lookups[el.getAttribute("data-lookup")][val[keys[i]]]){
+                                val[keys[i]] = lookups[el.getAttribute("data-lookup")][val[keys[i]]];
+                            }
+                        }
+                    }
+                }
+                if(el.getAttribute("data-join")){
+                    if(!val.join){
+                        val = Object.values(val);
+                    }
+                    val = val.join(el.getAttribute("data-join"));
+                }
+                el.innerHTML = val;
             }
             var importanceTokens = document.querySelectorAll("[data-importance]");
             for(var i = 0, len = importanceTokens.length; i < len; i++){
@@ -1666,8 +1759,7 @@
         function sat(i){
             var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
             return orbits[i];
-        }
-        
+        }        
         function clearElement(el){
             while(el.children.length > 0){
                 el.removeChild(el.children[el.children.length-1]);

@@ -17,7 +17,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     var gg = d6(2) <= gasGiantFrequency ? Math.max(d6(2)/2>>0-2,1) : 0;
     var roll;
     var uwp = "";
-    var tradeCodes = [];
+    var tradecodes = [];
     var stars = {primary:{},primary_companion:false,close:false,near:false, near_companion:false,close_companion:false,far:false, far_companion:false};
     var primaryType = d6()-d6(),
         primaryDecimal = d09(),
@@ -308,88 +308,88 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }
     var difference = stars.primary.HZorbit - MWOrbit;
     if(difference >= 2){
-        tradeCodes.push("Tr"); climate = "Hot. Tropic.";
+        tradecodes.push("Tr"); climate = "Hot. Tropic.";
     }else if(difference === 1){
         if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-            tradeCodes.push("Tr"); climate = "Tropic.";
+            tradecodes.push("Tr"); climate = "Tropic.";
         }else{
-            tradeCodes.push("Ho"); climate = "Hot.";
+            tradecodes.push("Ho"); climate = "Hot.";
         }
     }else if(difference === 0){
         climate = "Temperate.";
     }else if(difference === -1){
         if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-            tradeCodes.push("Tu"); climate = "Tundra.";
+            tradecodes.push("Tu"); climate = "Tundra.";
         }else{
-            tradeCodes.push("Co"); climate = "Cold.";
+            tradecodes.push("Co"); climate = "Cold.";
         }
     }else if(difference <= -2){
         if(size >= 2 && size <= 9 && hydro > 0){
-            tradeCodes.push("Fr"); 
+            tradecodes.push("Fr"); 
             climate = "Frozen.";
         }
     }
-    if(MWOrbit <= 1){ tradeCodes.push("Tz"); }
+    if(MWOrbit <= 1){ tradecodes.push("Tz"); }
     
     // trade codes
-    if(size === 0 && atmo === 0 && hydro === 0){ tradeCodes.push("As"); }
-    if(atmo >= 2 && atmo <= 9 && hydro === 0){ tradeCodes.push("De"); }
-    if(atmo >= 10 && atmo <= 12 && hydro >= 1){ tradeCodes.push("Fl"); }
+    if(size === 0 && atmo === 0 && hydro === 0){ tradecodes.push("As"); }
+    if(atmo >= 2 && atmo <= 9 && hydro === 0){ tradecodes.push("De"); }
+    if(atmo >= 10 && atmo <= 12 && hydro >= 1){ tradecodes.push("Fl"); }
     if(size >= 6 && size <= 8 && 
         (atmo === 5 || atmo === 6 || atmo === 8) &&
         (hydro >= 5 && hydro <= 7)
     ){ 
-        tradeCodes.push("Ga"); 
+        tradecodes.push("Ga"); 
     }
     if(size >= 3 && 
         (atmo === 2 || atmo === 4 || atmo === 7 || atmo === 9 || atmo === 10 || atmo === 11 || atmo === 12) &&
         (hydro <= 2)
     ){
-        tradeCodes.push("He");
+        tradecodes.push("He");
     }
-    if( atmo <= 1 && hydro >= 1){ tradeCodes.push("Ic"); }
+    if( atmo <= 1 && hydro >= 1){ tradecodes.push("Ic"); }
     if(size >= 10 && hydro === 10 && (
         (atmo >= 3 && atmo <=9) || (atmo >= 13)
-    )){ tradeCodes.push("Oc");}
+    )){ tradecodes.push("Oc");}
     if(size <= 9 && hydro === 10 && (
         (atmo >= 3 && atmo <=9) || (atmo >= 13)
-    )){ tradeCodes.push("Wa");}
-    if(atmo === 0){tradeCodes.push("Va");}
-    if(MWType === "Far Satellite"){ tradeCodes.push("Sa"); }
-    else if(MWType === "Close Satellite"){ tradeCodes.push("Lk"); }
+    )){ tradecodes.push("Wa");}
+    if(atmo === 0){tradecodes.push("Va");}
+    if(MWType === "Far Satellite"){ tradecodes.push("Sa"); }
+    else if(MWType === "Close Satellite"){ tradecodes.push("Lk"); }
     if(pop === 0){
-        tradeCodes.push("Ba");
-        if(tech > 0){ tradeCodes.push("Di");}
+        tradecodes.push("Ba");
+        if(tech > 0){ tradecodes.push("Di");}
     }
     else if(pop <= 3){
-        tradeCodes.push("Lo");
+        tradecodes.push("Lo");
     }else if(pop <= 6){
-        tradeCodes.push("Ni");
+        tradecodes.push("Ni");
     }else if(pop === 8){
-        tradeCodes.push("Ph");
+        tradecodes.push("Ph");
     }else if(pop >= 9){
-        tradeCodes.push("Hi");
+        tradecodes.push("Hi");
     }
-    if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop === 4 || pop === 8)){ tradeCodes.push("Pa"); }
-    if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop >= 5 && pop <= 7)){ tradeCodes.push("Ag"); }
-    if(atmo <= 3 && hydro <= 3 && pop >= 6){ tradeCodes.push("Na"); }
+    if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop === 4 || pop === 8)){ tradecodes.push("Pa"); }
+    if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop >= 5 && pop <= 7)){ tradecodes.push("Ag"); }
+    if(atmo <= 3 && hydro <= 3 && pop >= 6){ tradecodes.push("Na"); }
     if( (atmo === 2 || atmo === 3 || atmo === 10 || atmo === 11) &&
         hydro <= 5 && pop >=3 && pop <= 6 && law >= 6 && law <= 9 && gov === 6
     ){
-        tradeCodes.push("Px");
+        tradecodes.push("Px");
     }
-    if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9) && (pop === 7 || pop === 8)){ tradeCodes.push("Pi");}
+    if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9) && (pop === 7 || pop === 8)){ tradecodes.push("Pi");}
     if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9 || atmo === 10 || atmo === 11 || atmo === 12) 
-        && (pop >= 9)){ tradeCodes.push("In");
+        && (pop >= 9)){ tradecodes.push("In");
     }
     if(atmo >= 2 && atmo <= 5 && hydro <= 3){
-        tradeCodes.push("Po");
+        tradecodes.push("Po");
     }
     if(atmo === 6 || atmo === 8){
-        if(pop === 5 || pop === 9){ tradeCodes.push("Pr"); }
-        else if(pop >= 6 && pop <= 8){ tradeCodes.push("Ri"); }
+        if(pop === 5 || pop === 9){ tradecodes.push("Pr"); }
+        else if(pop >= 6 && pop <= 8){ tradecodes.push("Ri"); }
     }
-    if(pop >= 5 && pop <= 10 && gov === 6 && law <= 3){ tradeCodes.push("Cy");}
+    if(pop >= 5 && pop <= 10 && gov === 6 && law <= 3){ tradecodes.push("Cy");}
     
 
     var importance = 0, importanceDesc = "", dailyships = "0", weeklyships = "0";
@@ -398,10 +398,10 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(tech >= 16){importance += 1;}
     if(tech >= 10){importance += 1;}
     if(tech <= 8){importance -= 1;}
-    if(tradeCodes.indexOf("Ag")>=0){ importance += 1;}
-    if(tradeCodes.indexOf("Hi")>=0){ importance += 1;}
-    if(tradeCodes.indexOf("In")>=0){ importance += 1;}
-    if(tradeCodes.indexOf("Ri")>=0){ importance += 1;}
+    if(tradecodes.indexOf("Ag")>=0){ importance += 1;}
+    if(tradecodes.indexOf("Hi")>=0){ importance += 1;}
+    if(tradecodes.indexOf("In")>=0){ importance += 1;}
+    if(tradecodes.indexOf("Ri")>=0){ importance += 1;}
     if(pop <= 6){ importance -=1;}
     if((bases.indexOf("Naval") >= 0 || bases.indexOf("Naval Depot") >=0) && (bases.indexOf("Scout") || bases.indexOf("Way Station") >= 0) >= 0){ importance += 1;}
     if(bases.indexOf("Way Station") >= 0){ importance += 1;}
@@ -417,16 +417,16 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }
     else if(importance <= 4){ importanceDesc = "Important"; dailyships = "15-20"; weeklyships = "100";}
     else if(importance >= 5){ importanceDesc = "Very Important"; dailyships = "100"; weeklyships = "1000";}
-    tradeCodes.sort();
+    tradecodes.sort();
     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
     var hasHighport = false;
     if(starport === "A" && pop >= 7){ hasHighport = true;}
     else if(starport === "B" && pop >= 8){ hasHighport = true;}
     else if(starport === "C" && pop >= 9){ hasHighport = true;}
-    var mainworld = {isMainworld:true, uwp:uwp, hasHighport:hasHighport, tradeCodes:tradeCodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
+    var mainworld = {isMainworld:true, uwp:uwp, hasHighport:hasHighport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
     stars = placeWorlds(stars, mainworld, gg, planetoidBelts, d6(2))
 
-    return {name:name, uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradeCodes:tradeCodes};
+    return {name:name, uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
     
 }
 function getInnermostOrbit(star){
