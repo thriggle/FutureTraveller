@@ -44,17 +44,102 @@
             renderSystem(system);
         });
         function renderSystem(system){
+                var lookups = {
+                    tradecode:{
+                        "As":"Asteroid Belt",
+                        "De":"Desert",
+                        "Fl":"Fluid Oceans",
+                        "Ga":"Garden World",
+                        "He":"Hellworld",
+                        "Ic":"Ice-Capped",
+                        "Oc":"Ocean World",
+                        "Va":"Vacuum",
+                        "Wa":"Water World",
+                        "Sa":"Satellite (far satellite)",
+                        "Lk":"Locked (close satellite)",
+                        "Di":"Dieback",
+                        "Ba":"Barren",
+                        "Lo":"Low Population",
+                        "Ni":"Non-Industrial",
+                        "Ph":"Pre-High Population",
+                        "Hi":"High Population",
+                        "Pa":"Pre-Agricultural",
+                        "Ag":"Agricultural",
+                        "Na":"Non-Agricultural",
+                        "Px":"Prison or Exile Camp",
+                        "Pi":"Pre-Industrial",
+                        "In":"Industrial",
+                        "Po":"Poor",
+                        "Pr":"Pre-Rich",
+                        "Ri":"Rich",
+                        "Fr":"Frozen",
+                        "Ho":"Hot",
+                        "Co":"Cold",
+                        "Tr":"Tropic",
+                        "Tu":"Tundra",
+                        "Tz":"Twilight Zone",
+                        "Cp":"Capital",
+                        "Cy":"Colony",
+                        "Lt":"Low Tech",
+                        "Ht":"High Tech"
+                    }
+                };
             var systemTokens = document.querySelectorAll("[data-system]");
             for(var i = 0, len = systemTokens.length; i < len; i++){
                 var el = systemTokens[i];
                 var key = el.getAttribute("data-system");
-                el.innerHTML = system[key];
+                var val = {};
+                if(typeof system[key] === "string"){
+                    val = system[key];
+                }else{
+                    Object.assign(val,system[key]);
+                    if(el.getAttribute("data-lookup")){
+                        var keys = Object.keys(val);
+                        for(var i = 0, len = keys.length; i < len; i++){
+                            if(lookups[el.getAttribute("data-lookup")][val[keys[i]]]){
+                                val[keys[i]] = lookups[el.getAttribute("data-lookup")][val[keys[i]]];
+                            }
+                        }
+                    }
+                    if(el.getAttribute("data-join")){
+                        if(!val.join){
+                            val = Object.values(val);
+                        }
+                        val = val.join(el.getAttribute("data-join"));
+                    }
+                }
+                if(val.toString() === ""){
+                    if(el.getAttribute("data-ifblank")){
+                        val = el.getAttribute("data-ifblank");
+                    }
+                }
+                el.innerHTML = val;
             }
             var mainworldTokens = document.querySelectorAll("[data-mainworld]");
             for(var i = 0, len = mainworldTokens.length; i < len; i++){
                 var el = mainworldTokens[i];
                 var key = el.getAttribute("data-mainworld");
-                el.innerHTML = system.mainworld[key];
+                var val = {};
+                if(typeof system.mainworld[key] === "string"){
+                    val = system.mainworld[key];
+                }else{
+                    Object.assign(val,system.mainworld[key]);
+                    if(el.getAttribute("data-lookup")){
+                        var keys = Object.keys(val);
+                        for(var i = 0, len = keys.length; i < len; i++){
+                            if(lookups[el.getAttribute("data-lookup")][val[keys[i]]]){
+                                val[keys[i]] = lookups[el.getAttribute("data-lookup")][val[keys[i]]];
+                            }
+                        }
+                    }
+                }
+                if(el.getAttribute("data-join")){
+                    if(!val.join){
+                        val = Object.values(val);
+                    }
+                    val = val.join(el.getAttribute("data-join"));
+                }
+                el.innerHTML = val;
             }
             var importanceTokens = document.querySelectorAll("[data-importance]");
             for(var i = 0, len = importanceTokens.length; i < len; i++){
@@ -86,9 +171,11 @@
                         description = slot.uwp;
                         if(typeof description === "undefined"){ console.log(slot);}
                     }
-                    list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                    var li = list.appendChild(document.createElement("li"));
+                    li.appendChild(document.createTextNode(
                         "Orbit "+i+": "+addCaps(slot.worldtype) + " ("+ description + ")"+(slot.isMainworld?"**":"")
                     ));
+                    if(slot.isMainworld){li.style.fontWeight = "bold";}
                     if(slot.satellites){
                         var subOrbitingStar = false;
                         var sublist = list.appendChild(document.createElement("ul"));
@@ -107,15 +194,15 @@
                                     subOrbitingStar = false;
                                     desc = subslot.uwp;
                                 }
+                                var text = "";
                                 if(!orbitingStar){
-                                    sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                        "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
-                                    ));
+                                    text = "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"");
                                 }else{
-                                    sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                        "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
-                                    ));
+                                    text =  "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
                                 }
+                                var li = sublist.appendChild(document.createElement("li"));
+                                li.appendChild(document.createTextNode(text));
+                                if(subslot.isMainworld){ li.style.fontWeight = "bold"; }
                                 
                                 if(subslot.satellites){
                                     subsublist = sublist.appendChild(document.createElement("ul"));
@@ -123,17 +210,16 @@
                                         var subsub = subslot.satellites[k];
                                         if(typeof subsub !== "undefined"){
                                             desc = subsub.uwp;
-                                            if(subOrbitingStar){
-                                                subsublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                                    "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"")
-                                                    ));
+                                            var text = "";
+                                            if(subOrbitingStar){                                               
+                                                text = "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"");
                                                 
                                             }else{
-                                                subsublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                                    "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"")
-                                                    ));
-                                                
+                                                text = "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"");                                                
                                             }
+                                            var li = subsublist.appendChild(document.createElement("li"))
+                                            li.appendChild(document.createTextNode(text));
+                                            if(subsub.isMainworld){li.style.fontWeight = "bold";}
                                         }
                                     }
                                 }
@@ -144,6 +230,7 @@
             }
             console.log(system);
         }
+       
         function clearElement(el){
             while(el.children.length > 0){
                 el.removeChild(el.children[el.children.length-1]);
