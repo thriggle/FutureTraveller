@@ -331,7 +331,7 @@
         <div id="SystemDetails">
             <h1 data-system="name">System Name</h1>
             <h2 data-system="uwp">Mainworld</h2>
-            <h3>Importance: <span data-importance="description">System Importance</span> (<span data-importance="dailytraffic"></span> ships/day, <span data-importance="weeklytraffic"></span> ships/week)</h3>
+            <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
             <h3>System Map:</h3>
             <ul id="maplist"></ul>
         </div>
@@ -716,456 +716,9 @@
                     capital.mainworld.tradeCodes.push("Cp");
                     capital.mainworld.tradeCodes.sort();
                 }
-                /*
-                for(var j = 0, jlen = labels.length; j < jlen; j++){
-                    var label = labels[j];
-                    var avg = (uwpSums[j]/systemArray.length)>>0;
-                    console.log(label + " " +
-                     "min:"+uwpMins[j]+" ("+tracker[label][uwpMins[j]]+" times), "+
-                     "max:"+ uwpMaxes[j]+ " ("+tracker[label][uwpMaxes[j]]+" times), "+
-                     "avg:"+ avg+" ("+tracker[label][avg]+" times)");
-                     
-                }
-                //console.log(tracker);
-                //console.log(systemArray.length + " systems total");
-                */
+               
             }
-            /*
-            function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel){
-                var isAsteroidBelt = d6(2) == 2;
-                var planetoidBelts = Math.max(d6()-3,0);
-                var gg = d6(2) <= gasGiantFrequency ? Math.max(d6(2)/2>>0-2,1) : 0;
-                var roll;
-                var uwp = "";
-                var tradeCodes = [];
-                var stars = {primary:{},primary_companion:false,close:false,near:false, near_companion:false,close_companion:false,far:false, far_companion:false};
-                var primaryType = d6()-d6(),
-                    primaryDecimal = d09(),
-                    primarySize = d6()-d6();
-                stars.primary = getStar(primaryType,primaryDecimal,primarySize);
-                if(d6()-d6()>=3){ 
-                    stars.primary_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
-                    
-                }
-                if(d6()-d6()>=3){ 
-                    stars.close = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
-                    stars.close.orbit = d6()-1;
-                    if(d6()-d6()>=3){ 
-                        stars.close_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
-                    }
-                }
-                if(d6()-d6()>=3){ 
-                    stars.near = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
-                    stars.near.orbit = 5 + d6();
-                    if(d6()-d6()>=3){ 
-                        stars.near_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
-                    }
-                }
-                if(d6()-d6()>=3){ 
-                    stars.far = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
-                    stars.far.orbit = 11 + d6();
-                    if(d6()-d6()>=3){ 
-                        stars.far_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2);
-                    }
-                }
-                
-                var bases = [];
-                roll = d6(2); // roll for starport
-                var starport;
-                if(roll <= 4){
-                    uwp = starport = "A";
-                    if(d6(2)<=6){ 
-                        if(d6(2)<=4){
-                            bases.push("Naval Depot");
-                        }else{ bases.push("Naval");}
-                    }
-                    if(d6(2)<=4){ 
-                        if(d6(2)<=7){
-                            bases.push("Way Station");
-                        }else{ bases.push("Scout");}
-                    }
-                }
-                else if(roll <= 6){
-                    uwp = starport = "B";
-                    if(d6(2)<=5){ bases.push("Naval");}
-                    if(d6(2)<=5){ bases.push("Scout");}
-                }
-                else if(roll <= 8){
-                    uwp = starport = "C";
-                    if(d6(2)<=6){bases.push("Scout");}
-                }
-                else if(roll == 9){
-                    uwp = starport = "D";
-                    if(d6(2)<=7){bases.push("Scout");}
-                }
-                else if(roll <= 11){
-                    uwp = starport = "E";
-                }
-                else if(roll == 12){
-                    uwp = starport = "X";
-                }
-                // roll for size
-                var size = d6(2)-2; 
-                if(size === 10){ size = d6()+9; }
-                uwp += size.toString(36);
-                //roll for atmosphere
-                var atmo = d6()-d6()+size;
-                if(atmo < 0 || size === 0){ atmo = 0;}
-                if(atmo > 15){atmo = 15;}
-                uwp += atmo.toString(36);
-                //roll for hydro
-                var hydroMods = 0;
-                if(atmo < 2 || atmo > 9){hydroMods = 4;}
-                var hydro = d6()-d6()+atmo+hydroMods;
-                if(size < 2 || hydro < 0){hydro = 0;}
-                if(hydro > 10){hydro = 10;}
-                uwp += hydro.toString(36);
-                // roll for pop
-                var pop = d6(2)-2;
-                if(pop===0){
-                    //uwp = "X"+uwp.substring(1); 
-                    //starport = "X"; 
-                    bases = [];
-                }
-                if(pop === 10){ pop = d6(2)+3;}
-                uwp += pop.toString(36);
-                // roll for gov
-                var gov = d6()-d6()+pop;
-                if(gov > 15){gov = 15;}
-                if(gov < 0){gov = 0;}
-                if(pop === 0){gov = 0;}
-                uwp += gov.toString(36);
-                // roll for law
-                var law = d6()-d6()+gov;
-                if(law < 0){law = 0;}
-                if(law > 18){law = 18;}
-                if(pop === 0){ law = 0;}
-                if(law <= 17){
-                    uwp += law.toString(36);
-                }else{
-                    uwp += (law+1).toString(36);
-                }
-                // roll for TL
-                var tech = d6(1);
-                if(starport === "A"){tech+=6;}
-                else if(starport === "B"){tech+=4;}
-                else if(starport === "C"){tech+=2;}
-                else if(starport === "X"){if(tech>=5){tech -= 4;}}
-
-                if(pop > 0){
-                    if(size <= 1 ){tech += 2;}
-                    else if(size <= 4 ){tech += 1;}
-
-                    if(atmo <= 3 ){tech += 1;}
-                    else if(atmo >= 10 ){tech += 1;}
-
-                    if(hydro === 9 ){tech += 1;}
-                    else if(hydro === 10 ){tech += 2;}
-                    
-                    if(pop <= 5 ){ tech += 1; }
-                    else if(pop === 9){ tech += 2;}
-                    else if(pop >= 10){ tech += 4;}
-                }
-                if((pop > 0 && gov === 0) || gov === 5){ tech += 1;}
-                else if(gov === 13){ tech -= 2;}
-
-                if(pop === 0){ // reduce tech level on dieback worlds
-                    var reduction = document.getElementById("slctDiebackTLPenalty").value;
-                    tech -= reduction;
-                    if(reduction > 0){
-                        if(tech <= 8 && starport === "A"){ starport = "B"; uwp = "B"+uwp.substring(1);}
-                        else if(tech <= 7 && starport === "B"){ starport = "C"; uwp = "C"+uwp.substring(1);}
-                        else if(tech <= 3 && starport === "C"){ starport = "D"; uwp = "D"+uwp.substring(1);}
-                        else if(tech === 1 && starport === "D"){ starport = "E"; uwp = "E"+uwp.substring(1);}
-                    }
-                    if(tech > 0){
-                        // This will be a dieback world. Give them the tech bonuses for planet features.
-                        if(size <= 1 ){tech += 2;}
-                        else if(size <= 4 ){tech += 1;}
-
-                        if(atmo <= 3 ){tech += 1;}
-                        else if(atmo >= 10 ){tech += 1;}
-
-                        if(hydro === 9 ){tech += 1;}
-                        else if(hydro === 10 ){tech += 2;}
-                    }
-                } 
-                if(tech < 0){tech = 0;}
-                if(tech > +(maxTechLevel)){
-                    tech = +(maxTechLevel);
-                }
-                if(pop === 0){ 
-                    if(!permitDieback){ 
-                        tech = 0;
-                    }
-                    if(tech===0){ // barren worlds require starport E or X
-                        if(starport !== "E"){
-                            starport = "X";
-                            uwp = "X" + uwp.substring(1);
-                        }
-                    }
-                }
-                if(tech <= 17){
-                    uwp += "-"+tech.toString(36);
-                }else{
-                    uwp += "-" + ((+(tech)+1).toString(36));
-                }
-                // roll to see if the world is a satellite
-                roll = d6()-d6();
-                var MWType, MWPrimary, MWOrbitAroundPrimary;
-                if(roll <=-4){ 
-                    MWType = "Far Satellite";
-                    roll = d6() - d6();
-                    if(roll === -5){ MWOrbitAroundPrimary = "Oh"; }
-                    else if(roll === -4){ MWOrbitAroundPrimary = "Pee"; }
-                    else if(roll === -3){ MWOrbitAroundPrimary = "Que"; }
-                    else if(roll === -2){ MWOrbitAroundPrimary = "Arr"; }
-                    else if(roll === -1){ MWOrbitAroundPrimary = "Ess"; }
-                    else if(roll === 0){ MWOrbitAroundPrimary = "Tee"; }
-                    else if(roll === 1){ MWOrbitAroundPrimary = "Yu"; }
-                    else if(roll === 2){ MWOrbitAroundPrimary = "Vee"; }
-                    else if(roll === 3){ MWOrbitAroundPrimary = "Dub"; }
-                    else if(roll === 4){ MWOrbitAroundPrimary = "Ex"; }
-                    else if(roll === 5){ MWOrbitAroundPrimary = "Wye"; }
-                }
-                else if(roll <= -3){ 
-                    MWType = "Close Satellite";
-                    if(roll === -5){ MWOrbitAroundPrimary = "Bee"; }
-                    else if(roll === -4){ MWOrbitAroundPrimary = "Cee"; }
-                    else if(roll === -3){ MWOrbitAroundPrimary = "Dee"; }
-                    else if(roll === -2){ MWOrbitAroundPrimary = "Ee"; }
-                    else if(roll === -1){ MWOrbitAroundPrimary = "Eff"; }
-                    else if(roll === 0){ MWOrbitAroundPrimary = "Gee"; }
-                    else if(roll === 1){ MWOrbitAroundPrimary = "Aitch"; }
-                    else if(roll === 2){ MWOrbitAroundPrimary = "Eye"; }
-                    else if(roll === 3){ MWOrbitAroundPrimary = "Jay"; }
-                    else if(roll === 4){ MWOrbitAroundPrimary = "Kay"; }
-                    else if(roll === 5){ MWOrbitAroundPrimary = "Ell"; }
-                }
-                else{ MWType = "Planet"; MWPrimary = "Star"; MWOrbitAroundPrimary = MWOrbit; }
-                if(MWType !== "Planet"){
-                    if(gg >= 1 && d6()-d6() <= 0){
-                            MWPrimary = "Gas Giant";
-                    }else{
-                        MWPrimary = "Planet";
-                    }
-                }
-
-                
-                roll = d6()-d6(); // roll for mainworld orbit
-                
-                var MWOrbit = stars.primary.HZOrbit; var climate = "";
-                if(stars.primary.type === "M"){roll += 2;}
-                else if(stars.primary.type === "O" || stars.primary.type === "B"){ roll -= 2;}
-
-                if(roll<=-6){ 
-                    MWOrbit -= 2; tradeCodes.push("Tr"); climate = "Hot. Tropic.";
-                }
-                else if(roll <= -3){ 
-                    MWOrbit -=1; 
-                    if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                        tradeCodes.push("Tr"); climate = "Tropic.";
-                    }else{
-                        tradeCodes.push("Ho"); climate = "Hot.";
-                    }
-                }
-                else if(roll <= 2){ MWOrbit = stars.primary.HZOrbit; climate = "Temperate."; }
-                else if(roll <= 5){ 
-                    MWOrbit += 1; 
-                    if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                        tradeCodes.push("Tu"); climate = "Tundra.";
-                    }else{
-                        tradeCodes.push("Co"); climate = "Cold.";
-                    }
-                }
-                else if(roll >= 6){ 
-                    MWOrbit += 2; 
-                    if(size >= 2 && size <= 9){
-                        tradeCodes.push("Fr"); 
-                        climate = "Frozen.";
-                    }
-                }
-                if(MWOrbit <= 1){ tradeCodes.push("Tz"); }
-                // trade codes
-                if(size === 0 && atmo === 0 && hydro === 0){ tradeCodes.push("As"); }
-                if(atmo >= 2 && atmo <= 9 && hydro === 0){ tradeCodes.push("De"); }
-                if(atmo >= 10 && atmo <= 12 && hydro >= 1){ tradeCodes.push("Fl"); }
-                if(size >= 6 && size <= 8 && 
-                    (atmo === 5 || atmo === 6 || atmo === 8) &&
-                    (hydro >= 5 && hydro <= 7)
-                ){ 
-                    tradeCodes.push("Ga"); 
-                }
-                if(size >= 3 && 
-                    (atmo === 2 || atmo === 4 || atmo === 7 || atmo === 9 || atmo === 10 || atmo === 11 || atmo === 12) &&
-                    (hydro <= 2)
-                ){
-                    tradeCodes.push("He");
-                }
-                if( atmo <= 1 && hydro >= 1){ tradeCodes.push("Ic"); }
-                if(size >= 10 && hydro === 10 && (
-                    (atmo >= 3 && atmo <=9) || (atmo >= 13)
-                )){ tradeCodes.push("Oc");}
-                if(size <= 9 && hydro === 10 && (
-                    (atmo >= 3 && atmo <=9) || (atmo >= 13)
-                )){ tradeCodes.push("Wa");}
-                if(atmo === 0){tradeCodes.push("Va");}
-                if(MWType === "Far Satellite"){ tradeCodes.push("Sa"); }
-                else if(MWType === "Close Satellite"){ tradeCodes.push("Lk"); }
-                if(pop === 0){
-                    tradeCodes.push("Ba");
-                    if(tech > 0){ tradeCodes.push("Di");}
-                }
-                else if(pop <= 3){
-                    tradeCodes.push("Lo");
-                }else if(pop <= 6){
-                    tradeCodes.push("Ni");
-                }else if(pop === 8){
-                    tradeCodes.push("Ph");
-                }else if(pop >= 9){
-                    tradeCodes.push("Hi");
-                }
-                if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop === 4 || pop === 8)){ tradeCodes.push("Pa"); }
-                if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop >= 5 && pop <= 7)){ tradeCodes.push("Ag"); }
-                if(atmo <= 3 && hydro <= 3 && pop >= 6){ tradeCodes.push("Na"); }
-                if( (atmo === 2 || atmo === 3 || atmo === 10 || atmo === 11) &&
-                    hydro <= 5 && pop >=3 && pop <= 6 && law >= 6 && law <= 9 && gov === 6
-                ){
-                    tradeCodes.push("Px");
-                }
-                if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9) && (pop === 7 || pop === 8)){ tradeCodes.push("Pi");}
-                if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9 || atmo === 10 || atmo === 11 || atmo === 12) 
-                    && (pop >= 9)){ tradeCodes.push("In");
-                }
-                if(atmo >= 2 && atmo <= 5 && hydro <= 3){
-                    tradeCodes.push("Po");
-                }
-                if(atmo === 6 || atmo === 8){
-                    if(pop === 5 || pop === 9){ tradeCodes.push("Pr"); }
-                    else if(pop >= 6 && pop <= 8){ tradeCodes.push("Ri"); }
-                }
-                if(pop >= 5 && pop <= 10 && gov === 6 && law <= 3){ tradeCodes.push("Cy");}
-                
-
-                var importance = 0, importanceDesc = "";
-                if(starport === "A" || starport === "B"){ importance +=1; }
-                else if(starport === "D" || starport === "E" || starport === "X"){ importance -= 1;}
-                if(tech >= 16){importance += 1;}
-                if(tech >= 10){importance += 1;}
-                if(tech <= 8){importance -= 1;}
-                if(tradeCodes.indexOf("Ag")>=0){ importance += 1;}
-                if(tradeCodes.indexOf("Hi")>=0){ importance += 1;}
-                if(tradeCodes.indexOf("In")>=0){ importance += 1;}
-                if(tradeCodes.indexOf("Ri")>=0){ importance += 1;}
-                if(pop <= 6){ importance -=1;}
-                if((bases.indexOf("Naval") >= 0 || bases.indexOf("Naval Depot") >=0) && (bases.indexOf("Scout") || bases.indexOf("Way Station") >= 0) >= 0){ importance += 1;}
-                if(bases.indexOf("Way Station") >= 0){ importance += 1;}
-                var isImportant = importance >= 4;
-                var isUnimportant = importance <= 0;
-                if(importance <= -2){ importanceDesc = "Very Unimportant"; }
-                else if(importance <= 0){ importanceDesc = "Unimportant"; }
-                else if(importance <= 3){ importanceDesc = "Ordinary"; }
-                else if(importance <= 4){ importanceDesc = "Important"; }
-                else if(importance >= 5){ importanceDesc = "Very Important";}
-                tradeCodes.sort();
-                return {uwp:uwp,bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:{tradeCodes:tradeCodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport},tradeCodes:tradeCodes};
-            }
-            function getStar(type, decimal, size){
-                var star = {};
-                if(type == -6){ 
-                    if(d6() == 1){
-                        star.type =  "O";
-                        if(size <= -5){ star.size = "Ia"; star.HZOrbit = 15;}
-                        else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 15;}
-                        else if(size <= -3){ star.size = "II"; star.HZorbit = 14; }
-                        else if(size <= 0){ star.size = "III"; star.HZOrbit = 13;}
-                        else if(size <= 3){ star.size = "V"; star.HZOrbit = 11;}
-                        else if(size <= 4){ star.size = "IV"; star.HZOrbit = 12;}
-                        else if(size <= 5){ star.size = "D"; star.HZOrbit = 1;}
-                        else{ star.size = "IV"; star.HZOrbit = 12;}
-                    }else{
-                        star.type = "B";
-                        if(size <= -5){ star.size = "Ia"; star.HZOrbit = 13;}
-                        else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 13;}
-                        else if(size <= -3){ star.size = "II"; star.HZOrbit = 12; }
-                        else if(size <= 1){ star.size = "III"; star.HZOrbit = 11; }
-                        else if(size <= 3){ star.size = "V"; star.HZOrbit = 9;}
-                        else if(size <= 4){ star.size = "IV"; star.HZOrbit = 10;}
-                        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-                        else{ star.size = "IV";star.HZOrbit = 10;}
-                    }
-                }
-                else if(type <= -4){ 
-                        star.type = "A"; 
-                        if(size <= -5){ star.size = "Ia"; star.HZOrbit = 12; }
-                        else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 11;}
-                        else if(size <= -3){ star.size = "II";star.HZOrbit = 9; }
-                        else if(size <= -2){ star.size = "III"; star.HZOrbit = 7;}
-                        else if(size <= -1){ star.size = "IV"; star.HZOrbit = 7;}
-                        else if(size <= 4){ star.size = "V";star.HZOrbit = 7;}
-                        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-                        else{ star.size = "V";star.HZOrbit = 7;}
-                }
-                else if(type <= -2){ 
-                    star.type = "F"; 
-                    if(size <= -5){ star.size = "II"; star.HZOrbit = 9;}
-                    else if(size <= -4){ star.size = "III";star.HZOrbit = 6; }
-                    else if(size <= -3){ star.size = "IV"; star.HZOrbit = 6;}
-                    else if(size <= 3){ star.size = "V"; star.HZOrbit = 5;}
-                    else if(size <= 4){ star.size = "VI";star.HZOrbit = 3;}
-                    else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-                    else{ star.size = "VI";star.HZOrbit = 3;}
-                }
-                else if(type <= 0){ 
-                    star.type = "G"; 
-                    if(size <= -5){ star.size = "II"; star.HZOrbit = 9;}
-                    else if(size <= -4){ star.size = "III"; star.HZOrbit = 7;}
-                    else if(size <= -3){ star.size = "IV"; star.HZOrbit = 5;}
-                    else if(size <= 3){ star.size = "V"; star.HZOrbit = 3;}
-                    else if(size <= 4){ star.size = "VI";star.HZOrbit = 2;}
-                    else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-                    else{ star.size = "VI";star.HZOrbit = 3;}
-                }
-                else if(type <= 2){ 
-                    star.type = "K"; 
-                    if(size <= -5){ star.size = "II"; star.HZOrbit = 9;}
-                    else if(size <= -4){ star.size = "III"; star.HZOrbit = 8;}
-                    else if(size <= -3){ star.size = "IV"; star.HZOrbit = 5;}
-                    else if(size <= 3){ star.size = "V"; star.HZOrbit = 2;}
-                    else if(size <= 4){ star.size = "VI";star.HZOrbit = 1;}
-                    else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-                    else{ star.size = "VI";star.HZOrbit = 1;}
-                }
-                else if(type <= 5){ 
-                    star.type = "M"; 
-                    if(size <= -3){ star.size = "II"; star.HZOrbit = 10;}
-                    else if(size <= -2){ star.size = "III"; star.HZOrbit = 9;}
-                    else if(size <= 3){ star.size = "V"; star.HZOrbit = 0;}
-                    else if(size <= 4){ star.size = "VI";star.HZOrbit = 0;}
-                    else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-                    else{ star.size = "VI";star.HZOrbit = 0;}
-                }
-                else{ star.type = "BD"; }
-                if(star.size !== "D"){star.decimal = decimal;}
-                return star;
-            }
-            function d6(num){
-                if(!num){ num = 1;}
-                var sum = 0;
-                for(var i = 0; i < num; i++){
-                    sum += (Math.random()*6 >>> 0) + 1;
-                }
-                return sum;
-            }
-            function d09(){
-                //returns 0-9 even distribution
-                var r1=d6(),r2=d6(),x;
-                while(r1==6){r1=d6();}
-                x = (r1-1) * 2;
-                if(r2 >= 4){x+=1;}
-                return x;
-            }
-            */
+            
             function generateHexes(x,y, systems){
                 var systemsPredefined = true;
                 if(typeof systems == "undefined"){
@@ -1997,6 +1550,7 @@
                 }
                 return capitalizedString;
             }
+        
             function renderSystem(system){
             var systemTokens = document.querySelectorAll("[data-system]");
             for(var i = 0, len = systemTokens.length; i < len; i++){
@@ -2023,48 +1577,74 @@
             list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
                 "Primary Star: " + description
             ))
-            for(var i = 0, len = system.stars.primary.orbits.length; i < len; i++){
-                var slot = system.stars.primary.orbits[i];
-                if(slot){
+            for(var i = 0, len = system.stars.primary.satellites.length; i < len; i++){
+                var slot = system.stars.primary.satellites[i];
+                if(slot && typeof slot !== "undefined"){
                     var description = "";
-                    if(slot.type==="star"){
-                        if(slot.details.type === "BD"){
+                    var orbitingStar = false;
+                    if(slot.worldtype.indexOf("star") >= 0){
+                        orbitingStar = true;
+                        if(slot.type === "BD"){
                             description = "Brown Dwarf";
                         }else{
-                            description = slot.details.type + (typeof slot.details.decimal === "undefined" ? "" : slot.details.decimal.toString()) + slot.details.size ;
+                            description = slot.type + (typeof slot.decimal === "undefined" ? "" : slot.decimal.toString()) + slot.size ;
                         }
                     }else{
-                        description = slot.details.uwp;
+                        orbitingStar = false;
+                        description = slot.uwp;
+                        if(typeof description === "undefined"){ console.log(slot);}
                     }
                     list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                        "Orbit "+i+": "+addCaps(slot.type) + " ("+ description + ")"+(slot.details.isMainworld?"**":"")
+                        "Orbit "+i+": "+addCaps(slot.worldtype) + " ("+ description + ")"+(slot.isMainworld?"**":"")
                     ));
-                    if(slot.details.satellites){
+                    if(slot.satellites){
+                        var subOrbitingStar = false;
                         var sublist = list.appendChild(document.createElement("ul"));
-                        for(var j = 0, jlen = slot.details.satellites.length; j < jlen; j++){
-                            sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                "Orbit " +slot.details.satellites[j].orbitAroundPrimary +": " + addCaps(slot.details.satellites[j].worldtype) + " ("+slot.details.satellites[j].uwp+")"+(slot.details.satellites[j].isMainworld?"**":"")
-                            ));
-                        }
-                    }
-                    if(slot.details.numOrbits > 0){
-                        var starlist = list.appendChild(document.createElement("ul"));
-                        for(var j = 0, jlen = slot.details.orbits.length; j < jlen; j++){
-                            if(typeof slot.details.orbits[j] !== "undefined"){
-                                var subslot = slot.details.orbits[j];
+                        for(var j = 0, jlen = slot.satellites.length; j < jlen; j++){
+                            if(typeof slot.satellites[j] !== "undefined"){
+                                var subslot = slot.satellites[j];
                                 var desc = "";
-                                if(subslot.type === "star"){
-                                    if(subslot.details.type === "BD"){
-                                        desc = "BD";
+                                if(subslot.worldtype.indexOf("star") >= 0){
+                                    subOrbitingStar = true;
+                                    if(subslot.type === "BD"){
+                                        desc = "Brown Dwarf";
                                     }else{
-                                        desc = subslot.details.type + (typeof subslot.details.decimal === "undefined" ? "" : subslot.details.decimal.toString()) + subslot.details.size ;
+                                        desc = subslot.type + (typeof subslot.decimal === "undefined" ? "" : subslot.decimal.toString()) + subslot.size ;
                                     }
                                 }else{
-                                    desc = subslot.details.uwp;
+                                    subOrbitingStar = false;
+                                    desc = subslot.uwp;
                                 }
-                                starlist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                    "Orbit " +j+": " + addCaps(subslot.type) +" ("+desc+")" +(subslot.details.isMainworld?"**":"")
-                                ));
+                                if(!orbitingStar){
+                                    sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                        "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
+                                    ));
+                                }else{
+                                    sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                        "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
+                                    ));
+                                }
+                                
+                                if(subslot.satellites){
+                                    subsublist = sublist.appendChild(document.createElement("ul"));
+                                    for(var k = 0, klen = subslot.satellites.length; k < klen; k++){
+                                        var subsub = subslot.satellites[k];
+                                        if(typeof subsub !== "undefined"){
+                                            desc = subsub.uwp;
+                                            if(subOrbitingStar){
+                                                subsublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                                    "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"")
+                                                    ));
+                                                
+                                            }else{
+                                                subsublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                                    "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"")
+                                                    ));
+                                                
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -2072,6 +1652,11 @@
             }
             console.log(system);
         }
+        function sat(i){
+            var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+            return orbits[i];
+        }
+        
         function clearElement(el){
             while(el.children.length > 0){
                 el.removeChild(el.children[el.children.length-1]);

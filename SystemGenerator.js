@@ -23,8 +23,9 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         primaryDecimal = d09(),
         primarySize = d6()-d6();
     stars.primary = getStar(primaryType,primaryDecimal,primarySize,20);
+    stars.primary.worldtype = "primary star";
     //stars.primary.numOrbits = 20;
-    //stars.primary.orbits = new Array(20);
+    //stars.primary.satellites = new Array(20);
     var primarySurface = getInnermostOrbit(stars.primary);
     var secondaryOrbitDeduction = 2;
     if(primarySurface > -1){ 
@@ -34,7 +35,8 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         stars.primary_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2,0);
         //stars.primary_companion.numOrbits = 0;
         if(primarySurface > -1){
-            stars.primary.orbits[primarySurface] = {type:"star", details:stars.primary_companion};
+            stars.primary_companion.worldtype = "companion star";
+            stars.primary.satellites[primarySurface] = stars.primary_companion; //{worldtype:"companion star", details:stars.primary_companion};
         }
     }
     if(d6()-d6()>=3){ 
@@ -45,42 +47,48 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             stars.close_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2, 0);
             let inner = getInnermostOrbit(stars.close);
             if(inner > -1){
-                stars.close.orbits[inner] = {type:"star",details:stars.close_companion};
+                stars.close_companion.worldtype = "close companion star";
+                stars.close.satellites[inner] = stars.close_companion; //{worldtype:"close companion star",details:stars.close_companion};
             }
         }
-        stars.primary.orbits[stars.close.orbit] = {type:"star",details:stars.close};
+        stars.close.worldtype = "close star";
+        stars.primary.satellites[stars.close.orbit] = stars.close;
     }
     if(d6()-d6()>=3){ 
         var nearOrbit = 5 + d6();
         stars.near = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2, nearOrbit-secondaryOrbitDeduction);
         stars.near.orbit = nearOrbit;
         //stars.near.numOrbits = stars.near.orbit - 2;
-        //stars.near.orbits = new Array(stars.near.numOrbits);
+        //stars.near.satellites = new Array(stars.near.numOrbits);
         if(d6()-d6()>=3){ 
             stars.near_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2,0);
             //stars.near_companion.numOrbits = 0;
             let inner = getInnermostOrbit(stars.near);
             if(inner > -1){
-                stars.near.orbits[inner] = {type:"star", details:stars.near_companion};
+                stars.near_companion.worldtype = "near companion star";
+                stars.near.satellites[inner] = stars.near_companion; //{worldtype:"near companion star", details:stars.near_companion};
             }
         }
-        stars.primary.orbits[stars.near.orbit] = {type:"star",details:stars.near};
+        stars.near.worldtype = "near star";
+        stars.primary.satellites[stars.near.orbit] = stars.near;
     }
     if(d6()-d6()>=3){ 
         var farOrbit = 11 + d6();
         stars.far = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2, farOrbit-secondaryOrbitDeduction);
         stars.far.orbit = farOrbit;
         //stars.far.numOrbits = stars.far.orbit - 2;
-        //stars.far.orbits = new Array(stars.far.numOrbits);
+        //stars.far.satellites = new Array(stars.far.numOrbits);
         if(d6()-d6()>=3){ 
             stars.far_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2,0);
             //stars.far_companion.numOrbits = 0;
             let inner = getInnermostOrbit(stars.far);
             if(inner > -1){
-                stars.far.orbits[inner] = {type:"star", details:stars.far_companion};
+                stars.far_companion.worldtype = "far companion star";
+                stars.far.satellites[inner] = stars.far_companion;
             }
         }
-        stars.primary.orbits[stars.far.orbit] = {type:"star",details:stars.far};
+        stars.far.worldtype = "far star";
+        stars.primary.satellites[stars.far.orbit] = stars.far; // {worldtype:"far star",details:stars.far};
     }
     
     var bases = [];
@@ -230,32 +238,32 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(roll <=-4){ 
         MWType = "Far Satellite";
         roll = d6() - d6();
-        if(roll === -5){ MWOrbitAroundPrimary = "Oh"; }
-        else if(roll === -4){ MWOrbitAroundPrimary = "Pee"; }
-        else if(roll === -3){ MWOrbitAroundPrimary = "Que"; }
-        else if(roll === -2){ MWOrbitAroundPrimary = "Arr"; }
-        else if(roll === -1){ MWOrbitAroundPrimary = "Ess"; }
-        else if(roll === 0){ MWOrbitAroundPrimary = "Tee"; }
-        else if(roll === 1){ MWOrbitAroundPrimary = "Yu"; }
-        else if(roll === 2){ MWOrbitAroundPrimary = "Vee"; }
-        else if(roll === 3){ MWOrbitAroundPrimary = "Dub"; }
-        else if(roll === 4){ MWOrbitAroundPrimary = "Ex"; }
-        else if(roll === 5){ MWOrbitAroundPrimary = "Wye"; }
+        if(roll === -5){ MWOrbitAroundPrimary = 14; /*"Oh";*/ }
+        else if(roll === -4){ MWOrbitAroundPrimary = 15; /*"Pee";*/ }
+        else if(roll === -3){ MWOrbitAroundPrimary = 16; /*"Que";*/ }
+        else if(roll === -2){ MWOrbitAroundPrimary = 17; /*"Arr";*/ }
+        else if(roll === -1){ MWOrbitAroundPrimary = 18; /*"Ess";*/ }
+        else if(roll === 0){ MWOrbitAroundPrimary = 19; /*"Tee";*/ }
+        else if(roll === 1){ MWOrbitAroundPrimary = 20; /*"Yu";*/ }
+        else if(roll === 2){ MWOrbitAroundPrimary = 21; /*"Vee";*/ }
+        else if(roll === 3){ MWOrbitAroundPrimary = 22; /*"Dub";*/ }
+        else if(roll === 4){ MWOrbitAroundPrimary = 23; /*"Ex";*/ }
+        else if(roll === 5){ MWOrbitAroundPrimary = 24; /*"Wye";*/ }
     }
     else if(roll <= -3){ 
         MWType = "Close Satellite";
         roll = d6() - d6();
-        if(roll === -5){ MWOrbitAroundPrimary = "Bee"; }
-        else if(roll === -4){ MWOrbitAroundPrimary = "Cee"; }
-        else if(roll === -3){ MWOrbitAroundPrimary = "Dee"; }
-        else if(roll === -2){ MWOrbitAroundPrimary = "Ee"; }
-        else if(roll === -1){ MWOrbitAroundPrimary = "Eff"; }
-        else if(roll === 0){ MWOrbitAroundPrimary = "Gee"; }
-        else if(roll === 1){ MWOrbitAroundPrimary = "Aitch"; }
-        else if(roll === 2){ MWOrbitAroundPrimary = "Eye"; }
-        else if(roll === 3){ MWOrbitAroundPrimary = "Jay"; }
-        else if(roll === 4){ MWOrbitAroundPrimary = "Kay"; }
-        else if(roll === 5){ MWOrbitAroundPrimary = "Ell"; }
+        if(roll === -5 && size <= 2 ){ MWOrbitAroundPrimary = 1; /*"Bee";*/ }
+        else if(roll <= -4 && size <= 2){ MWOrbitAroundPrimary = 2; /*"Cee";*/ }
+        else if(roll <= -3){ MWOrbitAroundPrimary = 3; /*"Dee";*/ }
+        else if(roll === -2){ MWOrbitAroundPrimary = 4; /*"Ee";*/ }
+        else if(roll === -1){ MWOrbitAroundPrimary = 5; /*"Eff";*/ }
+        else if(roll === 0){ MWOrbitAroundPrimary = 6; /*"Gee";*/ }
+        else if(roll === 1){ MWOrbitAroundPrimary = 7; /*"Aitch";*/ }
+        else if(roll === 2){ MWOrbitAroundPrimary = 8; /*"Eye";*/ }
+        else if(roll === 3){ MWOrbitAroundPrimary = 9; /*"Jay";*/ }
+        else if(roll === 4){ MWOrbitAroundPrimary = 10; /*"Kay";*/ }
+        else if(roll === 5){ MWOrbitAroundPrimary = 11; /*"Ell";*/ }
     }else{ 
         if(size === 0){MWType = "Belt";} else{ MWType = "Planet";} 
         MWPrimary = "Star"; MWOrbitAroundPrimary = MWOrbit; 
@@ -292,10 +300,10 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         MWOrbit += roll;
     }
     var validOrbit = false;
-    if(typeof stars.primary.orbits[MWOrbit] !== "undefined"){ // check if desired orbit already occupied (by a star)
+    if(typeof stars.primary.satellites[MWOrbit] !== "undefined"){ // check if desired orbit already occupied (by a star)
         while(!validOrbit){ // mainworld will be placed in next available orbit
             MWOrbit += 1;
-            validOrbit = typeof stars.primary.orbits[MWOrbit] === "undefined";
+            validOrbit = typeof stars.primary.satellites[MWOrbit] === "undefined";
         }       
     }
     var difference = stars.primary.HZorbit - MWOrbit;
@@ -422,8 +430,8 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     
 }
 function getInnermostOrbit(star){
-    for(var i = 0, len = star.orbits.length; i < len; i++){
-        if(typeof star.orbits[i] === "undefined"){
+    for(var i = 0, len = star.satellites.length; i < len; i++){
+        if(typeof star.satellites[i] === "undefined"){
             return i;
         }
     }
@@ -442,19 +450,22 @@ function placeWorlds(stars, mainworld, gg, belts, other){
     var planetsToPlace = [];
     var SGGCount = 0;
     if(mainworld.worldtype === "Planet" || mainworld.worldtype === "Belt"){
+        mainworld.worldtype = "Mainworld";
         planetsToPlace.push(mainworld);
     }else if(mainworld.primary === "Gas Giant"){
         var giant = createGasGiant();
         if(giant.worldtype === "Small Gas Giant"){
             SGGCount += 1;
         }
-        giant.satellites = [mainworld];
+        //giant.satellites = new Array(26);
+        giant.satellites = addSatellite(new Array(26), mainworld);
         giant.orbit = mainworld.orbit;
         planetsToPlace.push(giant);
         gg-=1;
     }else if(mainworld.primary === "Planet"){
         var bw = createBigWorld(mainworld.pop - 1)
-        bw.satellites = [mainworld];
+        //bw.satellites = new Array(26);
+        bw.satellites = addSatellite(new Array(26), mainworld);
         bw.orbit = mainworld.orbit;
         planetsToPlace.push(bw);
     }
@@ -479,11 +490,11 @@ function placeWorlds(stars, mainworld, gg, belts, other){
         var planet = planetsToPlace[0];
         var star = arrStars[s];
         if(typeof planet.orbit !== "undefined"){ // if planet already has a preferred orbit...
-            star.orbits[planet.orbit] = {type:planet.worldtype,details:planet};
+            star.satellites[planet.orbit] = planet;
             planetsToPlace.splice(0,1);
             availableOrbits -= 1;
         }else{
-            while(star.orbits.length === 0){ // if the current star has no available orbits, rotate
+            while(star.satellites.length === 0){ // if the current star has no available orbits, rotate
                 s++; 
                 if(s >= arrStars.length){s = 0;}
                 star = arrStars[s];
@@ -533,64 +544,77 @@ function placeWorlds(stars, mainworld, gg, belts, other){
                     }
             }
             if(orbit < 0){orbit = 0;}
-            while(orbit >= star.orbits.length){ // if this is outside the available orbits, try next inside one
+            while(orbit >= star.satellites.length){ // if this is outside the available orbits, try next inside one
                 orbit -= 1;
             }
-            if(typeof star.orbits[orbit] === "undefined"){
+            if(typeof star.satellites[orbit] === "undefined"){
                 if(planet.worldtype === "Other World"){
                     planet = createOtherWorld(orbit, star.HZOrbit, mainworld.pop-1);
                 }else if(planet.worldtype.indexOf("Giant") > 0){
                     // add gas giant moons
-                    var moons = typeof planet.satellites === "undefined" ? [] : planet.satellites;
-                    var numAdditionalMoons = d6() - 1 - moons.length;
+                    var numExistingMoons = 0;
+                    if(typeof planet.satellites === "undefined"){
+                        planet.satellites = new Array(26);
+                    }else{
+                        numExistingMoons = planet.satellites.filter(function(val,i,arr){return typeof val !== "undefined"});
+                    }
+                    var moons = planet.satellites;
+                    var numAdditionalMoons = d6() - 1 - numExistingMoons;
                     if(numAdditionalMoons > 0){
                         var diff = orbit - star.HZOrbit;
                         var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                         for(var m = 0; m < numAdditionalMoons; m++){
-                            moons.push(moonMaker(planet.size,mainworld.pop-1));
+                            moons = addSatellite(moons, moonMaker(planet.size,mainworld.pop-1));
                         }
                         planet.satellites = moons;
                     }
+                   
                 }else if(planet.worldtype === "BigWorld"){
                     // add bigworld moons
-                    var moons = typeof planet.satellites === "undefined" ? [] : planet.satellites;
+                    var numExistingMoons = 0;
+                    if(typeof planet.satellites === "undefined"){
+                        planet.satellites = new Array(26);
+                    }else{
+                        numExistingMoons = planet.satellites.filter(function(val,i,arr){return typeof val !== "undefined"});
+                    }
+                    var moons = planet.satellites;
                     var diff = orbit - star.HZOrbit;
                     var numAdditionalMoons = 0;
                     if(diff < -1){
-                        numAdditionalMoons = d6() - 5 - moons.length;
+                        numAdditionalMoons = d6() - 5 - numExistingMoons;
                     }else if(diff <= 1){
-                        numAdditionalMoons = d6() - 4 - moons.length;
+                        numAdditionalMoons = d6() - 4 - numExistingMoons;
                     }else{
-                        numAdditionalMoons = d6() - 3 - moons.length;
+                        numAdditionalMoons = d6() - 3 - numExistingMoons;
                     }
                     if(numAdditionalMoons > 0){
                         var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                         for(var m = 0; m < numAdditionalMoons; m++){
-                            moons.push(moonMaker(planet.size,mainworld.pop-1));
+                            moons = addSatellite(moons, moonMaker(planet.size,mainworld.pop-1));
                         }
                         planet.satellites = moons;
                     }
                 }
-                star.orbits[orbit] = {type:planet.worldtype, details:planet};
+                star.satellites[orbit] = planet; //{worldtype:planet.worldtype, uwp:planet.uwp, details:planet};
                 planetsToPlace.splice(0,1);
                 availableOrbits -= 1;
             }else{
                 var amp = 0, placedSuccessfully = false;
-                while(!placedSuccessfully && amp < star.orbits.length){
+                while(!placedSuccessfully && amp < star.satellites.length){
                     amp++;
-                    if(orbit-amp >= 0 && typeof star.orbits[orbit-amp] === "undefined"){
+                    if(orbit-amp >= 0 && typeof star.satellites[orbit-amp] === "undefined"){
                         if(planet.worldtype === "Other World"){
                             planet = createOtherWorld(orbit-amp, star.HZOrbit, mainworld.pop-1);
                         }
-                        star.orbits[orbit-amp] = {type:planet.worldtype, details:planet};
+                        star.satellites[orbit-amp] = planet; //{worldtype:planet.worldtype,uwp:planet.uwp, details:planet};
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
-                    }else if(star.orbits.length > orbit+amp && typeof star.orbits[orbit+amp] === "undefined"){
+                    }else if(star.satellites.length > orbit+amp && typeof star.satellites[orbit+amp] === "undefined"){
                         if(planet.worldtype === "Other World"){
                             planet = createOtherWorld(orbit+amp, star.HZOrbit, mainworld.pop-1);
                         }
-                        star.orbits[orbit+amp] = {type:planet.worldtype, details:planet};
+                        star.satellites[orbit+amp] = planet; //{worldtype:planet.worldtype,uwp:planet.uwp, details:planet};
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
@@ -608,6 +632,25 @@ function placeWorlds(stars, mainworld, gg, belts, other){
     if(stars.far){ stars.far = arrStars[farIndex]; }
     return stars;
 }
+function addSatellite(moons, moon){
+    var preferredOrbit = moon.orbitAroundPrimary;
+    if(typeof moons[preferredOrbit] === "undefined"){
+        moons[preferredOrbit] = moon;
+    }else{
+        var amp = 0, placedSuccessfully = false;
+        while(!placedSuccessfully && amp < moons.length){
+            amp++;
+            if(preferredOrbit-amp >= 0 && typeof moons[preferredOrbit-amp] === "undefined"){     
+                moons[preferredOrbit-amp] = moon;
+                placedSuccessfully = true;
+            }else if(moons.length > preferredOrbit+amp && typeof moons[preferredOrbit+amp] === "undefined"){ 
+                moons[preferredOrbit+amp] = moon;
+                placedSuccessfully = true;
+            }
+        }
+    }
+    return moons;
+}
 function createBigWorld(maxPop){
     var uwp = "??";
     var planet = createPlanet("BigWorld",-1,maxPop);
@@ -619,7 +662,7 @@ function createGasGiant(){
     else{type = "Large Gas Giant";}
     uwp = "Size " + ext(20+roll);
     var uwp = "Y"+ext(20+roll)+"00000-0";
-    return {worldtype:type, uwp}
+    return {worldtype:type, uwp:uwp}
 }
 function createBelt(maxPop){
     var uwp = "??";
@@ -628,39 +671,16 @@ function createBelt(maxPop){
 }
 function createRing(){
     var uwp = "Y000000-0"; // TODO Rings?
-    var distanceRoll = d6(2);
-    var orbit = "??";
-    if(distanceRoll <= 7){
-        worldtype = "Close Ring";
-        var roll = d6() - d6();
-        if(roll === -5){ orbit = "Bee"; }
-        else if(roll === -4){ orbit = "Cee"; }
-        else if(roll === -3){ orbit = "Dee"; }
-        else if(roll === -2){ orbit = "Ee"; }
-        else if(roll === -1){ orbit = "Eff"; }
-        else if(roll === 0){ orbit = "Gee"; }
-        else if(roll === 1){ orbit = "Aitch"; }
-        else if(roll === 2){ orbit = "Eye"; }
-        else if(roll === 3){ orbit = "Jay"; }
-        else if(roll === 4){ orbit = "Kay"; }
-        else if(roll === 5){ orbit = "Ell"; }
-    }else{
-        worldtype = "Far Ring";
-        var roll = d6() - d6();
-        if(roll === -5){ orbit = "Oh"; }
-        else if(roll === -4){ orbit = "Pee"; }
-        else if(roll === -3){ orbit = "Que"; }
-        else if(roll === -2){ orbit = "Arr"; }
-        else if(roll === -1){ orbit = "Ess"; }
-        else if(roll === 0){ orbit = "Tee"; }
-        else if(roll === 1){ orbit = "Yu"; }
-        else if(roll === 2){ orbit = "Vee"; }
-        else if(roll === 3){ orbit = "Dub"; }
-        else if(roll === 4){ orbit = "Ex"; }
-        else if(roll === 5){ orbit = "Wye"; }
-       
+    var distanceRoll = d6();
+    var orbit = 0;
+    if(distanceRoll <= 2){
+        orbit = 0;
+    }else if(distanceRoll <= 4){
+        orbit = 1;
+    }else if(distanceRoll <= 6){
+        orbit = 2;
     }
-    return {worldtype:worldtype, uwp:uwp, orbitAroundPrimary:orbit}
+    return {worldtype:"Ring System", uwp:uwp, orbitAroundPrimary:orbit}
 }
 function createInnerSatellite(maxSize,maxPop){
     var worldtype = "";
@@ -680,39 +700,38 @@ function createInnerSatellite(maxSize,maxPop){
         type = "Hospitable";
     }
     var planet = createPlanet(type, maxSize, maxPop);
-    var distanceRoll = d6(2);
+    var distanceRoll = d6();
     var orbit = "??";
     if(distanceRoll <= 7){
-        worldtype = "Close Satellite ("+type+")";
+        worldtype = "Close Satellite";
         var roll = d6() - d6();
-        if(roll === -5){ orbit = "Bee"; }
-        else if(roll === -4){ orbit = "Cee"; }
-        else if(roll === -3){ orbit = "Dee"; }
-        else if(roll === -2){ orbit = "Ee"; }
-        else if(roll === -1){ orbit = "Eff"; }
-        else if(roll === 0){ orbit = "Gee"; }
-        else if(roll === 1){ orbit = "Aitch"; }
-        else if(roll === 2){ orbit = "Eye"; }
-        else if(roll === 3){ orbit = "Jay"; }
-        else if(roll === 4){ orbit = "Kay"; }
-        else if(roll === 5){ orbit = "Ell"; }
+        if(roll === -5 && planet.size <= 2){ orbit =1 ; /*"Bee";*/ }
+        else if(roll <= -4 && planet.size <= 2){ orbit =2 ; /*"Cee";*/ }
+        else if(roll <= -3){ orbit =3 ; /*"Dee";*/ }
+        else if(roll === -2){ orbit =4 ; /*"Ee";*/ }
+        else if(roll === -1){ orbit =5 ; /*"Eff";*/ }
+        else if(roll === 0){ orbit =6 ; /*"Gee";*/ }
+        else if(roll === 1){ orbit =7 ; /*"Aitch";*/ }
+        else if(roll === 2){ orbit =8 ; /*"Eye";*/ }
+        else if(roll === 3){ orbit =9 ; /*"Jay";*/ }
+        else if(roll === 4){ orbit =10 ; /*"Kay";*/ }
+        else if(roll === 5){ orbit =11 ; /*"Ell";*/ }
     }else{
-        worldtype = "Far Satellite ("+type+")";
+        worldtype = "Far Satellite";
         var roll = d6() - d6();
-        if(roll === -5){ orbit = "Oh"; }
-        else if(roll === -4){ orbit = "Pee"; }
-        else if(roll === -3){ orbit = "Que"; }
-        else if(roll === -2){ orbit = "Arr"; }
-        else if(roll === -1){ orbit = "Ess"; }
-        else if(roll === 0){ orbit = "Tee"; }
-        else if(roll === 1){ orbit = "Yu"; }
-        else if(roll === 2){ orbit = "Vee"; }
-        else if(roll === 3){ orbit = "Dub"; }
-        else if(roll === 4){ orbit = "Ex"; }
-        else if(roll === 5){ orbit = "Wye"; }
-       
+        if(roll === -5){ orbit = 14; /*"Oh";*/ }
+        else if(roll === -4){ orbit = 15; /*"Pee";*/ }
+        else if(roll === -3){ orbit = 16; /*"Que";*/ }
+        else if(roll === -2){ orbit = 17; /*"Arr";*/ }
+        else if(roll === -1){ orbit =18; /* "Ess";*/ }
+        else if(roll === 0){ orbit = 19; /*"Tee";*/ }
+        else if(roll === 1){ orbit = 20; /*"Yu";*/ }
+        else if(roll === 2){ orbit = 21; /*"Vee";*/ }
+        else if(roll === 3){ orbit = 22; /*"Dub";*/ }
+        else if(roll === 4){ orbit = 23; /*"Ex";*/ }
+        else if(roll === 5){ orbit = 24; /*"Wye";*/ }    
     }
-    return{worldtype:worldtype,uwp:planet.uwp, orbitAroundPrimary:orbit}
+    return{worldtype:worldtype, uwp:planet.uwp, orbitAroundPrimary:orbit}
 }
 function createOuterSatellite(maxSize,maxPop){
     var worldtype = "";
@@ -735,36 +754,35 @@ function createOuterSatellite(maxSize,maxPop){
     var distanceRoll = d6(2);
     var orbit = "??";
     if(distanceRoll <= 7){
-        worldtype = "Close Satellite ("+type+")";
+        worldtype = "Close Satellite";
         var roll = d6() - d6();
-        if(roll === -5){ orbit = "Bee"; }
-        else if(roll === -4){ orbit = "Cee"; }
-        else if(roll === -3){ orbit = "Dee"; }
-        else if(roll === -2){ orbit = "Ee"; }
-        else if(roll === -1){ orbit = "Eff"; }
-        else if(roll === 0){ orbit = "Gee"; }
-        else if(roll === 1){ orbit = "Aitch"; }
-        else if(roll === 2){ orbit = "Eye"; }
-        else if(roll === 3){ orbit = "Jay"; }
-        else if(roll === 4){ orbit = "Kay"; }
-        else if(roll === 5){ orbit = "Ell"; }
+        if(roll === -5 && planet.size <= 2){ orbit =1 ; /*"Bee";*/ }
+        else if(roll <= -4 && planet.size <= 2){ orbit =2 ; /*"Cee";*/ }
+        else if(roll <= -3){ orbit =3 ; /*"Dee";*/ }
+        else if(roll === -2){ orbit =4 ; /*"Ee";*/ }
+        else if(roll === -1){ orbit =5 ; /*"Eff";*/ }
+        else if(roll === 0){ orbit =6 ; /*"Gee";*/ }
+        else if(roll === 1){ orbit =7 ; /*"Aitch";*/ }
+        else if(roll === 2){ orbit =8 ; /*"Eye";*/ }
+        else if(roll === 3){ orbit =9 ; /*"Jay";*/ }
+        else if(roll === 4){ orbit =10 ; /*"Kay";*/ }
+        else if(roll === 5){ orbit =11 ; /*"Ell";*/ }
     }else{
-        worldtype = "Far Satellite ("+type+")";
+        worldtype = "Far Satellite";
         var roll = d6() - d6();
-        if(roll === -5){ orbit = "Oh"; }
-        else if(roll === -4){ orbit = "Pee"; }
-        else if(roll === -3){ orbit = "Que"; }
-        else if(roll === -2){ orbit = "Arr"; }
-        else if(roll === -1){ orbit = "Ess"; }
-        else if(roll === 0){ orbit = "Tee"; }
-        else if(roll === 1){ orbit = "Yu"; }
-        else if(roll === 2){ orbit = "Vee"; }
-        else if(roll === 3){ orbit = "Dub"; }
-        else if(roll === 4){ orbit = "Ex"; }
-        else if(roll === 5){ orbit = "Wye"; }
-       
+        if(roll === -5){ orbit = 14; /*"Oh";*/ }
+        else if(roll === -4){ orbit = 15; /*"Pee";*/ }
+        else if(roll === -3){ orbit = 16; /*"Que";*/ }
+        else if(roll === -2){ orbit = 17; /*"Arr";*/ }
+        else if(roll === -1){ orbit =18; /* "Ess";*/ }
+        else if(roll === 0){ orbit = 19; /*"Tee";*/ }
+        else if(roll === 1){ orbit = 20; /*"Yu";*/ }
+        else if(roll === 2){ orbit = 21; /*"Vee";*/ }
+        else if(roll === 3){ orbit = 22; /*"Dub";*/ }
+        else if(roll === 4){ orbit = 23; /*"Ex";*/ }
+        else if(roll === 5){ orbit = 24; /*"Wye";*/ }    
     }
-    return{worldtype:worldtype,uwp:planet.uwp, orbitAroundPrimary:orbit}
+    return{worldtype:worldtype, uwp:planet.uwp, orbitAroundPrimary:orbit}
 }
 function createPlanet(type,maxSize,maxPop){
     var size = 0;
@@ -882,9 +900,9 @@ function createPlanet(type,maxSize,maxPop){
 function createOtherWorld(orbit, hzorbit, maxPop){
     var uwp = "??Y000000-0", planet = {};
     var type = "Other World";
-    var moons = [], moonCount = 0, moonRoll = d6();
+    var moons = new Array(26), moonCount = 0, moonRoll = d6();
     if(typeof orbit === "undefined"){
-        return {worldtype:type, uwp:uwp}
+        return {worldtype:type, uwp:uwp};
     }else{
         var diff = orbit - hzorbit;
         if(diff <= 1){
@@ -906,19 +924,19 @@ function createOtherWorld(orbit, hzorbit, maxPop){
             planet = createPlanet(type,-1,maxPop);
             if(diff === 0){
                 while(moonRoll - 4 === 0){
-                    moons.push(createRing());
+                    moons = addSatellite(moons,createRing());
                     moonRoll = d6();
                 }
                 moonCount = Math.max(moonRoll-4,0);
             }else{
                 while(moonRoll - 5 === 0){
-                    moons.push(createRing());
+                    moons = addSatellite(moons,createRing());
                     moonRoll = d6();
                 }
                 moonCount = Math.max(moonRoll-5,0);
             }
             for(var i = 0; i < moonCount; i++){
-                moons.push(createInnerSatellite(planet.size,maxPop))
+                moons = addSatellite(moons,createInnerSatellite(planet.size,maxPop))
             }
         }else if(diff > 1){
             // outer worlds
@@ -938,12 +956,12 @@ function createOtherWorld(orbit, hzorbit, maxPop){
             }
             planet = createPlanet(type,-1,maxPop);
             while(moonRoll - 3 === 0){
-                moons.push(createRing());
+                moons = addSatellite(moons,createRing());
                 moonRoll = d6();
             }
             moonCount = Math.max(moonRoll-3,0);
             for(var i = 0; i < moonCount; i++){
-                moons.push(createOuterSatellite(planet.size, maxPop))
+                moons = addSatellite(moons,createOuterSatellite(planet.size, maxPop))
             }
         }
     }
@@ -1068,18 +1086,18 @@ function getStar(type, decimal, size, maxOrbits){
     else{ star.type = "BD"; star.HZOrbit = 0; }
     if(star.size !== "D"){star.decimal = decimal;}
     if(maxOrbits > 0){
-        star.orbits = new Array(maxOrbits);
+        star.satellites = new Array(maxOrbits);
         star.numOrbits = maxOrbits;
     }else{
-        star.orbits = [];
+        star.satellites = [];
         star.numOrbits = 0;
     }
     for(var i = 0; i < minOrbit; i++){
         if(minOrbit - 1 === i){
-            star.orbits[i] = {type:"Solar Surface",details:{uwp:"Solar Surface"}};
+            star.satellites[i] = {worldtype:"Solar Surface",uwp:"Solar Surface"};
             star.numOrbits -= 1;
         }else{
-            star.orbits[i] = {type:"Occupied", details:{uwp:"Occupied by Star"}};
+            star.satellites[i] = {worldtype:"Occupied", uwp:"Occupied by Star"};
             star.numOrbits -= 1;
         }
     }

@@ -12,7 +12,7 @@
         <div id="SystemDetails">
             <h1 data-system="name">System Name</h1>
             <h2 data-system="uwp">Mainworld</h2>
-            <h3>Importance: <span data-importance="description">System Importance</span> (<span data-importance="dailytraffic"></span> ships/day, <span data-importance="weeklytraffic"></span> ships/week)</h3>
+            <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
             <h3>System Map:</h3>
             <ul id="maplist"></ul>
         </div>
@@ -20,6 +20,10 @@
     <script src="NameGenerator.js"></script>
     <script src="SystemGenerator.js"></script>
     <script>
+        function sat(i){
+            var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+            return orbits[i];
+        }
         NameGenerator("names.jsonc",function(generator){
             document.getElementById("btnGenerateSystem").addEventListener("click",function(){
                 console.clear();
@@ -65,48 +69,74 @@
             list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
                 "Primary Star: " + description
             ))
-            for(var i = 0, len = system.stars.primary.orbits.length; i < len; i++){
-                var slot = system.stars.primary.orbits[i];
-                if(slot){
+            for(var i = 0, len = system.stars.primary.satellites.length; i < len; i++){
+                var slot = system.stars.primary.satellites[i];
+                if(slot && typeof slot !== "undefined"){
                     var description = "";
-                    if(slot.type==="star"){
-                        if(slot.details.type === "BD"){
+                    var orbitingStar = false;
+                    if(slot.worldtype.indexOf("star") >= 0){
+                        orbitingStar = true;
+                        if(slot.type === "BD"){
                             description = "Brown Dwarf";
                         }else{
-                            description = slot.details.type + (typeof slot.details.decimal === "undefined" ? "" : slot.details.decimal.toString()) + slot.details.size ;
+                            description = slot.type + (typeof slot.decimal === "undefined" ? "" : slot.decimal.toString()) + slot.size ;
                         }
                     }else{
-                        description = slot.details.uwp;
+                        orbitingStar = false;
+                        description = slot.uwp;
+                        if(typeof description === "undefined"){ console.log(slot);}
                     }
                     list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                        "Orbit "+i+": "+addCaps(slot.type) + " ("+ description + ")"+(slot.details.isMainworld?"**":"")
+                        "Orbit "+i+": "+addCaps(slot.worldtype) + " ("+ description + ")"+(slot.isMainworld?"**":"")
                     ));
-                    if(slot.details.satellites){
+                    if(slot.satellites){
+                        var subOrbitingStar = false;
                         var sublist = list.appendChild(document.createElement("ul"));
-                        for(var j = 0, jlen = slot.details.satellites.length; j < jlen; j++){
-                            sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                "Orbit " +slot.details.satellites[j].orbitAroundPrimary +": " + addCaps(slot.details.satellites[j].worldtype) + " ("+slot.details.satellites[j].uwp+")"+(slot.details.satellites[j].isMainworld?"**":"")
-                            ));
-                        }
-                    }
-                    if(slot.details.numOrbits > 0){
-                        var starlist = list.appendChild(document.createElement("ul"));
-                        for(var j = 0, jlen = slot.details.orbits.length; j < jlen; j++){
-                            if(typeof slot.details.orbits[j] !== "undefined"){
-                                var subslot = slot.details.orbits[j];
+                        for(var j = 0, jlen = slot.satellites.length; j < jlen; j++){
+                            if(typeof slot.satellites[j] !== "undefined"){
+                                var subslot = slot.satellites[j];
                                 var desc = "";
-                                if(subslot.type === "star"){
-                                    if(subslot.details.type === "BD"){
-                                        desc = "BD";
+                                if(subslot.worldtype.indexOf("star") >= 0){
+                                    subOrbitingStar = true;
+                                    if(subslot.type === "BD"){
+                                        desc = "Brown Dwarf";
                                     }else{
-                                        desc = subslot.details.type + (typeof subslot.details.decimal === "undefined" ? "" : subslot.details.decimal.toString()) + subslot.details.size ;
+                                        desc = subslot.type + (typeof subslot.decimal === "undefined" ? "" : subslot.decimal.toString()) + subslot.size ;
                                     }
                                 }else{
-                                    desc = subslot.details.uwp;
+                                    subOrbitingStar = false;
+                                    desc = subslot.uwp;
                                 }
-                                starlist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                    "Orbit " +j+": " + addCaps(subslot.type) +" ("+desc+")" +(subslot.details.isMainworld?"**":"")
-                                ));
+                                if(!orbitingStar){
+                                    sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                        "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
+                                    ));
+                                }else{
+                                    sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                        "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
+                                    ));
+                                }
+                                
+                                if(subslot.satellites){
+                                    subsublist = sublist.appendChild(document.createElement("ul"));
+                                    for(var k = 0, klen = subslot.satellites.length; k < klen; k++){
+                                        var subsub = subslot.satellites[k];
+                                        if(typeof subsub !== "undefined"){
+                                            desc = subsub.uwp;
+                                            if(subOrbitingStar){
+                                                subsublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                                    "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"")
+                                                    ));
+                                                
+                                            }else{
+                                                subsublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                                                    "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"")
+                                                    ));
+                                                
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
