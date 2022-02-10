@@ -106,11 +106,12 @@
                 <option value="1">Size</option>
                 <option value="2">Atmosphere</option>
                 <option value="3">Hydrography</option>
-                <option value="4">Population</option>
+                <option value="4">Mainworld Population</option>
                 <option value="5">Government Type</option>
                 <option value="6">Law Level</option>
                 <option value="7">Tech Level</option>
                 <option value="8">Importance</option>
+                <option value="9">Total System Pop</option>
             </select>
         </label><br/>
         <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes" checked="checked"/> Show Travel Codes</label>
@@ -341,11 +342,16 @@
     </fieldset>
     <div id="SystemDetailsContainer" style="display:none;">
         <div id="SystemDetails">
-            <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span> <span data-system="uwp"></span></h1>
+            <h1 data-system="tcoord"></h1>
+            <h2><span data-system="name">System Name</span> <span data-system="uwp"></span></h1>
             <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
             <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
             <h4><span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
             <h4><span data-system="travelcodenotes"></span></h4>
+            <h3>Mainworld Details</h3>
+            <ul>
+                <li>Starport <span data-mainworld="starport" data-lookup="port"></span> <span data-mainworld="highport" data-iftrue="(Has Highport)" data-iffalse="(No Highport)"></span></li>
+            </ul>
             <h3>System Map:</h3>
             <ul id="maplist"></ul>
         </div>
@@ -374,8 +380,8 @@
                 diameter:HEX_SIZE*2
             }
             
-            var mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3], 
-            maxes = [0,0,0,0,0,0,0,0,5], 
+            var mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3,-1], 
+            maxes = [0,0,0,0,0,0,0,0,5,0], 
             labels = ["starport","size","atmo","hydro","pop","gov","law","tech"];
             var _systems = {};
             
@@ -443,8 +449,8 @@
                                 var detailBlock = document.getElementById("SystemDetailsContainer");
                                 if(hex.system){
                                     renderSystem(hex.system);
-                                    detailBlock.style.left = e.clientX + "px";// - canvas.getBoundingClientRect().left +"px";
-                                    detailBlock.style.top = e.clientY + "px";//- canvas.getBoundingClientRect().top+"px";
+                                    detailBlock.style.left = e.pageX + "px";// - canvas.getBoundingClientRect().left +"px";
+                                    detailBlock.style.top = e.pageY + "px";//- canvas.getBoundingClientRect().top+"px";
                                     detailBlock.style.display = "inline-block";
                                 }else{
                                     detailBlock.style.display = "none";
@@ -600,7 +606,7 @@
                     case "Clump": d = 1, target = 2; break;
                 }
                 var namesSoFar = {};
-                mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3], maxes = [0,0,0,0,0,0,0,0,5];
+                mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3,-1], maxes = [0,0,0,0,0,0,0,0,5,0];
                 var systemArray = [];
                 for(var x = 0; x < SUBSECTOR_WIDTH; x++){
                     for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
@@ -625,11 +631,16 @@
                             var details = generateSystemDetails(addCaps(name), ggFrequency,permitDieback,maxTechLevel);
                             for(var i = 0, len = mins.length; i < len; i++){
                                 var currValue;
-                                if(i === 8){
-                                    currValue = details.importance.extension;
-                                    //if(currValue > currMax){ maxes[i] = currValue;}
-                                }else{
+                                if(i < 8){
                                     currValue = details.mainworld[labels[i]];
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if(currValue < currMin){ mins[i] = currValue;}
+                                    if(currValue > currMax){ maxes[i] = currValue;}
+                                }
+                                else if(i === 8){
+                                    currValue = details.importance.extension;
+                                }else if(i === 9){
+                                    currValue = details.totalpop;
                                     var currMin = mins[i], currMax = maxes[i];
                                     if(currValue < currMin){ mins[i] = currValue;}
                                     if(currValue > currMax){ maxes[i] = currValue;}
@@ -646,6 +657,7 @@
                                 bases:details.bases,
                                 stars:details.stars,
                                 importance: details.importance,
+                                totalpop: details.totalpop,
                                 tcoord: tcoord
                             };
                             systems[tcoord] = system;
@@ -1120,6 +1132,7 @@
                             case 6: heatMapValue = hex.system.mainworld.law; break;
                             case 7: heatMapValue = hex.system.mainworld.tech; break;
                             case 8: heatMapValue = hex.system.importance.extension; break;
+                            case 9: heatMapValue = hex.system.totalpop; break;
                         }
                         if(drawMode > 0){
                             var bValue = 200 - 200*((heatMapValue - minValue) / (maxValue - minValue)) >>> 0; 
@@ -1609,6 +1622,14 @@
                         "Cy":"Colony",
                         "Lt":"Low Tech",
                         "Ht":"High Tech"
+                    },
+                    "port":{
+                        "A":"A - Excellent",
+                        "B":"B - Good",
+                        "C":"C - Routine",
+                        "D":"D - Poor",
+                        "E":"E - Frontier",
+                        "X":"X - None"
                     }
                 };
             var systemTokens = document.querySelectorAll("[data-system]");
@@ -1622,9 +1643,9 @@
                     Object.assign(val,system[key]);
                     if(el.getAttribute("data-lookup")){
                         var keys = Object.keys(val);
-                        for(var i = 0, len = keys.length; i < len; i++){
-                            if(lookups[el.getAttribute("data-lookup")][val[keys[i]]]){
-                                val[keys[i]] = lookups[el.getAttribute("data-lookup")][val[keys[i]]];
+                        for(var j = 0, jlen = keys.length; j < jlen; j++){
+                            if(lookups[el.getAttribute("data-lookup")][val[keys[j]]]){
+                                val[keys[j]] = lookups[el.getAttribute("data-lookup")][val[keys[j]]];
                             }
                         }
                     }
@@ -1643,19 +1664,31 @@
                 el.innerHTML = val;
             }
             var mainworldTokens = document.querySelectorAll("[data-mainworld]");
+            console.log(mainworldTokens.length);
             for(var i = 0, len = mainworldTokens.length; i < len; i++){
                 var el = mainworldTokens[i];
                 var key = el.getAttribute("data-mainworld");
+                console.log(key);
                 var val = {};
+                console.log(typeof system.mainworld[key]);
                 if(typeof system.mainworld[key] === "string"){
                     val = system.mainworld[key];
+                    if(el.getAttribute("data-lookup")){
+                        val = lookups[el.getAttribute("data-lookup")][val];
+                    }
+                }else if(typeof system.mainworld[key] === "boolean"){
+                    if(system.mainworld[key]){
+                        val = el.getAttribute("data-iftrue");
+                    }else{
+                        val = el.getAttribute("data-iffalse");
+                    }
                 }else{
                     Object.assign(val,system.mainworld[key]);
                     if(el.getAttribute("data-lookup")){
                         var keys = Object.keys(val);
-                        for(var i = 0, len = keys.length; i < len; i++){
-                            if(lookups[el.getAttribute("data-lookup")][val[keys[i]]]){
-                                val[keys[i]] = lookups[el.getAttribute("data-lookup")][val[keys[i]]];
+                        for(var j = 0, jlen = keys.length; j < jlen; j++){
+                            if(lookups[el.getAttribute("data-lookup")][val[keys[j]]]){
+                                val[keys[j]] = lookups[el.getAttribute("data-lookup")][val[keys[j]]];
                             }
                         }
                     }
