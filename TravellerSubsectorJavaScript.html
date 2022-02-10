@@ -57,12 +57,22 @@
         #SystemDetailsContainer{
             display:inline-block;
                         position:absolute;
-            border:1px solid black;
+            border:1px solid gray;
             background-color:white;
+            color:black;
+            box-shadow:2px 2px 4px black;
+            font-family:'Candara','Segoe UI',sans-serif;
+            min-width:30rem;
+            text-align:center;
         }
         #SystemDetails{
             position:relative;
             display:inline-block;
+            text-align:left;
+        }
+        #SystemDetails h1, #SystemDetails h2, #SystemDetails h3{
+            text-align:center;
+            font-family:'Candara','Eras Demi ITC','Eras Demi','Eras','Segoe UI',sans-serif;
         }
     </style>
     <fieldset>
@@ -1594,9 +1604,11 @@
                         description = slot.uwp;
                         if(typeof description === "undefined"){ console.log(slot);}
                     }
-                    list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+                    var li = list.appendChild(document.createElement("li"));
+                    li.appendChild(document.createTextNode(
                         "Orbit "+i+": "+addCaps(slot.worldtype) + " ("+ description + ")"+(slot.isMainworld?"**":"")
                     ));
+                    if(slot.isMainworld){li.style.fontWeight = "bold";}
                     if(slot.satellites){
                         var subOrbitingStar = false;
                         var sublist = list.appendChild(document.createElement("ul"));
@@ -1615,15 +1627,15 @@
                                     subOrbitingStar = false;
                                     desc = subslot.uwp;
                                 }
+                                var text = "";
                                 if(!orbitingStar){
-                                    sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                        "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
-                                    ));
+                                    text = "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"");
                                 }else{
-                                    sublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                        "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
-                                    ));
+                                    text =  "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
                                 }
+                                var li = sublist.appendChild(document.createElement("li"));
+                                li.appendChild(document.createTextNode(text));
+                                if(subslot.isMainworld){ li.style.fontWeight = "bold"; }
                                 
                                 if(subslot.satellites){
                                     subsublist = sublist.appendChild(document.createElement("ul"));
@@ -1631,17 +1643,16 @@
                                         var subsub = subslot.satellites[k];
                                         if(typeof subsub !== "undefined"){
                                             desc = subsub.uwp;
-                                            if(subOrbitingStar){
-                                                subsublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                                    "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"")
-                                                    ));
+                                            var text = "";
+                                            if(subOrbitingStar){                                               
+                                                text = "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"");
                                                 
                                             }else{
-                                                subsublist.appendChild(document.createElement("li")).appendChild(document.createTextNode(
-                                                    "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"")
-                                                    ));
-                                                
+                                                text = "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"");                                                
                                             }
+                                            var li = subsublist.appendChild(document.createElement("li"))
+                                            li.appendChild(document.createTextNode(text));
+                                            if(subsub.isMainworld){li.style.fontWeight = "bold";}
                                         }
                                     }
                                 }
