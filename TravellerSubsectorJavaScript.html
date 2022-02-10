@@ -64,7 +64,10 @@
             font-family:'Candara','Segoe UI',sans-serif;
             min-width:30rem;
             text-align:center;
-            padding:1rem;
+            padding-top:1rem;
+            padding-bottom:1rem;
+            padding-left:0.5rem;
+            padding-right:0.5rem;
         }
         #SystemDetails{
             position:relative;
@@ -342,8 +345,8 @@
     </fieldset>
     <div id="SystemDetailsContainer" style="display:none;">
         <div id="SystemDetails">
-            <h1 data-system="tcoord"></h1>
-            <h2><span data-system="name">System Name</span> <span data-system="uwp"></span></h1>
+            <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span></h1>
+            <h2><span data-system="uwp"></span></h1>
             <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
             <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
             <h4><span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
