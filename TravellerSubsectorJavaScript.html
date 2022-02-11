@@ -75,9 +75,11 @@
             text-align:left;
         }
         #SystemDetails h1, #SystemDetails h2, #SystemDetails h3,  #SystemDetails h4{
-
             font-family:'Candara','Eras Demi ITC','Eras Demi','Eras','Segoe UI',sans-serif;
             margin-top:0; margin-bottom:0;
+        }
+        #SystemDetails ul{
+            margin-top:0px;
         }
     </style>
     <fieldset>
@@ -347,7 +349,7 @@
         <div id="SystemDetails">
             <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span></h1>
             <h2><span data-system="uwp"></span></h1>
-            <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
+            <h3><span data-importance="description">System Importance</span> (<span data-importance="weeklytraffic"></span> ships/week)</h3>
             <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
             <h4><span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
             <h4><span data-system="travelcodenotes"></span></h4>
@@ -356,6 +358,7 @@
                 <li>Starport <span data-mainworld="starport" data-lookup="port"></span> <span data-mainworld="highport" data-iftrue="(Has Highport)" data-iffalse="(No Highport)"></span></li>
             </ul>
             <h3>System Map:</h3>
+            Total system population: <span id="systempop"></span>
             <ul id="maplist"></ul>
         </div>
     </div>
@@ -1635,6 +1638,43 @@
                         "X":"X - None"
                     }
                 };
+                var totalpop = Math.pow(10,system.totalpop);
+                var totalpopdesc = "";
+                switch(system.totalpop){
+                    case 0: totalpopdesc = "No population"; break;
+                    case 1: totalpopdesc = "Few (<100)"; break;
+                    case 2: totalpopdesc = "Hundreds"; break;
+                    case 3: totalpopdesc = "Thousands"; break;
+                    case 4: totalpopdesc = "Tens of Thousands"; break;
+                    case 5: totalpopdesc = "Hundreds of Thousands"; break;
+                    case 6: totalpopdesc = "Millions"; break;
+                    case 7: totalpopdesc = "Tens of Millions"; break;
+                    case 8: totalpopdesc = "Hundreds of Millions"; break;
+                    case 9: totalpopdesc = "Billions"; break;
+                    case 10: totalpopdesc = "Tens of Billions"; break;
+                    case 11: totalpopdesc = "Hundreds of Billions"; break;
+                    case 12: totalpopdesc = "Trillions"; break;
+                    case 13: totalpopdesc = "Tens of Trillions"; break;
+                    case 14: totalpopdesc = "Hundreds of Trillions"; break;
+                    case 15: totalpopdesc = "Thousands of Trillions"; break;
+                    case 16: totalpopdesc = "Tens of Thousands of Trillions"; break;
+                    case 17: totalpopdesc = "Hundreds of Thousands of Trillions"; break;
+                    case 18: totalpopdesc = "Millions of Trillions"; break;
+                    case 19: totalpopdesc = "Tens of Millions of Trillions"; break;
+                    case 20: totalpopdesc = "Hundreds of Millions of Trillions"; break;
+                    case 21: totalpopdesc = "Thousands of Millions of Trillions"; break;
+                    case 22: totalpopdesc = "Tens of Thousands of Millions of Trillions"; break;
+                    case 23: totalpopdesc = "Hundreds of Thousands of Millions of Trillions"; break;
+                    case 24: totalpopdesc = "Billions of Trillions"; break;
+                    case 25: totalpopdesc = "Tens of Billions of Trillions"; break;
+                    case 26: totalpopdesc = "Hundreds of Billions of Trillions"; break;
+                    case 27: totalpopdesc = "Thousands of Billions of Trillions"; break;
+                    case 28: totalpopdesc = "Tens of Thousands of Billions of Trillions"; break;
+                    case 29: totalpopdesc = "Hundreds of Thousands of Billions of Trillions"; break;
+                    case 29: totalpopdesc = "Millions of Billions of Trillions"; break;
+                    default: totalpopdesc = "10^"+system.totalpop; break;
+                }
+                document.getElementById("systempop").innerHTML = system.totalpop + " (" + totalpopdesc + ")";
             var systemTokens = document.querySelectorAll("[data-system]");
             for(var i = 0, len = systemTokens.length; i < len; i++){
                 var el = systemTokens[i];
