@@ -81,6 +81,86 @@
         #SystemDetails ul{
             margin-top:0px;
         }
+        #maplist{
+            list-style-image: url(world.png);
+            border-radius:20px;
+            padding-top:10px;
+            padding-bottom:10px;
+            padding-right:10px;
+            box-shadow:1px 1px 4px rgba(50,50,100,1);
+        }
+        #maplist .star{
+            list-style-image: url(star.png);
+        }
+        #maplist .Mainworld, #maplist .mainworld{
+            color:black;
+            list-style-image: url(hospitable.png);
+            font-weight:800;
+        }
+        #maplist .populated{
+            color:black;
+        }
+        #maplist .Large.Gas.Giant{
+            list-style-image: url(giant.png);
+        }
+        #maplist .Small.Gas.Giant{
+            list-style-image: url(sgiant.png);
+        }
+        #maplist .Ice.Giant{
+            list-style-image: url(igiant.png);
+        }
+        #maplist .Belt{
+            list-style-image: url(belt.png);
+        }
+        #maplist .Asteroid.Belt{
+            list-style-image: url(asteroidbelt.png);
+            font-weight:800;
+        }
+        #maplist .BigWorld{
+            list-style-image: url(bworld.png);
+        }
+        #maplist .Ring{
+            list-style-image: url(ring.png);
+        }
+        #maplist .Inner{
+            list-style-image: url(inner.png);
+        }        
+        #maplist .Inner{
+            list-style-image: url(outer.png);
+        }
+        #maplist .Inferno{
+            list-style-image: url(inferno.png);
+        }
+        #maplist .Iceworld{
+            list-style-image: url(ice.png);
+        }
+        #maplist .RadWorld{
+            list-style-image: url(rad.png);
+        }
+        #maplist .Hospitable{
+            list-style-image: url(hospitable.png);
+        }
+        #maplist .StormWorld{
+            list-style-image: url(storm.png);
+        }
+        #maplist .Occupied{
+            list-style-image: url(occupied.png);
+        }
+        #maplist .Solar.Surface{
+            list-style-image: url(surface.png);
+        }
+        #maplist .Worldlet{
+            list-style-image: url(worldlet.png);
+        }
+        #maplist ul{
+            margin-bottom:8px;
+            background-color:rgba(150,150,200,0.1);
+            border-radius:20px;
+            box-shadow:1px 1px 4px rgba(50,50,100,1);
+        }
+        #maplist ul:empty{
+            margin:0px; display:none;
+        }
     </style>
     <fieldset>
         <legend>Controls</legend>
@@ -1638,43 +1718,6 @@
                         "X":"X - None"
                     }
                 };
-                var totalpop = Math.pow(10,system.totalpop);
-                var totalpopdesc = "";
-                switch(system.totalpop){
-                    case 0: totalpopdesc = "No population"; break;
-                    case 1: totalpopdesc = "Few (<100)"; break;
-                    case 2: totalpopdesc = "Hundreds"; break;
-                    case 3: totalpopdesc = "Thousands"; break;
-                    case 4: totalpopdesc = "Tens of Thousands"; break;
-                    case 5: totalpopdesc = "Hundreds of Thousands"; break;
-                    case 6: totalpopdesc = "Millions"; break;
-                    case 7: totalpopdesc = "Tens of Millions"; break;
-                    case 8: totalpopdesc = "Hundreds of Millions"; break;
-                    case 9: totalpopdesc = "Billions"; break;
-                    case 10: totalpopdesc = "Tens of Billions"; break;
-                    case 11: totalpopdesc = "Hundreds of Billions"; break;
-                    case 12: totalpopdesc = "Trillions"; break;
-                    case 13: totalpopdesc = "Tens of Trillions"; break;
-                    case 14: totalpopdesc = "Hundreds of Trillions"; break;
-                    case 15: totalpopdesc = "Thousands of Trillions"; break;
-                    case 16: totalpopdesc = "Tens of Thousands of Trillions"; break;
-                    case 17: totalpopdesc = "Hundreds of Thousands of Trillions"; break;
-                    case 18: totalpopdesc = "Millions of Trillions"; break;
-                    case 19: totalpopdesc = "Tens of Millions of Trillions"; break;
-                    case 20: totalpopdesc = "Hundreds of Millions of Trillions"; break;
-                    case 21: totalpopdesc = "Thousands of Millions of Trillions"; break;
-                    case 22: totalpopdesc = "Tens of Thousands of Millions of Trillions"; break;
-                    case 23: totalpopdesc = "Hundreds of Thousands of Millions of Trillions"; break;
-                    case 24: totalpopdesc = "Billions of Trillions"; break;
-                    case 25: totalpopdesc = "Tens of Billions of Trillions"; break;
-                    case 26: totalpopdesc = "Hundreds of Billions of Trillions"; break;
-                    case 27: totalpopdesc = "Thousands of Billions of Trillions"; break;
-                    case 28: totalpopdesc = "Tens of Thousands of Billions of Trillions"; break;
-                    case 29: totalpopdesc = "Hundreds of Thousands of Billions of Trillions"; break;
-                    case 29: totalpopdesc = "Millions of Billions of Trillions"; break;
-                    default: totalpopdesc = "10^"+system.totalpop; break;
-                }
-                document.getElementById("systempop").innerHTML = system.totalpop + " (" + totalpopdesc + ")";
             var systemTokens = document.querySelectorAll("[data-system]");
             for(var i = 0, len = systemTokens.length; i < len; i++){
                 var el = systemTokens[i];
@@ -1754,14 +1797,17 @@
             var list = document.getElementById("maplist");
             clearElement(list);
             var description = system.stars.primary.type + (typeof system.stars.primary.decimal === "undefined" ? "" : system.stars.primary.decimal.toString()) + system.stars.primary.size;
-            list.appendChild(document.createElement("li")).appendChild(document.createTextNode(
+            var primli = list.appendChild(document.createElement("li"));
+            primli.appendChild(document.createTextNode(
                 "Primary Star: " + description
-            ))
+            ));
+            primli.classList.add("star");
             for(var i = 0, len = system.stars.primary.satellites.length; i < len; i++){
                 var slot = system.stars.primary.satellites[i];
                 if(slot && typeof slot !== "undefined"){
                     var description = "";
                     var orbitingStar = false;
+                    var types = slot.worldtype.split(" ");
                     if(slot.worldtype.indexOf("star") >= 0){
                         orbitingStar = true;
                         if(slot.type === "BD"){
@@ -1775,11 +1821,21 @@
                         if(typeof description === "undefined"){ console.log(slot);}
                     }
                     var li = list.appendChild(document.createElement("li"));
+                    for(var s = 0; s < types.length; s++){
+                        li.classList.add(types[s]);
+                    }
                     li.appendChild(document.createTextNode(
                         "Orbit "+i+": "+addCaps(slot.worldtype) + " ("+ description + ")"
                     ));
-                    if(slot.isMainworld){li.style.fontWeight = "800"; li.style.textDecoration = "underline";}
-                    else if(slot.uwp && +(slot.uwp[4]) > 0){ li.style.fontWeight = "600";}
+                    if(!orbitingStar && slot.uwp){ 
+                        if(+(slot.uwp[4]) > 0){
+                            li.classList.add("populated"); 
+                            li.appendChild(document.createTextNode(String.fromCodePoint(128713)));
+                        }
+                        if(+(slot.uwp[1]) === 0 && !li.classList.contains("Belt") && !li.classList.contains("Ring") && !li.classList.contains("Occupied") && !li.classList.contains("Surface")){
+                            li.classList.add("Worldlet");
+                        }
+                    }
                     if(slot.satellites){
                         var subOrbitingStar = false;
                         var sublist = list.appendChild(document.createElement("ul"));
@@ -1787,6 +1843,7 @@
                             if(typeof slot.satellites[j] !== "undefined"){
                                 var subslot = slot.satellites[j];
                                 var desc = "";
+                                var subtypes = subslot.worldtype.split(" ");
                                 if(subslot.worldtype.indexOf("star") >= 0){
                                     subOrbitingStar = true;
                                     if(subslot.type === "BD"){
@@ -1806,14 +1863,26 @@
                                 }
                                 var li = sublist.appendChild(document.createElement("li"));
                                 li.appendChild(document.createTextNode(text));
-                                if(subslot.isMainworld){ li.style.fontWeight = "800"; li.style.textDecoration = "underline"; }
-                                else if(subslot.uwp && +(subslot.uwp[4]) > 0){ li.style.fontWeight = "600";}
+                                for(var s = 0; s < subtypes.length; s++){
+                                    li.classList.add(subtypes[s]);
+                                }
+                                if(subslot.isMainworld){ li.classList.add("mainworld");}
+                                if(!subOrbitingStar && subslot.uwp){ 
+                                    if(+(subslot.uwp[4]) > 0){
+                                        li.classList.add("populated"); 
+                                        li.appendChild(document.createTextNode(String.fromCodePoint(128713)));
+                                    }
+                                    if(+(subslot.uwp[1]) === 0 && !li.classList.contains("Belt") && !li.classList.contains("Ring") && !li.classList.contains("Occupied") && !li.classList.contains("Surface")){
+                                        li.classList.add("Worldlet");
+                                    }
+                                }
                                 if(subslot.satellites){
                                     subsublist = sublist.appendChild(document.createElement("ul"));
                                     for(var k = 0, klen = subslot.satellites.length; k < klen; k++){
                                         var subsub = subslot.satellites[k];
                                         if(typeof subsub !== "undefined"){
                                             desc = subsub.uwp;
+                                            var subsubtypes = subsub.worldtype.split(" ");
                                             var text = "";
                                             if(subOrbitingStar){                                               
                                                 text = "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")";
@@ -1823,8 +1892,19 @@
                                             }
                                             var li = subsublist.appendChild(document.createElement("li"))
                                             li.appendChild(document.createTextNode(text));
-                                            if(subsub.isMainworld){li.style.fontWeight = "800"; li.style.textDecoration = "underline";}
-                                            else if(subsub.uwp && +(subsub.uwp[4]) > 0){ li.style.fontWeight = "600";}
+                                            for(var s = 0; s < subsubtypes.length; s++){
+                                                li.classList.add(subsubtypes[s]);
+                                            }
+                                            if(subsub.isMainworld){li.classList.add("mainworld");}
+                                            if(!subOrbitingStar && subsub.uwp){ 
+                                                if(+(subsub.uwp[4]) > 0){
+                                                    li.classList.add("populated"); 
+                                                    li.appendChild(document.createTextNode(String.fromCodePoint(128713)));
+                                                }
+                                                if(+(subsub.uwp[1]) === 0 && !li.classList.contains("Belt") && !li.classList.contains("Ring") && !li.classList.contains("Occupied") && !li.classList.contains("Surface")){
+                                                    li.classList.add("Worldlet");
+                                                }
+                                            }
                                         }
                                     }
                                 }
