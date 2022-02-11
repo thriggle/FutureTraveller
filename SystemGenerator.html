@@ -7,12 +7,42 @@
     <title>System Generator</title>
 </head>
 <body>
-    <div>
-        <input type="button" value="Generate System" id="btnGenerateSystem" />
+    <style>
+        #SystemDetailsContainer{
+            display:block;
+            text-align:center;
+            
+        }
+        #SystemDetails{
+            position:relative;
+            display:inline-block;
+            text-align:left;
+            border:1px solid gray;
+            background-color:white;
+            color:black;
+            box-shadow:2px 2px 4px black;
+            font-family:'Candara','Segoe UI',sans-serif;
+            min-width:30rem;
+            padding:1rem;
+        }
+        #SystemDetails h1, #SystemDetails h2, #SystemDetails h3,  #SystemDetails h4, ul{
+            font-family:'Candara','Eras Demi ITC','Eras Demi','Eras','Segoe UI',sans-serif;
+            margin-top:0; margin-bottom:0;
+        }
+    </style>
+    <div id="SystemDetailsContainer">
+        <input type="button" value="Generate System" id="btnGenerateSystem" /><br/><br/>
         <div id="SystemDetails">
-            <h1 data-system="name">System Name</h1>
-            <h2 data-system="uwp">Mainworld</h2>
+            <h1><span data-system="name">System Name</span></h1>
+            <h2><span data-system="uwp"></span></h1>
             <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
+            <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
+            <h4><span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
+            
+            <h3>Mainworld Details</h3>
+            <ul>
+                <li>Starport <span data-mainworld="starport" data-lookup="port"></span> <span data-mainworld="highport" data-iftrue="(Has Highport)" data-iffalse="(No Highport)"></span></li>
+            </ul>
             <h3>System Map:</h3>
             <ul id="maplist"></ul>
         </div>
@@ -82,6 +112,14 @@
                         "Cy":"Colony",
                         "Lt":"Low Tech",
                         "Ht":"High Tech"
+                    },
+                    "port":{
+                        "A":"A - Excellent",
+                        "B":"B - Good",
+                        "C":"C - Routine",
+                        "D":"D - Poor",
+                        "E":"E - Frontier",
+                        "X":"X - None"
                     }
                 };
             var systemTokens = document.querySelectorAll("[data-system]");
@@ -95,9 +133,9 @@
                     Object.assign(val,system[key]);
                     if(el.getAttribute("data-lookup")){
                         var keys = Object.keys(val);
-                        for(var i = 0, len = keys.length; i < len; i++){
-                            if(lookups[el.getAttribute("data-lookup")][val[keys[i]]]){
-                                val[keys[i]] = lookups[el.getAttribute("data-lookup")][val[keys[i]]];
+                        for(var j = 0, jlen = keys.length; j < jlen; j++){
+                            if(lookups[el.getAttribute("data-lookup")][val[keys[j]]]){
+                                val[keys[j]] = lookups[el.getAttribute("data-lookup")][val[keys[j]]];
                             }
                         }
                     }
@@ -116,19 +154,31 @@
                 el.innerHTML = val;
             }
             var mainworldTokens = document.querySelectorAll("[data-mainworld]");
+            
             for(var i = 0, len = mainworldTokens.length; i < len; i++){
                 var el = mainworldTokens[i];
                 var key = el.getAttribute("data-mainworld");
+                
                 var val = {};
+                
                 if(typeof system.mainworld[key] === "string"){
                     val = system.mainworld[key];
+                    if(el.getAttribute("data-lookup")){
+                        val = lookups[el.getAttribute("data-lookup")][val];
+                    }
+                }else if(typeof system.mainworld[key] === "boolean"){
+                    if(system.mainworld[key]){
+                        val = el.getAttribute("data-iftrue");
+                    }else{
+                        val = el.getAttribute("data-iffalse");
+                    }
                 }else{
                     Object.assign(val,system.mainworld[key]);
                     if(el.getAttribute("data-lookup")){
                         var keys = Object.keys(val);
-                        for(var i = 0, len = keys.length; i < len; i++){
-                            if(lookups[el.getAttribute("data-lookup")][val[keys[i]]]){
-                                val[keys[i]] = lookups[el.getAttribute("data-lookup")][val[keys[i]]];
+                        for(var j = 0, jlen = keys.length; j < jlen; j++){
+                            if(lookups[el.getAttribute("data-lookup")][val[keys[j]]]){
+                                val[keys[j]] = lookups[el.getAttribute("data-lookup")][val[keys[j]]];
                             }
                         }
                     }
@@ -173,7 +223,7 @@
                     }
                     var li = list.appendChild(document.createElement("li"));
                     li.appendChild(document.createTextNode(
-                        "Orbit "+i+": "+addCaps(slot.worldtype) + " ("+ description + ")"+(slot.isMainworld?"**":"")
+                        "Orbit "+i+": "+addCaps(slot.worldtype) + " ("+ description + ")"
                     ));
                     if(slot.isMainworld){li.style.fontWeight = "bold";}
                     if(slot.satellites){
@@ -196,9 +246,9 @@
                                 }
                                 var text = "";
                                 if(!orbitingStar){
-                                    text = "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"");
+                                    text = "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" ;
                                 }else{
-                                    text =  "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")" +(subslot.isMainworld?"**":"")
+                                    text =  "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")";
                                 }
                                 var li = sublist.appendChild(document.createElement("li"));
                                 li.appendChild(document.createTextNode(text));
@@ -212,10 +262,10 @@
                                             desc = subsub.uwp;
                                             var text = "";
                                             if(subOrbitingStar){                                               
-                                                text = "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"");
+                                                text = "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")";
                                                 
                                             }else{
-                                                text = "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")"+(subsub.isMainworld?"**":"");                                                
+                                                text = "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")";                                                
                                             }
                                             var li = subsublist.appendChild(document.createElement("li"))
                                             li.appendChild(document.createTextNode(text));
@@ -230,7 +280,7 @@
             }
             console.log(system);
         }
-       
+        
         function clearElement(el){
             while(el.children.length > 0){
                 el.removeChild(el.children[el.children.length-1]);
