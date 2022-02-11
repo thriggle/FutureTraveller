@@ -711,6 +711,7 @@ function createRing(){
 function createInnerSatellite(maxSize,maxPop){
     var worldtype = "";
     var roll = d6();
+    while(maxSize < 9 && roll === 3){ roll = d6(); }
     var type = "";
     if(roll === 1){
         type = "Inferno";
@@ -762,6 +763,7 @@ function createInnerSatellite(maxSize,maxPop){
 function createOuterSatellite(maxSize,maxPop){
     var worldtype = "";
     var roll = d6();
+    while(maxSize < 9 && roll === 3){ roll = d6(); }
     var type = "";
     if(roll === 1){
         type = "Worldlet";
@@ -1149,7 +1151,7 @@ function d6(num){
     if(!num){ num = 1;}
     var sum = 0;
     for(var i = 0; i < num; i++){
-        sum += (Math.random()*6 >>> 0) + 1;
+        sum += ((Math.random()*6) >>> 0) + 1;
     }
     return sum;
 }
