@@ -14,7 +14,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(typeof diebackPenalty === "undefined"){ diebackPenalty = 2;}
     
     var planetoidBelts = Math.max(d6()-3,0);
-    var gg = d6(2) <= gasGiantFrequency ? Math.max(d6(2)/2>>0-2,1) : 0;
+    var gg = d6(2) <= gasGiantFrequency ? Math.max(((d6(2)/2) >> 0) - 2,1) : 0;
     var roll;
     var uwp = "",popdigit = 0,totalpop=0;
     var tradecodes = [];
@@ -143,7 +143,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(hydro > 10){hydro = 10;}
     uwp += hydro.toString(36);
     // roll for pop
-    var pop = d6(2)-2;
+    var pop = d6(2)-2, pop2 = d6(2)-2;
     if(pop===0){
         //uwp = "X"+uwp.substring(1); 
         //starport = "X"; 
@@ -153,6 +153,9 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         popdigit = d19()
     }
     if(pop === 10){ pop = d6(2)+3;}
+    if(pop2 === 10){ pop2 = d6(2)+3;}
+    pop2 = Math.max(pop,pop2);
+
     uwp += pop.toString(36);
     // roll for gov
     var gov = d6()-d6()+pop;
@@ -220,7 +223,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         tech = +(maxTechLevel);
     }
     if(pop === 0){ 
-        if(!permitDieback){ 
+        if(!permitDieback || pop2 === 0){ 
             tech = 0;
         }
         if(tech===0){ // barren worlds require starport E or X
@@ -426,7 +429,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(starport === "A" && pop >= 7){ highport = true;}
     else if(starport === "B" && pop >= 8){ highport = true;}
     else if(starport === "C" && pop >= 9){ highport = true;}
-    var mainworld = {isMainworld:true, popdigit:popdigit, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
+    var mainworld = {isMainworld:true, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
     stars = placeWorlds(stars, mainworld, gg, planetoidBelts, d6(2))
     var totalpop = getTotalPop(stars.primary);
     return {name:name, totalpop:totalpop, uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
@@ -466,8 +469,13 @@ function placeWorlds(stars, mainworld, gg, belts, other){
 
     var planetsToPlace = [];
     var SGGCount = 0;
-    if(mainworld.worldtype === "Planet" || mainworld.worldtype === "Belt"){
-        mainworld.worldtype = "Mainworld";
+    var isBelt = mainworld.worldtype === "Belt";
+    if(mainworld.worldtype === "Planet" || isBelt){
+        if(isBelt){
+            mainworld.worldtype = "Asteroid Belt";
+        }else{
+            mainworld.worldtype = "Mainworld";
+        }
         planetsToPlace.push(mainworld);
     }else if(mainworld.primary === "Gas Giant"){
         var giant = createGasGiant();
@@ -528,6 +536,7 @@ function placeWorlds(stars, mainworld, gg, belts, other){
                 case "Ice Giant":
                     orbit = roll - 1 + orbit; 
                 break;
+                case "Planetoid Belt":
                 case "Belt":
                     orbit = roll - 3 + orbit; 
                 break;
@@ -674,7 +683,7 @@ function createBigWorld(maxPop){
     return {worldtype: "BigWorld", uwp:planet.uwp}
 }
 function createGasGiant(){
-    var roll = d6(2);
+    var roll = d6();
     if(roll <= 3){type = "Small Gas Giant";}
     else{type = "Large Gas Giant";}
     uwp = "Size " + ext(20+roll);
@@ -684,7 +693,7 @@ function createGasGiant(){
 function createBelt(maxPop){
     var uwp = "??";
     var planet = createPlanet("Planetoid",0,maxPop);
-    return {worldtype:"Planetoid Belt", uwp:planet.uwp}
+    return {worldtype:"Planetoid Belt", uwp:planet.uwp, maxpop:uwp.maxpop, pop:planet.pop}
 }
 function createRing(){
     var uwp = "Y000000-0"; // TODO Rings?
@@ -697,7 +706,7 @@ function createRing(){
     }else if(distanceRoll <= 6){
         orbit = 2;
     }
-    return {worldtype:"Ring System", uwp:uwp, orbitAroundPrimary:orbit}
+    return {worldtype:"Ring System", uwp:uwp,orbitAroundPrimary:orbit}
 }
 function createInnerSatellite(maxSize,maxPop){
     var worldtype = "";
@@ -720,7 +729,7 @@ function createInnerSatellite(maxSize,maxPop){
     var distanceRoll = d6();
     var orbit = "??";
     if(distanceRoll <= 7){
-        worldtype = "Close Satellite";
+        worldtype = "Close "+type+" Satellite";
         var roll = d6() - d6();
         if(roll === -5 && planet.size <= 2){ orbit =1 ; /*"Bee";*/ }
         else if(roll <= -4 && planet.size <= 2){ orbit =2 ; /*"Cee";*/ }
@@ -734,7 +743,7 @@ function createInnerSatellite(maxSize,maxPop){
         else if(roll === 4){ orbit =10 ; /*"Kay";*/ }
         else if(roll === 5){ orbit =11 ; /*"Ell";*/ }
     }else{
-        worldtype = "Far Satellite";
+        worldtype = "Far "+type+" Satellite";
         var roll = d6() - d6();
         if(roll === -5){ orbit = 14; /*"Oh";*/ }
         else if(roll === -4){ orbit = 15; /*"Pee";*/ }
@@ -748,7 +757,7 @@ function createInnerSatellite(maxSize,maxPop){
         else if(roll === 4){ orbit = 23; /*"Ex";*/ }
         else if(roll === 5){ orbit = 24; /*"Wye";*/ }    
     }
-    return{worldtype:worldtype, uwp:planet.uwp, orbitAroundPrimary:orbit}
+    return{worldtype:worldtype, uwp:planet.uwp, maxpop:planet.maxpop, orbitAroundPrimary:orbit, pop:planet.pop}
 }
 function createOuterSatellite(maxSize,maxPop){
     var worldtype = "";
@@ -771,7 +780,7 @@ function createOuterSatellite(maxSize,maxPop){
     var distanceRoll = d6(2);
     var orbit = "??";
     if(distanceRoll <= 7){
-        worldtype = "Close Satellite";
+        worldtype = "Close "+type+" Satellite";
         var roll = d6() - d6();
         if(roll === -5 && planet.size <= 2){ orbit =1 ; /*"Bee";*/ }
         else if(roll <= -4 && planet.size <= 2){ orbit =2 ; /*"Cee";*/ }
@@ -785,7 +794,7 @@ function createOuterSatellite(maxSize,maxPop){
         else if(roll === 4){ orbit =10 ; /*"Kay";*/ }
         else if(roll === 5){ orbit =11 ; /*"Ell";*/ }
     }else{
-        worldtype = "Far Satellite";
+        worldtype = "Far "+type+" Satellite";
         var roll = d6() - d6();
         if(roll === -5){ orbit = 14; /*"Oh";*/ }
         else if(roll === -4){ orbit = 15; /*"Pee";*/ }
@@ -799,7 +808,7 @@ function createOuterSatellite(maxSize,maxPop){
         else if(roll === 4){ orbit = 23; /*"Ex";*/ }
         else if(roll === 5){ orbit = 24; /*"Wye";*/ }    
     }
-    return{worldtype:worldtype, uwp:planet.uwp, orbitAroundPrimary:orbit}
+    return{worldtype:worldtype, uwp:planet.uwp, maxpop:planet.maxpop, orbitAroundPrimary:orbit, pop:planet.pop}
 }
 function createPlanet(type,maxSize,maxPop){
     var size = 0;
@@ -848,22 +857,28 @@ function createPlanet(type,maxSize,maxPop){
         if(hydro < 0){ hydro = 0;}
         if(hydro > 10){ hydro = 10;}
     }
-    var pop = 0;
+    var pop = 0, pop2 = 0;
     if(type === "RadWorld" || type === "Inferno"){
         pop = 0;
+        pop2 = 0;
     }else{
         pop = d6(2)-2;
+        pop2 = d6(2)-2;
         if(type === "Iceworld" || type === "Stormworld"){
             pop -= 6;
+            pop2 -= 6;
         }else if(type === "Inner World"){
             pop -= 4;
+            pop2 -= 4;
         }
     }
     if(pop > maxPop){
         pop = maxPop;
+        pop2 = maxPop;
     }
     if(pop < 0){
         pop = 0;
+        pop2 = 0;
     }
     var portRoll = pop - d6(), port = "Y";
     if(portRoll <= 0){
@@ -911,9 +926,16 @@ function createPlanet(type,maxSize,maxPop){
         else if(gov === 13){ tech -=2; }
         
         if(tech < 0){ tech = 0;}
+        else if(pop === 0){
+            if(pop2 === 0){
+                tech = 0;
+            }
+        }else{
+            pop2 = Math.max(pop,pop2);
+        }
     }
     var uwp = port + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
-    return {worldtype:type, size:size, pop:pop, uwp:uwp};
+    return {worldtype:type, size:size, pop:pop, maxpop:pop2, uwp:uwp};
 }
 function createOtherWorld(orbit, hzorbit, maxPop){
     var uwp = "??Y000000-0", planet = {};
@@ -984,7 +1006,7 @@ function createOtherWorld(orbit, hzorbit, maxPop){
         }
     }
     
-    return {worldtype:type, uwp:planet.uwp, pop:planet.pop, satellites:moons}
+    return {worldtype:type, uwp:planet.uwp, pop:planet.pop, maxpop:planet.maxpop, satellites:moons}
 }
 function getStar(type, decimal, size, maxOrbits){
     var star = {};
