@@ -52,7 +52,16 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             }
         }
         stars.close.worldtype = "close star";
-        stars.primary.satellites[stars.close.orbit] = stars.close;
+        if(typeof stars.primary.satellites[closeOrbit] === "undefined"){
+            stars.primary.satellites[closeOrbit] = stars.close;
+        }else{
+            var amp = 1;
+            while(typeof stars.primary.satellites[closeOrbit+amp] !== "undefined"){
+                amp++;
+            }
+            stars.close.orbit = closeOrbit + amp;  
+            stars.primary.satellites[stars.close.orbit+amp] = stars.close;
+        }
     }
     if(d6()-d6()>=3){ 
         var nearOrbit = 5 + d6();
@@ -70,7 +79,16 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             }
         }
         stars.near.worldtype = "near star";
-        stars.primary.satellites[stars.near.orbit] = stars.near;
+        if(typeof stars.primary.satellites[nearOrbit] === "undefined"){
+            stars.primary.satellites[nearOrbit] = stars.near;
+        }else{
+            var amp = 1;
+            while(typeof stars.primary.satellites[nearOrbit+amp] !== "undefined"){
+                amp++;
+            }
+            stars.near.orbit = nearOrbit + amp;  
+            stars.primary.satellites[stars.near.orbit+amp] = stars.near;
+        }
     }
     if(d6()-d6()>=3){ 
         var farOrbit = 11 + d6();
@@ -88,7 +106,16 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             }
         }
         stars.far.worldtype = "far star";
-        stars.primary.satellites[stars.far.orbit] = stars.far; // {worldtype:"far star",details:stars.far};
+        if(typeof stars.primary.satellites[farOrbit] === "undefined"){
+            stars.primary.satellites[farOrbit] = stars.far;
+        }else{
+            var amp = 1;
+            while(typeof stars.primary.satellites[farOrbit+amp] !== "undefined"){
+                amp++;
+            }
+            stars.far.orbit = farOrbit + amp;  
+            stars.primary.satellites[stars.far.orbit+amp] = stars.far;
+        }
     }
     
     var bases = [];
@@ -515,9 +542,27 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
         var planet = planetsToPlace[0];
         var star = arrStars[s];
         if(typeof planet.orbit !== "undefined"){ // if planet already has a preferred orbit...
-            star.satellites[planet.orbit] = planet;
-            planetsToPlace.splice(0,1);
-            availableOrbits -= 1;
+            if(typeof star.satellites[orbit] === "undefined"){
+                star.satellites[planet.orbit] = planet;
+                planetsToPlace.splice(0,1);
+                availableOrbits -= 1;
+            }else{
+                var amp = 0, placedSuccessfully = false;
+                while(!placedSuccessfully && amp < star.satellites.length){
+                    amp++;
+                    if(planet.orbit-amp >= 0 && typeof star.satellites[planet.orbit-amp] === "undefined"){
+                        star.satellites[planet.orbit-amp] = planet; 
+                        planetsToPlace.splice(0,1);
+                        availableOrbits -= 1;
+                        placedSuccessfully = true;
+                    }else if(star.satellites.length > planet.orbit+amp && typeof star.satellites[planet.orbit+amp] === "undefined"){
+                        star.satellites[planet.orbit+amp] = planet;
+                        planetsToPlace.splice(0,1);
+                        availableOrbits -= 1;
+                        placedSuccessfully = true;
+                    }
+                }
+            }
         }else{
             while(star.satellites.length === 0){ // if the current star has no available orbits, rotate
                 s++; 
@@ -1147,10 +1192,10 @@ function getStar(type, decimal, size, maxOrbits){
     }
     for(var i = 0; i < minOrbit; i++){
         if(minOrbit - 1 === i){
-            star.satellites[i] = {worldtype:"Solar Surface",uwp:"Solar Surface"};
+            star.satellites[i] = {worldtype:"Solar Surface",uwp:star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + star.size};
             star.numOrbits -= 1;
         }else{
-            star.satellites[i] = {worldtype:"Occupied", uwp:"Occupied by Star"};
+            star.satellites[i] = {worldtype:"Occupied",uwp:star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + star.size};
             star.numOrbits -= 1;
         }
     }
