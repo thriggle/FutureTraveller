@@ -391,7 +391,7 @@
                 
                 var val = {};
                 
-                if(typeof system.mainworld[key] === "string"){
+                if(typeof system.mainworld[key] === "string" || typeof system.mainworld[key] === "number"){
                     val = system.mainworld[key];
                     if(el.getAttribute("data-lookup")){
                         val = lookups[el.getAttribute("data-lookup")][val];
