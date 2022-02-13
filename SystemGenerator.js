@@ -450,16 +450,42 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }
     else if(importance <= 4){ importanceDesc = "Important"; dailyships = "15-20"; weeklyships = "100";}
     else if(importance >= 5){ importanceDesc = "Very Important"; dailyships = "100"; weeklyships = "1000";}
+
+    var economics = {resources:0,infrastructure:0,labor:0,efficiency:0};
+    economics.resources = d6(2) + (tech >= 8 ? gg+planetoidBelts: 0);
+    economics.labor = Math.max(0, pop - 1);
+    if(pop === 0){
+        economics.infrastructure = 0;
+    }else if(pop <= 3){
+        economics.infrastructure = importance;
+    }else if(pop <= 6){
+        economics.infrastructure = d6() + importance;
+    }else{
+        economics.infrastructure = d6(2) + importance;
+    }
+    economics.efficiency = d6()-d6();
+    economics.extension = ""+ext(economics.resources) + ext(economics.labor) + ext(economics.infrastructure) + (economics.efficiency >= 0 ? "+" : "") + economics.efficiency;
+    economics.RU = Math.max(1,economics.resources)*Math.max(1,economics.labor)*Math.max(1,economics.infrastructure)*Math.max(1,economics.efficiency);
+    var cultural = {};
+    if(pop === 0){
+        cultural = {heterogeneity:0, acceptance:0, strangeness:0, symbols:0, extension:"0000"}
+    }else{
+        cultural.heterogeneity = Math.max(1, pop + d6()-d6());
+        cultural.acceptance = Math.max(1, importance + pop);
+        cultural.strangeness = Math.max(1, d6() - d6() + 5);
+        cultural.symbols = Math.max(1, d6() - d6() + tech);
+        cultural.extension = ext(cultural.heterogeneity)+ext(cultural.acceptance)+ext(cultural.strangeness)+ext(cultural.symbols);
+    }
     tradecodes.sort();
     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
     var highport = false;
     if(starport === "A" && pop >= 7){ highport = true;}
     else if(starport === "B" && pop >= 8){ highport = true;}
     else if(starport === "C" && pop >= 9){ highport = true;}
-    var mainworld = {isMainworld:true, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
+    var mainworld = {cultural:cultural, isMainworld:true, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
     stars = placeWorlds(stars, mainworld, gg, planetoidBelts, d6(2), +maxTechLevel)
     var totalpop = getTotalPop(stars.primary);
-    return {name:name, totalpop:totalpop, uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
+    return {name:name, economics:economics, totalpop:totalpop, uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
 }
 function getTotalPop(star){
     var total = 0;
