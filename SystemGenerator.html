@@ -106,6 +106,7 @@
             background-color:rgba(150,150,200,0.1);
             border-radius:20px;
             box-shadow:1px 1px 4px rgba(50,50,100,1);
+            padding-left:30px;
         }
         #maplist ul:empty{
             margin:0px; display:none;
@@ -115,7 +116,7 @@
         <input type="button" value="Generate System" id="btnGenerateSystem" /><br/><br/>
         <div id="SystemDetails">
             <h1><span data-system="name">System Name</span></h1>
-            <h2><span data-system="uwp"></span></h1>
+            <h2><span data-system="uwp"></span> <span data-mainworld="tradecodes" data-join=" "></span></h1>
             <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
             <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
             <h4><span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
@@ -123,6 +124,13 @@
             <h3>Mainworld Details</h3>
             <ul>
                 <li>Starport <span data-mainworld="starport" data-lookup="port"></span> <span data-mainworld="highport" data-iftrue="(Has Highport)" data-iffalse="(No Highport)"></span></li>
+                <li>Size: <span data-mainworld="size" data-lookup="size"></span></li>
+                <li>Atmosphere: <span data-mainworld="atmo" data-lookup="atmo"></span></li>
+                <li>Hydrographics: <span data-mainworld="hydro" data-lookup="hydro"></span></li>
+                <li>Population: <span data-mainworld="pop" data-lookup="pop"></span></li>
+                <li>Government: <span data-mainworld="gov" data-lookup="gov"></span></li>
+                <li>Law: <span data-mainworld="law" data-lookup="law"></span></li>
+                <li>Tech Level: <span data-mainworld="tech" data-lookup="tech"></span></li>
             </ul>
             <h3>System Map:</h3>
             <ul id="maplist"></ul>
@@ -201,6 +209,147 @@
                         "D":"D - Poor",
                         "E":"E - Frontier",
                         "X":"X - None"
+                    },
+                    "size":{
+                        "0":"Planetoid/Belt (<800 Km) - Microgravity",
+                        "1":"Small (200 - 2400 Km) - Very Low Gravity",
+                        "2":"Small (2400 - 4000 Km) - Low Gravity (Luna)",
+                        "3":"Small (4000 - 5600 Km) - Low Gravity (Mercury)",
+                        "4":"Medium (5600 - 7200 Km) - Low Gravity (Mars)",
+                        "5":"Medium (7200 - 8800 Km) - Standard/Low Gravity",
+                        "6":"Medium (8800 - 10400 Km) - Standard/Low Gravity",
+                        "7":"Large (10400 - 12000 Km) - Standard Gravity",
+                        "8":"Large (12000 - 13600 Km) - Standard Gravity (Terra)",
+                        "9":"Large (13600 - 15200 Km) - Standard Gravity",
+                        "10":"Huge (15200 - 16800 Km) - Standard/High Gravity",
+                        "11":"Huge (16800 - 18400 Km) - High Gravity",
+                        "12":"Huge (18400 - 19400 Km) - High Gravity"
+
+                    },
+                    "atmo":{
+                        "0":"Vacuum",
+                        "1":"Trace",
+                        "2":"Very Thin / Tainted",
+                        "3":"Very Thin",
+                        "4":"Thin / Tainted",
+                        "5":"Thin",
+                        "6":"Standard",
+                        "7":"Standard / Tainted",
+                        "8":"Dense",
+                        "9":"Dense / Tainted",
+                        "10":"Exotic",
+                        "11":"Corrosive",
+                        "12":"Insidious",
+                        "13":"Dense, high",
+                        "14":"Ellipsoid",
+                        "15":"Thin, low"
+
+                    },
+                    "hydro":{
+                        "0":"0-5% Desert",
+                        "1":"6-15% Dry",
+                        "2":"16-25% Dry, A Few Small Seas",
+                        "3":"26-35% Wet, Small Seas and Oceans",
+                        "4":"36-45% Wet World",
+                        "5":"46-55% Wet, A Large Ocean",
+                        "6":"56-65% Wet, Large Oceans",
+                        "7":"66-75% Wet, Earthlike",
+                        "8":"76-85% Very Wet, Marine",
+                        "9":"86-95% Very Wet, Almost Entirely Ocean",
+                        "10":"96-100% Water World"
+
+                    },
+                    "pop":{
+                        "0":"None",
+                        "1":"Few (1+)",
+                        "2":"Hundreds (100+)",
+                        "3":"Thousands (1000+)",
+                        "4":"Tens of Thousands (10,000+)",
+                        "5":"Hundreds of thousands (100,000+)",
+                        "6":"Millions (1,000,000+)",
+                        "7":"Tens of Millions (10,000,000+)",
+                        "8":"Hundreds of Millions (100,000,000+)",
+                        "9":"Billions (1,000,000,000+)",
+                        "10":"Tens of Billions (10,000,000,000+)",
+                        "11":"Hundreds of Billions (100,000,000,000+)",
+                        "12":"Trillions (1,000,000,000,000+)",
+                        "13":"Tens of Trillions (10,000,000,000,000+)",
+                        "14":"Hundreds of Trillions (100,000,000,000,000+)",
+                        "15":"Quadrillions (1,000,000,000,000,000+)"
+                    },
+                    "gov":{
+                        "0":"No government structure",
+                        "1":"Company/Corporation",
+                        "2":"Participating Democracy",
+                        "3":"Self-Perpetuating Oligarchy",
+                        "4":"Representative Democracy",
+                        "5":"Feudal Technocracy",
+                        "6":"Captive Government",
+                        "7":"Balkanization",
+                        "8":"Civil Service Bureaucracy",
+                        "9":"Impersonal Bureaucracy",
+                        "10":"Charismatic Dictator",
+                        "11":"Non-Charismatic Leader",
+                        "12":"Charismatic Oligarchy",
+                        "13":"Religious Dictatorship",
+                        "14":"Religious Autocracy",
+                        "15":"Totalitarian Oligarchy"
+
+                    },
+                    "law":{
+                        "0":"0 - No Law",
+                        "1":"1 - Low Law, No Explosives/Poisons",
+                        "2":"2 - Low Law, No Portable Energy Weapons",
+                        "3":"3 - Low Law, No Automatic Weapons",
+                        "4":"4 - Moderate Law, No Submachine Guns, Energy Weapons",
+                        "5":"5 - Moderate Law, No Concealable Firearms, EMP Weapons, Gauss Weapons",
+                        "6":"6 - Moderate Law, No Firearms Except Shotguns",
+                        "7":"7 - Moderate Law, No Firearms Including Shotguns",
+                        "8":"8 - High Law, Blades controlled, No open display of weapons",
+                        "9":"9 - High Law, No Weapons Outside Home",
+                        "10":"10 - Extreme Law, No Weapon Possession",
+                        "11":"11 - Extreme Law, Civilian movement controlled",
+                        "12":"12 - Extreme Law, Unrestricted invasion of privacy",
+                        "13":"13 - Extreme Law, Paramilitary law enforcement",
+                        "14":"14 - Extreme Law, Full-fledged police state",
+                        "15":"15 - Extreme Law, All facets of daily life rigidly controlled",
+                        "16":"16 - Extreme Law, Severe punishment for petty infractions",
+                        "17":"17 - Extreme Law, Legalized oppression",
+                        "18":"18 - Extreme Law, Routinely oppressive and restrictive",
+                    },
+                    "tech":{
+                        "0":"TL0 - Neolithic",
+                        "1":"TL1 - Bronze/Iron Age",
+                        "2":"TL2 - Age of Sail",
+                        "3":"TL3 - Industrial Revolution",
+                        "4":"TL4 - Mechanized Age",
+                        "5":"TL5 - Broadcast Age",
+                        "6":"TL6 - Atomic Age",
+                        "7":"TL7 - Space Age",
+                        "8":"TL8 - Information Age",
+                        "9":"TL9 - Gravitics Age",
+                        "10":"TL10 - Basic Fusion Age",
+                        "11":"TL11 - FusionPlus Age",
+                        "12":"TL12 - Positronics Age",
+                        "13":"TL13 - Cloning Age",
+                        "14":"TL14 - Geneering Age",
+                        "15":"TL15 - Anagathics Age",
+                        "16":"TL16 - Artificial Persons Age",
+                        "17":"TL17 - Personality Transfer Age",
+                        "18":"TL18 - Exotics Age",
+                        "19":"TL19 - Antimatter Age",
+                        "20":"TL20 - Skip Drive Age",
+                        "21":"TL21 - Stasis Age",
+                        "22":"TL22 - Planet-scrubber Age",
+                        "23":"TL23 - Psychohistory Age",
+                        "24":"TL24 - Rosette Age",
+                        "25":"TL25 - Psionic Engineering Age",
+                        "26":"TL26 - Star Energy Age",
+                        "27":"TL27 - Ringworlds Age",
+                        "28":"TL28 - Reality Engineering Age",
+                        "29":"TL29 - Dyson Sphere Age",
+                        "30":"TL30 - Remote Technology Age",
+                        "30":"TL30 - Pocket Universes Age"
                     }
                 };
             var systemTokens = document.querySelectorAll("[data-system]");
