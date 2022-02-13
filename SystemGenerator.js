@@ -339,7 +339,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             
         }       
     }
-    var difference = stars.primary.HZorbit - MWOrbit;
+    var difference = stars.primary.HZOrbit - MWOrbit;
     if(difference >= 2){
         tradecodes.push("Tr"); climate = "Hot. Tropic.";
     }else if(difference === 1){
