@@ -457,15 +457,15 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(pop === 0){
         economics.infrastructure = 0;
     }else if(pop <= 3){
-        economics.infrastructure = importance;
+        economics.infrastructure = Math.max(0,importance);
     }else if(pop <= 6){
-        economics.infrastructure = d6() + importance;
+        economics.infrastructure = Math.max(0,d6() + importance);
     }else{
-        economics.infrastructure = d6(2) + importance;
+        economics.infrastructure = Math.max(0,d6(2) + importance);
     }
     economics.efficiency = d6()-d6();
     economics.extension = ""+ext(economics.resources) + ext(economics.labor) + ext(economics.infrastructure) + (economics.efficiency >= 0 ? "+" : "") + economics.efficiency;
-    economics.RU = Math.max(1,economics.resources)*Math.max(1,economics.labor)*Math.max(1,economics.infrastructure)*Math.max(1,economics.efficiency);
+    economics.RU = Math.max(1,economics.resources)*Math.max(1,economics.labor)*Math.max(1,economics.infrastructure)*(economics.efficiency === 0 ? 1 : economics.efficiency);
     var cultural = {};
     if(pop === 0){
         cultural = {heterogeneity:0, acceptance:0, strangeness:0, symbols:0, extension:"0000"}
