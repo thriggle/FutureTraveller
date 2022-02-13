@@ -116,21 +116,28 @@
         <input type="button" value="Generate System" id="btnGenerateSystem" /><br/><br/>
         <div id="SystemDetails">
             <h1><span data-system="name">System Name</span></h1>
-            <h2><span data-system="uwp"></span> <span data-mainworld="tradecodes" data-join=" "></span></h1>
+            <h2><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} {<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>} [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h2>
             <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
+            <h3>Resource Units: <span data-economics="RU" ></span></h3>
             <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
             <h4><span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
             
             <h3>Mainworld Details</h3>
             <ul>
-                <li>Starport <span data-mainworld="starport" data-lookup="port"></span> <span data-mainworld="highport" data-iftrue="(Has Highport)" data-iffalse="(No Highport)"></span></li>
-                <li>Size: <span data-mainworld="size" data-lookup="size"></span></li>
-                <li>Atmosphere: <span data-mainworld="atmo" data-lookup="atmo"></span></li>
-                <li>Hydrographics: <span data-mainworld="hydro" data-lookup="hydro"></span></li>
-                <li>Population: <span data-mainworld="pop" data-lookup="pop"></span></li>
-                <li>Government: <span data-mainworld="gov" data-lookup="gov"></span></li>
-                <li>Law: <span data-mainworld="law" data-lookup="law"></span></li>
-                <li>Tech Level: <span data-mainworld="tech" data-lookup="tech"></span></li>
+                <li><strong>Starport</strong> <span data-mainworld="starport" data-lookup="port"></span> <span data-mainworld="highport" data-iftrue="(Has Highport)" data-iffalse="(No Highport)"></span></li>
+                <li><strong>Size:</strong> <span data-mainworld="size" data-lookup="size"></span></li>
+                <li><strong>Atmosphere:</strong> <span data-mainworld="atmo" data-lookup="atmo"></span></li>
+                <li><strong>Hydrographics:</strong> <span data-mainworld="hydro" data-lookup="hydro"></span></li>
+                <li><strong>Population:</strong> <span data-mainworld="pop" data-lookup="pop"></span></li>
+                <li><strong>Government:</strong> <span data-mainworld="gov" data-lookup="gov"></span></li>
+                <li><strong>Law:</strong> <span data-mainworld="law" data-lookup="law"></span></li>
+                <li><strong>Tech Level:</strong> <span data-mainworld="tech" data-lookup="tech"></span></li>
+                <li><strong>Climate:</strong> <span data-mainworld="climate" data-ifblank="N/A"></span></li>
+                <li ><span style="display:inline-block; vertical-align:text-top;"><strong>Culture:</strong></span>
+                    <span style="display:inline-block; vertical-align:text-top; max-width:400px">
+                        <span data-culture="heterogeneity" data-lookup="heterogeneity"></span><span data-culture="acceptance" data-lookup="acceptance"></span><span data-culture="strangeness" data-lookup="strangeness"></span><span data-culture="symbols" data-lookup="symbols"></span>
+                    </span>
+                </li>
             </ul>
             <h3>System Map:</h3>
             <ul id="maplist"></ul>
@@ -350,6 +357,99 @@
                         "29":"TL29 - Dyson Sphere Age",
                         "30":"TL30 - Remote Technology Age",
                         "30":"TL30 - Pocket Universes Age"
+                    },
+                    "heterogeneity":{
+                        // pop + flux -> max 20
+                        "0":"N/A",
+                        "1":"Perfectly homogeneous, ",
+                        "2":"Nearly entirely homogenous, ",
+                        "3":"Very homogenous, ",
+                        "4":"Mostly homogenous, ",
+                        "5":"Somewhat homogenous, ",
+                        "6":"Slightly homogenous, ",
+                        "7":"Average diversity, ",
+                        "8":"Slightly diverse, ",
+                        "9":"Somewhat diverse, ",
+                        "10":"Mostly diverse, ",
+                        "11":"Very diverse, ",
+                        "12":"Cosmopolitan, ",
+                        "13":"Extremely Diverse, ",
+                        "14":"Extremely Diverse, ",
+                        "15":"Extremely Diverse, ",
+                        "16":"Extremely Diverse, ",
+                        "17":"Extremely Diverse, ",
+                        "18":"Extremely Diverse, ",
+                        "19":"Extremely Diverse, ",
+                        "20":"Extremely Diverse, "                   },
+                    "acceptance":{
+                        // Pop + Importance -> max 20/21
+                        "0":"",
+                        "1":"Extremely xenophobic, ",
+                        "2":"Very Xenophobic, ",
+                        "3":"Xenophobic, ",
+                        "4":"Somewhat Xenophobic, ",
+                        "5":"Very cautious of outsiders, ",
+                        "6":"Cautious of outsiders, ",
+                        "7":"Somewhat cautious of outsiders, ",
+                        "8":"Somewhat tolerant of outsiders, ",
+                        "9":"Tolerant of outsiders, ",
+                        "10":"Very tolerant of outsiders, ",
+                        "11":"Generally friendly toward outsiders, ",
+                        "12":"Welcoming toward outsiders, ",
+                        "13":"Very welcoming toward outsiders, ",
+                        "14":"Extremely welcoming toward outsiders, ",
+                        "15":"Excessively welcoming toward outsiders, ",
+                        "16":"Xenophilic, ",
+                        "17":"Very Xenophilic, ",
+                        "18":"Extremely Xenophilic, ",
+                        "19":"Excessively Xenophilic, ",
+                        "20":"Fanatically Xenophilic, ",
+                        "21":"Fanatically Xenophilic, "
+                    },
+                    "strangeness":{
+                        // interstellar norm of 7, max 10
+                        "0":"",
+                        "1":"No local cultural input, ",
+                        "2":"Almost no local cultural input, ",
+                        "3":"Very slight local cultural input, ",
+                        "4":"Unusually minor local cultural input, ",
+                        "5":"Minor local cultural input, ",
+                        "6":"Only Modest cultural input and deviation from interstellar standards of behavior, ",
+                        "7":"Average cultural input and deviation from interstellar standards of behavior, ",
+                        "8":"Somewhat strange and deviant from interstellar standards of behavior, ",
+                        "9":"Considerably strange and deviant from interstellar standards of behavior, ",
+                        "10":"Strange culture, extremely deviant from interstellar standards of behavior, "
+                    },
+                    "symbols":{
+                        // max of 27
+                        "0":"",
+                        "1":"Only concrete symbols",
+                        "2":"Extremely concrete symbols",
+                        "3":"Mostly concrete symbols",
+                        "4":"Strong tendency toward concrete symbols",
+                        "5":"Tendency toward concrete symbols",
+                        "6":"Slight tendency toward concrete symbols",
+                        "7":"Normal complexity of symbols",
+                        "8":"Slight tendency toward abstract symbols",
+                        "9":"Tendency toward abstract symbols",
+                        "10":"Strong tendency toward abstract symbols",
+                        "11":"Unusually abstract symbols",
+                        "12":"Unusually abstract symbols",
+                        "13":"Extremely abstract symbols",
+                        "14":"Extremely abstract symbols",
+                        "15":"Extremely abstract symbols",
+                        "16":"Extremely abstract symbols",
+                        "17":"Extremely abstract symbols",
+                        "18":"Extremely abstract symbols",
+                        "19":"Extremely abstract symbols",
+                        "20":"Extremely abstract symbols",
+                        "21":"Extremely abstract symbols",
+                        "22":"Extremely abstract symbols",
+                        "23":"Extremely abstract symbols",
+                        "24":"Extremely abstract symbols",
+                        "25":"Extremely abstract symbols",
+                        "26":"Extremely abstract symbols",
+                        "27":"Extremely abstract symbols",
                     }
                 };
             var systemTokens = document.querySelectorAll("[data-system]");
@@ -376,7 +476,7 @@
                         val = val.join(el.getAttribute("data-join"));
                     }
                 }
-                if(val.toString() === ""){
+                if(val.toString() == ""){
                     if(el.getAttribute("data-ifblank")){
                         val = el.getAttribute("data-ifblank");
                     }
@@ -413,6 +513,11 @@
                         }
                     }
                 }
+                if(val.toString() == ""){
+                    if(el.getAttribute("data-ifblank")){
+                        val = el.getAttribute("data-ifblank");
+                    }
+                }
                 if(el.getAttribute("data-join")){
                     if(!val.join){
                         val = Object.values(val);
@@ -425,8 +530,35 @@
             for(var i = 0, len = importanceTokens.length; i < len; i++){
                 var el = importanceTokens[i];
                 var key = el.getAttribute("data-importance");
-                el.innerHTML = system.importance[key];
+                var val = system.importance[key]
+                if(el.getAttribute("data-showsign")){
+                    val = (+val >= 0 ? "+" : "") + val;
+                }
+                el.innerHTML = val;
                 
+            }
+            var economicsTokens = document.querySelectorAll("[data-economics]");
+            for(var i = 0, len = economicsTokens.length; i < len; i++){
+                var el = economicsTokens[i];
+                var key = el.getAttribute("data-economics");
+                var val = system.economics[key]
+                if(el.getAttribute("data-showsign")){
+                    val = (+val >= 0 ? "+" : "") + val;
+                }
+                el.innerHTML = val;
+            }
+            var cultureTokens = document.querySelectorAll("[data-culture]");
+            for(var i = 0, len = cultureTokens.length; i < len; i++){
+                var el = cultureTokens[i];
+                var key = el.getAttribute("data-culture");
+                var val = system.mainworld.cultural[key]
+                if(el.getAttribute("data-showsign")){
+                    val = (+val >= 0 ? "+" : "") + val;
+                }
+                if(el.getAttribute("data-lookup")){
+                    val = lookups[el.getAttribute("data-lookup")][val];
+                }
+                el.innerHTML = val;
             }
             var list = document.getElementById("maplist");
             clearElement(list);
