@@ -318,7 +318,17 @@
                                 <option value=10>10</option>
                                 <option value=11>11</option>
                                 <option selected="selected" value=12>12</option>
-                            </select>+)</label><br/>
+                                <option value=13>13</option>
+                                <option value=14>14</option>
+                                <option value=15>15</option>
+                            </select>+, <select id="slctDangerousAtmoThresholdMax">
+                                <option value=10>10</option>
+                                <option value=11>11</option>
+                                <option selected="selected" value=12>12</option>
+                                <option value=13>13</option>
+                                <option value=14>14</option>
+                                <option value=15>15</option>
+                            </select>-)</label><br/>
                         </fieldset>
                         <fieldset class="collapsed">
                             <legend>Law Level</legend>
@@ -433,7 +443,7 @@
             <h3><span data-importance="description">System Importance</span> (<span data-importance="weeklytraffic"></span> ships/week)</h3>
             <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
             <h4><span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
-            <h4><span data-system="travelcodenotes"></span></h4>
+            <h4 style="color:darkred"><span data-system="travelcodenotes"></span></h4>
             <h3>Mainworld Details</h3>
             <ul>
                 <li><strong>Starport</strong> <span data-mainworld="starport" data-lookup="port"></span> <span data-mainworld="highport" data-iftrue="(Has Highport)" data-iffalse="(No Highport)"></span></li>
@@ -665,6 +675,10 @@
                     document.getElementById("btnResetTravelCodes").disabled = false;
                 });
                 document.getElementById("slctDangerousAtmoThreshold").addEventListener("change",function(){
+                    document.getElementById("btnApplyTravelCodes").disabled = false; 
+                    document.getElementById("btnResetTravelCodes").disabled = false;
+                });
+                document.getElementById("slctDangerousAtmoThresholdMax").addEventListener("change",function(){
                     document.getElementById("btnApplyTravelCodes").disabled = false; 
                     document.getElementById("btnResetTravelCodes").disabled = false;
                 });
@@ -933,6 +947,7 @@
                 document.getElementById("slctAmberGovLawThreshold").setAttribute("data-color",document.getElementById("slctAmberGovLawThreshold").value = 20);
                 document.getElementById("slctRedGovLawThreshold").setAttribute("data-color",document.getElementById("slctRedGovLawThreshold").value = 22);
                 document.getElementById("slctDangerousAtmoThreshold").setAttribute("data-color",document.getElementById("slctDangerousAtmoThreshold").value = 10);
+                document.getElementById("slctDangerousAtmoThresholdMax").setAttribute("data-color",document.getElementById("slctDangerousAtmoThresholdMax").value = 15);
                 document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "N/A");
                 document.getElementById("slctAmberDieback").setAttribute("data-color",document.getElementById("slctAmberDieback").value= "N/A");
                 document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Amber");
@@ -955,6 +970,7 @@
                 document.getElementById("slctAmberGovLawThreshold").setAttribute("data-color",document.getElementById("slctAmberGovLawThreshold").value = 20);
                 document.getElementById("slctRedGovLawThreshold").setAttribute("data-color",document.getElementById("slctRedGovLawThreshold").value = 22);
                 document.getElementById("slctDangerousAtmoThreshold").setAttribute("data-color",document.getElementById("slctDangerousAtmoThreshold").value = 12);
+                document.getElementById("slctDangerousAtmoThresholdMax").setAttribute("data-color",document.getElementById("slctDangerousAtmoThresholdMax").value = 12);
                 document.getElementById("slctRedZoneX").setAttribute("data-color",document.getElementById("slctRedZoneX").value = "Red");
                 document.getElementById("slctAmberDieback").setAttribute("data-color",document.getElementById("slctAmberDieback").value= "Red");
                 document.getElementById("slctAmberZoneBa").setAttribute("data-color",document.getElementById("slctAmberZoneBa").value= "Amber");
@@ -977,6 +993,7 @@
                 var AmberGovLaw = document.getElementById("slctAmberGovLaw").value;
                 var RedGovLawThreshold = document.getElementById("slctRedGovLawThreshold").value;
                 var DangerousAtmoThreshold = document.getElementById("slctDangerousAtmoThreshold").value;
+                var DangerousAtmoThresholdMax = document.getElementById("slctDangerousAtmoThresholdMax").value;
                 var AmberGovLawThreshold = document.getElementById("slctAmberGovLawThreshold").value;
                 var RedZoneX = document.getElementById("slctRedZoneX").value;
                 var AmberZoneBa = document.getElementById("slctAmberZoneBa").value;
@@ -1126,7 +1143,7 @@
                             }
                         }
                         if(AmberZoneAtmo !== "N/A"){ // amber 10+ atmo
-                            if(mapContent[i].system.mainworld.atmo >= DangerousAtmoThreshold) {
+                            if(mapContent[i].system.mainworld.atmo >= DangerousAtmoThreshold && mapContent[i].system.mainworld.atmo <= DangerousAtmoThresholdMax) {
                                 if(AmberZoneAtmo === "Red"){
                                     mapContent[i].system.isRed = true; 
                                 }else{
