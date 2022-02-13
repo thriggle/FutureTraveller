@@ -327,16 +327,16 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         MWOrbit += 2;         
     }
     if(size === 0){ // asteroid belt placement is independent of HZ
-        roll = d6(2);
-        MWOrbit = stars.primary.HZOrbit;
-        roll -= 3;
-        MWOrbit += roll;
+        roll = d6(2) - 3;
+        MWOrbit = stars.primary.HZOrbit + roll;
     }
+    if(MWOrbit < 0){ MWOrbit = 0;}
     var validOrbit = false;
     if(typeof stars.primary.satellites[MWOrbit] !== "undefined"){ // check if desired orbit already occupied (by a star)
         while(!validOrbit){ // mainworld will be placed in next available orbit
             MWOrbit += 1;
             validOrbit = typeof stars.primary.satellites[MWOrbit] === "undefined";
+            
         }       
     }
     var difference = stars.primary.HZorbit - MWOrbit;
@@ -520,16 +520,19 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
         bw.satellites = addSatellite(new Array(26), mainworld);
         bw.orbit = mainworld.orbit;
         planetsToPlace.push(bw);
+    }else{
+        console.log("Unexpected mainworld worldtype or primary! Mainworld not placed.")
+        console.log(mainworld);
     }
     for(var i = 0; i < gg; i++){
-        var giant = createGasGiant();
-        if(giant.worldtype === "Small Gas Giant"){
+        var ngiant = createGasGiant();
+        if(ngiant.worldtype === "Small Gas Giant"){
             SGGCount += 1;
             if(SGGCount % 2 === 0){
-                giant.worldtype = "Ice Giant";
+                ngiant.worldtype = "Ice Giant";
             }
         }
-        planetsToPlace.push(giant);
+        planetsToPlace.push(ngiant);
     }
     for(var i = 0; i < belts; i++){
         planetsToPlace.push(createBelt(mainworld.pop - 1));
@@ -542,7 +545,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
         var planet = planetsToPlace[0];
         var star = arrStars[s];
         if(typeof planet.orbit !== "undefined"){ // if planet already has a preferred orbit...
-            if(typeof star.satellites[orbit] === "undefined"){
+            if(typeof star.satellites[planet.orbit] === "undefined"){
                 star.satellites[planet.orbit] = planet;
                 planetsToPlace.splice(0,1);
                 availableOrbits -= 1;
@@ -583,6 +586,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
                 break;
                 case "Planetoid Belt":
                 case "Belt":
+                case "Asteroid Belt":
                     orbit = roll - 3 + orbit; 
                 break;
                 default:
