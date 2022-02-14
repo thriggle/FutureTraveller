@@ -527,7 +527,7 @@
             ctx.font = ""+fontSize+"pt "+FONT;
             drawMap(mapContent);
             NameGenerator("names.jsonc",function(o){wordMaker = o; populateSubsector();});
-            var lastHighlightedHex;
+            var lastHighlightedHex, lastSelectedHex;
             attachEventListeners();
             
 
@@ -574,7 +574,11 @@
                                 detailBlock.style.display = "none";
                             }
                             else{
+                                if(lastSelectedHex){
+                                    lastSelectedHex.selected = false;
+                                }
                                 hex.selected = true;
+                                lastSelectedHex = hex;
                                 var detailBlock = document.getElementById("SystemDetailsContainer");
                                 if(hex.system){
                                     renderSystem(hex.system);
@@ -583,7 +587,8 @@
                                     detailBlock.style.display = "inline-block";
                                 }else{
                                     detailBlock.style.display = "none";
-                                }                                
+                                }
+                                break;                                
                             }
                         }else{
                             if(hex.selected){
@@ -616,6 +621,9 @@
                 }
                 document.getElementById("dialog_close").addEventListener("click",function(){
                     document.getElementById("SystemDetailsContainer").style.display = "none";
+                    if(lastSelectedHex){
+                        lastSelectedHex.selected = false;
+                    }
                 });
                 document.getElementById("slctMapSize").addEventListener("change",function(){
                     var choice = document.getElementById("slctMapSize").value;
