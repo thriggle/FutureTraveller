@@ -162,6 +162,19 @@
         #maplist ul:empty{
             margin:0px; display:none;
         }
+        .mainworlddetails{
+            margin-bottom:8px;
+            border-radius:20px;
+            box-shadow:1px 1px 4px rgba(50,50,100,1);
+            padding-left:30px;
+        }
+        #dialog_close{
+            float:right; font-weight:normal; cursor:pointer; font-size: 1rem; font-family:sans-serif; border:1px solid black; padding:4px;
+        }
+        #dialog_close:hover{
+            background-color: darkred;
+            color:white;
+        }
     </style>
     <fieldset>
         <legend>Controls</legend>
@@ -198,6 +211,7 @@
                 <option value="7">Tech Level</option>
                 <option value="8">Importance</option>
                 <option value="9">Total System Pop</option>
+                <option value="10">Economy</option>
             </select>
         </label><br/>
         <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes" checked="checked"/> Show Travel Codes</label>
@@ -438,15 +452,20 @@
     </fieldset>
     <div id="SystemDetailsContainer" style="display:none;">
         <div id="SystemDetails">
-            <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span></h1>
-            <h2><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} {<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>} [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h2>
-            <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
-            <h3>Resource Units: <span data-economics="RU" ></span></h3>
+            <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span><span id="dialog_close">X</span></h1>
+            <h2><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span></h2>
             <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
-            <h4><span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
+            <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
+            <h3>Available Resource Units: <span data-economics="RU" ></span></h3>
+            <h4>
+                <span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span> 
+                <span style="font-weight:heavy">Gas Giants:</span> <span style="font-weight:normal" data-system="gg" data-ifblank="None" >None</span> 
+                <span style="font-weight:heavy">Planetoid Belts:</span> <span style="font-weight:normal" data-system="planetoidBelts" data-ifblank="None" >None</span> 
+            </h4>
+            <h4 style="font-weight: normal;"><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} {<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>} [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h4>
             <h4 style="color:darkred"><span data-system="travelcodenotes"></span></h4>
             <h3>Mainworld Details</h3>
-            <ul>
+            <ul class="mainworlddetails">
                 <li><strong>Starport</strong> <span data-mainworld="starport" data-lookup="port"></span> <span data-mainworld="highport" data-iftrue="(Has Highport)" data-iffalse="(No Highport)"></span></li>
                 <li><strong>Size:</strong> <span data-mainworld="size" data-lookup="size"></span></li>
                 <li><strong>Atmosphere:</strong> <span data-mainworld="atmo" data-lookup="atmo"></span></li>
@@ -489,9 +508,9 @@
                 yOffset:HEX_SIZE*4,
                 diameter:HEX_SIZE*2
             }
-            
-            var mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3,-1], 
-            maxes = [0,0,0,0,0,0,0,0,5,0], 
+            // 0-7 UWP, 8 importance, 9 total pop, 10 RU
+            var mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3,-1,-1], 
+            maxes = [0,0,0,0,0,0,0,0,5,0,0], 
             labels = ["starport","size","atmo","hydro","pop","gov","law","tech"];
             var _systems = {};
             
@@ -508,7 +527,7 @@
             ctx.font = ""+fontSize+"pt "+FONT;
             drawMap(mapContent);
             NameGenerator("names.jsonc",function(o){wordMaker = o; populateSubsector();});
-            var lastHighlightedHex;
+            var lastHighlightedHex, lastSelectedHex;
             attachEventListeners();
             
 
@@ -555,7 +574,11 @@
                                 detailBlock.style.display = "none";
                             }
                             else{
+                                if(lastSelectedHex){
+                                    lastSelectedHex.selected = false;
+                                }
                                 hex.selected = true;
+                                lastSelectedHex = hex;
                                 var detailBlock = document.getElementById("SystemDetailsContainer");
                                 if(hex.system){
                                     renderSystem(hex.system);
@@ -564,7 +587,8 @@
                                     detailBlock.style.display = "inline-block";
                                 }else{
                                     detailBlock.style.display = "none";
-                                }                                
+                                }
+                                break;                                
                             }
                         }else{
                             if(hex.selected){
@@ -595,6 +619,12 @@
                         }
                     });
                 }
+                document.getElementById("dialog_close").addEventListener("click",function(){
+                    document.getElementById("SystemDetailsContainer").style.display = "none";
+                    if(lastSelectedHex){
+                        lastSelectedHex.selected = false;
+                    }
+                });
                 document.getElementById("slctMapSize").addEventListener("change",function(){
                     var choice = document.getElementById("slctMapSize").value;
                     switch(choice){
@@ -720,7 +750,8 @@
                     case "Clump": d = 1, target = 2; break;
                 }
                 var namesSoFar = {};
-                mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3,-1], maxes = [0,0,0,0,0,0,0,0,5,0];
+                //  0-7 = UWP, 8 = Importance, 9 = Total Pop, 10 = RUs
+                mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3,-1,-1], maxes = [0,0,0,0,0,0,0,0,5,0,0];
                 var systemArray = [];
                 for(var x = 0; x < SUBSECTOR_WIDTH; x++){
                     for(var y = 0; y < SUBSECTOR_HEIGHT; y++){
@@ -758,6 +789,11 @@
                                     var currMin = mins[i], currMax = maxes[i];
                                     if(currValue < currMin){ mins[i] = currValue;}
                                     if(currValue > currMax){ maxes[i] = currValue;}
+                                }else if(i === 10){
+                                    currValue = details.economics.RU;
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if(currValue < currMin){ mins[i] = currValue; }
+                                    if(currValue > currMax){ maxes[i] = currValue; }
                                 }
                                 
                             }
@@ -838,7 +874,7 @@
                             maxImportance = importance;
                             tradeCodeCount = capital.mainworld.tradecodes.length | 0;
                         }else if(importance === maxImportance){
-                            if(system.tradecodes && system.tradecodes.length > tradeCodeCount){
+                            if(system.mainworld.tradecodes && system.mainworld.tradecodes.length > tradeCodeCount){
                                 capital = system;
                                 maxImportance = importance;
                             }
@@ -1160,11 +1196,17 @@
                                 mapContent[i].system.travelcodenotes += "Dangerous atmosphere.  ";
                             }
                         }
+                        var indexOfFo = mapContent[i].system.mainworld.tradecodes.indexOf("Fo");
                         if(mapContent[i].system.isRed){
                             mapContent[i].system.travelcodenotes = "RED ZONE: "+mapContent[i].system.travelcodenotes;
-                        }else if(mapContent[i].system.isAmber){
-                            mapContent[i].system.travelcodenotes = "AMBER ZONE: "+mapContent[i].system.travelcodenotes;
-                        }
+                            if(indexOfFo == -1){ mapContent[i].system.mainworld.tradecodes.push("Fo"); mapContent[i].system.mainworld.tradecodes.sort();}
+                        }else{
+                            if(indexOfFo >= 0){ mapContent[i].system.mainworld.tradecodes.splice(indexOfFo,1);}
+                            if(mapContent[i].system.isAmber){
+                                mapContent[i].system.travelcodenotes = "AMBER ZONE: "+mapContent[i].system.travelcodenotes;
+                                
+                            }
+                        } 
                     }
                 }
             }
@@ -1172,6 +1214,10 @@
                 for(var i = 0, len = mapContent.length; i < len; i++){
                     if(typeof mapContent[i].system !== "undefined" && mapContent[i].system !== null){
                         mapContent[i].system.isRed = false;
+                        var indexOfFo = mapContent[i].system.mainworld.tradecodes.indexOf("Fo");
+                        if(indexOfFo){
+                            if(indexOfFo >= 0){ mapContent[i].system.mainworld.tradecodes.splice(indexOfFo,1);}
+                        }
                         mapContent[i].system.isAmber = false;
                     }
                 }
@@ -1251,6 +1297,7 @@
                             case 7: heatMapValue = hex.system.mainworld.tech; break;
                             case 8: heatMapValue = hex.system.importance.extension; break;
                             case 9: heatMapValue = hex.system.totalpop; break;
+                            case 10: heatMapValue = hex.system.economics.RU; break;
                         }
                         if(drawMode > 0){
                             var bValue = 200 - 200*((heatMapValue - minValue) / (maxValue - minValue)) >>> 0; 
@@ -1739,7 +1786,8 @@
                         "Cp":"Capital",
                         "Cy":"Colony",
                         "Lt":"Low Tech",
-                        "Ht":"High Tech"
+                        "Ht":"High Tech",
+                        "Fo":"Forbidden"
                     },
                     "port":{
                         "A":"A - Excellent",
@@ -1905,83 +1953,83 @@
                         "10":"Mostly diverse, ",
                         "11":"Very diverse, ",
                         "12":"Cosmopolitan, ",
-                        "13":"Extremely Diverse, ",
-                        "14":"Extremely Diverse, ",
-                        "15":"Extremely Diverse, ",
-                        "16":"Extremely Diverse, ",
-                        "17":"Extremely Diverse, ",
-                        "18":"Extremely Diverse, ",
-                        "19":"Extremely Diverse, ",
-                        "20":"Extremely Diverse, "                   },
-                    "acceptance":{
+                        "13":"Extremely diverse, ",
+                        "14":"Extremely diverse, ",
+                        "15":"Extremely diverse, ",
+                        "16":"Extremely diverse, ",
+                        "17":"Extremely diverse, ",
+                        "18":"Extremely diverse, ",
+                        "19":"Extremely diverse, ",
+                        "20":"Extremely diverse, "                   },
+                        "acceptance":{
                         // Pop + Importance -> max 20/21
                         "0":"",
-                        "1":"Extremely xenophobic, ",
-                        "2":"Very Xenophobic, ",
-                        "3":"Xenophobic, ",
-                        "4":"Somewhat Xenophobic, ",
-                        "5":"Very cautious of outsiders, ",
-                        "6":"Cautious of outsiders, ",
-                        "7":"Somewhat cautious of outsiders, ",
-                        "8":"Somewhat tolerant of outsiders, ",
-                        "9":"Tolerant of outsiders, ",
-                        "10":"Very tolerant of outsiders, ",
-                        "11":"Generally friendly toward outsiders, ",
-                        "12":"Welcoming toward outsiders, ",
-                        "13":"Very welcoming toward outsiders, ",
-                        "14":"Extremely welcoming toward outsiders, ",
-                        "15":"Excessively welcoming toward outsiders, ",
-                        "16":"Xenophilic, ",
-                        "17":"Very Xenophilic, ",
-                        "18":"Extremely Xenophilic, ",
-                        "19":"Excessively Xenophilic, ",
-                        "20":"Fanatically Xenophilic, ",
-                        "21":"Fanatically Xenophilic, "
+                        "1":"extremely xenophobic, ",
+                        "2":"very xenophobic, ",
+                        "3":"xenophobic, ",
+                        "4":"somewhat xenophobic, ",
+                        "5":"very cautious of outsiders, ",
+                        "6":"cautious of outsiders, ",
+                        "7":"reasonably cautious of outsiders, ",
+                        "8":"somewhat tolerant of outsiders, ",
+                        "9":"tolerant of outsiders, ",
+                        "10":"very tolerant of outsiders, ",
+                        "11":"generally friendly toward outsiders, ",
+                        "12":"welcoming toward outsiders, ",
+                        "13":"very welcoming toward outsiders, ",
+                        "14":"extremely welcoming toward outsiders, ",
+                        "15":"excessively welcoming toward outsiders, ",
+                        "16":"outright xenophilic, ",
+                        "17":"very Xenophilic, ",
+                        "18":"extremely Xenophilic, ",
+                        "19":"excessively Xenophilic, ",
+                        "20":"fanatically Xenophilic, ",
+                        "21":"fanatically Xenophilic, "
                     },
                     "strangeness":{
                         // interstellar norm of 7, max 10
                         "0":"",
-                        "1":"No local cultural input, ",
-                        "2":"Almost no local cultural input, ",
-                        "3":"Very slight local cultural input, ",
-                        "4":"Unusually minor local cultural input, ",
-                        "5":"Minor local cultural input, ",
-                        "6":"Only Modest cultural input and deviation from interstellar standards of behavior, ",
-                        "7":"Average cultural input and deviation from interstellar standards of behavior, ",
-                        "8":"Somewhat strange and deviant from interstellar standards of behavior, ",
-                        "9":"Considerably strange and deviant from interstellar standards of behavior, ",
-                        "10":"Strange culture, extremely deviant from interstellar standards of behavior, "
+                        "1":"no local cultural input, ",
+                        "2":"almost no local cultural input, ",
+                        "3":"very slight local cultural input, ",
+                        "4":"slight local cultural input, ",
+                        "5":"minor local cultural input, ",
+                        "6":"only Modest cultural input and deviation from interstellar standards of behavior, ",
+                        "7":"average cultural input and deviation from interstellar standards of behavior, ",
+                        "8":"somewhat strange and deviant from interstellar standards of behavior, ",
+                        "9":"considerably strange and deviant from interstellar standards of behavior, ",
+                        "10":"strange culture, extremely deviant from interstellar standards of behavior, "
                     },
                     "symbols":{
                         // max of 27
                         "0":"",
-                        "1":"Only concrete symbols",
-                        "2":"Extremely concrete symbols",
-                        "3":"Mostly concrete symbols",
-                        "4":"Strong tendency toward concrete symbols",
-                        "5":"Tendency toward concrete symbols",
-                        "6":"Slight tendency toward concrete symbols",
-                        "7":"Normal complexity of symbols",
-                        "8":"Slight tendency toward more abstract symbols",
-                        "9":"Tendency toward more abstract symbols",
-                        "10":"Strong tendency toward more abstract symbols",
-                        "11":"Unusually abstract symbols",
-                        "12":"Unusually abstract symbols",
-                        "13":"Extremely abstract symbols",
-                        "14":"Extremely abstract symbols",
-                        "15":"Extremely abstract symbols",
-                        "16":"Extremely abstract symbols",
-                        "17":"Extremely abstract symbols",
-                        "18":"Extremely abstract symbols",
-                        "19":"Extremely abstract symbols",
-                        "20":"Extremely abstract symbols",
-                        "21":"Extremely abstract symbols",
-                        "22":"Extremely abstract symbols",
-                        "23":"Extremely abstract symbols",
-                        "24":"Extremely abstract symbols",
-                        "25":"Extremely abstract symbols",
-                        "26":"Extremely abstract symbols",
-                        "27":"Extremely abstract symbols",
+                        "1":"only concrete symbols",
+                        "2":"extremely concrete symbols",
+                        "3":"mostly concrete symbols",
+                        "4":"strong tendency toward more concrete symbols",
+                        "5":"tendency toward more concrete symbols",
+                        "6":"slight tendency toward more concrete symbols",
+                        "7":"normal complexity of symbols",
+                        "8":"slight tendency toward more abstract symbols",
+                        "9":"tendency toward more abstract symbols",
+                        "10":"strong tendency toward more abstract symbols",
+                        "11":"unusually abstract symbols",
+                        "12":"unusually abstract symbols",
+                        "13":"extremely abstract symbols",
+                        "14":"extremely abstract symbols",
+                        "15":"extremely abstract symbols",
+                        "16":"extremely abstract symbols",
+                        "17":"extremely abstract symbols",
+                        "18":"extremely abstract symbols",
+                        "19":"extremely abstract symbols",
+                        "20":"extremely abstract symbols",
+                        "21":"extremely abstract symbols",
+                        "22":"extremely abstract symbols",
+                        "23":"extremely abstract symbols",
+                        "24":"extremely abstract symbols",
+                        "25":"extremely abstract symbols",
+                        "26":"extremely abstract symbols",
+                        "27":"extremely abstract symbols",
                     }
                 };
             var systemTokens = document.querySelectorAll("[data-system]");
@@ -1989,7 +2037,7 @@
                 var el = systemTokens[i];
                 var key = el.getAttribute("data-system");
                 var val = {};
-                if(typeof system[key] === "string"){
+                if(typeof system[key] === "string" || typeof system[key] === "number"){
                     val = system[key];
                 }else{
                     Object.assign(val,system[key]);
