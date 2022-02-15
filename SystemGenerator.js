@@ -1029,7 +1029,7 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech){
             // homebrewed rule to shift pop balance to habitable worlds
             if(isHospitable){
                 pop += 1;
-                if(tech - 2 < mw.tech){
+                if(tech < 9 && tech - 2 < mw.tech){
                     tech += 1;
                 }
             }else if(!isHospitable){
@@ -1037,7 +1037,7 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech){
                     pop -= 1;
                 }
                 // homebrewed rule to reduce insystem tech discrepencies
-                if(tech-1 < mw.tech){
+                if(tech < 9 && tech-1 < mw.tech){
                     tech += 1;
                     if(pop > 2 && !isBelt){
                         pop -= 1;
