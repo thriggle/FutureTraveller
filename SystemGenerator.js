@@ -1043,7 +1043,7 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech){
                 }
 
                 // homebrewed rule to increase tech and reduce pop on harsh worlds
-                if(pop >= 1){
+                if(pop >= 1 && type.indexOf("Belt") < 0){
                     pop -= 1;
                 }
                 if(pop > 0 && tech < 9){
