@@ -171,6 +171,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     uwp += hydro.toString(36);
     // roll for pop
     var pop = d6(2)-2, pop2 = d6(2)-2;
+    var popdigit = 0;
     if(pop===0){
         //uwp = "X"+uwp.substring(1); 
         //starport = "X"; 
@@ -179,6 +180,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }else{
         popdigit = d19()
     }
+    
     if(pop === 10){ pop = d6(2)+3;}
     if(pop2 === 10){ pop2 = d6(2)+3;}
     pop2 = Math.max(pop,pop2);
@@ -482,7 +484,8 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(starport === "A" && pop >= 7){ highport = true;}
     else if(starport === "B" && pop >= 8){ highport = true;}
     else if(starport === "C" && pop >= 9){ highport = true;}
-    var mainworld = {cultural:cultural, isMainworld:true, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
+    var roughpop = popdigit * Math.pow(10,pop);
+    var mainworld = {cultural:cultural, isMainworld:true, roughpop:roughpop, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
     stars = placeWorlds(stars, mainworld, gg, planetoidBelts, d6(2), +maxTechLevel)
     var totalpop = getTotalPop(stars.primary);
     return {name:name, economics:economics, totalpop:totalpop, uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
@@ -1265,7 +1268,7 @@ function d19(){
         x = 4;
     }else if(eq(2,2) || eq(2,5) || eq(5,2) || eq(5,5)){
         x = 5;
-    }else if(eq(3,2) || eq(3,5) || eq(6,2) || eq(65)){
+    }else if(eq(3,2) || eq(3,5) || eq(6,2) || eq(6,5)){
         x = 6;
     }else if(eq(1,3) || eq(1,6) || eq(4,3) || eq(4,6)){
         x = 7;
