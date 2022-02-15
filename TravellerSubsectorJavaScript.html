@@ -38,6 +38,27 @@
         fieldset.collapsed > legend::before{
             content:"► ";
         }
+        #SystemDetailsContainer fieldset{
+            font-family:'Bahnschrift Light','Bahnschrift',sans-serif;
+            padding-left:20px;
+            padding-right:20px;
+            padding-top:5px;
+            padding-bottom:5px;
+            border-radius:20px;
+            box-shadow:1px 1px 4px rgba(50,50,100,1);
+            display:block;
+            margin-bottom:4px;
+        }
+        #SystemDetailsContainer fieldset > legend::before{
+            content:"- ";
+        }
+        #SystemDetailsContainer  fieldset.collapsed > legend::before{
+            content:"+ ";
+        }
+        #SystemDetailsContainer fieldset legend{
+            background-color: white;
+            font-weight:bold;
+        }
         canvas{
             border:1px solid black;
             background-color:white;
@@ -162,14 +183,11 @@
         #maplist ul:empty{
             margin:0px; display:none;
         }
-        .mainworlddetails{
-            margin-bottom:8px;
-            border-radius:20px;
-            box-shadow:1px 1px 4px rgba(50,50,100,1);
-            padding-left:30px;
-        }
         #dialog_close{
-            float:right; font-weight:normal; cursor:pointer; font-size: 1rem; font-family:sans-serif; border:1px solid black; padding:4px;
+            float:right; font-weight:normal; cursor:pointer; 
+            font-size: 1rem; font-family:sans-serif; border:1px solid black; padding:4px;
+            width:2rem; text-align: center;
+            border-radius:4px;
         }
         #dialog_close:hover{
             background-color: darkred;
@@ -454,17 +472,23 @@
         <div id="SystemDetails">
             <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span><span id="dialog_close">X</span></h1>
             <h2><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span></h2>
-            <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
-            <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
-            <h3>Available Resource Units: <span data-economics="RU" ></span></h3>
-            <h4>
-                <span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span> 
-                <span style="font-weight:heavy">Gas Giants:</span> <span style="font-weight:normal" data-system="gg" data-ifblank="None" >None</span> 
-                <span style="font-weight:heavy">Planetoid Belts:</span> <span style="font-weight:normal" data-system="planetoidBelts" data-ifblank="None" >None</span> 
-            </h4>
-            <h4 style="font-weight: normal;"><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} {<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>} [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h4>
-            <h4 style="color:darkred"><span data-system="travelcodenotes"></span></h4>
-            <h3>Mainworld Details</h3>
+            <h3 style="font-weight:normal; font-size:medium;" data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
+            <h3 style="font-weight: normal; font-family:'Consolas','Inconsolas','Courier New', Courier, monospace; font-size:small;"><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} {<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>} [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h4>
+            <h3 style="color:darkred"><span data-system="travelcodenotes"></span></h4>
+            <fieldset>
+                <legend>Importance and Economy</legend>
+                <h4><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
+                <h4>Available Resource Units: <span data-economics="RU" ></span></h3>
+                <h4>
+                    <span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span> 
+                    <span style="font-weight:heavy">Gas Giants:</span> <span style="font-weight:normal" data-system="gg" data-ifblank="None" >None</span> 
+                    <span style="font-weight:heavy">Planetoid Belts:</span> <span style="font-weight:normal" data-system="planetoidBelts" data-ifblank="None" >None</span> 
+                </h4>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Mainworld Details</legend>
+            
             <ul class="mainworlddetails">
                 <li><strong>Starport</strong> <span data-mainworld="starport" data-lookup="port"></span> <span data-mainworld="highport" data-iftrue="(Has Highport)" data-iffalse="(No Highport)"></span></li>
                 <li><strong>Size:</strong> <span data-mainworld="size" data-lookup="size"></span></li>
@@ -481,8 +505,11 @@
                     </span>
                 </li>
             </ul>
-            <h3>System Map:</h3>
+        </fieldset>
+        <fieldset>
+            <legend>System Map</legend>
             <ul id="maplist"></ul>
+        </fieldset>
         </div>
     </div>
     <script src="NameGenerator.js"></script>

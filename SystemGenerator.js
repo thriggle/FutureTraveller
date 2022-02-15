@@ -1024,18 +1024,22 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech){
             }
         }else{
             pop2 = Math.max(pop,pop2);
-            
+            var isHospitable = type.indexOf("Hospitable") >= 0;
+            var isBelt = type.indexOf("Belt") >= 0;
             // homebrewed rule to shift pop balance to habitable worlds
-            if(type.indexOf("Hospitable") >= 0 && pop > 0){
+            if(isHospitable){
                 pop += 1;
                 if(tech - 2 < mw.tech){
                     tech += 1;
                 }
-            }else if(type.indexOf("Hospitable") < 0){
+            }else if(!isHospitable){
+                if(port === "Y"  && !isBelt){
+                    pop -= 1;
+                }
                 // homebrewed rule to reduce insystem tech discrepencies
                 if(tech-1 < mw.tech){
                     tech += 1;
-                    if(pop > 2 && type.indexOf("Belt") < 0){
+                    if(pop > 2 && !isBelt){
                         pop -= 1;
                     }
                 }else if(tech > mw.tech){
@@ -1043,12 +1047,14 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech){
                 }
 
                 // homebrewed rule to increase tech and reduce pop on harsh worlds
-                if(pop >= 1 && type.indexOf("Belt") < 0){
-                    pop -= 1;
-                }
                 if(pop > 0 && tech < 9){
                     tech += 1;
+                    if(pop >= 1 && !isBelt && tech > 4){
+                        pop -= 1;
+                    }
                 }
+                
+                
             }
             
             if(pop > maxPop){ pop = maxPop;}
