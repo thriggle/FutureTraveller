@@ -2056,7 +2056,7 @@
                         val = val.join(el.getAttribute("data-join"));
                     }
                 }
-                if(val.toString() === ""){
+                if(val.toString() == ""){
                     if(el.getAttribute("data-ifblank")){
                         val = el.getAttribute("data-ifblank");
                     }
@@ -2101,6 +2101,11 @@
                         val = Object.values(val);
                     }
                     val = val.join(el.getAttribute("data-join"));
+                }
+                if(typeof val === "undefined" || val.toString().length == 0){
+                    if(el.getAttribute("data-ifblank")){
+                        val = el.getAttribute("data-ifblank");
+                    }
                 }
                 el.innerHTML = val;
             }
