@@ -111,6 +111,12 @@
         #maplist ul:empty{
             margin:0px; display:none;
         }
+        .mainworlddetails{
+            margin-bottom:8px;
+            border-radius:20px;
+            box-shadow:1px 1px 4px rgba(50,50,100,1);
+            padding-left:30px;
+        }
     </style>
     <div id="SystemDetailsContainer">
         <input type="button" value="Generate System" id="btnGenerateSystem" /><br/><br/>
@@ -118,8 +124,13 @@
             <h1><span data-system="name">System Name</span></h1>
             <h2><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} {<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>} [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h2>
             <h3><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
-            <h3>Resource Units: <span data-economics="RU" ></span></h3>
+            <h3>Available Resource Units: <span data-economics="RU" ></span></h3>
             <h4 data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
+            <h4>
+                <span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span> 
+                <span style="font-weight:heavy">Gas Giants:</span> <span style="font-weight:normal" data-system="gg" data-ifblank="None" >None</span> 
+                <span style="font-weight:heavy">Planetoid Belts:</span> <span style="font-weight:normal" data-system="planetoidBelts" data-ifblank="None" >None</span> 
+            </h4>
             <h4><span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span></h4>
             
             <h3>Mainworld Details</h3>
@@ -390,8 +401,8 @@
                         "4":"Somewhat Xenophobic, ",
                         "5":"Very cautious of outsiders, ",
                         "6":"Cautious of outsiders, ",
-                        "7":"Somewhat cautious of outsiders, ",
-                        "8":"Somewhat tolerant of outsiders, ",
+                        "7":"Reasonably cautious of outsiders, ",
+                        "8":"Reasonably tolerant of outsiders, ",
                         "9":"Tolerant of outsiders, ",
                         "10":"Very tolerant of outsiders, ",
                         "11":"Generally friendly toward outsiders, ",
@@ -412,7 +423,7 @@
                         "1":"No local cultural input, ",
                         "2":"Almost no local cultural input, ",
                         "3":"Very slight local cultural input, ",
-                        "4":"Unusually minor local cultural input, ",
+                        "4":"Slight local cultural input, ",
                         "5":"Minor local cultural input, ",
                         "6":"Only Modest cultural input and deviation from interstellar standards of behavior, ",
                         "7":"Average cultural input and deviation from interstellar standards of behavior, ",
@@ -426,9 +437,9 @@
                         "1":"Only concrete symbols",
                         "2":"Extremely concrete symbols",
                         "3":"Mostly concrete symbols",
-                        "4":"Strong tendency toward concrete symbols",
-                        "5":"Tendency toward concrete symbols",
-                        "6":"Slight tendency toward concrete symbols",
+                        "4":"Strong tendency toward more concrete symbols",
+                        "5":"Tendency toward more concrete symbols",
+                        "6":"Slight tendency toward more concrete symbols",
                         "7":"Normal complexity of symbols",
                         "8":"Slight tendency toward more abstract symbols",
                         "9":"Tendency toward more abstract symbols",
@@ -457,7 +468,7 @@
                 var el = systemTokens[i];
                 var key = el.getAttribute("data-system");
                 var val = {};
-                if(typeof system[key] === "string"){
+                if(typeof system[key] === "string" || typeof system[key] === "number"){
                     val = system[key];
                 }else{
                     Object.assign(val,system[key]);
