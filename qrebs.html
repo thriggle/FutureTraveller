@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Evaluation - QREBS</title>
+</head>
+<body>
+    <style>
+        .QREBS span + span{ padding-left:10px;}
+        h2, h3{margin-bottom:0px; margin-bottom:0px;}
+        .box{
+            display:inline-block;
+            max-width:300px;
+            padding:10px;
+            box-shadow:1px 1px 4px black;
+            vertical-align:text-top;
+            min-height:250px;
+        }
+    </style>
+    <h1 class="QREBS">QREBS = <span id="Q">Q</span><span id="R">R</span><span id="E">E</span><span id="B">B</span><span id="S">S</span></h1>
+    <div class="box">
+        <h2>Quality: <span data-value="Q"></span></h2>
+        <h3>
+            <span data-value="Q" data-lookup="quality"></span> (<span data-sign="true" data-value="Qmod"></span> mod when using object)
+        </h3>
+        
+        Expected reliability downgrade after <span data-value="Q" data-lookup="period"></span> of continuous use.
+        <br/><br>
+        Quality is a measure of the consistency of workmanship, merit, value, or worth of an object. It directly reflects the time period between reliability downgrades.
+        
+    </div>
+    <div class="box">
+        <h2>Reliability: <span data-value="R"></span></h2>
+        <h3>
+            <span data-value="R" data-lookup="reliability"></span>
+        </h3>
+        <br>
+        Reliability is the probability that an object will fail. (Low reliability increases likelihood of a mishap.)
+
+    </div>
+    <div class="box">
+        <h2>Ease of Use: <span data-value="E"></span></h2>
+        <h3>
+            <span data-value="E" data-lookup="ease of use"></span> (<span data-sign="true" data-value="E"></span> object use mod)
+        </h3>
+        <br>
+        Ease of Use measures the facility with which a piece of equipment can be put into operation.
+    </div>
+    <div class="box">
+        <h2>Bulk/Burden: <span data-value="B"></span></h2>
+        <h3>
+            <span data-value="B" data-lookup="bulk/burden"></span> (<span data-sign="true" data-value="B"></span> kilograms)
+        </h3>
+        <br>
+        Burden (or Bulk) measures the difficulty of carrying or transporting using a piece of equipment. It expresses ergonomic fitness for transport or manipulation. Alternatively, it measures the bulk or unwieldiness of an object
+    </div>
+    <div class="box">
+        <h2>Safety: <span data-value="S"></span></h2>
+        <h3>
+            <span data-value="S" data-lookup="safety"></span>
+        </h3>
+        <br>
+        Safety expresses the possibility, even probability, that the use of an object will inflict pain, injury, or even death. (Low safety increases likelihood of a mishap causing injury or damage.)
+    </div>
+    <br/><input type="button" value="New Evaluation" id="btnEvaluate"/>
+    <script>
+        document.getElementById("btnEvaluate").addEventListener("click",evaluateEquipment);
+        evaluateEquipment();
+        function evaluateEquipment(){
+            var Q = d6(2)-2;
+            var iPeriod = lookup("period",Q);
+            var R = flux(),
+                E = flux(),
+                B = flux(),
+                S = flux();
+            document.getElementById("Q").innerHTML = Q;
+            document.getElementById("R").innerHTML = R;
+            document.getElementById("E").innerHTML = E;
+            document.getElementById("B").innerHTML = B;
+            document.getElementById("S").innerHTML = S;
+            var values = {Q:Q,R:R,E:E,B:B,S:S,Qmod:Q-5}
+            var elements = document.querySelectorAll("[data-value]");
+            for(var i = 0, len = elements.length; i < len; i++){
+                populate(values, elements[i]);
+            }
+        }
+        function populate(values, element){
+            var key = element.getAttribute("data-value");
+            if(key){
+                var val = values[key];
+                if(element.getAttribute("data-lookup")){
+                    if(key !== "Q"){ val += 5;}
+                    val = lookup(element.getAttribute("data-lookup"),val);
+                }
+                if(element.getAttribute("data-sign") == "true"){
+                    val = val >= 0 ? "+"+val:val;
+                }
+                element.innerHTML = val;
+            }
+        }
+        function lookup(list,index){
+            var all = {
+                "period":["one minute","one hour","one day","one week","one month","six months","one year","two years","three years","four years","ten years","twenty years","centuries"],
+                "quality":["very bad","bad","poor","lesser","below average","average","better than some","better than many","very good","better than most","excellent","superb","masterpiece"],
+                "reliability":["very unreliable","more unreliable","unreliable","somewhat unreliable","slightly unreliable","standard reliability","better than some","better than many","reliable","more reliable","very reliable"],
+                "ease of use":["very difficult to use","more difficult to use","hard to use","somewhat hard to use","slightly difficult to use","standard ease of use","better than some","better than many","easy to use","easier to use","very easy to use"],
+                "bulk/burden":["very easy-to-carry","easier to carry","easy to carry/wear","better than many","better than some","standard burden","slightly unergonomic","unwieldy","hard to carry","more burdensome","very burdensome"],
+                "safety":["very hazardous","more hazardous","hazardous","somewhat hazardous","slightly hazardous","standard safety","better than some","better than many","safe to use","safer to use","very safe"],
+                "current age":[50,35,25,21,18,15,12,9,6,3,0], // months
+                "antique age":[400,300,250,210,180,150,120,100,80,60,50], // years
+                "artifact age":["RR",1300,1200,1100,1000,900,800,700,600,500,400], // years
+                "surplus age":[100,90,80,70,60,50,40,30,20,10,0], // years
+                "experimental age":[20,10,9,8,7,6,5,4,3,2,1] //months
+            }
+            var value = all[list][index];
+            if(typeof value == "string"){
+                value = addCaps(value);
+            }
+            return value;
+        }
+        function flux(){
+            return d6()-d6();
+        }
+        function d6(num){
+            if(!num){ num = 1;}
+            var sum = 0;
+            for(var i = 0; i < num; i++){
+                sum += ((Math.random()*6) >>> 0) + 1;
+            }
+            return sum;
+        }
+        function addCaps(text) {
+            var capitalizedString = "";
+            var lastCharacter = null, currCharacter = " ";
+            if(typeof text === "undefined"){return text;}
+            for (var i = 0, len = text.length; i < len; i++) {
+                lastCharacter = currCharacter;
+                currCharacter = text[i];
+                if (lastCharacter === " " || lastCharacter === "-") {
+                    capitalizedString += currCharacter.toUpperCase();
+                } else {
+                    capitalizedString += currCharacter;
+                }
+            }
+            return capitalizedString;
+        }
+    </script>
+</body>
+</html>
