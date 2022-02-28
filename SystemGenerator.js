@@ -1024,6 +1024,7 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech){
             }
         }else{
             pop2 = Math.max(pop,pop2);
+            /*
             var isHospitable = type.indexOf("Hospitable") >= 0;
             var isBelt = type.indexOf("Belt") >= 0;
             // homebrewed rule to shift pop balance to habitable worlds
@@ -1056,7 +1057,7 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech){
                 
                 
             }
-            
+            */
             if(pop > maxPop){ pop = maxPop;}
             if(pop <= 0){
                 pop = 0;
