@@ -565,7 +565,7 @@
                 document.getElementById("chkUseRandom").checked = false;
                 MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
             }
-            NameGenerator("names.jsonc",function(o){wordMaker = o; populateSubsector();},"ass",MathRandom);
+            NameGenerator("names.jsonc",function(o){wordMaker = o; populateSubsector();},null,MathRandom);
             var lastHighlightedHex, lastSelectedHex;
             attachEventListeners();
 
@@ -782,11 +782,16 @@
                     var hash = window.location.hash;
                     if(hash.length > 0){
                         var seed = hash.substring(1);
-                        document.getElementById("txtSeed").value = decodeURI(seed);
-                        var wasChecked = document.getElementById("chkUseRandom").checked;
-                        document.getElementById("chkUseRandom").checked = false;
-                        populateSubsector();
-                        document.getElementById("chkUseRandom").checked = wasChecked;
+                        var newValue = decodeURI(seed);
+                        if(document.getElementById("txtSeed").value == newValue){
+
+                        }else{
+                            document.getElementById("txtSeed").value = newValue;
+                            var wasChecked = document.getElementById("chkUseRandom").checked;
+                            document.getElementById("chkUseRandom").checked = false;
+                            populateSubsector();
+                            document.getElementById("chkUseRandom").checked = wasChecked;
+                        }
                     }
                 });
             }
@@ -795,17 +800,24 @@
                 var seed;
                 if(useRandomSeed){ 
                     seed1 = Math.floor(Math.random()*1000000);
-                    MathRandom = pseudoRandomNumberGenerator(seed1.toString());
-                    wordMaker.setRandom(MathRandom);
+                    //MathRandom = pseudoRandomNumberGenerator(seed1.toString());
+                    //wordMaker.setRandom(MathRandom);
                     seed = addCaps(wordMaker.getRandomName("system")+seed1);
+                    //seed = "xCamp Arngarfps891823"
                     document.getElementById("txtSeed").value = seed;
                    
                 }else{
                     seed = document.getElementById("txtSeed").value
                 } 
+                
+                //console.log("Setting window hash");
                 window.location.hash = encodeURI(seed);
+                
+                //console.log("Seeding number generators");
                 MathRandom = pseudoRandomNumberGenerator(seed.toString());
                 wordMaker.setRandom(MathRandom);
+                
+                //console.log("Generating subsector map");
                 
                 var ggFrequency = document.getElementById("slctGGFrequency").value;
                 var density = document.getElementById("slctStellarDensity").value;
@@ -846,8 +858,10 @@
                                 name = wordMaker.getRandomName("system");
                             }
                             var tcoord = XYCoordToTCoord(x,y);
+                            //console.log("Adding " + name + " to " + tcoord);
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
                             var details = generateSystemDetails(addCaps(name), ggFrequency,permitDieback,maxTechLevel);
+                            //console.log(details);
                             for(var i = 0, len = mins.length; i < len; i++){
                                 var currValue;
                                 if(i < 8){
