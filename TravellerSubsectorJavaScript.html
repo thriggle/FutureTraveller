@@ -539,7 +539,8 @@
             var mins = [-1,-1,-1,-1,-1,-1,-1,-1,-3,-1,-1], 
             maxes = [0,0,0,0,0,0,0,0,5,0,0], 
             labels = ["starport","size","atmo","hydro","pop","gov","law","tech"];
-            var _systems = {};
+            var systems = {};
+            var routes = [];
             
             var canvas = document.getElementById("canvas");
             canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
@@ -848,6 +849,7 @@
                 document.getElementById("data").value = JSON.stringify(systems);
                 var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
                 applyTravelCodes(mapContent);
+                //calcRoutes(mapContent, "T5");
                 drawMap(mapContent);                
             }
             function analyzeMap(systemArray){
@@ -986,6 +988,7 @@
                 for(var i = 0, len = mapContent.length; i < len; i++){
                     drawFinal(mapContent[i], options);
                 }
+                drawRoutes();
                 ctx.restore();
                 document.getElementById("data").value = JSON.stringify(_systems);
             }
@@ -1774,7 +1777,148 @@
                 }
                 return capitalizedString;
             }
-        
+            function calcRoutes(mapContent, rules){
+                if(rules === "T5"){
+                    var importantWorlds = [];
+                    routes = [];
+                    for(var i = 0, len = mapContent.length; i < len; i++){
+                        var hex = mapContent[i];
+                        if(hex.system){
+                            if(hex.system.importance.isImportant && !hex.system.isRed){
+                                hex.system.routes = [];
+                                importantWorlds.push(hex.system);
+                            }
+                        }    
+                        
+                    }
+                    if(importantWorlds.length > 1){
+                        for(var i = 0, len = importantWorlds.length; i < len; i++){
+                            var hexId = importantWorlds[i].tcoord;
+                            var neighbors = getNeighbors(hexId,4);
+                            for(var j = 0, jlen = neighbors.length; j < jlen; j++){
+                                var neighbor = neighbors[j];
+                                if(neighbor.importance.isImportant){
+                                    if(importantWorlds[i].routes.indexOf(neighbor.tcoord) === -1){
+                                        importantWorlds[i].routes.push(neighbor.tcoord);
+                                        neighbor.routes.push(hexId);
+                                        routes.push([hexId,neighbor.tcoord]);
+                                        console.log("Trade route from " +hexId + " to " + neighbor.tcoord);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            function getRoute(tcoord1, tcoord2, maxJump){
+                // TO DO: Build array of system coordinates between two coordinates
+            }
+            function getNeighbors(tcoord, range, excluded){
+                if(typeof excluded == "undefined"){
+                    excluded = {};
+                }
+                excluded[tcoord] = true;
+               var xy = TCoordToXYCoord(tcoord);
+               var x = xy.x, y = xy.y;
+               var candidates = [];
+                if(x%2===0){
+                    if(x > 1){
+                        candidates.push(XYCoordToTCoord(x-1,y));
+                        if(y < SUBSECTOR_HEIGHT){
+                            candidates.push(XYCoordToTCoord(x-1,y+1));
+                        }
+                    }
+                    if(y > 1){
+                        candidates.push(XYCoordToTCoord(x,y-1));
+                    }
+                    if(y < SUBSECTOR_HEIGHT){
+                        candidates.push(XYCoordToTCoord(x, y+1));
+                    }
+                    if(x < SUBSECTOR_WIDTH){
+                        candidates.push(XYCoordToTCoord(x+1,y));
+                        if(y < SUBSECTOR_HEIGHT){
+                            candidates.push(XYCoordToTCoord(x+1,y+1));
+                        }
+                    }
+                }else{
+                    if(x > 1){
+                        if(y > 1){
+                            candidates.push(XYCoordToTCoord(x-1,y-1));
+                        }
+                        candidates.push(XYCoordToTCoord(x-1,y));
+                    }
+                    if(y > 1){
+                        candidates.push(XYCoordToTCoord(x,y-1));
+                    }
+                    if(y < SUBSECTOR_HEIGHT){
+                        candidates.push(XYCoordToTCoord(x, y+1));
+                    }
+                    if(x < SUBSECTOR_WIDTH){
+                        if(y > 1){
+                            candidates.push(XYCoordToTCoord(x+1,y-1));
+                        }
+                        candidates.push(XYCoordToTCoord(x+1,y));
+                    }
+                }
+                var neighbors = [];
+                for(var i = 0; i < candidates.length; i++){
+                    var candidate  = candidates[i];
+                    if(!excluded[candidate]){
+                        if(_systems[candidate]){
+                            neighbors.push(_systems[candidate])
+                        }
+                    }
+                    excluded[candidate] = true;
+                    if(range > 1){
+                        var moreNeighbors = getNeighbors(candidate, range-1, excluded);
+                        if(moreNeighbors.length > 0){
+                            neighbors.push(...moreNeighbors);
+                        }
+                    }
+                }
+                return neighbors;
+            }
+            function isConnected(hex1,hex2){
+                for(var i = 0, len = hex1.routes.length; i < len; i++){
+                    if(hex1.routes[i] === hex2.tcoord){
+                        return true;
+                    }
+                }
+                return false;
+            }
+            function drawRoutes(){
+                //ctx.save();
+                //ctx.globalCompositeOperation = 'source-over';
+                //ctx.translate(HEX_MATH.diameter + CANVAS_PADDING, HEX_MATH.diameter + CANVAS_PADDING);
+                var keys = Object.keys(_systems);
+                var oldStrokeStyle = ctx.strokeStyle;
+                var oldLineWidth = ctx.lineWidth;
+                ctx.strokeStyle = "rgba(255,255,255,0.4)";
+                ctx.lineWidth = HEX_SIZE/10;
+                for(var i = 0, len = routes.length; i < len; i++){
+                    var key = routes[i][0];
+                    var destKey = routes[i][1];
+                    var hex = TCoordToXYCoord(key);
+                    var coords = {
+                        x:hex.x*HEX_MATH.xOffset,
+                        y:hex.x%2 == 0 ? hex.y*HEX_MATH.yOffset : hex.y*HEX_MATH.yOffset + HEX_MATH.diameter
+                    };
+                    ctx.moveTo(coords.x,coords.y);
+                    ctx.beginPath();
+                    ctx.moveTo(coords.x,coords.y);
+                    var destHex = TCoordToXYCoord(destKey);
+                    var dest = {
+                        x:destHex.x*HEX_MATH.xOffset,
+                        y:destHex.x%2 == 0 ? destHex.y*HEX_MATH.yOffset : destHex.y*HEX_MATH.yOffset + HEX_MATH.diameter
+                    };
+                    ctx.lineTo(dest.x,dest.y);
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+                ctx.strokeStyle = oldStrokeStyle;
+                ctx.lineWidth = oldLineWidth;
+               //ctx.restore();
+            }
             function renderSystem(system){
                 var lookups = {
                     tradecode:{
@@ -1813,8 +1957,7 @@
                         "Cp":"Capital",
                         "Cy":"Colony",
                         "Lt":"Low Tech",
-                        "Ht":"High Tech",
-                        "Fo":"Forbidden"
+                        "Ht":"High Tech"
                     },
                     "port":{
                         "A":"A - Excellent",
@@ -1837,7 +1980,10 @@
                         "9":"Large (13600 - 15200 Km) - Standard Gravity",
                         "10":"Huge (15200 - 16800 Km) - Standard/High Gravity",
                         "11":"Huge (16800 - 18400 Km) - High Gravity",
-                        "12":"Huge (18400 - 19400 Km) - High Gravity"
+                        "12":"Huge (18400 - 19400 Km) - High Gravity",
+                        "13":"Massive (~20,800 Km) - High Gravity",
+                        "14":"Massive (~22,400 Km) - High Gravity",
+                        "15":"Massive (~24,000 Km) - High Gravity"
 
                     },
                     "atmo":{
@@ -1874,22 +2020,22 @@
 
                     },
                     "pop":{
-                        "0":"",
-                        "1":"",
-                        "2":" hundred",
-                        "3":" thousand",
-                        "4":"0 thousand",
-                        "5":" hundred thousand",
-                        "6":" million",
-                        "7":"0 Million",
-                        "8":" hundred million",
-                        "9":" billion",
-                        "10":"0 billion",
-                        "11":" hundred billion",
-                        "12":" trillion",
-                        "13":"0 trillion",
-                        "14":" hundred trillion",
-                        "15":" quadrillion"
+                        "0":"None",
+                        "1":"Few (1+)",
+                        "2":"Hundreds (100+)",
+                        "3":"Thousands (1000+)",
+                        "4":"Tens of Thousands (10,000+)",
+                        "5":"Hundreds of thousands (100,000+)",
+                        "6":"Millions (1,000,000+)",
+                        "7":"Tens of Millions (10,000,000+)",
+                        "8":"Hundreds of Millions (100,000,000+)",
+                        "9":"Billions (1,000,000,000+)",
+                        "10":"Tens of Billions (10,000,000,000+)",
+                        "11":"Hundreds of Billions (100,000,000,000+)",
+                        "12":"Trillions (1,000,000,000,000+)",
+                        "13":"Tens of Trillions (10,000,000,000,000+)",
+                        "14":"Hundreds of Trillions (100,000,000,000,000+)",
+                        "15":"Quadrillions (1,000,000,000,000,000+)"
                     },
                     "gov":{
                         "0":"No government structure",
@@ -1980,83 +2126,83 @@
                         "10":"Mostly diverse, ",
                         "11":"Very diverse, ",
                         "12":"Cosmopolitan, ",
-                        "13":"Extremely diverse, ",
-                        "14":"Extremely diverse, ",
-                        "15":"Extremely diverse, ",
-                        "16":"Extremely diverse, ",
-                        "17":"Extremely diverse, ",
-                        "18":"Extremely diverse, ",
-                        "19":"Extremely diverse, ",
-                        "20":"Extremely diverse, "                   },
-                        "acceptance":{
+                        "13":"Extremely Diverse, ",
+                        "14":"Extremely Diverse, ",
+                        "15":"Extremely Diverse, ",
+                        "16":"Extremely Diverse, ",
+                        "17":"Extremely Diverse, ",
+                        "18":"Extremely Diverse, ",
+                        "19":"Extremely Diverse, ",
+                        "20":"Extremely Diverse, "                   },
+                    "acceptance":{
                         // Pop + Importance -> max 20/21
                         "0":"",
-                        "1":"extremely xenophobic, ",
-                        "2":"very xenophobic, ",
-                        "3":"xenophobic, ",
-                        "4":"somewhat xenophobic, ",
-                        "5":"very cautious of outsiders, ",
-                        "6":"cautious of outsiders, ",
-                        "7":"reasonably cautious of outsiders, ",
-                        "8":"somewhat tolerant of outsiders, ",
-                        "9":"tolerant of outsiders, ",
-                        "10":"very tolerant of outsiders, ",
-                        "11":"generally friendly toward outsiders, ",
-                        "12":"welcoming toward outsiders, ",
-                        "13":"very welcoming toward outsiders, ",
-                        "14":"extremely welcoming toward outsiders, ",
-                        "15":"excessively welcoming toward outsiders, ",
-                        "16":"outright xenophilic, ",
-                        "17":"very Xenophilic, ",
-                        "18":"extremely Xenophilic, ",
-                        "19":"excessively Xenophilic, ",
-                        "20":"fanatically Xenophilic, ",
-                        "21":"fanatically Xenophilic, "
+                        "1":"Extremely xenophobic, ",
+                        "2":"Very Xenophobic, ",
+                        "3":"Xenophobic, ",
+                        "4":"Somewhat Xenophobic, ",
+                        "5":"Very cautious of outsiders, ",
+                        "6":"Cautious of outsiders, ",
+                        "7":"Reasonably cautious of outsiders, ",
+                        "8":"Reasonably tolerant of outsiders, ",
+                        "9":"Tolerant of outsiders, ",
+                        "10":"Very tolerant of outsiders, ",
+                        "11":"Generally friendly toward outsiders, ",
+                        "12":"Welcoming toward outsiders, ",
+                        "13":"Very welcoming toward outsiders, ",
+                        "14":"Extremely welcoming toward outsiders, ",
+                        "15":"Excessively welcoming toward outsiders, ",
+                        "16":"Xenophilic, ",
+                        "17":"Very Xenophilic, ",
+                        "18":"Extremely Xenophilic, ",
+                        "19":"Excessively Xenophilic, ",
+                        "20":"Fanatically Xenophilic, ",
+                        "21":"Fanatically Xenophilic, "
                     },
                     "strangeness":{
                         // interstellar norm of 7, max 10
                         "0":"",
-                        "1":"no local cultural input, ",
-                        "2":"almost no local cultural input, ",
-                        "3":"very slight local cultural input, ",
-                        "4":"slight local cultural input, ",
-                        "5":"minor local cultural input, ",
-                        "6":"only Modest cultural input and deviation from interstellar standards of behavior, ",
-                        "7":"average cultural input and deviation from interstellar standards of behavior, ",
-                        "8":"somewhat strange and deviant from interstellar standards of behavior, ",
-                        "9":"considerably strange and deviant from interstellar standards of behavior, ",
-                        "10":"strange culture, extremely deviant from interstellar standards of behavior, "
+                        "1":"No local cultural input, ",
+                        "2":"Almost no local cultural input, ",
+                        "3":"Very slight local cultural input, ",
+                        "4":"Slight local cultural input, ",
+                        "5":"Minor local cultural input, ",
+                        "6":"Only Modest cultural input and deviation from interstellar standards of behavior, ",
+                        "7":"Average cultural input and deviation from interstellar standards of behavior, ",
+                        "8":"Somewhat strange and deviant from interstellar standards of behavior, ",
+                        "9":"Considerably strange and deviant from interstellar standards of behavior, ",
+                        "10":"Strange culture, extremely deviant from interstellar standards of behavior, "
                     },
                     "symbols":{
                         // max of 27
                         "0":"",
-                        "1":"only deal in concrete symbols",
-                        "2":"abstract symbols are extremely rare",
-                        "3":"mostly deal in concrete symbols",
-                        "4":"strong tendency toward more concrete symbols",
-                        "5":"tendency toward more concrete symbols",
-                        "6":"slight tendency toward more concrete symbols",
-                        "7":"typical complexity of symbols",
-                        "8":"slight tendency toward more abstract symbols",
-                        "9":"tendency toward more abstract symbols",
-                        "10":"strong tendency toward more abstract symbols",
-                        "11":"unusually abstract symbols",
-                        "12":"unusually abstract symbols",
-                        "13":"extremely abstract symbols",
-                        "14":"extremely abstract symbols",
-                        "15":"extremely abstract symbols",
-                        "16":"extremely abstract symbols",
-                        "17":"extremely abstract symbols",
-                        "18":"extremely abstract symbols",
-                        "19":"extremely abstract symbols",
-                        "20":"extremely abstract symbols",
-                        "21":"extremely abstract symbols",
-                        "22":"extremely abstract symbols",
-                        "23":"extremely abstract symbols",
-                        "24":"extremely abstract symbols",
-                        "25":"extremely abstract symbols",
-                        "26":"extremely abstract symbols",
-                        "27":"extremely abstract symbols",
+                        "1":"Only concrete symbols",
+                        "2":"Extremely concrete symbols",
+                        "3":"Mostly concrete symbols",
+                        "4":"Strong tendency toward more concrete symbols",
+                        "5":"Tendency toward more concrete symbols",
+                        "6":"Slight tendency toward more concrete symbols",
+                        "7":"Normal complexity of symbols",
+                        "8":"Slight tendency toward more abstract symbols",
+                        "9":"Tendency toward more abstract symbols",
+                        "10":"Strong tendency toward more abstract symbols",
+                        "11":"Unusually abstract symbols",
+                        "12":"Unusually abstract symbols",
+                        "13":"Extremely abstract symbols",
+                        "14":"Extremely abstract symbols",
+                        "15":"Extremely abstract symbols",
+                        "16":"Extremely abstract symbols",
+                        "17":"Extremely abstract symbols",
+                        "18":"Extremely abstract symbols",
+                        "19":"Extremely abstract symbols",
+                        "20":"Extremely abstract symbols",
+                        "21":"Extremely abstract symbols",
+                        "22":"Extremely abstract symbols",
+                        "23":"Extremely abstract symbols",
+                        "24":"Extremely abstract symbols",
+                        "25":"Extremely abstract symbols",
+                        "26":"Extremely abstract symbols",
+                        "27":"Extremely abstract symbols",
                     }
                 };
             var systemTokens = document.querySelectorAll("[data-system]");
@@ -2083,7 +2229,7 @@
                         val = val.join(el.getAttribute("data-join"));
                     }
                 }
-                if(val.toString() === ""){
+                if(val.toString() == ""){
                     if(el.getAttribute("data-ifblank")){
                         val = el.getAttribute("data-ifblank");
                     }
@@ -2091,12 +2237,13 @@
                 el.innerHTML = val;
             }
             var mainworldTokens = document.querySelectorAll("[data-mainworld]");
+            
             for(var i = 0, len = mainworldTokens.length; i < len; i++){
                 var el = mainworldTokens[i];
                 var key = el.getAttribute("data-mainworld");
                 
                 var val = {};
-
+                
                 if(typeof system.mainworld[key] === "string" || typeof system.mainworld[key] === "number"){
                     val = system.mainworld[key];
                     if(el.getAttribute("data-lookup")){
@@ -2123,16 +2270,16 @@
                         }
                     }
                 }
+                if(typeof val === "undefined" || val.toString() == ""){
+                    if(el.getAttribute("data-ifblank")){
+                        val = el.getAttribute("data-ifblank");
+                    }
+                }
                 if(el.getAttribute("data-join")){
                     if(!val.join){
                         val = Object.values(val);
                     }
                     val = val.join(el.getAttribute("data-join"));
-                }
-                if(typeof val === "undefined" || val.toString().length === 0){
-                    if(el.getAttribute("data-ifblank")){
-                        val = el.getAttribute("data-ifblank");
-                    }
                 }
                 el.innerHTML = val;
             }
@@ -2201,7 +2348,7 @@
                         li.classList.add(types[s]);
                     }
                     li.appendChild(document.createTextNode(
-                        "Orbit "+i+": "+addCaps(slot.worldtype) + " ("+ description + ")"
+                        "Orbit "+slot.decimalOrbit+" ("+slot.au+" AU): "+addCaps(slot.worldtype) + " ("+ description + ")"
                     ));
                     if(!orbitingStar && slot.uwp){ 
                         if(+(slot.uwp[4]) > 0){
@@ -2235,7 +2382,7 @@
                                 if(!orbitingStar){
                                     text = "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" ;
                                 }else{
-                                    text =  "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")";
+                                    text =  "Orbit "+subslot.decimalOrbit+" ("+subslot.au+" AU): " + addCaps(subslot.worldtype) +" ("+desc+")";
                                 }
                                 var li = sublist.appendChild(document.createElement("li"));
                                 li.appendChild(document.createTextNode(text));
@@ -2261,7 +2408,7 @@
                                             var subsubtypes = subsub.worldtype.split(" ");
                                             var text = "";
                                             if(subOrbitingStar){                                               
-                                                text = "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")";
+                                                text = "Orbit "+subsub.decimalOrbit+" ("+subsub.au+" AU): " +addCaps(subsub.worldtype) + " ("+desc+")";
                                                 
                                             }else{
                                                 text = "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")";                                                
@@ -2291,7 +2438,7 @@
             }
             console.log(system);
         }
-        function sat(i){
+       function sat(i){
             var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
             return orbits[i];
         }        

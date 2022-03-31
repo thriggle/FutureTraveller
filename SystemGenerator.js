@@ -33,33 +33,49 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }
     if(d6()-d6()>=3){ 
         stars.primary_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2,0);
+        var starOrbit = 0;
         //stars.primary_companion.numOrbits = 0;
         if(primarySurface > -1){
             stars.primary_companion.worldtype = "companion star";
             stars.primary.satellites[primarySurface] = stars.primary_companion; //{worldtype:"companion star", details:stars.primary_companion};
+            starOrbit = primarySurface;
         }
+        let starOrbitDetails = createOrbitDetails(starOrbit);
+        stars.primary_companion.decimalOrbit = starOrbitDetails.decimalOrbit;
+        stars.primary_companion.au = starOrbitDetails.au;  
     }
     if(d6()-d6()>=3){ 
         var closeOrbit = d6()-1
         stars.close = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2, closeOrbit > secondaryOrbitDeduction+1 ? closeOrbit - secondaryOrbitDeduction : 0);
-        stars.close.orbit = closeOrbit;        
+        stars.close.orbit = closeOrbit;   
+         
         if(d6()-d6()>=3){ 
             stars.close_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2, 0);
             let inner = getInnermostOrbit(stars.close);
             if(inner > -1){
                 stars.close_companion.worldtype = "close companion star";
+                let closeCompanionDetails = createOrbitDetails(inner);
+                stars.close_companion.decimalOrbit = closeCompanionDetails.decimalOrbit;
+                stars.close_companion.au = closeCompanionDetails.au;  
                 stars.close.satellites[inner] = stars.close_companion; //{worldtype:"close companion star",details:stars.close_companion};
             }
+            
         }
         stars.close.worldtype = "close star";
         if(typeof stars.primary.satellites[closeOrbit] === "undefined"){
             stars.primary.satellites[closeOrbit] = stars.close;
+            let starOrbitDetails = createOrbitDetails(closeOrbit);
+            stars.close.decimalOrbit = starOrbitDetails.decimalOrbit;
+            stars.close.au = starOrbitDetails.au;  
         }else{
             var amp = 1;
             while(typeof stars.primary.satellites[closeOrbit+amp] !== "undefined"){
                 amp++;
             }
             stars.close.orbit = closeOrbit + amp;  
+            let starOrbitDetails = createOrbitDetails(closeOrbit + amp);
+            stars.close.decimalOrbit = starOrbitDetails.decimalOrbit;
+            stars.close.au = starOrbitDetails.au;  
             stars.primary.satellites[stars.close.orbit+amp] = stars.close;
         }
     }
@@ -74,6 +90,9 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             //stars.near_companion.numOrbits = 0;
             let inner = getInnermostOrbit(stars.near);
             if(inner > -1){
+                let nearCompanionDetails = createOrbitDetails(inner);
+                stars.near_companion.decimalOrbit = nearCompanionDetails.decimalOrbit;
+                stars.near_companion.au = nearCompanionDetails.au;  
                 stars.near_companion.worldtype = "near companion star";
                 stars.near.satellites[inner] = stars.near_companion; //{worldtype:"near companion star", details:stars.near_companion};
             }
@@ -81,12 +100,18 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         stars.near.worldtype = "near star";
         if(typeof stars.primary.satellites[nearOrbit] === "undefined"){
             stars.primary.satellites[nearOrbit] = stars.near;
+            let starOrbitDetails = createOrbitDetails(nearOrbit);
+            stars.near.decimalOrbit = starOrbitDetails.decimalOrbit;
+            stars.near.au = starOrbitDetails.au;  
         }else{
             var amp = 1;
             while(typeof stars.primary.satellites[nearOrbit+amp] !== "undefined"){
                 amp++;
             }
             stars.near.orbit = nearOrbit + amp;  
+            let starOrbitDetails = createOrbitDetails(nearOrbit + amp);
+            stars.near.decimalOrbit = starOrbitDetails.decimalOrbit;
+            stars.near.au = starOrbitDetails.au;
             stars.primary.satellites[stars.near.orbit+amp] = stars.near;
         }
     }
@@ -101,19 +126,28 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             //stars.far_companion.numOrbits = 0;
             let inner = getInnermostOrbit(stars.far);
             if(inner > -1){
+                let farCompanionDetails = createOrbitDetails(inner);
+                stars.far_companion.decimalOrbit = farCompanionDetails.decimalOrbit;
+                stars.far_companion.au = farCompanionDetails.au; 
                 stars.far_companion.worldtype = "far companion star";
                 stars.far.satellites[inner] = stars.far_companion;
             }
         }
         stars.far.worldtype = "far star";
         if(typeof stars.primary.satellites[farOrbit] === "undefined"){
+            let starOrbitDetails = createOrbitDetails(farOrbit);
+            stars.far.decimalOrbit = starOrbitDetails.decimalOrbit;
+            stars.far.au = starOrbitDetails.au;
             stars.primary.satellites[farOrbit] = stars.far;
         }else{
             var amp = 1;
             while(typeof stars.primary.satellites[farOrbit+amp] !== "undefined"){
                 amp++;
             }
-            stars.far.orbit = farOrbit + amp;  
+            stars.far.orbit = farOrbit + amp; 
+            let starOrbitDetails = createOrbitDetails(farOrbit+amp);
+            stars.far.decimalOrbit = starOrbitDetails.decimalOrbit;
+            stars.far.au = starOrbitDetails.au; 
             stars.primary.satellites[stars.far.orbit+amp] = stars.far;
         }
     }
@@ -576,6 +610,9 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
         if(typeof planet.orbit !== "undefined"){ // if planet already has a preferred orbit...
             if(typeof star.satellites[planet.orbit] === "undefined"){
                 star.satellites[planet.orbit] = planet;
+                var orbitDetails = createOrbitDetails(planet.orbit);
+                planet.decimalOrbit = orbitDetails.decimalOrbit;
+                planet.au = orbitDetails.au;
                 planetsToPlace.splice(0,1);
                 availableOrbits -= 1;
             }else{
@@ -584,11 +621,17 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
                     amp++;
                     if(planet.orbit-amp >= 0 && typeof star.satellites[planet.orbit-amp] === "undefined"){
                         star.satellites[planet.orbit-amp] = planet; 
+                        var orbitDetails = createOrbitDetails(planet.orbit-amp);
+                        planet.decimalOrbit = orbitDetails.decimalOrbit;
+                        planet.au = orbitDetails.au;
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
                     }else if(star.satellites.length > planet.orbit+amp && typeof star.satellites[planet.orbit+amp] === "undefined"){
                         star.satellites[planet.orbit+amp] = planet;
+                        var orbitDetails = createOrbitDetails(planet.orbit+amp);
+                        planet.decimalOrbit = orbitDetails.decimalOrbit;
+                        planet.au = orbitDetails.au;
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
@@ -700,6 +743,9 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
                     }
                 }
                 star.satellites[orbit] = planet; //{worldtype:planet.worldtype, uwp:planet.uwp, details:planet};
+                var orbitDetails = createOrbitDetails(orbit);
+                planet.decimalOrbit = orbitDetails.decimalOrbit;
+                planet.au = orbitDetails.au;
                 planetsToPlace.splice(0,1);
                 availableOrbits -= 1;
             }else{
@@ -711,6 +757,9 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
                             planet = createOtherWorld(mainworld, orbit-amp, star.HZOrbit, mainworld.pop-1, maxTech);
                         }
                         star.satellites[orbit-amp] = planet; //{worldtype:planet.worldtype,uwp:planet.uwp, details:planet};
+                        var orbitDetails = createOrbitDetails(orbit-amp);
+                        planet.decimalOrbit = orbitDetails.decimalOrbit;
+                        planet.au = orbitDetails.au;
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
@@ -719,6 +768,9 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
                             planet = createOtherWorld(mainworld, orbit+amp, star.HZOrbit, mainworld.pop-1, maxTech);
                         }
                         star.satellites[orbit+amp] = planet; //{worldtype:planet.worldtype,uwp:planet.uwp, details:planet};
+                        var orbitDetails = createOrbitDetails(orbit+amp);
+                        planet.decimalOrbit = orbitDetails.decimalOrbit;
+                        planet.au = orbitDetails.au;
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
@@ -754,6 +806,36 @@ function addSatellite(moons, moon){
         }
     }
     return moons;
+}
+function createOrbitDetails(orbit){
+    var flux = (d6(2)-2);
+    var decimalOrbits = [
+        [.15,   .16,    .17,    .18,    .19,    .2,     .22,    .24,    .26,    .28,    .30], // 0
+        [.3,    .32,    .34,    .36,    .38,    .4,     .43,    .46,    .49,    .52,    .55], // 1
+        [.55,   .58,    .61,    .64,    .67,    .7,      .73,    .76,    .79,    .82,    .85], // 2
+        [.85,   .88,    .91,    .94,    .97,    1,      1.06,   1.12,   1.18,   1.124,  1.30], // 3
+        [1.3,   1.36,   1.42,   1.48,   1.54,   1.6,    1.72,   1.84,   1.96,   2.08,   2.20], // 4
+        [2.2,   2.32,   2.44,   2.56,   2.68,   2.8,    3.04,   3.28,   3.52,   3.76,   4], // 5
+        [4,     4.2,    4.4,    4.7,    4.9,    5.2,    5.6,    6.1,    6.6,    7.1,    7.6], // 6
+        [7.6,   8.1,    8.5,    9.0,    9.5,    10,     11,     12,     13,     14,     15], // 7
+        [15,    16,     17,     18,     19,     20,     22,     24,     26,     28,     30], // 8
+        [30,    32,     34,     36,     38,     40,     43,     47,     51,     54,     58], // 9
+        [58,    62,     65,     69,     73,     77,     84,     92,     100,    107,    115], // 10
+        [115,   123,    130,    138,    146,    154,    169,    184,    200,    215,    231], // 11
+        [231,    246,    261,    277,    292,    308,   338,    369,    400,    430,    461], // 12
+        [461,   492,    522,    553,    584,    615,    676,    738,    799,    861,    922], // 13
+        [922,   984,    1045,   1107,   1168,   1230,   1352,   1475,   1598,   1721,   1844], // 14
+        [1844,  1966,   2089,   2212,   2335,   2458,   2703,   2949,   3195,   3441,   3687], // 15
+        [3687,  3932,   4178,   4424,   4670,   4916,   5407,   5898,   6390,   6881,   7373], // 16
+        [7373,  7864,   8355,   8847,   9338,   9830,   10797,  11764,  12731,  13698,  14665], // 17
+        [14665, 15632,  16599,  17566,  18533,  19500,  21500,  23500,  25500,  27500,  29500], // 18 = 19500
+        [29500, 31500,  33500,  35500,  37500,  39500,  43420,  47340,  51260,  55180,  59100], // 19 = 39500
+        [59100, 63020,  66940,  70860,  74780,  78700,  86620,  94540,  102460, 110380, 118300] // 20 = 78700
+    ];
+    var au = decimalOrbits[orbit][flux];
+    flux = flux - 5;
+    var decimalOrbit = (orbit + flux/10).toFixed(1);
+    return {decimalOrbit:decimalOrbit,au:au}
 }
 function createBigWorld(mw, maxPop, maxTech){
     if(typeof maxTech === "undefined"){console.error("BigWorld");}
