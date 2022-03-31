@@ -1,7 +1,8 @@
 var MathRandom = pseudoRandomNumberGenerator((Math.random()*1000000).toString());
 function pseudoRandomNumberGenerator(word){
     var seed = xmur3(word);
-    return xoshiro128ss(seed(), seed(), seed(), seed());
+    var a = seed(), b = seed(), c = seed(), d = seed();
+    return xoshiro128ss(a, b, c, d);
 }
 function xmur3(str) {
     for(var i = 0, h = 1779033703 ^ str.length; i < str.length; i++) {
@@ -34,6 +35,7 @@ function ext(num){
     }
 }
 function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel, diebackPenalty, ruleset){
+    
     if(typeof ruleset === "undefined"){ ruleset = "T5";}
     if(typeof diebackPenalty === "undefined"){ diebackPenalty = 2;}
     
@@ -624,7 +626,8 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
     for(var i = 0; i < belts; i++){
         planetsToPlace.push(createBelt(mainworld, mainworld.pop - 1));
     }
-    for(var i = 0; i < other; i++){
+
+    for(var i = 0; i < other && availableOrbits > planetsToPlace.length+1; i++){
         planetsToPlace.push(createOtherWorld());
     }
     s = 0;
@@ -1385,11 +1388,13 @@ function getStar(type, decimal, size, maxOrbits){
     return star;
 }
 function d6(num){
+    
     if(!num){ num = 1;}
     var sum = 0;
     for(var i = 0; i < num; i++){
         sum += ((MathRandom()*6) >>> 0) + 1;
     }
+    
     return sum;
 }
 
