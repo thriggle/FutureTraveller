@@ -794,7 +794,10 @@
                 var useRandomSeed = document.getElementById("chkUseRandom").checked;
                 var seed;
                 if(useRandomSeed){ 
-                    seed = Math.floor(Math.random()*1000000);
+                    seed1 = Math.floor(Math.random()*1000000);
+                    MathRandom = pseudoRandomNumberGenerator(seed1.toString());
+                    wordMaker.setRandom(MathRandom);
+                    seed = addCaps(wordMaker.getRandomName("system")+seed1);
                     document.getElementById("txtSeed").value = seed;
                    
                 }else{
