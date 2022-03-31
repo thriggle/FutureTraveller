@@ -241,7 +241,10 @@
                         "9":"Large (13600 - 15200 Km) - Standard Gravity",
                         "10":"Huge (15200 - 16800 Km) - Standard/High Gravity",
                         "11":"Huge (16800 - 18400 Km) - High Gravity",
-                        "12":"Huge (18400 - 19400 Km) - High Gravity"
+                        "12":"Huge (18400 - 19400 Km) - High Gravity",
+                        "13":"Massive (~20,800 Km) - High Gravity",
+                        "14":"Massive (~22,400 Km) - High Gravity",
+                        "15":"Massive (~24,000 Km) - High Gravity"
 
                     },
                     "atmo":{
@@ -602,7 +605,7 @@
                         li.classList.add(types[s]);
                     }
                     li.appendChild(document.createTextNode(
-                        "Orbit "+i+": "+addCaps(slot.worldtype) + " ("+ description + ")"
+                        "Orbit "+slot.decimalOrbit+" ("+slot.au+" AU): "+addCaps(slot.worldtype) + " ("+ description + ")"
                     ));
                     if(!orbitingStar && slot.uwp){ 
                         if(+(slot.uwp[4]) > 0){
@@ -636,7 +639,7 @@
                                 if(!orbitingStar){
                                     text = "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" ;
                                 }else{
-                                    text =  "Orbit " +j+": " + addCaps(subslot.worldtype) +" ("+desc+")";
+                                    text =  "Orbit "+subslot.decimalOrbit+" ("+subslot.au+" AU): " + addCaps(subslot.worldtype) +" ("+desc+")";
                                 }
                                 var li = sublist.appendChild(document.createElement("li"));
                                 li.appendChild(document.createTextNode(text));
@@ -662,7 +665,7 @@
                                             var subsubtypes = subsub.worldtype.split(" ");
                                             var text = "";
                                             if(subOrbitingStar){                                               
-                                                text = "Orbit " + k + ": " +addCaps(subsub.worldtype) + " ("+desc+")";
+                                                text = "Orbit "+subsub.decimalOrbit+" ("+subsub.au+" AU): " +addCaps(subsub.worldtype) + " ("+desc+")";
                                                 
                                             }else{
                                                 text = "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")";                                                
@@ -692,7 +695,7 @@
             }
             console.log(system);
         }
-        
+       
         function clearElement(el){
             while(el.children.length > 0){
                 el.removeChild(el.children[el.children.length-1]);
