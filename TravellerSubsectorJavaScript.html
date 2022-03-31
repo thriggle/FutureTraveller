@@ -49,6 +49,7 @@
             display:block;
             margin-bottom:4px;
         }
+        
         #SystemDetailsContainer fieldset > legend::before{
             content:"- ";
         }
@@ -101,6 +102,9 @@
         }
         #SystemDetails ul{
             margin-top:0px;
+        }
+        fieldset label{
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         #maplist{
             list-style-image: url(world.png);
@@ -196,6 +200,11 @@
     </style>
     <fieldset>
         <legend>Controls</legend>
+        <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
+        <label for="txtSeed"><input id="txtSeed" type="text"></label>
+        <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Map"></label>
+            <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Map"></label>
+            <br/>
         <fieldset class="collapsed">
             <legend>Appearance</legend>                
             <label for="sizeSlider">Scale: <span id="sizeIndicator"></span></label><input type="range" min="4" max="50" id="sizeSlider" />
@@ -241,8 +250,7 @@
                 <option value="Quadrant">Quadrant (16x20)</option>
                 <option value="Sector">Sector (32x40)</option>
             </select>         
-            <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Map"></label>
-            <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Map"></label>
+            
             <br/><fieldset class="collapsed">
                 <legend>Configuration</legend>
                 <fieldset class="collapsed">
@@ -459,11 +467,7 @@
             </fieldset>
             
         </fieldset>
-        <fieldset class="collapsed">
-            <legend>Randomization</legend>
-            <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label><br/>
-            <label for="txtSeed">Seed: <input id="txtSeed" type="text"></label>
-        </fieldset>
+
     </fieldset>
     <br/>
     <canvas id="canvas"></canvas>
