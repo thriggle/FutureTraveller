@@ -2363,7 +2363,7 @@
                         var subOrbitingStar = false;
                         var sublist = list.appendChild(document.createElement("ul"));
                         for(var j = 0, jlen = slot.satellites.length; j < jlen; j++){
-                            if(typeof slot.satellites[j] !== "undefined"){
+                            if(typeof slot.satellites[j] !== "undefined" && slot.satellites[j]){
                                 var subslot = slot.satellites[j];
                                 var desc = "";
                                 var subtypes = subslot.worldtype.split(" ");
@@ -2403,7 +2403,7 @@
                                     subsublist = sublist.appendChild(document.createElement("ul"));
                                     for(var k = 0, klen = subslot.satellites.length; k < klen; k++){
                                         var subsub = subslot.satellites[k];
-                                        if(typeof subsub !== "undefined"){
+                                        if(typeof subsub !== "undefined" && subsub){
                                             desc = subsub.uwp;
                                             var subsubtypes = subsub.worldtype.split(" ");
                                             var text = "";
