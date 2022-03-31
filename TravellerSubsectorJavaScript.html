@@ -459,6 +459,11 @@
             </fieldset>
             
         </fieldset>
+        <fieldset class="collapsed">
+            <legend>Randomization</legend>
+            <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label><br/>
+            <label for="txtSeed">Seed: <input id="txtSeed" type="text"></label>
+        </fieldset>
     </fieldset>
     <br/>
     <canvas id="canvas"></canvas>
@@ -554,10 +559,15 @@
             var fontSize = HEX_SIZE*1/3;
             ctx.font = ""+fontSize+"pt "+FONT;
             drawMap(mapContent);
-            NameGenerator("names.jsonc",function(o){wordMaker = o; populateSubsector();});
+            if(window.location.hash){
+                var seed = window.location.hash.substr(1);
+                document.getElementById("txtSeed").value = decodeURI(seed);
+                document.getElementById("chkUseRandom").checked = false;
+                MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
+            }
+            NameGenerator("names.jsonc",function(o){wordMaker = o; populateSubsector();},"ass",MathRandom);
             var lastHighlightedHex, lastSelectedHex;
             attachEventListeners();
-            
 
             function attachEventListeners(){
                 canvas.addEventListener("mousemove",function(e){
@@ -652,6 +662,14 @@
                     if(lastSelectedHex){
                         lastSelectedHex.selected = false;
                     }
+                });
+                document.getElementById("txtSeed").addEventListener("keyup",function(e){
+                    MathRandom = pseudoRandomNumberGenerator(this.value);
+                    wordMaker.setRandom(MathRandom);
+                    if(e.keyCode == 13){
+                        document.getElementById("chkUseRandom").checked = false;
+                        populateSubsector();
+                    }                   
                 });
                 document.getElementById("slctMapSize").addEventListener("change",function(){
                     var choice = document.getElementById("slctMapSize").value;
@@ -759,8 +777,33 @@
                     document.getElementById("btnApplyTravelCodes").disabled = false; 
                     document.getElementById("btnResetTravelCodes").disabled = false;
                 });
+                // event listener when window.location.hash changes
+                window.addEventListener("hashchange", function(){
+                    var hash = window.location.hash;
+                    if(hash.length > 0){
+                        var seed = hash.substring(1);
+                        document.getElementById("txtSeed").value = decodeURI(seed);
+                        var wasChecked = document.getElementById("chkUseRandom").checked;
+                        document.getElementById("chkUseRandom").checked = false;
+                        populateSubsector();
+                        document.getElementById("chkUseRandom").checked = wasChecked;
+                    }
+                });
             }
             function populateSubsector(){
+                var useRandomSeed = document.getElementById("chkUseRandom").checked;
+                var seed;
+                if(useRandomSeed){ 
+                    seed = Math.floor(Math.random()*1000000);
+                    document.getElementById("txtSeed").value = seed;
+                   
+                }else{
+                    seed = document.getElementById("txtSeed").value
+                } 
+                window.location.hash = encodeURI(seed);
+                MathRandom = pseudoRandomNumberGenerator(seed.toString());
+                wordMaker.setRandom(MathRandom);
+                
                 var ggFrequency = document.getElementById("slctGGFrequency").value;
                 var density = document.getElementById("slctStellarDensity").value;
                 var permitDieback = document.getElementById("chkPermitDieback").checked;
