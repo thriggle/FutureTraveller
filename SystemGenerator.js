@@ -1,4 +1,4 @@
-var MathRandom = pseudoRandomNumberGenerator(Math.random().toString());
+var MathRandom = pseudoRandomNumberGenerator((Math.random()*1000000).toString());
 function pseudoRandomNumberGenerator(word){
     var seed = xmur3(word);
     return xoshiro128ss(seed(), seed(), seed(), seed());
