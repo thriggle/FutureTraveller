@@ -76,7 +76,36 @@
                         {}
 );
 
-function NameGenerator(sourceJson,callback,forbiddenWords){
+function NameGenerator(sourceJson,callback,forbiddenWords,randomizer){
+    var MathRandom;
+    if(randomizer){
+        MathRandom = randomizer;
+    }else{
+        MathRandom = pseudoRandomNumberGenerator(Math.random().toString());
+    }    
+    function pseudoRandomNumberGenerator(word){
+        var seed = xmur3(word);
+        return xoshiro128ss(seed(), seed(), seed(), seed());
+    }
+    function xmur3(str) {
+        for(var i = 0, h = 1779033703 ^ str.length; i < str.length; i++) {
+            h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+            h = h << 13 | h >>> 19;
+        } return function() {
+            h = Math.imul(h ^ (h >>> 16), 2246822507);
+            h = Math.imul(h ^ (h >>> 13), 3266489909);
+            return (h ^= h >>> 16) >>> 0;
+        }
+    }
+    function xoshiro128ss(a, b, c, d) {
+        return function() {
+            var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
+            c ^= a; d ^= b;
+            b ^= c; a ^= d; c ^= t;
+            d = d << 11 | d >>> 21;
+            return (r >>> 0) / 4294967296;
+        }
+    }
     var forbiddenWords = forbiddenWords;
     if(typeof forbiddenWords === "undefined"){
         forbiddenWords = ["anus","ass"];
@@ -94,16 +123,22 @@ function NameGenerator(sourceJson,callback,forbiddenWords){
         var rawJson = xhr.responseText;
         templates = getWeightedPatternsFromJSON({}, JSON.parse(JSON.minify(rawJson)));
         var keys = Object.keys(templates);
-        var generator = {templates:templates,keys:keys,getRandomName:getRandomName, unpackStringTemplate:unpackStringTemplate};
+        var generator = {templates:templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
         callback(generator);
     });
     xhr.send();
+    function setSeed(seed){
+        MathRandom = pseudoRandomNumberGenerator(seed);
+    }
+    function setRandom(random){
+        MathRandom = random;
+    }
     function getRandomName(key) {
         var templatesSubset = this.templates[key];
-        var template = templatesSubset[(templatesSubset.length * Math.random()) >>> 0];
+        var template = templatesSubset[(templatesSubset.length * MathRandom()) >>> 0];
         var phrases = this.unpackStringTemplate(template); // convert string into array of phrase objects with child segments
         UnpackedStringTemplates.names[key] = phrases;
-        var phrase = phrases[(phrases.length * Math.random()) >>> 0];
+        var phrase = phrases[(phrases.length * MathRandom()) >>> 0];
         var currentText = "";
         var references = [];
         var checkNot = -1;
@@ -136,7 +171,7 @@ function NameGenerator(sourceJson,callback,forbiddenWords){
                 currentText += piece;
                 references.push(piece);
             } else if (segment.references) {
-                piece = this.getRandomName(segment.references[(segment.references.length * Math.random()) >>> 0]);;
+                piece = this.getRandomName(segment.references[(segment.references.length * MathRandom()) >>> 0]);;
                 if(checkNot >= 0){
                     while(piece == references[checkNot]){
                         piece = this.getRandomName(segment.reference);
