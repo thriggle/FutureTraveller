@@ -1374,12 +1374,35 @@ function getStar(type, decimal, size, maxOrbits){
         star.satellites = [];
         star.numOrbits = 0;
     }
+    var decimalOrbits = [
+        .2,     
+        .4,     
+        .7,     
+        1,      
+        1.6,    
+        2.8,    
+        5.2,    
+        10,     
+        20,     
+        40,     
+        77,     
+        154,    
+         308,   
+        615,    
+        1230,   
+        2458,   
+        4916,   
+        9830,   
+        19500,  
+        39500,  
+        78700  
+    ];
     for(var i = 0; i < minOrbit; i++){
         if(minOrbit - 1 === i){
-            star.satellites[i] = {worldtype:"Solar Surface",uwp:star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + star.size};
+            star.satellites[i] = {worldtype:"Solar Surface",uwp:star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + star.size, decimalOrbit:i.toFixed(1), au:decimalOrbits[i]};
             star.numOrbits -= 1;
         }else{
-            star.satellites[i] = {worldtype:"Occupied",uwp:star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + star.size};
+            star.satellites[i] = {worldtype:"Occupied",uwp:star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + star.size, decimalOrbit:i.toFixed(1), au:decimalOrbits[i]};
             star.numOrbits -= 1;
         }
     }
