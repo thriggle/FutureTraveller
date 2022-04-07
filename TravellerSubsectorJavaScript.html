@@ -2419,6 +2419,9 @@
                         if(+(slot.uwp[4]) > 0){
                             li.classList.add("populated"); 
                             li.appendChild(document.createTextNode("👤"));
+                        }else if(+(slot.uwp[8]) > 0){
+                            li.classList.add("dieback"); 
+                            li.appendChild(document.createTextNode("💀"));
                         }
                         if(+(slot.uwp[1]) === 0 && !li.classList.contains("Belt") && !li.classList.contains("Ring") && !li.classList.contains("Occupied") && !li.classList.contains("Surface")){
                             li.classList.add("Worldlet");
@@ -2459,6 +2462,9 @@
                                     if(+(subslot.uwp[4]) > 0){
                                         li.classList.add("populated"); 
                                         li.appendChild(document.createTextNode("👤"));
+                                    }else if(+(subslot.uwp[8]) > 0){
+                                        li.classList.add("dieback"); 
+                                        li.appendChild(document.createTextNode("💀"));
                                     }
                                     if(+(subslot.uwp[1]) === 0 && !li.classList.contains("Belt") && !li.classList.contains("Ring") && !li.classList.contains("Occupied") && !li.classList.contains("Surface")){
                                         li.classList.add("Worldlet");
@@ -2488,6 +2494,9 @@
                                                 if(+(subsub.uwp[4]) > 0){
                                                     li.classList.add("populated"); 
                                                     li.appendChild(document.createTextNode("👤"));
+                                                }else if(+(subsub.uwp[8]) > 0){
+                                                    li.classList.add("dieback"); 
+                                                    li.appendChild(document.createTextNode("💀"));
                                                 }
                                                 if(+(subsub.uwp[1]) === 0 && !li.classList.contains("Belt") && !li.classList.contains("Ring") && !li.classList.contains("Occupied") && !li.classList.contains("Surface")){
                                                     li.classList.add("Worldlet");
