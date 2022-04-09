@@ -306,14 +306,7 @@
                     </label>
                     <br/>
                     <label for="chkPermitDieback" title="Dieback worlds have 0 population but TL>0"><input checked="checked" type="checkbox" name="chkPermitDieback" id="chkPermitDieback" /> Permit Dieback Worlds</label>
-                    <br/><label for="slctDiebackTLPenalty">Uninhabited world TL -<select name="slctDiebackTLPenalty" id="slctDiebackTLPenalty">
-                        <option value=5>5</option>
-                        <option value=4>4</option>
-                        <option value=3>3</option>
-                        <option selected="selected" value=2>2</option>
-                        <option value=1>1</option>
-                        <option value=0>0</option>
-                    </select></label>
+                    <br/>
                 </fieldset>
                 <fieldset class="collapsed travelcodepickers">
                     <legend>Travel Zones</legend>
@@ -2419,7 +2412,7 @@
                         if(+(slot.uwp[4]) > 0){
                             li.classList.add("populated"); 
                             li.appendChild(document.createTextNode("👤"));
-                        }else if(+(slot.uwp[8]) > 0){
+                        }else if(+(slot.uwp[8]) !== 0){
                             li.classList.add("dieback"); 
                             li.appendChild(document.createTextNode("💀"));
                         }
@@ -2462,7 +2455,7 @@
                                     if(+(subslot.uwp[4]) > 0){
                                         li.classList.add("populated"); 
                                         li.appendChild(document.createTextNode("👤"));
-                                    }else if(+(subslot.uwp[8]) > 0){
+                                    }else if(+(subslot.uwp[8]) !== 0){
                                         li.classList.add("dieback"); 
                                         li.appendChild(document.createTextNode("💀"));
                                     }
@@ -2494,7 +2487,7 @@
                                                 if(+(subsub.uwp[4]) > 0){
                                                     li.classList.add("populated"); 
                                                     li.appendChild(document.createTextNode("👤"));
-                                                }else if(+(subsub.uwp[8]) > 0){
+                                                }else if(+(subsub.uwp[8]) !== 0){
                                                     li.classList.add("dieback"); 
                                                     li.appendChild(document.createTextNode("💀"));
                                                 }
