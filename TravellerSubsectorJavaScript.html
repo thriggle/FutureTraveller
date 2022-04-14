@@ -477,17 +477,25 @@
     <br/>
     <canvas id="canvas"></canvas>
     <br/>
-    <fieldset>
+    <fieldset class="collapsed">
         <legend>Data</legend>
-        <label for="data"><textarea title="data" placeholder="data" name="data" id="data" cols="30" rows="10"></textarea></label>
-        <input type="button" value="Apply" id="btnApplyData">
+        <fieldset class="collapsed">
+            <legend>T5 Tab Delimited Format</legend>
+            <label for="sectordata"><textarea placeholder="sectordata" title="sectordata" name="sectordata" id="sectordata" cols="150" rows="10"></textarea></label>
+        </fieldset>
+        <fieldset class="collapsed">
+            <legend>JSON</legend>
+            <label for="data"><textarea title="data" placeholder="data" name="data" id="data" cols="30" rows="10"></textarea></label>
+            <input type="button" value="Apply" id="btnApplyData"><br/>
+        </fieldset>
+        
     </fieldset>
     <div id="SystemDetailsContainer" style="display:none;">
         <div id="SystemDetails">
             <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span><span id="dialog_close">X</span></h1>
             <h2><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span></h2>
             <h3 style="font-weight:normal; font-size:medium;" data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h3>
-            <h3 style="font-weight: normal; font-family:'Consolas','Inconsolas','Courier New', Courier, monospace; font-size:small;"><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} {<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>} [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h3>
+            <h3 style="font-weight: normal; font-family:'Consolas','Inconsolas','Courier New', Courier, monospace; font-size:small;"><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} (<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>) [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h3>
             <h3 style="color:darkred"><span data-system="travelcodenotes"></span></h3>
             <fieldset>
                 <legend>Importance and Economy</legend>
@@ -906,7 +914,9 @@
                                 economics: details.economics,
                                 importance: details.importance,
                                 totalpop: details.totalpop,
-                                tcoord: tcoord
+                                tcoord: tcoord,
+                                pbg: details.pbg,
+                                allegiance: details.allegiance
                             };
                             systems[tcoord] = system;
                             systemArray.push(system);
@@ -916,10 +926,80 @@
                 
                 analyzeMap(systemArray);
                 document.getElementById("data").value = JSON.stringify(systems);
+                document.getElementById("sectordata").value = getSectorData(systemArray);
                 var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
                 applyTravelCodes(mapContent);
                 //calcRoutes(mapContent, "T5");
                 drawMap(mapContent);                
+            }
+            function getSectorData(systems){
+                var sectordata = "Hex\tName\tUWP\tBases\tRemarks\tZone\tPBG\tAllegiance\tStars\t{Ix}\t(Ex)\t[Cx]";
+                for(var i = 0, len = systems.length; i < len; i++){
+                    var system = systems[i];
+                    sectordata += "\n"
+                        + system.tcoord+"\t"
+                        + system.name+"\t"
+                        + system.uwp+"\t"
+                        + getBasesAbbrev(system.bases)+"\t"
+                        + system.mainworld.tradecodes.join(" ")+"\t"
+                        + (system.isRed ? "R" : (system.isAmber ? "A" : ""))+"\t"
+                        + system.pbg+"\t"
+                        + system.allegiance+"\t"
+                        + getStarsAbbrev(system.stars) + "\t"
+                        + "{"+(system.importance.extension>0?"+":"")+system.importance.extension+"}\t"
+                        + "("+system.economics.extension+")\t"
+                        + "["+system.mainworld.cultural.extension+"]";
+
+                }
+                return sectordata;
+            }
+            function getStarsAbbrev(stars){
+                var abbrev = getStarAbbrev(stars.primary);
+                if(stars.primary_companion){
+                    abbrev += " " + getStarAbbrev(stars.primary_companion);
+                }
+                if(stars.close){
+                    abbrev += " " + getStarAbbrev(stars.close);
+                    if(stars.close_companion){
+                        abbrev += " " + getStarAbbrev(stars.close_companion);
+                    }
+                }
+                if(stars.near){
+                    abbrev += " " + getStarAbbrev(stars.near);
+                    if(stars.near_companion){
+                        abbrev += " " + getStarAbbrev(stars.near_companion);
+                    }
+                }
+                if(stars.far){
+                    abbrev += " " + getStarAbbrev(stars.far);
+                    if(stars.far_companion){
+                        abbrev += " " + getStarAbbrev(stars.far_companion);
+                    }
+                }
+                return abbrev;
+            }
+            function getStarAbbrev(star){
+                var abbrev = "";
+                if(star.size === "D"){
+                    abbrev = "D";
+                }else if(star.type === "BD"){
+                    abbrev = "BD";
+                }else{
+                    abbrev = star.type.toString() + star.decimal.toString() + " " + star.size;
+                }
+                return abbrev;
+            }
+            function getBasesAbbrev(bases){
+                var text = "";
+                for(var i = 0, len = bases.length; i < len; i++){
+                    switch(bases[i]){
+                        case "Naval": text += "N"; break;
+                        case "Naval Depot": text += "D"; break;
+                        case "Scout": text += "S"; break;
+                        case "Way Station": text += "W"; break;
+                    }
+                }
+                return text;
             }
             function analyzeMap(systemArray){
                 var capital, maxImportance = -4, tradeCodeCount = 0;
@@ -2027,7 +2107,9 @@
                         "Cy":"Colony",
                         "Lt":"Low Tech",
                         "Ht":"High Tech",
-                        "Fo":"Forbidden"
+                        "Fo":"Forbidden",
+                        "Mr":"Military Rule",
+                        "Re":"Reserve"
                     },
                     "port":{
                         "A":"A - Excellent",
