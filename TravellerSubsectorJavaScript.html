@@ -482,6 +482,7 @@
         <fieldset class="collapsed">
             <legend>T5 Tab Delimited Format</legend>
             <label for="sectordata"><textarea placeholder="sectordata" title="sectordata" name="sectordata" id="sectordata" cols="150" rows="10"></textarea></label>
+            <input type="button" value="Generate Poster from TravellerMap.com" id="btnTravellerMapPoster" />
         </fieldset>
         <fieldset class="collapsed">
             <legend>JSON</legend>
@@ -731,6 +732,14 @@
                 });
                 document.getElementById("btnApplyData").addEventListener("click",function(){
                     var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, JSON.parse(document.getElementById("data").value));
+                    var systems = [];
+                    for(var i = 0, len = mapContent.length; i < len; i++){
+                        var hex = mapContent[i];
+                        if(hex.system){
+                            systems.push(hex.system);
+                        }
+                    }
+                    document.getElementById("sectordata").value = getSectorData(systems);
                     drawMap(mapContent);
                 });
                 document.getElementById("btnPopulateSystems").addEventListener("click",populateSubsector);
@@ -793,6 +802,39 @@
                 document.getElementById("slctLawLevelThreshold").addEventListener("change",function(){
                     document.getElementById("btnApplyTravelCodes").disabled = false; 
                     document.getElementById("btnResetTravelCodes").disabled = false;
+                });
+                document.getElementById("btnTravellerMapPoster").addEventListener("click",function(){
+                    var sectorData = document.getElementById("sectordata").value;
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST","https://travellermap.com/api/poster",true);
+                    xhr.responseType = "arraybuffer";
+                    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                    xhr.onreadystatechange = function(){
+                        if(xhr.readyState === 4){
+                            if(xhr.status === 200){
+                                var bytes = new Uint8Array(xhr.response);
+                                var len = bytes.byteLength, binary = '';
+                                for (var i = 0; i < len; i++) {
+                                    binary += String.fromCharCode( bytes[ i ] );
+                                }
+                                var blob = new Blob([xhr.response], {type: "image/png"});
+                                var objectUrl = URL.createObjectURL(blob);
+                                var img = document.createElement("a");
+                                img.href = objectUrl;
+                                img.download = "travellermap.png";
+                                img.click();                                
+                            }
+
+                        }
+                    };
+                    var size = document.getElementById("slctMapSize").value;
+                    var subsector = ""
+                    if(size==="Subsector"){
+                        subsector = "&subsector=A";
+                    }else if(size === "Quadrant"){
+                        subsector = "&quadrant=Alpha"
+                    }
+                    xhr.send("data="+encodeURIComponent(sectorData)+subsector);
                 });
                 // event listener when window.location.hash changes
                 window.addEventListener("hashchange", function(){
@@ -2471,7 +2513,13 @@
             }
             var list = document.getElementById("maplist");
             clearElement(list);
-            var description = system.stars.primary.type + (typeof system.stars.primary.decimal === "undefined" ? "" : system.stars.primary.decimal.toString()) + system.stars.primary.size;
+            var description;
+            if(system.stars.primary.size == "D"){
+                description = "D";
+            }else{
+                description = system.stars.primary.type + (typeof system.stars.primary.decimal === "undefined" ? "" : system.stars.primary.decimal.toString()) + " " + system.stars.primary.size ;
+            }
+          
             var primli = list.appendChild(document.createElement("li"));
             primli.appendChild(document.createTextNode(
                 "Primary Star: " + description
@@ -2488,7 +2536,11 @@
                         if(slot.type === "BD"){
                             description = "Brown Dwarf";
                         }else{
-                            description = slot.type + (typeof slot.decimal === "undefined" ? "" : slot.decimal.toString()) + slot.size ;
+                            if(slot.size == "D"){
+                                description = "D";
+                            }else{
+                                description = slot.type + (typeof slot.decimal === "undefined" ? "" : slot.decimal.toString()) + " " + slot.size ;
+                            }
                         }
                     }else{
                         orbitingStar = false;
@@ -2502,11 +2554,12 @@
                     li.appendChild(document.createTextNode(
                         "Orbit "+slot.decimalOrbit+" ("+slot.au+" AU): "+addCaps(slot.worldtype) + " ("+ description + ")"
                     ));
-                    if(!orbitingStar && slot.uwp){ 
+                    if(!orbitingStar && slot.worldtype !== "Occupied" && slot.worldtype !== "Solar Surface" && slot.uwp){ 
                         var pop = dext(slot.uwp[4]);
                         if(pop > 0){
                             li.classList.add("populated"); 
                             li.appendChild(document.createTextNode("👤"));
+                            console.log(slot);
                         }else if(slot.uwp[8] !== "0"){
                            
                             li.classList.add("dieback"); 
@@ -2529,7 +2582,12 @@
                                     if(subslot.type === "BD"){
                                         desc = "Brown Dwarf";
                                     }else{
-                                        desc = subslot.type + (typeof subslot.decimal === "undefined" ? "" : subslot.decimal.toString()) + subslot.size ;
+                                        if(subslot.size == "D"){
+                                            desc = "D";
+                                        }else{
+                                            desc = subslot.type + (typeof subslot.decimal === "undefined" ? "" : subslot.decimal.toString()) + " " + subslot.size ;
+                                        }
+                                        
                                     }
                                 }else{
                                     subOrbitingStar = false;
@@ -2547,7 +2605,7 @@
                                     li.classList.add(subtypes[s]);
                                 }
                                 if(subslot.isMainworld){ li.classList.add("mainworld");}
-                                if(!subOrbitingStar && subslot.uwp){ 
+                                if(!subOrbitingStar && subslot.worldtype !== "Occupied" && subslot.worldtype !== "Solar Surface" && subslot.uwp){ 
                                     var pop = dext(subslot.uwp[4]);
                                     if(pop > 0){
                                         li.classList.add("populated"); 
@@ -2581,7 +2639,7 @@
                                                 li.classList.add(subsubtypes[s]);
                                             }
                                             if(subsub.isMainworld){li.classList.add("mainworld");}
-                                            if(!subOrbitingStar && subsub.uwp){ 
+                                            if(!subOrbitingStar && subsub.worldtype !== "Occupied" && subsub.worldtype !== "Solar Surface" &&  subsub.uwp){ 
                                                 var pop = dext(subsub.uwp[4]);
                                                 if(pop > 0){
                                                     li.classList.add("populated"); 
