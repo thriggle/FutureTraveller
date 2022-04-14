@@ -874,7 +874,7 @@ function createGasGiant(){
     if(roll <= 3){type = "Small Gas Giant";}
     else{type = "Large Gas Giant";}
     uwp = "Size " + ext(20+roll);
-    var uwp = "Y"+ext(20+roll)+"X000-0";
+    var uwp = "Y"+ext(20+roll)+"X0000-0";
     return {worldtype:type, uwp:uwp}
 }
 function createBelt(mw, maxPop, maxTech){

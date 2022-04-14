@@ -14,13 +14,17 @@
             vertical-align: text-top;
         }
         fieldset legend{
-            cursor:pointer;
+            cursor:pointer;       
+            -webkit-user-select: none;
+            -ms-user-select: none;
             user-select: none;
         }
         fieldset legend:hover{
             color:red;
         }
         label{
+            -webkit-user-select: none;
+            -ms-user-select: none;
             user-select: none;
         }
         fieldset > fieldset{
@@ -90,6 +94,13 @@
             padding-bottom:1rem;
             padding-left:0.5rem;
             padding-right:0.5rem;
+        }
+       
+        #SystemDetailsContainer fieldset h4 .subtitle{
+            font-weight:bold;
+        }
+        #SystemDetailsContainer fieldset .subnormal{
+            font-weight:normal;
         }
         #SystemDetails{
             position:relative;
@@ -201,7 +212,7 @@
     <fieldset>
         <legend>Controls</legend>
         <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
-        <label for="txtSeed"><input id="txtSeed" type="text"></label>
+        <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
         <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Map"></label>
             <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Map"></label>
             <br/>
@@ -307,6 +318,7 @@
                     <br/>
                     <label for="chkPermitDieback" title="Dieback worlds have 0 population but TL>0"><input checked="checked" type="checkbox" name="chkPermitDieback" id="chkPermitDieback" /> Permit Dieback Worlds</label>
                     <br/>
+                    <label for="chkPopulateNonMainworlds" title="Check to allow population on worlds other than the system's mainworld"><input checked="checked" type="checkbox" name="chkPopulateNonMainworlds" id="chkPopulateNonMainworlds" /> Allow Non-Mainworld Pops</label>
                 </fieldset>
                 <fieldset class="collapsed travelcodepickers">
                     <legend>Travel Zones</legend>
@@ -467,24 +479,24 @@
     <br/>
     <fieldset>
         <legend>Data</legend>
-        <textarea name="data" id="data" cols="30" rows="10"></textarea>
+        <label for="data"><textarea title="data" placeholder="data" name="data" id="data" cols="30" rows="10"></textarea></label>
         <input type="button" value="Apply" id="btnApplyData">
     </fieldset>
     <div id="SystemDetailsContainer" style="display:none;">
         <div id="SystemDetails">
             <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span><span id="dialog_close">X</span></h1>
             <h2><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span></h2>
-            <h3 style="font-weight:normal; font-size:medium;" data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h4>
-            <h3 style="font-weight: normal; font-family:'Consolas','Inconsolas','Courier New', Courier, monospace; font-size:small;"><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} {<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>} [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h4>
-            <h3 style="color:darkred"><span data-system="travelcodenotes"></span></h4>
+            <h3 style="font-weight:normal; font-size:medium;" data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h3>
+            <h3 style="font-weight: normal; font-family:'Consolas','Inconsolas','Courier New', Courier, monospace; font-size:small;"><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} {<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>} [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h3>
+            <h3 style="color:darkred"><span data-system="travelcodenotes"></span></h3>
             <fieldset>
                 <legend>Importance and Economy</legend>
-                <h4><span data-importance="description">System Importance</span> system (<span data-importance="weeklytraffic"></span> ships/week)</h3>
-                <h4>Available Resource Units: <span data-economics="RU" ></span></h3>
+                <h4><span data-importance="description">System Importance</span> system (<span class="subnormal" data-importance="weeklytraffic"></span> ships/week)</h3>
+                <h4><span class="subtitle">Available Resource Units:</span> <span class="subnormal" data-economics="RU" ></span></h3>
                 <h4>
-                    <span style="font-weight:heavy">Bases:</span> <span style="font-weight:normal" data-system="bases" data-join=", " data-ifblank="None" >None</span> 
-                    <span style="font-weight:heavy">Gas Giants:</span> <span style="font-weight:normal" data-system="gg" data-ifblank="None" >None</span> 
-                    <span style="font-weight:heavy">Planetoid Belts:</span> <span style="font-weight:normal" data-system="planetoidBelts" data-ifblank="None" >None</span> 
+                    <span class="subtitle">Bases:</span> <span class="subnormal" data-system="bases" data-join=", " data-ifblank="None" >None</span> 
+                    <span class="subtitle">Gas Giants:</span> <span class="subnormal" data-system="gg" data-ifblank="None" >None</span> 
+                    <span class="subtitle">Planetoid Belts:</span> <span class="subnormal" data-system="planetoidBelts" data-ifblank="None" >None</span> 
                 </h4>
             </fieldset>
             
@@ -2409,10 +2421,12 @@
                         "Orbit "+slot.decimalOrbit+" ("+slot.au+" AU): "+addCaps(slot.worldtype) + " ("+ description + ")"
                     ));
                     if(!orbitingStar && slot.uwp){ 
-                        if(+(slot.uwp[4]) > 0){
+                        var pop = dext(slot.uwp[4]);
+                        if(pop > 0){
                             li.classList.add("populated"); 
                             li.appendChild(document.createTextNode("👤"));
-                        }else if(+(slot.uwp[8]) !== 0){
+                        }else if(slot.uwp[8] !== "0"){
+                           
                             li.classList.add("dieback"); 
                             li.appendChild(document.createTextNode("💀"));
                         }
@@ -2452,10 +2466,12 @@
                                 }
                                 if(subslot.isMainworld){ li.classList.add("mainworld");}
                                 if(!subOrbitingStar && subslot.uwp){ 
-                                    if(+(subslot.uwp[4]) > 0){
+                                    var pop = dext(subslot.uwp[4]);
+                                    if(pop > 0){
                                         li.classList.add("populated"); 
                                         li.appendChild(document.createTextNode("👤"));
-                                    }else if(+(subslot.uwp[8]) !== 0){
+                                    }else if(subslot.uwp[8] !== "0"){
+                                       
                                         li.classList.add("dieback"); 
                                         li.appendChild(document.createTextNode("💀"));
                                     }
@@ -2484,10 +2500,12 @@
                                             }
                                             if(subsub.isMainworld){li.classList.add("mainworld");}
                                             if(!subOrbitingStar && subsub.uwp){ 
-                                                if(+(subsub.uwp[4]) > 0){
+                                                var pop = dext(subsub.uwp[4]);
+                                                if(pop > 0){
                                                     li.classList.add("populated"); 
                                                     li.appendChild(document.createTextNode("👤"));
-                                                }else if(+(subsub.uwp[8]) !== 0){
+                                                }else if(subsub.uwp[8] !== "0"){
+                                                    
                                                     li.classList.add("dieback"); 
                                                     li.appendChild(document.createTextNode("💀"));
                                                 }
@@ -2504,6 +2522,16 @@
                 }
             }
             console.log(system);
+        }
+        function dext(txt){
+            var tempInt = parseInt(txt,36);
+            if(tempInt <= 17){
+                return tempInt;
+            }else if(tempInt <= 23){
+                return tempInt - 1;
+            }else {
+                return tempInt - 2;
+            }
         }
        function sat(i){
             var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
