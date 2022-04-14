@@ -267,7 +267,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(starport === "A"){tech+=6;}
     else if(starport === "B"){tech+=4;}
     else if(starport === "C"){tech+=2;}
-    else if(starport === "X"){if(tech>=5){tech -= 4;}}
+    else if(starport === "X"){tech -= 4;}
 
     if(pop > 0){
         if(size <= 1 ){tech += 2;}
@@ -283,18 +283,18 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         else if(pop === 9){ tech += 2;}
         else if(pop >= 10){ tech += 4;}
     }
-    if((pop > 0 && gov === 0) || gov === 5){ tech += 1;}
+    if((tech > 0 && gov === 0) || gov === 5){ tech += 1;}
     else if(gov === 13){ tech -= 2;}
 
     if(pop === 0){ // reduce tech level on dieback worlds
-        var reduction = diebackPenalty;
-        tech -= reduction;
-        if(reduction > 0){
-            if(tech <= 8 && starport === "A"){ starport = "B"; uwp = "B"+uwp.substring(1);}
-            else if(tech <= 7 && starport === "B"){ starport = "C"; uwp = "C"+uwp.substring(1);}
-            else if(tech <= 3 && starport === "C"){ starport = "D"; uwp = "D"+uwp.substring(1);}
-            else if(tech === 1 && starport === "D"){ starport = "E"; uwp = "E"+uwp.substring(1);}
-        }
+        //var reduction = diebackPenalty;
+        //tech -= reduction;
+        //if(reduction > 0){
+        //    if(tech <= 8 && starport === "A"){ starport = "B"; uwp = "B"+uwp.substring(1);}
+        //    else if(tech <= 7 && starport === "B"){ starport = "C"; uwp = "C"+uwp.substring(1);}
+        //    else if(tech <= 3 && starport === "C"){ starport = "D"; uwp = "D"+uwp.substring(1);}
+        //    else if(tech === 1 && starport === "D"){ starport = "E"; uwp = "E"+uwp.substring(1);}
+        //}
         if(tech > 0){
             // This will be a dieback world. Give them the tech bonuses for planet features.
             if(size <= 1 ){tech += 2;}
@@ -453,8 +453,9 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(MWType === "Far Satellite"){ tradecodes.push("Sa"); }
     else if(MWType === "Close Satellite"){ tradecodes.push("Lk"); }
     if(pop === 0){
-        tradecodes.push("Ba");
+        
         if(tech > 0){ tradecodes.push("Di");}
+        else{tradecodes.push("Ba");}
     }
     else if(pop <= 3){
         tradecodes.push("Lo");
@@ -468,10 +469,18 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop === 4 || pop === 8)){ tradecodes.push("Pa"); }
     if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop >= 5 && pop <= 7)){ tradecodes.push("Ag"); }
     if(atmo <= 3 && hydro <= 3 && pop >= 6){ tradecodes.push("Na"); }
-    if( (atmo === 2 || atmo === 3 || atmo === 10 || atmo === 11) &&
+    if(gov === 6){ // captive gov
+
+        if( (atmo === 2 || atmo === 3 || atmo === 10 || atmo === 11) &&
         hydro <= 5 && pop >=3 && pop <= 6 && law >= 6 && law <= 9 && gov === 6
-    ){
-        tradecodes.push("Px");
+        ){
+            tradecodes.push("Px");
+        }else if(pop <= 4 && (law == 0 || law == 4 || law == 5)){
+            tradecodes.push("Re");
+        }else{
+            tradecodes.push("Mr");
+        }
+       
     }
     if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9) && (pop === 7 || pop === 8)){ tradecodes.push("Pi");}
     if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9 || atmo === 10 || atmo === 11 || atmo === 12) 
@@ -498,8 +507,8 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(tradecodes.indexOf("In")>=0){ importance += 1;}
     if(tradecodes.indexOf("Ri")>=0){ importance += 1;}
     if(pop <= 6){ importance -=1;}
-    if((bases.indexOf("Naval") >= 0 || bases.indexOf("Naval Depot") >=0) && (bases.indexOf("Scout") || bases.indexOf("Way Station") >= 0) >= 0){ importance += 1;}
-    if(bases.indexOf("Way Station") >= 0){ importance += 1;}
+    if(bases.indexOf("Naval") >= 0 && bases.indexOf("Scout") >= 0){ importance += 1;}
+    if(bases.indexOf("Way Station") >= 0 || bases.indexOf("Naval Depot") >= 0){ importance += 1;}
     var isImportant = importance >= 4;
     var isUnimportant = importance <= 0;
     if(importance <= -2){ importanceDesc = "Very Unimportant"; }
@@ -526,7 +535,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         economics.infrastructure = Math.max(0,d6(2) + importance);
     }
     economics.efficiency = d6()-d6();
-    economics.extension = ""+ext(economics.resources) + ext(economics.labor) + ext(economics.infrastructure) + (economics.efficiency >= 0 ? "+" : "") + economics.efficiency;
+    economics.extension = ""+ext(economics.resources) + ext(economics.labor) + ext(economics.infrastructure) + (economics.efficiency >= 0 ? "+" : "") + (economics.efficiency == 0 ? 1 : economics.efficiency);
     economics.RU = Math.max(1,economics.resources)*Math.max(1,economics.labor)*Math.max(1,economics.infrastructure)*(economics.efficiency === 0 ? 1 : economics.efficiency);
     var cultural = {};
     if(pop === 0){
@@ -548,7 +557,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     var mainworld = {cultural:cultural, isMainworld:true, roughpop:roughpop, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
     stars = placeWorlds(stars, mainworld, gg, planetoidBelts, d6(2), +maxTechLevel)
     var totalpop = getTotalPop(stars.primary);
-    return {name:name, economics:economics, totalpop:totalpop, uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
+    return {name:name, economics:economics, pbg:ext(popdigit)+ext(planetoidBelts)+ext(gg), totalpop:totalpop, popdigit:popdigit, allegiance:"Na", uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
 }
 function getTotalPop(star){
     var total = 0;
