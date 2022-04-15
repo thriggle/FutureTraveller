@@ -482,12 +482,18 @@
         <fieldset class="collapsed">
             <legend>T5 Tab Delimited Format</legend>
             <label for="sectordata"><textarea placeholder="sectordata" title="sectordata" name="sectordata" id="sectordata" cols="150" rows="10"></textarea></label>
-            <input type="button" value="Generate Poster from TravellerMap.com" id="btnTravellerMapPoster" />
+            <br/>
+            <input type="button" value="Export to .tsv" id="btnExportCsv"/>
+            <input type="button" value="Export to .txt" id="btnExportTxt"/>
+            <input type="button" value="Export to .png Poster from TravellerMap.com" id="btnTravellerMapPoster" />
         </fieldset>
         <fieldset class="collapsed">
             <legend>JSON</legend>
             <label for="data"><textarea title="data" placeholder="data" name="data" id="data" cols="30" rows="10"></textarea></label>
-            <input type="button" value="Apply" id="btnApplyData"><br/>
+            <br/>
+            <input type="button" value="Export to .json" id="btnExportJSON"/> 
+            <input type="button" value="Apply above JSON" id="btnApplyData"><br/>
+            <label for="btnImportJSON">Load .json from file: </label><input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/>
         </fieldset>
         
     </fieldset>
@@ -803,6 +809,40 @@
                     document.getElementById("btnApplyTravelCodes").disabled = false; 
                     document.getElementById("btnResetTravelCodes").disabled = false;
                 });
+                document.getElementById("btnExportCsv").addEventListener("click",function(){
+                    var sectorData = document.getElementById("sectordata").value;
+                    var a = document.createElement("a");
+                    a.href = "data:text/tab-separated-values;charset=utf-8,"+encodeURIComponent(sectorData);
+                    a.download = document.getElementById("txtSeed").value+".tsv";
+                    a.click();
+                });
+                document.getElementById("btnExportTxt").addEventListener("click",function(){
+                    var sectorData = document.getElementById("sectordata").value;
+                    var a = document.createElement("a");
+                    a.href = "data:text/tab-separated-values;charset=utf-8,"+encodeURIComponent(sectorData);
+                    a.download = document.getElementById("txtSeed").value+".txt";
+                    a.click();
+                });
+                document.getElementById("btnExportJSON").addEventListener("click",function(){
+                    var sectorData = document.getElementById("data").value;
+                    var a = document.createElement("a");
+                    a.href = "data:text/json;charset=utf-8,"+encodeURIComponent(sectorData);
+                    a.download = document.getElementById("txtSeed").value+".json";
+                    a.click();
+                });
+                document.getElementById("btnImportJSON").addEventListener("change", function(){
+                    var curFiles = document.getElementById("btnImportJSON").files;
+                    if(curFiles.length > 0){
+                        var reader = new FileReader();
+                        reader.onload = function(event){
+                            document.getElementById("data").value = event.target.result;
+                            document.getElementById("btnApplyData").click();
+                            document.getElementById("txtSeed").value = curFiles[0].name.replace(".json","");
+                        }
+                        reader.readAsText(curFiles[0]);
+                        
+                    }
+                });
                 document.getElementById("btnTravellerMapPoster").addEventListener("click",function(){
                     var sectorData = document.getElementById("sectordata").value;
                     var xhr = new XMLHttpRequest();
@@ -821,7 +861,7 @@
                                 var objectUrl = URL.createObjectURL(blob);
                                 var img = document.createElement("a");
                                 img.href = objectUrl;
-                                img.download = "travellermap.png";
+                                img.download = document.getElementById("txtSeed").value+".png";
                                 img.click();                                
                             }
 
