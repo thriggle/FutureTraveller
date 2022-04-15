@@ -215,6 +215,7 @@
         <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
         <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Map"></label>
             <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Map"></label>
+            <label for="btnSaveImg"><input type="button" id="btnSaveImg" name="btnSaveImage" value="Export to .png"/></label>
             <br/>
         <fieldset class="collapsed">
             <legend>Appearance</legend>                
@@ -842,6 +843,12 @@
                         reader.readAsText(curFiles[0]);
                         
                     }
+                });
+                document.getElementById("btnSaveImg").addEventListener("click",function(){
+                    var a = document.createElement("a");
+                    a.href = canvas.toDataURL("image/png");
+                    a.download = document.getElementById("txtSeed").value+".png";
+                    a.click();
                 });
                 document.getElementById("btnTravellerMapPoster").addEventListener("click",function(){
                     var sectorData = document.getElementById("sectordata").value;
