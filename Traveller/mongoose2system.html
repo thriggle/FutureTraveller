@@ -35,7 +35,7 @@
             font-weight:bold;
         }
     </style>
-    <script src="NameGenerator.js"></script>
+    <script src="js/NameGenerator.js"></script>
     <h1 id="uwp">Universal World Profile</h1>
     <h2 id="name">System Name</h2>
     <input type="button" value="Generate new system" id="btnGenerate" /><br/><br/>
@@ -79,7 +79,7 @@
     
     <script>
         var wordMaker;
-        NameGenerator("names.jsonc",function(o){
+        NameGenerator("js/names.jsonc",function(o){
             wordMaker = o;
             generateSystem();
             document.getElementById("btnGenerate").addEventListener("click",function(){

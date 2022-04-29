@@ -31,7 +31,7 @@
             margin-top:0; margin-bottom:0;
         }
         #maplist{
-            list-style-image: url(world.png);
+            list-style-image: url(images/world.png);
             border-radius:20px;
             padding-top:10px;
             padding-bottom:10px;
@@ -39,67 +39,67 @@
             box-shadow:1px 1px 4px rgba(50,50,100,1);
         }
         #maplist .star{
-            list-style-image: url(star.png);
+            list-style-image: url(images/star.png);
         }
         #maplist .Mainworld, #maplist .mainworld{
             color:black;
-            list-style-image: url(hospitable.png);
+            list-style-image: url(images/hospitable.png);
             font-weight:800;
         }
         #maplist .populated{
             color:black;
         }
         #maplist .Large.Gas.Giant{
-            list-style-image: url(giant.png);
+            list-style-image: url(images/giant.png);
         }
         #maplist .Small.Gas.Giant{
-            list-style-image: url(sgiant.png);
+            list-style-image: url(images/sgiant.png);
         }
         #maplist .Ice.Giant{
-            list-style-image: url(igiant.png);
+            list-style-image: url(images/igiant.png);
         }
         #maplist .Belt{
-            list-style-image: url(belt.png);
+            list-style-image: url(images/belt.png);
         }
         #maplist .Asteroid.Belt{
-            list-style-image: url(asteroidbelt.png);
+            list-style-image: url(images/asteroidbelt.png);
             font-weight:800;
         }
         #maplist .BigWorld{
-            list-style-image: url(bworld.png);
+            list-style-image: url(images/bworld.png);
         }
         #maplist .Ring{
-            list-style-image: url(ring.png);
+            list-style-image: url(images/ring.png);
         }
         #maplist .Inner{
-            list-style-image: url(inner.png);
+            list-style-image: url(images/inner.png);
         }        
         #maplist .Inner{
-            list-style-image: url(outer.png);
+            list-style-image: url(images/outer.png);
         }
         #maplist .Inferno{
-            list-style-image: url(inferno.png);
+            list-style-image: url(images/inferno.png);
         }
         #maplist .Iceworld{
-            list-style-image: url(ice.png);
+            list-style-image: url(images/ice.png);
         }
         #maplist .RadWorld{
-            list-style-image: url(rad.png);
+            list-style-image: url(images/rad.png);
         }
         #maplist .Hospitable{
-            list-style-image: url(hospitable.png);
+            list-style-image: url(images/hospitable.png);
         }
         #maplist .StormWorld{
-            list-style-image: url(storm.png);
+            list-style-image: url(images/storm.png);
         }
         #maplist .Occupied{
-            list-style-image: url(occupied.png);
+            list-style-image: url(images/occupied.png);
         }
         #maplist .Solar.Surface{
-            list-style-image: url(surface.png);
+            list-style-image: url(images/surface.png);
         }
         #maplist .Worldlet{
-            list-style-image: url(worldlet.png);
+            list-style-image: url(images/worldlet.png);
         }
         #maplist ul{
             margin-bottom:8px;
@@ -154,14 +154,14 @@
             <ul id="maplist"></ul>
         </div>
     </div>
-    <script src="NameGenerator.js"></script>
-    <script src="SystemGenerator.js"></script>
+    <script src="js/NameGenerator.js"></script>
+    <script src="js/SystemGenerator.js"></script>
     <script>
         function sat(i){
             var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
             return orbits[i];
         }
-        NameGenerator("names.jsonc",function(generator){
+        NameGenerator("js/names.jsonc",function(generator){
             document.getElementById("btnGenerateSystem").addEventListener("click",function(){
                 console.clear();
                 var gasGiantFrequency = 8, permitDieback = false, maxTechLevel = 16;
