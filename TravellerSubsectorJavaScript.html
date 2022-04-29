@@ -9,7 +9,11 @@
 <body>
     <script>
         var here = window.location.toString();
-        window.location.replace(here.replace("TravellerSubsectorJavaScript.html", "Traveller/TravellerSubsectorJavaScript.html"));
+        here = here.replace("TravellerSubsectorJavaScript.html", "Traveller/TravellerSubsectorJavaScript.html")
+        console.log(here);
+        if(here != window.location){
+            window.location = here;
+        }
     </script>
 </body>
 </html>
