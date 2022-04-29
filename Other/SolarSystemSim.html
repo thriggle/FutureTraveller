@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Solar System</title>
+</head>
+<style>
+    #AutoStep {
+  font-weight: bold;
+}
+
+canvas {
+  cursor: crosshair;
+  background-color: black;
+  border: 1px solid black;
+  vertical-align: text-top;
+  -ms-touch-action: none;
+}
+
+input,
+.controls {
+  font-size: 12pt;
+  font-family: Calibri;
+}
+
+input {
+  padding: 2px;
+}
+
+.controls {
+  text-align: center;
+  background-color: #bfbfbf;
+  display: inline-block;
+  vertical-align: text-top;
+  border: 1px solid black;
+}
+
+label {
+  cursor: pointer;
+}
+
+.container {
+  display: inline-block;
+  width: 552px;
+}
+
+.controls .inner {
+  display: inline-block;
+}
+
+.controls .section {
+  text-align: left;
+  background-color: #dfdfdf;
+  border: 1px solid #9f9f9f;
+  padding: 2px;
+  margin: 1px;
+  display: inline-block;
+  vertical-align: text-top;
+}
+
+</style>
+<body>
+    <div class="container">
+        <div class="controls">
+          <div class="section">
+            <input type="button" id="Reset" value="Reset" />
+          </div>
+          <div class="section">
+            <div class="inner">
+              <input type="button" id="NextStep" value="Next" />
+              <input type="button" id="AutoStep" value="Auto" />
+            </div>
+            <div class="inner">Delay:
+              <select id="Delay">
+                <options>
+                  <option value=0 selected="selected">none</option>
+                  <option value=10>10 ms</option>
+                  <option value=15>15 ms</option>
+                  <option value=30>30 ms</option>
+                  <option value=60>60 ms</option>
+                  <option value=500>500ms</option>
+                  <option value=1000>1 sec</option>
+                </options>
+              </select>
+            </div>
+          </div>
+          <div class="section">Border:
+            <select id="BorderBehavior">
+              <options>
+                <option value="Annihilate">Annihilate</option>
+                <option selected="selected" value="Unbounded">Unbounded</option>
+                <option value="Loop">Loop</option>
+                <option value="Ricochet">Ricochet</option>
+                <option value="HalfRicochet">50% Ricochet</option>
+              </options>
+            </select>
+          </div>
+          <div class="section">
+            Object Size: 
+            <select id="ObjectSize">
+            <options>
+              <option value=0>Random</option>
+              <option value=1>100%</option>
+              <option value=.9>90%</option>
+              <option value=.75>75%</option>
+              <option value=.5>50%</option>
+              <option value=.25>25%</option>
+              <option value=.1>10%</option>
+              <option value=.05>5%</option>
+              <option value=.01>1%</option>
+              <option value=.009>0.90%</option>
+              <option value=.005>0.50%</option>
+              <option value=.0025>0.25%</option>
+              <option value=.001>0.10%</option>
+              <option value=.0001 selected="selected">0.01%</option>
+            </options>
+            </select>
+            <br/>
+            Object Color:
+            <select id="ObjectColor">
+            <options>
+              <option value="">Random</option>
+              <option value="red">Red</option>
+              <option value="magenta">Magenta</option>
+              <option value="orange">Orange</option>
+              <option value="yellow">Yellow</option>
+              <option value="green">Green</option>
+              <option value="lightgreen">Light Green</option>
+              <option value="blue">Blue</option>
+              <option value="cyan">Cyan</option>
+              <option value="indigo">Indigo</option>
+              <option value="violet">Violet</option>        
+              <option value="brown">Brown</option>
+              <option value="gray">Gray</option>
+              <option value="white"  selected="selected">White</option>
+            </options>
+            </select>
+          </div>
+          <div class="section">
+            <label>
+              <input type="checkbox" id="ShowFabric"/>Show Fabric</label>
+            <div>Granularity:
+              <select id="FabricGranularity">
+                <options>
+                  <option value="5">5</option>
+                  <option value="7">7</option>
+                  <option value="10">10</option>
+                  <option value="13">13</option>
+                  <option value="15">15</option>
+                  <option value="20" selected="selected">20</option>
+                  <option value="30">30</option>
+                </options>
+              </select>
+            </div>
+          </div>
+          <div class="section">
+          <div class="inner">
+          <label for="chkTrack"><input type="checkbox" id="chkTrack"  checked="checked"/>Track</label>
+          </div>
+          </div>
+          <div class="section">
+            <div class="inner">
+              <label for="chkCollisions">
+                <input type="checkbox" checked="checked" id="chkCollisions" />Handle Collisions</label>
+            </div>
+            <div>Restitution:
+              <select id="Restitution">
+                <options>
+                  <option value=1>1.0</option>
+                  <option value=0.95 selected="selected">0.95</option>
+                  <option value=0.9>0.9</option>
+                  <option value=0.8>0.8</option>
+                  <option value=0.7>0.7</option>
+                  <option value=0.6>0.6</option>
+                  <option value=0.5>0.5</option>
+                  <option value=0.4>0.4</option>
+                  <option value=0.3>0.3</option>
+                  <option value=0.2>0.2</option>
+                  <option value=0.1>0.1</option>
+                  <option value=0.0>0.0</option>
+                </options>
+              </select>
+            </div>
+          </div>
+      
+        </div>
+        <canvas id="canvas" height="550" oncontextmenu="return false;" width="550">no canvas available</canvas>
+      </div>
+      
+</body>
+<script>
+   const G = 6.674e-11, // gravitational constant
+  MAX_RND_VEL = 5,
+  MAX_RND_MASS = 5e12,
+  MIN_RND_MASS = 50,
+  MAX_RND_SIZE = 8,
+  PI = Math.PI,
+  TWOPI = Math.PI * 2,
+  FADE_RATE = 4,
+  CURSOR_LINE_COLOR = "cyan",
+  OBJECT_BORDER_COLOR = "white",
+  CANVAS_BACKGROUND = "black",
+  GRAVITY_FIELD_MARKER_COLOR = "rgb(150,200,150)",
+  GRAVITY_FIELD_MARKER_RADIUS = 0.5,
+  TRACK_GRADIENT_FADE_RATE = 0.015,
+  TIMESTEP = 0.5,
+  MAX_FIELD_DISTANCE = 900,
+  canvas = document.getElementById("canvas"),
+  chkShowFabric = document.getElementById("ShowFabric"),
+  chkTrackObjects = document.getElementById("chkTrack"),
+  ddlFabricGranularity = document.getElementById("FabricGranularity"),
+  ddlRestitution = document.getElementById("Restitution"),
+  ddlBorderBehavior = document.getElementById("BorderBehavior"),
+  ddlObjectSize = document.getElementById("ObjectSize"),
+  ddlObjectColor = document.getElementById("ObjectColor"),
+  chkHandleCollisions = document.getElementById("chkCollisions"),
+  btnNextStep = document.getElementById("NextStep"),
+  btnAutoStep = document.getElementById("AutoStep"),
+  txtDelay = document.getElementById("Delay");
+const WIDTH = canvas.width,
+  HEIGHT = canvas.height,
+  DOUBLE_SIZE = MAX_RND_SIZE * 2,
+  SCALE = MAX_RND_SIZE / Math.pow(3 * MAX_RND_MASS / 4 / PI, 1/3),
+  ctx = canvas.getContext("2d");
+let numObjects = 0,
+  cellSize = ddlFabricGranularity.value,
+  borderBehavior = ddlBorderBehavior.value,
+  objectSize = +(ddlObjectSize.value),
+  objectColor = ddlObjectColor.value,
+  showFabric = chkShowFabric.checked,
+  shouldHandleCollisions = chkHandleCollisions.checked,
+  trackObjects = chkTrackObjects.checked,
+  Cr = ddlRestitution.value, // coefficient of restitution
+  delay = txtDelay.value,
+  time = 0,
+  stellarObjects,
+  isRunning = false,
+  isPlanting = false,
+  plantX, plantY, mouseX, mouseY, // vars for adding new objects  
+  gField = [],
+  gHeight, gWidth; // vars for spacetime fabric visualization
+let fadeMultiplier = cellSize / FADE_RATE;
+ddlRestitution.addEventListener("change", changeCoefficientOfRestitution);
+chkHandleCollisions.addEventListener("change", changeHandleCollisions);
+chkTrackObjects.addEventListener("change",changeTrackObjects);
+canvas.addEventListener("mousedown", touchDown);
+canvas.addEventListener("mousemove", touchMove);
+canvas.addEventListener("mouseup", touchUp);
+canvas.addEventListener("mouseout", stopPlanting);
+ddlBorderBehavior.addEventListener("change", changeBorderBehavior);
+ddlObjectSize.addEventListener("change",changeObjectSize);
+ddlObjectColor.addEventListener("change",changeObjectColor);
+document.getElementById("Reset").addEventListener("click",reset);
+document.getElementById("NextStep").addEventListener("click", step);
+ddlFabricGranularity.addEventListener("change",changeFabricGranularity);
+chkShowFabric.addEventListener("change",changeShowFabric);
+btnAutoStep.addEventListener("click", toggleAutoStep);
+txtDelay.addEventListener("change", changeDelay);
+reset();
+toggleAutoStep();
+function changeCoefficientOfRestitution() {
+  Cr = ddlRestitution.value;
+}
+function changeHandleCollisions() {
+  shouldHandleCollisions = chkHandleCollisions.checked;
+}
+function changeTrackObjects(){
+	trackObjects = chkTrackObjects.checked;
+}
+function stopPlanting() {
+	isPlanting = false;
+	if (!isRunning) {
+		drawFieldAndObjects();
+	}
+}
+function changeBorderBehavior() {
+  borderBehavior = ddlBorderBehavior.value;
+}
+function changeObjectSize(){
+	objectSize = +(ddlObjectSize.value);
+}
+function changeObjectColor(){
+	objectColor = ddlObjectColor.value;
+}
+function changeFabricGranularity() {
+  cellSize = ddlFabricGranularity.value;
+  fadeMultiplier = cellSize / FADE_RATE;
+  reinitializeGravityField();
+  recalculateGravityField();
+  drawFieldAndObjects();
+}
+function changeShowFabric() {
+  showFabric = chkShowFabric.checked;
+}
+function toggleAutoStep() {
+  if (isRunning) {
+    clearTimeout(isRunning);
+    btnNextStep.disabled = false;
+    isRunning = null;
+    btnAutoStep.value = "Auto";
+  } else {
+    btnNextStep.disabled = true;
+    btnAutoStep.value = "Stop";
+    isRunning = setTimeout(loopStep, delay);
+  }
+}
+function changeDelay () {
+	delay = +(txtDelay.value);
+}
+function touchDown(event) {
+  if (event.which === 3 || event.button === 2) {
+    event.preventDefault();
+    return false;
+  } else {
+    isPlanting = true;
+    plantX = event.pageX - canvas.offsetLeft;
+    plantY = event.pageY - canvas.offsetTop;
+    mouseX = plantX;
+    mouseY = plantY;
+  }
+  event.preventDefault();
+}
+
+function touchMove(event) {
+  if (isPlanting) {
+    mouseX = event.pageX - canvas.offsetLeft;
+    mouseY = event.pageY - canvas.offsetTop;
+    if (!isRunning) {
+     drawFieldAndObjects();
+    }
+    drawCursorLine();
+  }
+  event.preventDefault();
+}
+
+function touchUp(event) {
+  if (event.which === 3 || event.button === 2) {
+    removeObjectAt(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
+    event.preventDefault();
+    return false;
+  } else {
+    if (isPlanting) {
+      let thing = getRandomStellarObject(),
+        upX = event.pageX - canvas.offsetLeft,
+        upY = event.pageY - canvas.offsetTop;
+      if (typeof plantX === "undefined") {
+        plantX = upX;
+        plantY = upY;
+      }
+      thing.x = upX;
+      thing.y = upY;
+      thing.velocity.x = MAX_RND_VEL * MAX_RND_VEL * (plantX - upX) / WIDTH;
+      thing.velocity.y = MAX_RND_VEL * MAX_RND_VEL * (plantY - upY) / HEIGHT;
+      stellarObjects.push(thing);
+      numObjects++;
+      isPlanting = false;      
+      applyObjectGravityToFabric(upX, upY, thing.mass * G);
+      drawFieldAndObjects();      
+    }
+  }
+  event.preventDefault();
+}
+
+// Clears all objects and regenerates them based on the chosen number of objects
+function reset() {
+	ctx.clearRect(0, 0, WIDTH, HEIGHT);
+  reinitializeGravityField();
+  stellarObjects = [
+  	getStellarObject( "orange", 1.2, WIDTH/2, HEIGHT/2, 0, 0.002), //getStellarObject(color,size,x,y, xv, yv)
+    getStellarObject( "magenta", .001, WIDTH*6.7/8, HEIGHT/2, 0, 2.4),
+    //getStellarObject( "blue", .01, WIDTH/2, HEIGHT*2/5, 2.4, 0),
+    //getStellarObject( "yellow", .01, WIDTH/2, HEIGHT*3/5, -2.4, 0),
+    //getStellarObject( "green", .1, WIDTH/5, HEIGHT/2, 0.00, -1.5),
+    //getStellarObject( "cyan", .001, WIDTH*1.3/8, HEIGHT/2, 0, -2.4),
+     getStellarObject( "green", .07, WIDTH*1.8/5, HEIGHT/2, 0.00, -2.2),
+    getStellarObject( "red", .1, WIDTH*4/5, HEIGHT/2, 0.00, 1.5)
+    ];
+  numObjects = stellarObjects.length;
+  step();
+}
+
+// Repeatedly advances time based on the chosen delay
+function loopStep() {
+  let startTime = +new Date,
+    delta;
+  step();
+  if (delay === 0 || (delta = +new Date - startTime) >= delay) {
+    isRunning = setTimeout(loopStep, 0);
+  } else {
+    isRunning = setTimeout(loopStep, delay - delta);
+  }
+}
+
+// Advances time forward and recalculates all object positions/velocities as necessary, redrawing the canvas as necessary
+function step() {
+  if(!trackObjects){
+  	ctx.clearRect(0, 0, WIDTH, HEIGHT);
+  }else{
+  	ctx.fillStyle = CANVAS_BACKGROUND;
+    ctx.globalAlpha = TRACK_GRADIENT_FADE_RATE;
+  	ctx.fillRect(0,0,WIDTH,HEIGHT);
+    ctx.globalAlpha = 1;
+  }
+  if(showFabric){
+  	resetGravityFieldInPlace();
+    moveObjects();
+    drawGravityField();
+  }else{
+  	moveObjects();
+  }
+  drawObjects();
+}
+
+// Removes any stellar objects that overlap at the given xy coordinates
+function removeObjectAt(x, y) {
+  for (let i = stellarObjects.length - 1; i >= 0; i--) {
+    let obj = stellarObjects[i];
+    if (getDistance(obj.x - x, obj.y - y) <= obj.size) {
+      stellarObjects.splice(i, 1);
+    }
+  }
+  let newLength = stellarObjects.length;
+  if (newLength != numObjects) {
+    numObjects = newLength;
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    if (showFabric) {
+      resetGravityFieldInPlace();
+      recalculateGravityField();
+      drawGravityField();
+    }
+    drawObjects();
+  }
+}
+
+// Moves all objects based on their current velocities
+function moveObjects() {
+	time += TIMESTEP;
+  if (shouldHandleCollisions) {
+    for (let i = 0; i < numObjects; i++) {
+      let o = stellarObjects[i];
+      let ov = o.velocity, oa = o.acc;
+      checkCollision(o, TIMESTEP*(ov.x + TIMESTEP*oa.x/2), TIMESTEP*(ov.y + TIMESTEP*oa.y/2), []);
+    }
+  }
+  for (let i = 0; i < numObjects; i++) {
+    let o = stellarObjects[i];
+    let ov = o.velocity, oa = o.acc, ooa = o.oldAcc;
+    let ovx = ov.x,ovy = ov.y, oax = oa.x, oay = oa.y;
+    o.x += TIMESTEP*(ovx + TIMESTEP * oa.x/2);
+    o.y += TIMESTEP*(ovy + TIMESTEP * oa.y/2);
+    ooa.x = oax, ooa.y = oay;
+    oa.x = 0, oa.y = 0;
+    let ox = o.x,
+      oy = o.y;
+    if (borderBehavior !== "Unbounded") {
+      if (borderBehavior === "Loop") {
+        if (ox > WIDTH) {
+          o.x = 0;
+        } else if (ox < 0) {
+          o.x = WIDTH;
+        }
+        if (oy > HEIGHT) {
+          o.y = 0;
+        } else if (oy < 0) {
+          o.y = HEIGHT;
+        }
+      } else if (borderBehavior === "Ricochet") {
+        if (ox > WIDTH || ox < 0) {
+          o.velocity.x = ovx * -1;
+        }
+        if (oy > HEIGHT || oy < 0) {
+          o.velocity.y = -1 * ovy;
+        }
+      } else if (borderBehavior === "HalfRicochet") {
+        if (ox > WIDTH || ox < 0) {
+          o.velocity.x = ovx * (-0.5);
+          if (ox > WIDTH) {
+            o.x = WIDTH;
+          } else if (ox < 0) {
+            o.x = 0;
+          }
+        }
+        if (oy > HEIGHT || oy < 0) {
+          o.velocity.y = (-0.5) * ovy;
+          if (oy > HEIGHT) {
+            o.y = HEIGHT;
+          } else if (oy < 0) {
+            o.y = 0;
+          }
+        }
+      } else if (borderBehavior === "Annihilate") {
+        if (ox > WIDTH || oy > HEIGHT || ox < 0 || oy < 0) {
+          removeObjectAt(ox, oy);
+        }
+      }
+    }
+  }
+  applyObjectsGravity();
+  for (let i = 0; i < numObjects; i++) {
+    let o = stellarObjects[i];
+    o.velocity.x += TIMESTEP * (o.acc.x + o.oldAcc.x) / 2;
+    o.velocity.y += TIMESTEP * (o.acc.y + o.oldAcc.y) / 2;
+  }
+}
+
+// Checks whether two objects are about to collide, and adjusts their velocities if necessary
+function checkCollision(obj, ovx, ovy, objectsToIgnore) {
+  for (let i = 0; i < numObjects; i++) {
+    let test = stellarObjects[i],
+      shortCircuit = false;
+    if (test === obj) {
+      continue;
+    }
+    for (let j = 0, len = objectsToIgnore.length; j < len; j++) {
+      if (test === objectsToIgnore[j]) {
+        shortCircuit = true;
+        break;
+      }
+    }
+    if (shortCircuit) {
+      continue;
+    }
+    let oa = obj.acc, ta = test.acc;
+    let ox = obj.x + TIMESTEP*(ovx + TIMESTEP * oa.x/2),
+      oy = obj.y + TIMESTEP*(ovy + TIMESTEP * oa.y/2),
+      tv = test.velocity;
+    let tvx = tv.x,
+      tvy = tv.y;
+    let tx = test.x + TIMESTEP*(tvx + TIMESTEP * ta.x/2),
+      ty = test.y + TIMESTEP*(tvy + TIMESTEP * ta.y/2);
+    let difx = tx - ox,
+      dify = ty - oy;
+    if (difx === 0 && dify === 0){
+      continue;
+    }
+    let aSize = obj.size,
+      bSize = test.size;
+    let cumulativeSize = aSize + bSize;
+    let distance = getDistance(difx, dify);
+    if (distance < cumulativeSize) {
+      handleCollision(obj, test, cumulativeSize, difx, dify, distance, ox, oy, tx, ty);
+      checkCollision(test, tvx, tvy, [obj].concat(objectsToIgnore)); // objectsToIgnore prevents a "Night at the Roxbury" collision loop // [obj].concat(objectsToIgnore)
+      checkCollision(obj, ovx, ovy, [test].concat(objectsToIgnore));
+    }
+  }
+}
+
+// Given two objects, their combined size, differences in their xy coordinates, distance, and their coordinates
+// updates their coordinates to ensure the objects don't overlap and adjusts their velocities
+function handleCollision(first, second, cumulativeSize, difX, difY, distance, x1, y1, x2, y2) {
+  let mass1 = first.mass,
+    mass2 = second.mass;
+  let cumulativeMass = mass1 + mass2;
+  let v1x = first.velocity.x,
+    v1y = first.velocity.y,
+    v2x = second.velocity.x,
+    v2y = second.velocity.y;
+  let v1 = Math.sqrt(v1x * v1x + v1y * v1y),
+    v2 = Math.sqrt(v2x * v2x + v2y * v2y);
+  let collisionAngle = Math.atan2(difY, difX);
+  let dir1 = Math.atan2(v1y, v1x),
+    dir2 = Math.atan2(v2y, v2x);
+  let d1cA = dir1 - collisionAngle,
+    d2cA = dir2 - collisionAngle;
+  let newXv1 = v1 * Math.cos(d1cA),
+    newYv1 = v1 * Math.sin(d1cA),
+    newXv2 = v2 * Math.cos(d2cA),
+    newYv2 = v2 * Math.sin(d2cA);
+  let massVCalc = mass1 * newXv1 + mass2 * newXv2;
+  let finalXv1 = (massVCalc + mass2 * Cr * (newXv2 - newXv1)) / cumulativeMass,
+    finalXv2 = (massVCalc + mass1 * Cr * (newXv1 - newXv2)) / cumulativeMass,
+    finalYv1 = newYv1,
+    finalYv2 = newYv2;
+  let cosAngle = Math.cos(collisionAngle),
+    sinAngle = Math.sin(collisionAngle);
+  first.velocity = {
+    x: cosAngle * finalXv1 - sinAngle * finalYv1,
+    y: sinAngle * finalXv1 + cosAngle * finalYv1
+  };  
+  second.velocity = {
+    x: cosAngle * finalXv2 - sinAngle * finalYv2,
+    y: sinAngle * finalXv2 + cosAngle * finalYv2
+  };  
+  // minimum translation difference to prevent overlaps:
+  let dx = first.x - second.x,
+    dy = first.y - second.y;
+  if(dx === 0 && dy === 0){ // special case for shared centers of gravity, offsets objects in random directions before continuing
+    	let xOffset = (Math.random()*1);
+      let yOffset = (1 - xOffset)*(Math.random()*2 > 1 ? -1 : 1 );
+      xOffset *= (Math.random()*2 > 1 ? -1 : 1 );
+      first.x += xOffset / mass1;
+      first.y += yOffset / mass1;
+      second.x -= xOffset / mass2;
+      second.y -= yOffset / mass2;
+      dx = first.x - second.x;
+      dy = first.y - second.y;
+  }
+  let d_squared = (dx * dx + dy * dy);
+  if (d_squared <= cumulativeSize*cumulativeSize) {  	
+    let d = Math.sqrt(d_squared);
+    let mtd_multiplier = ((first.size + second.size - d) / d);
+    let mtd_x = mtd_multiplier * dx;
+    let mtd_y = mtd_multiplier * dy;
+    let im1 = 1 / mass1,
+        im2 = 1 / mass2;
+    let cumIm = im1 + im2;
+    let imCalc1 = (im1 / (cumIm)),
+        imCalc2 = (im2 / (cumIm));
+    first.x += mtd_x * imCalc1;
+    first.y += mtd_y * imCalc1;
+    second.x -= mtd_x * imCalc2;
+    second.y -= mtd_y * imCalc2;
+    first.acc = {x:0,y:0};
+    first.oldAcc = {x:0,y:0};
+		second.acc = {x:0,y:0};
+    second.oldAcc = {x:0,y:0};
+  }
+}
+
+// Applies an object's gravity to all other objects and to the gravity field fabric (if displayed)
+function applyObjectsGravity() {
+  for (let i = numObjects-1; i >= 0; i--) {
+    let o = stellarObjects[i];
+    let ox = o.x,
+      oy = o.y,
+      om = o.massEffect;
+    applyObjectGravityToObjects(o, ox, oy, om, i);
+    if (showFabric) {
+      applyObjectGravityToFabric(ox, oy, om);
+    }
+  }
+}
+
+// Given an object, its xy coordinates, and its precalculated mass effect, applies given object's gravity to all other objects
+function applyObjectGravityToObjects(stellarObject, x, y, massEffect, init) {
+	let objAcc = stellarObject.acc, objOldAcc = stellarObject.oldAcc;
+  for (let i = init; i >= 0; i--) {
+    let currentTarget = stellarObjects[i];
+    if (currentTarget !== stellarObject) {
+      let targetX = currentTarget.x,
+        targetY = currentTarget.y,
+        targetME = currentTarget.massEffect,
+        targetAcc = currentTarget.acc, targetOldAcc = currentTarget.oldAcc;
+      let difY = y - targetY,
+        difX = x - targetX;
+      let distance = getDistance(difY, difX);
+      if (distance !== 0) {
+      	let distSqr = distance * distance;
+        // F = G*m1*m2 / distance^2... acceleration = F / m... the current object's mass cancels out of Force equation to produce acceleration
+        let accelTarg = massEffect / distSqr,
+        	accelObj = targetME / distSqr;
+        let yIsNegative = difY < 0;
+        let theta = Math.atan(difX / difY);
+        targetAcc.x += difX === 0 ? 0 : ((yIsNegative ? -1 : 1) * accelTarg * Math.sin(theta));
+        targetAcc.y += difY === 0 ? 0 : ((yIsNegative ? -1 : 1) * accelTarg * Math.cos(theta));
+        objAcc.x -= difX === 0 ? 0 : ((yIsNegative ? -1 : 1) * accelObj * Math.sin(theta));
+        objAcc.y -= difY === 0 ? 0 : ((yIsNegative ? -1 : 1) * accelObj * Math.cos(theta));
+      }
+    }
+  }
+}
+
+// For a given object (and its precalculated mass * the gravitational constant) adjusts the gravity field fabric accordingly
+function applyObjectGravityToFabric(x, y, massEffect) {
+	let xMeasure = x/cellSize, yMeasure = y/cellSize;
+  for (let i = 0; i < gHeight; i++) {
+    let row = gField[i];
+    for (let j = 0; j < gWidth; j++) {
+      let currentVector = row[j];
+      let oX = currentVector[0],
+        oY = currentVector[1],
+        difX = xMeasure - j,
+        difY = yMeasure - i;
+      if(difX*difX + difY*difY < MAX_FIELD_DISTANCE ){
+      let distance = getDistance(difX, difY);
+      if ( distance !== 0) {
+        let force = (massEffect) / (distance * distance);
+        let xIsNegative = difX < 0,
+          yIsNegative = difY < 0;
+        let theta = Math.atan(difX / difY);
+        currentVector[0] += difX === 0 ? 0 : ((yIsNegative ? -1 : 1) * force * Math.sin(theta));
+        currentVector[1] += difY === 0 ? 0 : ((yIsNegative ? -1 : 1) * force *  Math.cos(theta));
+      }
+      }
+    }
+  }
+}
+
+// Warps the gravity field fabric based on the mass of each stellar object
+function recalculateGravityField() {
+  for (let i = 0; i < numObjects; i++) {
+    let o = stellarObjects[i];
+    applyObjectGravityToFabric(o.x, o.y, o.massEffect);
+  }
+}
+
+// Resets all the gravity field fabric markers to their places
+function resetGravityFieldInPlace() {
+  for (let i = 0; i < gHeight; i++) {
+    let row = gField[i];
+    for (let w = 0; w < gWidth; w++) {
+      row[w] = [0,0];
+    }
+  }
+}
+
+// Calculates the number of gravity field fabric markers based on granularity and initializes them
+function reinitializeGravityField() {
+  gField = [];
+  let maxH = HEIGHT / cellSize,
+    maxW = WIDTH / cellSize;
+  for (let h = 0; h <= maxH; h++) {
+    let row = [];    
+    for (let w = 0; w <= maxW; w++) {
+      row.push([0,0]);
+    }
+    gField.push(row);
+  }
+  gHeight = gField.length;
+  gWidth = gField[0].length
+}
+
+function drawFieldAndObjects(){
+  ctx.clearRect(0, 0, WIDTH, HEIGHT);
+  if (showFabric) {
+    drawGravityField();
+  }
+  drawObjects();
+}
+
+// draws all stellar objects
+function drawObjects() {
+  for (let i = 0; i < numObjects; i++) {
+    drawObject(stellarObjects[i]);
+  }
+  if (isPlanting) {
+    drawCursorLine();
+  }
+}
+
+// draws a line from the cursor planted point to the cursor
+function drawCursorLine() {
+  ctx.beginPath();
+  ctx.strokeStyle = CURSOR_LINE_COLOR;
+  ctx.moveTo(plantX, plantY);
+  ctx.lineTo(mouseX, mouseY);
+  ctx.stroke();
+  ctx.closePath();
+  let dist = getDistance(mouseX-plantX,mouseY-plantY);
+  ctx.fillStyle = CURSOR_LINE_COLOR;
+  ctx.fillText(dist,mouseX+10, mouseY-10);
+}
+
+// draws a stellar object on the canvas
+function drawObject(o) {
+  let x = o.x,
+    y = o.y,
+    radius = o.size;
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, TWOPI);
+  ctx.fillStyle = o.color;
+  ctx.fill();
+  ctx.globalAlpha = 0.2;
+  ctx.strokeStyle = OBJECT_BORDER_COLOR;
+  ctx.arc(x, y, radius, 0, TWOPI);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  ctx.closePath();
+}
+
+// Draws the markers for the gravity field fabric
+function drawGravityField() {
+  ctx.strokeStyle = GRAVITY_FIELD_MARKER_COLOR;
+  for (let i = 0; i < gHeight; i++) {
+    let row = gField[i], iMeasure = i * cellSize;
+    for (let j = 0; j < gWidth; j++) {
+      drawVectorDot(j * cellSize, iMeasure, row[j]);
+    }
+  }
+}
+
+// Draws a marker for the gravity field fabric, given the XY coordinates of the dot and a vector representing how much it's been warped
+function drawVectorDot(x, y, vector) {
+  let vx = vector[0],
+    vy = vector[1];  
+  ctx.globalAlpha = fadeMultiplier / Math.sqrt(vx*vx + vy*vy); // the farther the marker is pulled, the more it fades from view
+  ctx.beginPath();
+  ctx.arc(x + vx, y + vy, GRAVITY_FIELD_MARKER_RADIUS, 0, TWOPI);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+}
+
+// returns an object with random color, position, velocity, and mass/size
+function getRandomStellarObject() {
+	let multiplier = objectSize === 0 ? Math.random() : objectSize;
+  let randomMass = MIN_RND_MASS + multiplier * (MAX_RND_MASS - MIN_RND_MASS);  
+  let randomSize = Math.pow(3 * randomMass / 4 / PI, 1 / 3) * SCALE, // size formula based on volume of a sphere
+    randomColor = objectColor === "" ? getRandomColor() : objectColor;
+  let velocity = Math.random() * MAX_RND_VEL;
+  let xComponent = Math.random() * velocity;
+  return {
+    color: randomColor,
+    size: randomSize,
+    mass: randomMass,
+    x: WIDTH / 6 + (2 * WIDTH / 3 * Math.random()),
+    y: HEIGHT / 6 + (2 * HEIGHT / 3 * Math.random()),
+    velocity: {
+      x: (Math.random() * 2 > 1 ? -1 : 1) * Math.sqrt(xComponent),
+      y: (Math.random() * 2 > 1 ? -1 : 1) * Math.sqrt(velocity - xComponent)
+    },
+    acc:{
+    	x:0,y:0,xh:0,yh:0
+    },
+    oldAcc: {
+    	x:0,y:0
+    },
+    massEffect: randomMass * G
+  }
+}
+function getStellarObject(color,multiplier,x,y, xv, yv){
+	let mass = MIN_RND_MASS + multiplier * (MAX_RND_MASS - MIN_RND_MASS);
+  let size = Math.pow(3 * mass / 4 / PI, 1 / 3) * SCALE;
+  return {color:color, size:size, mass:mass, x: x, y:y, velocity:{x:xv,y:yv},acc:{x:0,y:0,xh:0,yh:0}, oldAcc:{x:0,y:0},massEffect:mass*G};
+  
+}
+// Returns the distance between two points given the difference between their x and y values
+function getDistance(difX, difY) {
+  return Math.sqrt(difX * difX + difY * difY);
+}
+
+function getRandomColor() {
+  return "rgb(" + (Math.random() * 256 >>> 0) + "," + (Math.random() * 256 >>> 0) + "," + (Math.random() * 256 >>> 0) + ")";
+}
+
+</script>
+</html>
