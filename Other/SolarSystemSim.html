@@ -140,7 +140,7 @@ label {
           </div>
           <div class="section">
             <label>
-              <input type="checkbox" id="ShowFabric"/>Show Fabric</label>
+              <input type="checkbox"  checked="checked" id="ShowFabric"/>Show Fabric</label>
             <div>Granularity:
               <select id="FabricGranularity">
                 <options>
@@ -157,7 +157,7 @@ label {
           </div>
           <div class="section">
           <div class="inner">
-          <label for="chkTrack"><input type="checkbox" id="chkTrack"  checked="checked"/>Track</label>
+          <label for="chkTrack"><input type="checkbox" id="chkTrack" />Track</label>
           </div>
           </div>
           <div class="section">
@@ -267,6 +267,8 @@ function changeHandleCollisions() {
   shouldHandleCollisions = chkHandleCollisions.checked;
 }
 function changeTrackObjects(){
+    chkShowFabric.checked = false;
+    showFabric = false;
 	trackObjects = chkTrackObjects.checked;
 }
 function stopPlanting() {
@@ -292,6 +294,8 @@ function changeFabricGranularity() {
   drawFieldAndObjects();
 }
 function changeShowFabric() {
+    trackObjects = false;
+    chkTrackObjects.checked = false;
   showFabric = chkShowFabric.checked;
 }
 function toggleAutoStep() {
