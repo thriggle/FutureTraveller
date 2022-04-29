@@ -8,8 +8,8 @@
 </head>
 <body>
     <script>
-        var here = window.location.toString().toLowerCase();
-        here = here.replace("travellersubsectorjavascript", "Traveller/TravellerSubsectorJavaScript")
+        var here = window.location.toString();
+        here = here.replace("travellersubsectorjavascript", "Traveller/TravellerSubsectorJavaScript").replace("travellersubsectorjavascript","Traveller/TravellerSubsectorJavaScript");
         if(here != window.location){
             window.location = here;
         }
