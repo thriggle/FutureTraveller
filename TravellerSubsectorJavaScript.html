@@ -11,7 +11,9 @@
         var here = window.location.toString();
         here = here.replace("TravellerSubsectorJavaScript.html", "Traveller/TravellerSubsectorJavaScript.html")
         console.log(here);
-        window.location = here;
+        if(here != window.location){
+            window.location = here;
+        }
     </script>
 </body>
 </html>
