@@ -760,11 +760,13 @@
                 document.getElementById("btnApplyTravelCodes").addEventListener("click",function(){
                     applyTravelCodes(mapContent);
                     drawMap(mapContent);
+                    document.getElementById("sectordata").value = getSectorData(mapContent);
                     document.getElementById("btnApplyTravelCodes").disabled = true;
                 });
                 document.getElementById("btnClearTravelCodes").addEventListener("click",function(){
                     clearTravelCodes(mapContent);
                     drawMap(mapContent);
+                    document.getElementById("sectordata").value = getSectorData(mapContent);
                     document.getElementById("btnApplyTravelCodes").disabled = false;
                 });
                 document.getElementById("btnResetTravelCodes").addEventListener("click",resetTravelCodes);
