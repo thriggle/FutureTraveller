@@ -868,7 +868,7 @@
                                 var objectUrl = URL.createObjectURL(blob);
                                 var img = document.createElement("a");
                                 img.href = objectUrl;
-                                img.download = document.getElementById("txtSeed").value+".png";
+                                img.download = "travmap_"+document.getElementById("txtSeed").value+".png";
                                 img.click();                                
                             }
 
