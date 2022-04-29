@@ -739,14 +739,7 @@
                 });
                 document.getElementById("btnApplyData").addEventListener("click",function(){
                     var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, JSON.parse(document.getElementById("data").value));
-                    var systems = [];
-                    for(var i = 0, len = mapContent.length; i < len; i++){
-                        var hex = mapContent[i];
-                        if(hex.system){
-                            systems.push(hex.system);
-                        }
-                    }
-                    document.getElementById("sectordata").value = getSectorData(systems);
+                    document.getElementById("sectordata").value = getSectorData(mapContent);
                     drawMap(mapContent);
                 });
                 document.getElementById("btnPopulateSystems").addEventListener("click",populateSubsector);
@@ -1005,7 +998,9 @@
                                 totalpop: details.totalpop,
                                 tcoord: tcoord,
                                 pbg: details.pbg,
-                                allegiance: details.allegiance
+                                allegiance: details.allegiance,
+                                isRed:false,
+                                isAmber:false
                             };
                             systems[tcoord] = system;
                             systemArray.push(system);
@@ -1015,17 +1010,18 @@
                 
                 analyzeMap(systemArray);
                 document.getElementById("data").value = JSON.stringify(systems);
-                document.getElementById("sectordata").value = getSectorData(systemArray);
                 var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
                 applyTravelCodes(mapContent);
+                document.getElementById("sectordata").value = getSectorData(mapContent);
                 //calcRoutes(mapContent, "T5");
                 drawMap(mapContent);                
             }
-            function getSectorData(systems){
+            function getSectorData(map){
                 var sectordata = "Hex\tName\tUWP\tBases\tRemarks\tZone\tPBG\tAllegiance\tStars\t{Ix}\t(Ex)\t[Cx]";
-                for(var i = 0, len = systems.length; i < len; i++){
-                    var system = systems[i];
-                    sectordata += "\n"
+                for(var i = 0, len = map.length; i < len; i++){
+                    if(typeof map[i].system !== "undefined"){
+                        var system = map[i].system;
+                        sectordata += "\n"
                         + system.tcoord+"\t"
                         + system.name+"\t"
                         + system.uwp+"\t"
@@ -1038,7 +1034,7 @@
                         + "{"+(system.importance.extension>0?"+":"")+system.importance.extension+"}\t"
                         + "("+system.economics.extension+")\t"
                         + "["+system.mainworld.cultural.extension+"]";
-
+                    }
                 }
                 return sectordata;
             }
