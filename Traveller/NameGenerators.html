@@ -32,7 +32,7 @@
             content:"► ";
         }
     </style>
-    <script src="NameGenerator.js"></script>
+    <script src="js/NameGenerator.js"></script>
     <fieldset class="collapsed">
         <legend>Anglic Words</legend>
         <input type="button" id="btnWord" name="btnWord" value="Word" data-key="word" /> 
@@ -111,7 +111,7 @@
         <span data-for="btnShipNaval" >Generate a likely naval starship name</span>
     </fieldset>
     <script>
-        NameGenerator("names.jsonc",addEventListeners);
+        NameGenerator("js/names.jsonc",addEventListeners);
         function addEventListeners(generator){
             var buttons = document.querySelectorAll("input[data-key]");
             for(var i = 0, len = buttons.length; i < len; i++){

@@ -845,7 +845,7 @@
             // 162: v v cv cv cvc
             "162:{aslan.v}<!0>{aslan.v}{aslan.cv}{aslan.cv}{aslan.cvc}",
             // 162: v v cv vc v
-            "162:{aslan.v}<!0>{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.v}", 
+            "162:{aslan.v}<!0>{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}", 
             // 108: v v cv vc vc
             "108:{aslan.v}<!0>{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
             // 162: v v cv cvc v
@@ -1460,62 +1460,65 @@
             // 162: v v v v v vc
             "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
             // 162: v v v v v cvc
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cvc}"
-
-            // // 243: v v v cv v
-            // "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 243: v v v cv cv
-            // "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 162: v v v cv vc
-            // "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: v v v cv cvc
-            // "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 162: v v v vc v
-            // "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 108: v v v vc vc
-            // "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 162: v v v cvc v
-            // "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 108: v v v cvc vc
-            // "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 243: v v cv v v
-            // "243:{aslan.v}<!0>{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // // 243: v v cv v cv
-            // "243:{aslan.v}<!0>{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 162: v v cv v vc
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: v v cv v cvc
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cvc}",
-            // // 243: v v cv cv v
-            // "243:{aslan.v}<!0>{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 243: v v cv cv cv
-            // "243:{aslan.v}<!0>{aslan.v}{aslan.cv}{aslan.cv}{aslan.cv}",
-            // // 162: v v cv cv vc
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: v v cv cv cvc
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.cv}{aslan.cv}{aslan.cvc}",
-            // // 162: v v cv vc v
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.v}", 
-            // // 108: v v cv vc vc
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 162: v v cv cvc v
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}",
-            // // 108: v v cv cvc vc
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.cv}{aslan.cvc}{aslan.vc}",
-            // // 162: v v vc v v
-            // "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 162: v v vc v cv
-            // "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}",
-            // // 108: v v vc v vc
-            // "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: v v vc v cvc
-            // "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}",
-            // // 108: v v vc vc v
-            // "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}",
-            // // 72: v v vc vc vc
-            // "72:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}",
-            // // 162: v v cvc v v
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.cvc}{aslan.v}<!3>{aslan.v}",
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cvc}", 
+            // 243: v v v v cv v
+            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}<!3>{aslan.v}",
+            // 243: v v v v cv cv
+            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cv}",            
+            // 162: v v v v cv vc
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.initialConsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
+            // 162: v v v v cv cvc
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cvc}",
+            // 162: v v v v vc v
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
+            // 108: v v v v vc vc
+            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
+            // 162: v v v v cvc v
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.v}",
+            // 108: v v v v cvc vc
+            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.vc}",
+            // 243: v v v cv v v
+            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialConsonant}{aslan.v}<!4>{aslan.v}<!5>{aslan.v}",
+            // 243: v v v cv v cv
+            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialConsonant}{aslan.v}<!4>{aslan.v}{aslan.cv}",
+            // 162: v v v cv v vc
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialConsonant}{aslan.v}<!4>{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
+            // 162: v v v cv v cvc
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialConsonant}{aslan.v}<!4>{aslan.v}{aslan.cvc}",
+            // 243: v v v cv cv v
+            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.initialConsonant}{aslan.v}<!5>{aslan.v}",
+            // 243: v v v cv cv cv
+            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cv}{aslan.cv}",
+            // 162: v v v cv cv vc
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.initialConsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
+            // 162: v v v cv cv cvc
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cv}{aslan.cvc}",
+            // 162: v v v cv vc v
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.v}",
+            // 108: v v v cv vc vc
+            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
+            // 162: v v v cv cvc v
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}",
+            // 108: v v v cv cvc vc
+            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cvc}{aslan.vc}",
+            // 162: v v v vc v v
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}",
+            // 162: v v v vc v cv
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}",
+            // 108: v v v vc v vc
+            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
+            // 108: v v v vc v cvc
+            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}",
+            // 108: v v v vc cv v
+            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.initialConsonant}{aslan.v}<6>{aslan.v}",
+            // 108: v v v vc vc v
+            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}",
+            // 72: v v v vc vc vc
+            "72:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}",
+            // 162: v v v cvc v v
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.v}<!4>{aslan.v}",
+            // 162: v v v cvc v cv
+            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.v}<!4>{aslan.v}{aslan.cv}"
             // // 162: v v cvc v cv
             // "162:{aslan.v}<!0>{aslan.v}{aslan.cvc}{aslan.v}<!3>{aslan.v}{aslan.cv}",
             // // 108: v v cvc v vc

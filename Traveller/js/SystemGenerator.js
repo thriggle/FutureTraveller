@@ -557,7 +557,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     var mainworld = {cultural:cultural, isMainworld:true, roughpop:roughpop, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
     stars = placeWorlds(stars, mainworld, gg, planetoidBelts, d6(2), +maxTechLevel)
     var totalpop = getTotalPop(stars.primary);
-    return {name:name, economics:economics, pbg:ext(popdigit)+ext(planetoidBelts)+ext(gg), totalpop:totalpop, popdigit:popdigit, allegiance:"Na", uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
+    return {name:name, economics:economics, pbg:ext(popdigit)+ext(planetoidBelts)+ext(gg), totalpop:totalpop, popdigit:popdigit, allegiance:"Im", uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
 }
 function getTotalPop(star){
     var total = 0;
