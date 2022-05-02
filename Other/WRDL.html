@@ -7,75 +7,96 @@
     <title>Wordle Scratch Pad</title>
 </head>
 <style>
-    body{font-family:Bahnschrift, sans-serif;font-size:1.2rem;}
+    body{font-family:Bahnschrift, sans-serif;font-size:1.2rem; background-color:black; color:white;}
     [letter]{display:inline-block; width:1.3rem; padding-top:.4rem; padding-bottom:.4rem; border:1px solid white; background-color:#666; color:white; border-radius:3px; cursor:pointer;}
     div.keyboard{ -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select:none; text-align:center; padding-top:4px; padding-bottom:2px; background-color:black;}
     div.guesses{text-align:center; padding-top:2px; padding-bottom:4px; background-color:black; border-bottom: solid white 2px;}
     .guesses [position]{display:inline-block; font-size: 2rem; text-align:center; width:2rem; border:1px solid white; background-color:#333; color:white; border-radius:3px;}
     div.statuses{text-align:center; padding-top:2px; padding-bottom:4px; background-color:black; border-bottom: solid white 2px;}
     .statuses [position]{display:inline-block; text-align:center; padding:3px; max-width:2rem; width:2rem; font-size:2rem; border:1px solid white; background-color:#333; color:white; border-radius:3px;}
+    .statuses [data-status]{display:block;}
     div.guesses input[data-selected="true"],div.guesses input[data-selected="true"]:focus{border-color:cyan; outline:none;}
     [position][data-status="green"], [data-status="green"]  { background-color:green;}
     [position][data-status="yellow"], [data-status="yellow"] { background-color:yellow; color:black;}
     [position][data-status="black"], [data-status="black"]  { background-color:black; color:gray;}
-
+    .wordle_solver{ width:100%; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select:none; }
     .status [position] span{display:inline-block;}
+    .pool, .keep, .exclude { cursor:pointer; border:1px solid black;}
+    .pool:hover, .keep:hover, .exclude:hover{ background-color:cyan; color:black;}
+    .pool[data-selectedheading], .keep[data-selectedheading], .exclude[data-selectedheading]{ border:1px solid cyan; text-decoration: underline;}
+    .ol{display:inline-block;}
+    #options, #likely{ display:inline-block; max-width: 20%; vertical-align: text-top;}
+    #likely{ color:lightgreen;}
 </style>
 <body>
-    <div class="keyboard firstrow">
-        <span letter="Q">Q</span>
-        <span letter="W">W</span>
-        <span letter="E">E</span>
-        <span letter="R">R</span>
-        <span letter="T">T</span>
-        <span letter="Y">Y</span>
-        <span letter="U">U</span>
-        <span letter="I">I</span>
-        <span letter="O">O</span>
-        <span letter="P">P</span>
-    </div>
-    <div class="keyboard secondrow">
-        <span letter="A">A</span>
-        <span letter="S">S</span>
-        <span letter="D">D</span>
-        <span letter="F">F</span>
-        <span letter="G">G</span>
-        <span letter="H">H</span>
-        <span letter="J">J</span>
-        <span letter="K">K</span>
-        <span letter="L">L</span>
-    </div>
-    <div class="keyboard thirdrow">
-        <span letter="Z">Z</span>
-        <span letter="X">X</span>
-        <span letter="C">C</span>
-        <span letter="V">V</span>
-        <span letter="B">B</span>
-        <span letter="N">N</span>
-        <span letter="M">M</span>
-    </div>
-    <div class="guesses">
-        <input data-guess="unlocked" data-selected="true" type="text" title="first letter" placeholder="" position="1"></input>
-        <input data-guess="unlocked" type="text" title="second letter" placeholder="" position="2"></input>
-        <input data-guess="unlocked" type="text" title="third letter" placeholder="" position="3"></input>
-        <input data-guess="unlocked" type="text" title="fourth letter" placeholder="" position="4"></input>
-        <input data-guess="unlocked" type="text" title="fifth letter" placeholder="" position="5"></input>
-    </div>
-    <div class="statuses">
-        <span position="1"></span>
-        <span position="2"></span>
-        <span position="3"></span>
-        <span position="4"></span>
-        <span position="5"></span>
-    </div>
+    <table class="wordle_solver">
+        <tr>
+            <td class="pool" data-selectedheading="true">Letter Pool</td>
+            <td> <div class="keyboard firstrow">
+                <span letter="Q">Q</span>
+                <span letter="W">W</span>
+                <span letter="E">E</span>
+                <span letter="R">R</span>
+                <span letter="T">T</span>
+                <span letter="Y">Y</span>
+                <span letter="U">U</span>
+                <span letter="I">I</span>
+                <span letter="O">O</span>
+                <span letter="P">P</span>
+            </div>
+            <div class="keyboard secondrow">
+                <span letter="A">A</span>
+                <span letter="S">S</span>
+                <span letter="D">D</span>
+                <span letter="F">F</span>
+                <span letter="G">G</span>
+                <span letter="H">H</span>
+                <span letter="J">J</span>
+                <span letter="K">K</span>
+                <span letter="L">L</span>
+            </div>
+            <div class="keyboard thirdrow">
+                <span letter="Z">Z</span>
+                <span letter="X">X</span>
+                <span letter="C">C</span>
+                <span letter="V">V</span>
+                <span letter="B">B</span>
+                <span letter="N">N</span>
+                <span letter="M">M</span>
+            </div></td>
+        </tr>
+        <tr >
+            <td class="keep">Correct Guesses</td>
+            <td><div class="guesses">
+                <input data-guess="unlocked" data-selected="true" type="text" title="first letter" placeholder="" position="1"></input>
+                <input data-guess="unlocked" type="text" title="second letter" placeholder="" position="2"></input>
+                <input data-guess="unlocked" type="text" title="third letter" placeholder="" position="3"></input>
+                <input data-guess="unlocked" type="text" title="fourth letter" placeholder="" position="4"></input>
+                <input data-guess="unlocked" type="text" title="fifth letter" placeholder="" position="5"></input>
+            </div></td>
+        </tr>
+        <tr>
+            <td class="exclude">Incorrect Guesses</td>
+            <td><div class="statuses">
+                <span position="1"></span>
+                <span position="2"></span>
+                <span position="3"></span>
+                <span position="4"></span>
+                <span position="5"></span>
+            </div></td>
+        </tr>
+    </table>
     
     
     <input id="btnShowOptions" type="button" value="Show Options" />
     <ul id="options"></ul>
+    <ul id="likely"></ul>
     <script>
+        var mode = "pool";
         var xhr = new XMLHttpRequest();
-        // https://static.nytimes.com/newsgraphics/2022/01/25/wordle-solver/assets/solutions.txt
-        xhr.open("GET","https://thriggle.netlify.app/Other/resources/wrdl_solutions.txt",true);
+        //var solutionSource = "https://static.nytimes.com/newsgraphics/2022/01/25/wordle-solver/assets/solutions.txt";
+        var solutionSource = "https://thriggle.netlify.app/Other/resources/wrdl_solutions.txt"
+        xhr.open("GET",solutionSource,true);
         xhr.addEventListener("loadend",process);
         xhr.send();
         function process(){
@@ -88,6 +109,7 @@
             guess.addEventListener("focus",function(e){
                 document.querySelector("[data-selected=\"true\"]").setAttribute("data-selected","false");
                 e.target.setAttribute("data-selected","true");
+                setMode(mode);
             });
         }
         var keys = document.querySelectorAll("[letter]");
@@ -97,23 +119,59 @@
             [], [], [], [], []
         ];
         document.getElementById("btnShowOptions").addEventListener("click",showOptions);
+        var headings = document.querySelectorAll(".keep, .pool, .exclude");
+        for(var i = 0, len = headings.length; i < len; i++){
+            headings[i].addEventListener("click",function(e){
+                document.querySelector("[data-selectedheading]").removeAttribute("data-selectedheading","false");
+                e.target.setAttribute("data-selectedheading","true");
+                var selectedMode = e.target.className;
+                switch(selectedMode){
+                    case "keep":
+                        mode = "keep";
+                        break;
+                    case "pool":
+                        mode = "pool";
+                        break;
+                    case "exclude":
+                        mode = "exclude";
+                        break;
+                }
+                setMode(selectedMode);
+            });
+        }
         for(var i = 0, len = keys.length; i < len; i++){
             (function(key){
                 key.addEventListener("click",function(){
                     var currentStatus = key.getAttribute("data-status");
                     var newStatus = "";
-                    if(currentStatus == null){
-                        key.setAttribute("data-status","green");
-                        newStatus = "green";
-                    }else if(currentStatus == "green"){
-                        key.setAttribute("data-status","yellow");
-                        newStatus = "yellow";
-                    }else if(currentStatus == "yellow"){
-                        key.setAttribute("data-status","black");
-                        newStatus = "black";
-                    }else{
-                        key.removeAttribute("data-status");
-                        newStatus = null;
+                    switch(mode){
+                        case "keep":
+                            if(currentStatus == null){
+                                key.setAttribute("data-status","green");
+                                newStatus = "green";
+                            }else if(currentStatus == "green"){
+                                key.removeAttribute("data-status");
+                                newStatus = null;
+                            }
+                            break;
+                        case "pool":
+                            if(currentStatus == null){
+                                newStatus = "black";
+                                key.setAttribute("data-status",newStatus);
+                            }else if(currentStatus == "black"){
+                                newStatus = null;
+                                key.removeAttribute("data-status");
+                            }
+                            break;
+                        case "exclude":
+                            if(currentStatus == null){
+                                newStatus = "yellow";
+                                key.setAttribute("data-status",newStatus);
+                            }else if(currentStatus == "yellow"){
+                                key.removeAttribute("data-status");
+                                newStatus = null;
+                            }
+                            break;
                     }
                     var letterIndex = +(document.querySelector("[data-selected=\"true\"]").getAttribute("position"))-1;
                     var letter = key.getAttribute("letter");
@@ -122,9 +180,51 @@
                 });
             })(keys[i]);           
         }
+        function setMode(mode){
+            for(var i = 0, len = keys.length; i < len; i++){ // first make all keys black
+                keys[i].setAttribute("data-status","black");
+            }
+            for(var i = 0, len = options.length; i < len; i++){ // then add the available letters
+                var option = options[i];
+                var key = document.querySelector("[letter=\""+option+"\"]");
+                key.removeAttribute("data-status");
+            }
+            var positionIndex = +(document.querySelector("[data-selected=\"true\"]").getAttribute("position"))-1;
+            switch(mode){
+                case "keep":
+                    if(keepers[positionIndex] != null){
+                        var key = document.querySelector("[letter=\""+keepers[positionIndex]+"\"]");
+                        key.setAttribute("data-status","green");
+                    }
+                    break;
+                case "pool":
+                    for(var i = 0, len = excluded.length; i < len; i++){
+                        for(var j = 0, jlen = excluded[i].length; j < jlen; j++){
+                            var key = document.querySelector("[letter=\""+excluded[i][j]+"\"]");
+                            key.setAttribute("data-status","yellow");
+                        }
+                    }
+                    for(var i = 0, len = keepers.length; i < len; i++){
+                        if(keepers[i] != null){
+                            var key = document.querySelector("[letter=\""+keepers[i]+"\"]");
+                            key.setAttribute("data-status","green");
+                        }
+                    }
+                    break;
+                case "exclude":
+                    if(excluded[positionIndex].length > 0){
+                        for(var i = 0, len = excluded[positionIndex].length; i < len; i++){
+                            var key = document.querySelector("[letter=\""+excluded[positionIndex][i]+"\"]");
+                            key.setAttribute("data-status","yellow");
+                        }
+                    }
+                    break;
+            }
+        }
         function showOptions(){
             var output = document.getElementById("options");
             removeChildElements(output);
+            removeChildElements(document.getElementById("likely"));
             var count = 0, max = 100000, comboTracker = {}, combos = [];
             while(count < max){
                 count++;
@@ -136,13 +236,13 @@
                     combo = "";
                     for(var i = 0; i < 5; i++){
                         var prospects = [];
-                        if(excluded[i].length > 0){
+                        if(keepers[i] != null){
+                            prospects = [keepers[i]];
+                        } else if(excluded[i].length > 0){
                             prospects = options.slice();
                             for(var j = 0, jlen = excluded[i].length; j < jlen; j++){
                                 prospects.splice(prospects.indexOf(excluded[i][j]),1);
                             }
-                        }else if(keepers[i] != null){
-                            prospects = [keepers[i]];
                         }else{
                             prospects = options.slice();
                         }
@@ -173,6 +273,7 @@
                     li.style.fontWeight = "bold";
                     li.style.color = "darkred";
                     li.appendChild(document.createTextNode(word));
+                    document.getElementById("likely").appendChild(document.createElement("li")).appendChild(document.createTextNode(word));
                 }else{
                     ol.appendChild(document.createElement("li")).appendChild(document.createTextNode(word));
                 }
@@ -218,16 +319,17 @@
                 }else{
                     guess.value = "";
                     guess.removeAttribute("data-status");
-                    var guessContainer = document.querySelector(".statuses [position=\""+(letterIndex+1)+"\"]");
-                    removeChildElements(guessContainer);
-                    if(excluded[letterIndex].length > 0){                                        
-                       for(var j = 0, jlen = excluded[letterIndex].length; j < jlen; j++){
-                            var excludedLetter = excluded[letterIndex][j];
-                            var span = document.createElement("span");
-                            span.setAttribute("data-status","yellow");
-                            span.innerHTML = excludedLetter;
-                            guessContainer.appendChild(span);
-                       }
+                    
+                }
+                var guessContainer = document.querySelector(".statuses [position=\""+(letterIndex+1)+"\"]");
+                removeChildElements(guessContainer);
+                if(excluded[letterIndex].length > 0){                                        
+                    for(var j = 0, jlen = excluded[letterIndex].length; j < jlen; j++){
+                        var excludedLetter = excluded[letterIndex][j];
+                        var span = document.createElement("span");
+                        span.setAttribute("data-status","yellow");
+                        span.innerHTML = excludedLetter;
+                        guessContainer.appendChild(span);
                     }
                 }
             }
@@ -238,48 +340,39 @@
             }
         }
         function setLetterStatus(place, letter, status){
-            if(status == null){ // default
-                keepers[place] = null;
-                var excludeIndex = excluded[place].indexOf(letter);
-                if(excludeIndex >= 0){
-                    excluded[place].splice(excludeIndex,1);
-                }
-                if(options.indexOf(letter) < 0){
-                    options.push(letter);
-                }
-            } else if(status == "green"){ // keeper
-                keepers[place] = letter;
-                var excludeIndex = excluded[place].indexOf(letter);
-                if(excludeIndex >= 0){
-                    excluded[place].splice(excludeIndex,1);
-                }
-                if(options.indexOf(letter) < 0){
-                    options.push(letter);
-                }
-            } else if(status == "yellow"){ // excluded
-                if(keepers[place] == letter){
-                    keepers[place] = null;
-                }
-                var excludeIndex = excluded[place].indexOf(letter);
-                if(excludeIndex < 0){
-                    excluded[place].push(letter);
-                }
-                if(options.indexOf(letter) < 0){
-                    options.push(letter);
-                }
-            } else { // black
-                if(keepers[place] == letter){
-                    keepers[place] = null;
-                }
-                var excludeIndex = excluded[place].indexOf(letter);
-                if(excludeIndex >= 0){
-                    excluded[place].splice(excludeIndex,1);
-                }
-                var optionIndex = options.indexOf(letter);
-                if(optionIndex >= 0){
-                    options.splice(optionIndex,1);
-                }
+            switch(mode){
+                case "keep":
+                    if(status == "green"){
+                        keepers[place] = letter;
+                    }else{
+                        keepers[place] = null;
+                    }
+                    break;
+                case "pool":
+                    if(status == "black"){
+                        var optionIndex = options.indexOf(letter);
+                        if(optionIndex >= 0){
+                            options.splice(optionIndex,1);
+                        }
+                    }else{
+                        var optionIndex = options.indexOf(letter);
+                        if(options.indexOf(letter) < 0){
+                             options.push(letter);
+                        }
+                    }
+                    break;
+                case "exclude":
+                    if(status == "yellow"){
+                        excluded[place].push(letter);
+                    }else{
+                        var excludedIndex = excluded[place].indexOf(letter);
+                        if(excludedIndex >= 0){
+                            excluded[place].splice(excludedIndex,1);
+                        }
+                    }
+                    break;
             }
+            
             console.log(options);
             console.log(keepers);
             console.log(excluded);
