@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveller Sophont Creation System</title>
+    <script src="js/NameGenerator.js"></script>
+    <script src="js/SystemGenerator.js"></script>
+</head>
+<style>
+    h1,h2,h3{ margin:0px;}
+    body{font-family:Bahnschrift;}
+</style>
+<body>
+    <h1>Traveller Sophont Creation System</h1>
+    <label for="txtName">Species Name: <input type="text" id="txtName" placeholder="Leave blank for random"></label>
+    <input type="button" id="btnRandomName" value="Random"><br>
+    <fieldset>
+        <legend>Homeworld</legend>
+        <label for="txtWorldName">Homeworld Name: <input type="text" id="txtWorldName" placeholder="Leave blank for random"></label>
+        <input type="button" id="btnRandomWorldName" value="Random"><br>
+        <label for="txtUWP">UWP<input type="text" id="txtUWP" placeholder="Leave blank for random"></label><input type="button" id="btnRandomUWP" value="Random"><br>
+        <label for="txtTradeCodes">Trade Codes: <input type="text" id="txtTradeCodes"></label>
+    </fieldset>
+    <br>
+
+    <input type="button" id="btnGenerate" value="Generate Alien" />
+    <hr />
+    <h2 id="name"></h2>
+    <h3><span data-detail="name" data-source="homeworld"></span> <span data-detail="uwp" data-source="mainworld"></span> <span data-detail="tradecodes" data-source="homeworld"></span></h3>
+    <h3>Native Terrain: <span data-detail="nativeTerrain" data-source="species"></span></h3>
+    <h3>Locomotion: <span data-detail="locomotion" data-source="species"></span></h3>
+    <h3>Niche: <span data-detail="class" data-source="species"></span> (<span data-detail="niche" data-source="species"></span>)</h3>
+    <h3>Genetic Profile: <span data-detail="geneticprofile" data-source="species"></span> </h3>
+    <h3>Genders: <span data-detail="genderstructure" data-source="species"></span> (<span data-detail="genders" data-source="species"></span>) - <span data-detail="genderassignment" data-source="species"></span>, <span data-detail="gendershift" data-source="species"></span></h3>
+    <h3>Life Expectancy: ~<span data-detail="lifeexpectancy" data-source="species"></span> years</h3>
+    <h3>Language Medium: <span data-detail="language" data-source="species"></span></h3>
+    <h3>Stats</h3>
+    <table>
+        <tr>
+            <td><span data-detail="c1" data-source="species"></span></td>
+            <td><span data-detail="c1val" data-source="species"></span></td>
+        </tr>
+        <tr>
+            <td><span data-detail="c2" data-source="species"></span></td>
+            <td><span data-detail="c2val" data-source="species"></span></td>
+        </tr>
+        <tr>
+            <td><span data-detail="c3" data-source="species"></span></td>
+            <td><span data-detail="c3val" data-source="species"></span></td>
+        </tr>
+        <tr>
+            <td><span data-detail="c4" data-source="species"></span></td>
+            <td><span data-detail="c4val" data-source="species"></span></td>
+        </tr>
+        <tr>
+            <td><span data-detail="c5" data-source="species"></span></td>
+            <td><span data-detail="c5val" data-source="species"></span></td>
+        </tr>
+        <tr>
+            <td><span data-detail="c6" data-source="species"></span></td>
+            <td><span data-detail="c6val" data-source="species"></span></td>
+        </tr>
+    </table>
+</body>
+<script>
+    NameGenerator("js/names.jsonc",setup);
+    function setup(generator){
+        var species = {};
+        species.name = addCaps(generator.getRandomName("word"));
+        var systemName = addCaps(generator.getRandomName("system"));
+        species.homeworld = generateSystemDetails(
+            addCaps(generator.getRandomName("system")), 
+            8, // gas giant frequency
+            16 // max tech level
+        );
+        while(species.homeworld.mainworld.atmo < 2 || species.homeworld.mainworld.pop < 7){
+            species.homeworld  = generateSystemDetails(species.homeworld.name, 8, 16);
+        }
+        renderDetails(generateRandomAlien(species));
+        document.getElementById("btnRandomName").addEventListener("click",function(){
+            document.getElementById("txtName").value = addCaps(generator.getRandomName("word"));
+        });
+        document.getElementById("btnRandomWorldName").addEventListener("click",function(){
+            document.getElementById("txtWorldName").value = addCaps(generator.getRandomName("system"));
+        });
+        document.getElementById("btnRandomUWP").addEventListener("click",function(){
+            var temp = generateSystemDetails("placeholder",8,16);
+            while(temp.mainworld.atmo < 2 || temp.mainworld.pop < 7){
+                temp  = generateSystemDetails(temp.name, 8, 16);
+            }
+            document.getElementById("txtUWP").value = temp.uwp;
+            document.getElementById("txtTradeCodes").value = temp.tradecodes;
+        });
+        document.getElementById("btnGenerate").addEventListener("click", function(){
+            var name = document.getElementById("txtName").value;
+            species.name = (name != null && name.length > 0) ? name : addCaps(generator.getRandomName("word"));
+            var systemName = document.getElementById("txtWorldName").value;
+            
+            if(systemName == null || systemName.length == 0){
+                systemName = addCaps(generator.getRandomName("system"));
+            }
+
+            var systemUWP = document.getElementById("txtUWP").value;
+            if(systemUWP != null && systemUWP.length > 0){
+                species.homeworld = generateSystemDetails(systemName, 8, 16);
+                species.homeworld.uwp = systemUWP;
+            }else{
+                species.homeworld = generateSystemDetails(systemName, 8, 16); 
+                while(species.homeworld.mainworld.atmo < 2 || species.homeworld.mainworld.pop < 7){
+                    species.homeworld  = generateSystemDetails(species.homeworld.name, 8, 16);
+                }
+            }
+            renderDetails(generateRandomAlien(species));
+        });
+    }
+    function generateRandomAlien(species){
+        // species.name, species.homeworld.mainworld
+        var tc = species.homeworld.mainworld.tradecodes;
+        var EnvironmentDM = d6() - d6();
+        species.nativeTerrain = "Clear";
+        var homeworld = species.homeworld.mainworld;
+        if(homeworld.atmo >= 8){ EnvironmentDM -= 2;}
+        if(homeworld.size <= 5){ EnvironmentDM -= 1;}
+        if(homeworld.hydro >= 6){ EnvironmentDM += 1;}
+        if(homeworld.hydro >= 9){ EnvironmentDM += 1;}
+        if(tc.indexOf("Tz") >= 0 || tc.indexOf("Lk") >= 0){
+            if(EnvironmentDM < 0){ species.nativeTerrain = "Baked Lands"; EnvironmentDM = -1; }
+            else if(EnvironmentDM > 0){ species.nativeTerrain = "Frozen Lands"; EnvironmentDM = 1; }
+            else{ species.nativeTerrain = "Twilight Zone"; }
+        }else{
+            if(EnvironmentDM <= -5){
+                EnvironmentDM = -5;
+                species.nativeTerrain = "Mountain";
+            }else if(EnvironmentDM === -4){
+                species.nativeTerrain = "Desert";
+            }else if(EnvironmentDM === -3){
+                species.nativeTerrain = "Exotic";
+            }else if(EnvironmentDM === -2){
+                species.nativeTerrain = "Rough Wood";
+            }else if(EnvironmentDM === -1){
+                species.nativeTerrain = "Rough";
+            }else if(EnvironmentDM === 0){
+                species.nativeTerrain = "Clear";
+            }else if(EnvironmentDM === 1){
+                species.nativeTerrain = "Forest";
+            }else if(EnvironmentDM === 2){
+                species.nativeTerrain = "Wetlands";
+            }else if(EnvironmentDM === 3){
+                species.nativeTerrain = "Wetland Woods";
+            }else if(EnvironmentDM === 4){
+                species.nativeTerrain = "Ocean";
+            }else if(EnvironmentDM >= 5){
+                species.nativeTerrain = "Ocean Depths";
+                EnvironmentDM = 5;
+            }
+        }
+        var roll = d6();
+        niche = d6() - d6() + EnvironmentDM;
+        switch(EnvironmentDM){
+            case -5:
+                switch(roll){
+                    case 1:
+                        species.locomotion = "Walker";
+                        break;
+                    case 2:
+                        species.locomotion = "Walker";
+                        break;
+                    case 3:
+                        species.locomotion = "Walker";
+                        break;
+                    case 4:
+                        species.locomotion = "Walker";
+                        break;
+                    case 5:
+                        species.locomotion = "Walker";
+                        break;
+                    case 6:
+                        species.locomotion = "Flyer";
+                        break;
+                }
+                break;
+            case -4:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Walker";
+                        break;
+                    case 2:
+                        species.locomotion = "Walker";
+                        break;
+                    case 3:
+                        species.locomotion = "Walker";
+                        break;
+                    case 4:
+                        species.locomotion = "Walker";
+                        break;
+                    case 5:
+                        species.locomotion = "Walker";
+                        break;
+                    case 6:
+                        species.locomotion = "Flyer";
+                        break;
+                }
+                break;
+            case -3:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Amphib";
+                        break;
+                    case 2:
+                        species.locomotion = "Walker";
+                        break;
+                    case 3:
+                        species.locomotion = "Walker";
+                        break;
+                    case 4:
+                        species.locomotion = "Walker";
+                        break;
+                    case 5:
+                        species.locomotion = "Flyphib";
+                        break;
+                    case 6:
+                        species.locomotion = "Flyer";
+                        break;
+                }
+                break;
+            case -2:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Amphib";
+                        break;
+                    case 2:
+                        species.locomotion = "Walker";
+                        break;
+                    case 3:
+                        species.locomotion = "Walker";
+                        break;
+                    case 4:
+                        species.locomotion = "Walker";
+                        break;
+                    case 5:
+                        species.locomotion = "Walker";
+                        break;
+                    case 6:
+                        species.locomotion = "Flyer";
+                        break;
+                }
+                break;
+            case -1:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Amphib";
+                        break;
+                    case 2:
+                        species.locomotion = "Walker";
+                        break;
+                    case 3:
+                        species.locomotion = "Walker";
+                        break;
+                    case 4:
+                        species.locomotion = "Walker";
+                        break;
+                    case 5:
+                        species.locomotion = "Walker";
+                        break;
+                    case 6:
+                        species.locomotion = "Flyer";
+                        break;
+                }
+                break;
+            case 0:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Walker";
+                        break;
+                    case 2:
+                        species.locomotion = "Walker";
+                        break;
+                    case 3:
+                        species.locomotion = "Walker";
+                        break;
+                    case 4:
+                        species.locomotion = "Walker";
+                        break;
+                    case 5:
+                        species.locomotion = "Walker";
+                        break;
+                    case 6:
+                        species.locomotion = "Walker";
+                        break;
+                }
+                break;
+            case 1:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Walker";
+                        break;
+                    case 2:
+                        species.locomotion = "Walker";
+                        break;
+                    case 3:
+                        species.locomotion = "Walker";
+                        break;
+                    case 4:
+                        species.locomotion = "Walker";
+                        break;
+                    case 5:
+                        species.locomotion = "Walker";
+                        break;
+                    case 6:
+                        species.locomotion = "Walker";
+                        break;
+                }
+                break;
+            case 2:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Amphib";
+                        break;
+                    case 2:
+                        species.locomotion = "Aquatic";
+                        break;
+                    case 3:
+                        species.locomotion = "Walker";
+                        break;
+                    case 4:
+                        species.locomotion = "Walker";
+                        break;
+                    case 5:
+                        species.locomotion = "Triphib";
+                        break;
+                    case 6:
+                        species.locomotion = "Flyer";
+                        break;
+                }
+                break;
+            case 3:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Amphib";
+                        break;
+                    case 2:
+                        species.locomotion = "Walker";
+                        break;
+                    case 3:
+                        species.locomotion = "Walker";
+                        break;
+                    case 4:
+                        species.locomotion = "Walker";
+                        break;
+                    case 5:
+                        species.locomotion = "Triphib";
+                        break;
+                    case 6:
+                        species.locomotion = "Flyphib";
+                        break;
+                }
+                break;
+            case 4:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Flyphib";
+                        break;
+                    case 2:
+                        species.locomotion = "Swim";
+                        break;
+                    case 3:
+                        species.locomotion = "Swim";
+                        break;
+                    case 4:
+                        species.locomotion = "Swim";
+                        break;
+                    case 5:
+                        species.locomotion = "Aquatic";
+                        break;
+                    case 6:
+                        species.locomotion = "Diver";
+                        break;
+                }
+                break;
+            case 5:
+            switch(roll){
+                    case 1:
+                        species.locomotion = "Aquatic";
+                        break;
+                    case 2:
+                        species.locomotion = "Diver";
+                        break;
+                    case 3:
+                        species.locomotion = "Diver";
+                        break;
+                    case 4:
+                        species.locomotion = "Diver";
+                        break;
+                    case 5:
+                        species.locomotion = "Diver";
+                        break;
+                    case 6:
+                        species.locomotion = "Diver";
+                        break;
+                }
+                break;
+        }
+        roll = d6() - d6();
+        if(roll <= -5){
+            species.class = "Producer";
+            if(niche <= -1){
+                species.niche = "Collector";
+            }else{
+                species.niche = "Basker";
+            }
+        }else if(roll <= -3){
+            species.class = "Herbivore"
+            if(niche <= -4){
+                species.niche = "Grazer";
+            }else if(niche <= 0){
+                species.niche = "Intermittent";
+            }else if (niche <= 5){
+                species.niche = "Grazer";
+            }else{
+                species.niche = "Filter";
+            }
+        }else if(roll <= 2){
+            species.class = "Omnivore";
+            if(niche <= -2){
+                species.niche = "Hunter";
+            }else if(niche <= -1){
+                species.niche = "Gatherer";
+            }else if(niche === 0){
+                species.niche = "Hunter/Gatherer";
+            }else if(niche <= 5){
+                species.niche = "Gatherer";
+            }else{
+                species.niche = "Eater";
+            }
+        }else if(roll <= 4){
+            species.class = "Carnivore";
+            if(niche <= -1){
+                species.niche = "Pouncer";
+            }else if(niche <= 3){
+                species.niche = "Chaser";
+            }else if(niche <= 4){
+                species.niche = "Trapper";
+            }else if(niche <= 5){
+                species.niche = "Siren";
+            }else{
+                species.niche = "Killer";
+            }
+        }else{
+            species.class = "Scavenger";
+            if(niche <= -4){
+                species.niche = "Carrion-Eater";
+            }else if(niche <= -1){
+                species.niche = "Hijacker";
+            }else if(niche <= 4){
+                species.niche = "Intimidator";
+            }else{
+                species.niche = "Reducer";
+            }
+        }
+        species.c1 = "Str";
+        roll = d6() - d6() + EnvironmentDM;
+        if(roll <= -4){
+            species.c1val = "1D";
+        }else if(roll <= 1){
+            species.c1val = "2D";
+        }else if(roll === 1){
+            species.c1val = "3D";
+        }else if (roll === 2){
+            species.c1val = "12+2D";
+        }else if (roll === 3){
+            species.c1val = "12+3D";
+        }else if (roll === 4){
+            species.c1val = "12+4D";
+        }else if(roll === 5){
+            species.c1val = "12+5D";
+        }else{
+            species.c1val = "12+6D";
+        }
+        var locMod = 0;
+        if(species.locomotion === "Flyer"){ locMod = -2;}
+        else if(species.locomotion === "Swimmer" || species.locomotion === "Diver"){
+            locMod = +2;
+        }
+        roll = d6() - d6() + locMod;
+        if(roll <= -2){
+            species.c2 = "Agi";
+        }else if(roll <= 1){
+            species.c2 = "Dex";
+        }else{
+            species.c2 = "Gra";
+        }
+        roll = d6() - d6() + EnvironmentDM;
+        if(roll <= -4){
+            species.c2val = "1D";
+        }else if(roll <= 1){
+            species.c2val = "2D";
+        }else{
+            species.c2val = "3D";
+        }
+        roll = d6() - d6() + locMod;
+        if(roll <= -2){
+            species.c3 = "Sta";
+        }else if(roll <= 1){
+            species.c3 = "End";
+        }else{
+            species.c3 = "Vig";
+        }
+        roll = d6() - d6() + EnvironmentDM;
+        if(species.niche === "Pouncer"){ roll -= 2;}
+        else if(species.niche === "Chaser"){ roll += 2;}
+        if(roll <= -4){
+            species.c3val = "1D";
+        }else if(roll <= 1){
+            species.c3val = "2D";
+        }else{
+            species.c3val = "3D";
+        }
+        species.c4 = "Int";
+        roll = d6() - d6();
+        if(roll <= -4){
+            species.c4val = "1D";
+        }else if(roll <= 1){
+            species.c4val = "2D";
+        }else{
+            species.c4val = "3D";
+        }
+        roll = d6() - d6();
+        if(roll <= -2){
+            species.c5 = "Ins";
+        }else if(roll <= 1){
+            species.c5 = "Edu";
+        }else{
+            species.c5 = "Tra";
+        }
+        if(species.c5 === "Ins"){
+            roll = d6() - d6();
+            if(roll <= -3){
+                species.c5val = "1D";
+            }else if(roll <= 3){
+                species.c5val = "2D";
+            }else{
+                species.c5val = "3D";
+            }
+        }else{
+            species.c5val = "2D";
+        }
+        roll = d6() - d6();
+        if(roll <= -3){
+            species.c6 = "Cas";
+        }else if(roll <= 1){
+            species.c6 = "Soc";
+        }else{
+            species.c6 = "Cha";
+        }
+        if(species.c6 !== "Cas"){
+            roll = d6() - d6();
+            if(roll <= -4){
+                species.c6val = "1D";
+            }else{
+                species.c6val = "2D";
+            }
+        }else{
+            // figure out caste here
+            roll = d6();
+            switch(roll){
+                case 1: species.castestructure = "Body"; break;
+                case 2: species.castestructure = "Economic"; break;
+                case 3: species.castestructure = "Family"; break;
+                case 4: species.castestructure = "Military"; break;
+                case 5: species.castestructure = "Social"; break;
+                case 6: species.castestructure = "Skilled"; break;
+            }
+            roll = d6();
+            switch(roll){
+                case 1: species.casteassignment = "assigned at birth"; break;
+                case 2: species.casteassignment = "assigned at adolescence"; break;
+                case 3: species.casteassignment = "assigned by heredity"; break;
+                case 4: species.casteassignment = "assigned by community"; break;
+                case 5: species.casteassignment = "assigned by family choice"; break;
+                case 6: species.casteassignment = "assigned by personal choice"; break;
+            }
+            roll = d6();
+            switch(roll){
+                case 1: 
+                case 2:  
+                case 3: 
+                case 4: species.casteshift = "fixed"; break;
+                case 5: species.casteshift = "shifts at life stage 6"; break;
+                case 6: species.casteshift = "rotates at every life stage"; break;
+            }
+            species.c6val = "2D ("+species.castestructure + " Caste Structure, "+ species.casteassignment+ ", "+ species.casteshift+")";
+        }
+        species.geneticprofile = "S" + species.c2[0] + species.c3[0] + species.c4[0] + species.c5[0] + (species.c6 === "Cas" ? "K" : species.c6[0]);
+        roll = d6() - d6();
+        if(roll <= -4){
+            species.genderstructure = "Solitaire";
+            species.genders = ["Solo"];
+        }else if(roll <= -2){
+            species.genderstructure = "EAB";
+            species.genders = ["Egg Donor","Activator","Bearer"];
+        }else if(roll <= 1){
+            species.genderstructure = "Dual";
+            species.genders = ["Male","Female"];
+        }else if(roll <= 3){
+            species.genderstructure = "FMN";
+            species.genders = ["Male","Female","Neuter"];
+        }else{
+            species.genderstructure = "Group";
+            species.genders = ["One","Two","Three","Four","Five","Six"];
+        }
+        roll = d6() - d6();
+        if(roll <= -5){
+            species.genderassignment = "Assigned by family";
+            species.gendershift = "Progression";
+        }else if(roll <= -4){
+            species.genderassignment = "Assigned at life stage 2";
+            species.gendershift = "Progression";
+        }else if(roll <= -3){
+            species.genderassignment = "Assigned at life stage 2";
+            species.gendershift = "Fixed";
+        }else if(roll <= 2){
+            species.genderassignment = "Assigned at birth";
+            species.gendershift = "Fixed";
+        }else if(roll <= 3){
+            species.genderassignment = "Assigned at life stage 2";
+            species.gendershift = "Fixed";
+        }else if(roll <= 4){
+            species.genderassignment = "Assigned at life stage 2";
+            species.gendershift = "Transformation";
+        }else{
+            species.genderassignment = "Assigned by individual";
+            species.gendershift = "Transformation";
+        }
+        species.lifestages = [];
+        for(var i = 0; i <= 9; i++){
+            roll = d6() - d6();
+            if(i === 0){
+                species.lifestages.push(2);
+            }else if(roll === -5){
+                if(i === 1 || i === 5 || i === 9){
+                    species.lifestages.push(4);
+                }else{
+                    species.lifestages.push(0);
+                }
+            }else{
+                if(roll <= -2){
+                    species.lifestages.push(4);
+                }else if(roll <= 1){
+                    species.lifestages.push(8);
+                }else if(roll <= 3){
+                    species.lifestages.push(12)
+                }else if(roll === 4){
+                    species.lifestages.push(16);
+                }else{
+                    species.lifestages.push(24);
+                }
+            }
+        }
+        var sum = 0;
+        for(var i = 0, len = species.lifestages.length; i < len; i++){
+            sum += species.lifestages[i];
+        }
+        species.lifeexpectancy = sum;
+        roll = d6() - d6();
+        if(roll <= -3){
+            species.vision = "Blind";
+        }else{
+            species.vision = "Vision"; // TODO: add vision band by native star
+        }
+        roll = d6() - d6();
+        if(roll <= -2){
+            species.hearing = "Deaf";
+        }else{
+            species.hearing = "Hearing"; // TODO: add hearing frequency, span, voice, range
+        }
+        roll = d6() - d6();
+        if(roll <= -1){
+            species.smell = "Anosmic";
+        }else{
+            species.smell = "Smell"; // TODO: add sharpness
+        }
+        roll = d6() - d6();
+        species.touch = "Touch";
+
+        roll = d6() - d6();
+        if(roll <= 0){
+            species.aware = "Unaware";
+        }else{
+            species.aware = "Aware";
+        }
+
+        roll = d6() - d6();
+        if(roll <= 1){
+            species.percep = "Oblivious";
+        }else{
+            species.percep = "Percept";
+        }
+        if(species.hearing === "Hearing"){ species.language = "Verbal Language";}
+        else if(species.percep === "Percept"){ species.language = "Perceptual Language";}
+        else if(species.vision === "Blind" && species.aware === "Aware"){
+            species.language = "Awareness Language";
+        }else if(species.vision === "Vision" && species.percep === "Oblivious" && species.hearing === "Deaf"){
+            species.language = "Visual Sign Language";
+        }else if(species.vision === "Blind" && species.percep === "Oblivious" && species.hearing === "Deaf"){
+            species.language = "Tactile Sign Language";
+        }
+        return species;
+    }
+    function renderDetails(species){
+        console.log(species);
+        var elmtName = document.getElementById("name");
+        removeChildElements(elmtName);
+        elmtName.appendChild(document.createTextNode("The " + species.name + " of " + species.homeworld.name));
+        document.querySelectorAll("[data-detail]").forEach(function(elmt){
+            var source = elmt.getAttribute("data-source");
+            var detail = elmt.getAttribute("data-detail");
+            var value = source === "species" ? species[detail] : ( source === "mainworld" ? species.homeworld.mainworld[detail] : species[source][detail]);
+            removeChildElements(elmt);
+            elmt.appendChild(document.createTextNode(value));
+        });
+    }
+    function removeChildElements(element){
+        while(element.childNodes.length > 0){
+            element.removeChild(element.childNodes[element.childNodes.length-1]);
+        }
+    }
+    function addCaps(text) {
+            var capitalizedString = "";
+            var lastCharacter = null, currCharacter = " ";
+            if(typeof text === "undefined"){return text;}
+            for (var i = 0, len = text.length; i < len; i++) {
+                lastCharacter = currCharacter;
+                currCharacter = text[i];
+                if (lastCharacter === " " || lastCharacter === "-") {
+                    capitalizedString += currCharacter.toUpperCase();
+                } else {
+                    capitalizedString += currCharacter;
+                }
+            }
+            return capitalizedString;
+        }
+</script>
+</html>
