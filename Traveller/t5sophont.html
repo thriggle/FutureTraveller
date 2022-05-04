@@ -7,17 +7,19 @@
     <title>Traveller Sophont Creation System</title>
     <script src="js/NameGenerator.js"></script>
     <script src="js/SystemGenerator.js"></script>
+    <script src="js/SophontGenerator.js"></script>
 </head>
 <style>
     h1,h2,h3{ margin:0px; font-weight:normal;}
     body{font-family:Bahnschrift;}
-    table{ box-shadow:1px 1px 3px #555; border-radius:5px; border-collapse:collapse; border:2px solid black; display:inline-block; vertical-align: text-top;}
+    table{ box-shadow:1px 1px 3px #555; border-radius:0.3rem; border-collapse:collapse; overflow:hidden; border:0.1rem solid black; display:inline-block; vertical-align: text-top;}
     tr:first-child{ border-bottom:1px solid black; background-color:#dfdfdf;}
     tr:nth-child(even){ background-color:#f0f0f0;}
-    th, th td{text-align:left; font-weight:bold; vertical-align:text-top;}
-    td + td, th + th{border-left:1px solid black;}
-    td:empty, th:empty{border:0px solid transparent; }
+    th, th td{text-align:left; font-weight:bold; vertical-align:text-top; }
+    td + td, th + th{border-left:0.01rem solid black;}
+    td:empty, th:empty{border:0px solid transparent !important; }
     fieldset{display:inline-block; vertical-align:text-top;}
+    .hidden{display:none;}
 </style>
 <body>
     <h1>Traveller Sophont Creation System</h1>
@@ -28,13 +30,229 @@
     <h2 id="name"></h2>
     
     <fieldset>
-        <legend>Genetics</legend>
-        <div><strong>Life Expectancy:</strong> ~<span data-detail="lifeexpectancy" data-source="species"></span> years</div>
-        <div><strong>Genetic Profile:</strong> <span data-detail="geneticprofile" data-source="species"></span> </div>
+        <legend>Lifespan</legend>
+        <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy" data-source="species"></span> years</div>
+        <table>
+            <tr>
+                <th>#</th>
+                <th>Life Stage</th>
+                <th>Duration</th>
+                <th>Ages</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>Infant</td>
+                <td><span data-detail="lifestages" data-index="0" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="0" data-source="species"></span>-<span data-detail="lifestageupper" data-index="0" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Child</td>
+                <td><span data-detail="lifestages" data-index="1" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="1" data-source="species"></span>-<span data-detail="lifestageupper" data-index="1" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Teen</td>
+                <td><span data-detail="lifestages" data-index="2" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="2" data-source="species"></span>-<span data-detail="lifestageupper" data-index="2" data-source="species"></span></td>
+                <td>Gender/Caste maturity.</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Young Adult</td>
+                <td><span data-detail="lifestages" data-index="3" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="3" data-source="species"></span>-<span data-detail="lifestageupper" data-index="3" data-source="species"></span></td>
+                <td>Career resolution begins.</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Adult</td>
+                <td><span data-detail="lifestages" data-index="4" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="4" data-source="species"></span>-<span data-detail="lifestageupper" data-index="4" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Peak</td>
+                <td><span data-detail="lifestages" data-index="5" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="5" data-source="species"></span>-<span data-detail="lifestageupper" data-index="5" data-source="species"></span></td>
+                <td>Physical aging begins.</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Mid-Life</td>
+                <td><span data-detail="lifestages" data-index="6" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="6" data-source="species"></span>-<span data-detail="lifestageupper" data-index="6" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Senior</td>
+                <td><span data-detail="lifestages" data-index="7" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="7" data-source="species"></span>-<span data-detail="lifestageupper" data-index="7" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>Elder</td>
+                <td><span data-detail="lifestages" data-index="8" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="8" data-source="species"></span>-<span data-detail="lifestageupper" data-index="8" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>Retirement</td>
+                <td><span data-detail="lifestages" data-index="9" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="9" data-source="species"></span>-<span data-detail="lifestageupper" data-index="9" data-source="species"></span></td>
+                <td>Mental aging begins.</td>
+            </tr>
+        </table>
         
-        <div><strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span> (<span data-detail="genders" data-source="species"></span>) - <span data-detail="genderassignment" data-source="species"></span>, <span data-detail="gendershift" data-source="species"></span></div>
-        <div><strong>Caste:</strong> <span data-detail="castestructure" data-source="species">No</span> caste structure <strong>Caste Assignment:</strong> <span data-detail="casteassignment" data-source="species"></span> (<span data-detail="casteshift" data-source="species"></span>)</div>
-
+        
+    </fieldset>
+   
+    <fieldset>
+        <legend>Characteristics, Genders, and Castes</legend><div><strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span> <strong>Assignment:</strong> <span data-detail="genderassignment" data-source="species"></span> (<span data-detail="gendershift" data-source="species"></span>)</div>
+        <div><strong>Genetic Profile:</strong> <span data-detail="geneticprofile" data-source="species"></span> </div>
+        <div><strong>Caste:</strong> <span data-detail="castestructure" data-source="species">No</span> caste structure <strong>Assignment:</strong> <span data-detail="casteassignment" data-source="species"></span> (<span data-detail="casteshift" data-source="species"></span>)</div>
+        <div><strong>Caste-Gender Relation:</strong> <span data-detail="castegenderrelation" data-source="species"></span></div>
+        <table>
+            <tr>
+                <th colspan="2"></th>
+                <th colspan="7">Genders</th>
+                <th colspan="7" data-hideifzero="castes" data-source="species">Castes</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>Baseline</th>
+                <th data-detail="genders" data-index="0" data-source="species"></th>
+                <th data-detail="genders" data-index="1" data-source="species"></th>
+                <th data-detail="genders" data-index="2" data-source="species"></th>
+                <th data-detail="genders" data-index="3" data-source="species"></th>
+                <th data-detail="genders" data-index="4" data-source="species"></th>
+                <th data-detail="genders" data-index="5" data-source="species"></th>
+                <th data-detail="genders" data-index="6" data-source="species"></th>
+                <th data-detail="castes" data-index="0" data-source="species"></th>
+                <th data-detail="castes" data-index="1" data-source="species"></th>
+                <th data-detail="castes" data-index="2" data-source="species"></th>
+                <th data-detail="castes" data-index="3" data-source="species"></th>
+                <th data-detail="castes" data-index="4" data-source="species"></th>
+                <th data-detail="castes" data-index="5" data-source="species"></th>
+                <th data-detail="castes" data-index="6" data-source="species"></th>
+            </tr>
+            <tr>
+                <td><span data-detail="c1" data-source="species"></span></td>
+                <td><span data-detail="c1val" data-source="species"></span></td>
+                <td data-detail="genderc1s" data-index="0" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="1" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="2" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="3" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="4" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="5" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="6" data-source="species"></td>
+                <td data-detail="castec1s" data-index="0" data-source="species"></td>
+                <td data-detail="castec1s" data-index="1" data-source="species"></td>
+                <td data-detail="castec1s" data-index="2" data-source="species"></td>
+                <td data-detail="castec1s" data-index="3" data-source="species"></td>
+                <td data-detail="castec1s" data-index="4" data-source="species"></td>
+                <td data-detail="castec1s" data-index="5" data-source="species"></td>
+                <td data-detail="castec1s" data-index="6" data-source="species"></td>
+            </tr>
+            <tr>
+                <td><span data-detail="c2" data-source="species"></span></td>
+                <td><span data-detail="c2val" data-source="species"></span></td>
+                <td data-detail="genderc2s" data-index="0" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="1" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="2" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="3" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="4" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="5" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="6" data-source="species"></td>
+                <td data-detail="castec2s" data-index="0" data-source="species"></td>
+                <td data-detail="castec2s" data-index="1" data-source="species"></td>
+                <td data-detail="castec2s" data-index="2" data-source="species"></td>
+                <td data-detail="castec2s" data-index="3" data-source="species"></td>
+                <td data-detail="castec2s" data-index="4" data-source="species"></td>
+                <td data-detail="castec2s" data-index="5" data-source="species"></td>
+                <td data-detail="castec2s" data-index="6" data-source="species"></td>
+            </tr>
+            <tr>
+                <td><span data-detail="c3" data-source="species"></span></td>
+                <td><span data-detail="c3val" data-source="species"></span></td>
+                <td data-detail="genderc3s" data-index="0" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="1" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="2" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="3" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="4" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="5" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="6" data-source="species"></td>
+                <td data-detail="castec3s" data-index="0" data-source="species"></td>
+                <td data-detail="castec3s" data-index="1" data-source="species"></td>
+                <td data-detail="castec3s" data-index="2" data-source="species"></td>
+                <td data-detail="castec3s" data-index="3" data-source="species"></td>
+                <td data-detail="castec3s" data-index="4" data-source="species"></td>
+                <td data-detail="castec3s" data-index="5" data-source="species"></td>
+                <td data-detail="castec3s" data-index="6" data-source="species"></td>
+            </tr>
+        <tr>
+            <td><span data-detail="c4" data-source="species"></span></td>
+            <td><span data-detail="c4val" data-source="species"></span></td>
+            <td data-detail="genderc4s" data-index="0" data-source="species"></td>
+            <td data-detail="genderc4s" data-index="1" data-source="species"></td>
+            <td data-detail="genderc4s" data-index="2" data-source="species"></td>
+            <td data-detail="genderc4s" data-index="3" data-source="species"></td>
+            <td data-detail="genderc4s" data-index="4" data-source="species"></td>
+            <td data-detail="genderc4s" data-index="5" data-source="species"></td>
+            <td data-detail="genderc4s" data-index="6" data-source="species"></td>
+            <td data-detail="castec4s" data-index="0" data-source="species"></td>
+            <td data-detail="castec4s" data-index="1" data-source="species"></td>
+            <td data-detail="castec4s" data-index="2" data-source="species"></td>
+            <td data-detail="castec4s" data-index="3" data-source="species"></td>
+            <td data-detail="castec4s" data-index="4" data-source="species"></td>
+            <td data-detail="castec4s" data-index="5" data-source="species"></td>
+            <td data-detail="castec4s" data-index="6" data-source="species"></td>
+        </tr>
+        <tr>
+            <td><span data-detail="c5" data-source="species"></span></td>
+            <td><span data-detail="c5val" data-source="species"></span></td>
+            <td data-detail="genderc5s" data-index="0" data-source="species"></td>
+            <td data-detail="genderc5s" data-index="1" data-source="species"></td>
+            <td data-detail="genderc5s" data-index="2" data-source="species"></td>
+            <td data-detail="genderc5s" data-index="3" data-source="species"></td>
+            <td data-detail="genderc5s" data-index="4" data-source="species"></td>
+            <td data-detail="genderc5s" data-index="5" data-source="species"></td>
+            <td data-detail="genderc5s" data-index="6" data-source="species"></td>
+            <td data-detail="castec5s" data-index="0" data-source="species"></td>
+            <td data-detail="castec5s" data-index="1" data-source="species"></td>
+            <td data-detail="castec5s" data-index="2" data-source="species"></td>
+            <td data-detail="castec5s" data-index="3" data-source="species"></td>
+            <td data-detail="castec5s" data-index="4" data-source="species"></td>
+            <td data-detail="castec5s" data-index="5" data-source="species"></td>
+            <td data-detail="castec5s" data-index="6" data-source="species"></td>
+        </tr>
+        <tr>
+            <td><span data-detail="c6" data-source="species"></span></td>
+            <td><span data-detail="c6val" data-source="species"></span></td>
+            <td data-detail="genderc6s" data-index="0" data-source="species"></td>
+            <td data-detail="genderc6s" data-index="1" data-source="species"></td>
+            <td data-detail="genderc6s" data-index="2" data-source="species"></td>
+            <td data-detail="genderc6s" data-index="3" data-source="species"></td>
+            <td data-detail="genderc6s" data-index="4" data-source="species"></td>
+            <td data-detail="genderc6s" data-index="5" data-source="species"></td>
+            <td data-detail="genderc6s" data-index="6" data-source="species"></td>
+            <td data-detail="castec6s" data-index="0" data-source="species"></td>
+            <td data-detail="castec6s" data-index="1" data-source="species"></td>
+            <td data-detail="castec6s" data-index="2" data-source="species"></td>
+            <td data-detail="castec6s" data-index="3" data-source="species"></td>
+            <td data-detail="castec6s" data-index="4" data-source="species"></td>
+            <td data-detail="castec6s" data-index="5" data-source="species"></td>
+            <td data-detail="castec6s" data-index="6" data-source="species"></td>
+        </tr>
+    </table>
         <table>
             <tr>
                 <th>Gender</th>
@@ -97,214 +315,8 @@
                 <td><span data-detail="caste12" data-source="species"></span></td>
             </tr>
         </table>
-        <table>
-            <tr>
-                <th>#</th>
-                <th>Life Stage</th>
-                <th>Duration</th>
-                <th>Ages</th>
-                <th>Notes</th>
-            </tr>
-            <tr>
-                <td>0</td>
-                <td>Infant</td>
-                <td data-detail="lifestages" data-index="0" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="0" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="0" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>Child</td>
-                <td data-detail="lifestages" data-index="1" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="1" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="1" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Teen</td>
-                <td data-detail="lifestages" data-index="2" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="2" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="2" data-source="species"></span></td>
-                <td>Gender/Caste maturity.</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Young Adult</td>
-                <td data-detail="lifestages" data-index="3" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="3" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="3" data-source="species"></span></td>
-                <td>Career resolution begins.</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>Adult</td>
-                <td data-detail="lifestages" data-index="4" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="4" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="4" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>Peak</td>
-                <td data-detail="lifestages" data-index="5" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="5" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="5" data-source="species"></span></td>
-                <td>Physical aging begins.</td>
-            </tr>
-            <tr>
-                <td>6</td>
-                <td>Mid-Life</td>
-                <td data-detail="lifestages" data-index="6" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="6" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="6" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>7</td>
-                <td>Senior</td>
-                <td data-detail="lifestages" data-index="7" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="7" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="7" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>8</td>
-                <td>Elder</td>
-                <td data-detail="lifestages" data-index="8" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="8" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="8" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>9</td>
-                <td>Retirement</td>
-                <td data-detail="lifestages" data-index="9" data-source="species"></td>
-                <td><span data-detail="lifestagelower" data-index="9" data-source="species"></span>-
-                    <span data-detail="lifestageupper" data-index="9" data-source="species"></span></td>
-                <td>Mental aging begins.</td>
-            </tr>
-        </table>
         
-    </fieldset>
-   
-    <fieldset>
-        <legend>Characteristics</legend>
-        <table>
-            <tr>
-                <th></th>
-                <th><span data-detail="gender2" data-source="species"></span><br/>(<span data-detail="castes" data-index="0" data-source="species"></span>)</th>
-                <th data-detail="genders" data-index="1" data-source="species"></th>
-                <th data-detail="genders" data-index="2" data-source="species"></th>
-                <th data-detail="genders" data-index="3" data-source="species"></th>
-                <th data-detail="genders" data-index="4" data-source="species"></th>
-                <th data-detail="genders" data-index="5" data-source="species"></th>
-                <th data-detail="genders" data-index="6" data-source="species"></th>
-                <th data-detail="castes" data-index="1" data-source="species"></th>
-                <th data-detail="castes" data-index="2" data-source="species"></th>
-                <th data-detail="castes" data-index="3" data-source="species"></th>
-                <th data-detail="castes" data-index="4" data-source="species"></th>
-                <th data-detail="castes" data-index="5" data-source="species"></th>
-                <th data-detail="castes" data-index="6" data-source="species"></th>
-            </tr>
-            <tr>
-                <td><span data-detail="c1" data-source="species"></span></td>
-                <td><span data-detail="c1val" data-source="species"></span></td>
-                <td data-detail="genderc1s" data-index="1" data-source="species"></td>
-                <td data-detail="genderc1s" data-index="2" data-source="species"></td>
-                <td data-detail="genderc1s" data-index="3" data-source="species"></td>
-                <td data-detail="genderc1s" data-index="4" data-source="species"></td>
-                <td data-detail="genderc1s" data-index="5" data-source="species"></td>
-                <td data-detail="genderc1s" data-index="6" data-source="species"></td>
-                <td data-detail="castec1s" data-index="1" data-source="species"></td>
-                <td data-detail="castec1s" data-index="2" data-source="species"></td>
-                <td data-detail="castec1s" data-index="3" data-source="species"></td>
-                <td data-detail="castec1s" data-index="4" data-source="species"></td>
-                <td data-detail="castec1s" data-index="5" data-source="species"></td>
-                <td data-detail="castec1s" data-index="6" data-source="species"></td>
-            </tr>
-            <tr>
-                <td><span data-detail="c2" data-source="species"></span></td>
-                <td><span data-detail="c2val" data-source="species"></span></td>
-                <td data-detail="genderc2s" data-index="1" data-source="species"></td>
-                <td data-detail="genderc2s" data-index="2" data-source="species"></td>
-                <td data-detail="genderc2s" data-index="3" data-source="species"></td>
-                <td data-detail="genderc2s" data-index="4" data-source="species"></td>
-                <td data-detail="genderc2s" data-index="5" data-source="species"></td>
-                <td data-detail="genderc2s" data-index="6" data-source="species"></td>
-                <td data-detail="castec2s" data-index="1" data-source="species"></td>
-                <td data-detail="castec2s" data-index="2" data-source="species"></td>
-                <td data-detail="castec2s" data-index="3" data-source="species"></td>
-                <td data-detail="castec2s" data-index="4" data-source="species"></td>
-                <td data-detail="castec2s" data-index="5" data-source="species"></td>
-                <td data-detail="castec2s" data-index="6" data-source="species"></td>
-            </tr>
-            <tr>
-                <td><span data-detail="c3" data-source="species"></span></td>
-                <td><span data-detail="c3val" data-source="species"></span></td>
-                <td data-detail="genderc3s" data-index="1" data-source="species"></td>
-                <td data-detail="genderc3s" data-index="2" data-source="species"></td>
-                <td data-detail="genderc3s" data-index="3" data-source="species"></td>
-                <td data-detail="genderc3s" data-index="4" data-source="species"></td>
-                <td data-detail="genderc3s" data-index="5" data-source="species"></td>
-                <td data-detail="genderc3s" data-index="6" data-source="species"></td>
-                <td data-detail="castec3s" data-index="1" data-source="species"></td>
-                <td data-detail="castec3s" data-index="2" data-source="species"></td>
-                <td data-detail="castec3s" data-index="3" data-source="species"></td>
-                <td data-detail="castec3s" data-index="4" data-source="species"></td>
-                <td data-detail="castec3s" data-index="5" data-source="species"></td>
-                <td data-detail="castec3s" data-index="6" data-source="species"></td>
-            </tr>
-        <tr>
-            <td><span data-detail="c4" data-source="species"></span></td>
-            <td><span data-detail="c4val" data-source="species"></span></td>
-            <td data-detail="genderc4s" data-index="1" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="2" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="3" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="4" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="5" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="6" data-source="species"></td>
-            <td data-detail="castec4s" data-index="1" data-source="species"></td>
-            <td data-detail="castec4s" data-index="2" data-source="species"></td>
-            <td data-detail="castec4s" data-index="3" data-source="species"></td>
-            <td data-detail="castec4s" data-index="4" data-source="species"></td>
-            <td data-detail="castec4s" data-index="5" data-source="species"></td>
-            <td data-detail="castec4s" data-index="6" data-source="species"></td>
-        </tr>
-        <tr>
-            <td><span data-detail="c5" data-source="species"></span></td>
-            <td><span data-detail="c5val" data-source="species"></span></td>
-            <td data-detail="genderc5s" data-index="1" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="2" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="3" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="4" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="5" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="6" data-source="species"></td>
-            <td data-detail="castec5s" data-index="1" data-source="species"></td>
-            <td data-detail="castec5s" data-index="2" data-source="species"></td>
-            <td data-detail="castec5s" data-index="3" data-source="species"></td>
-            <td data-detail="castec5s" data-index="4" data-source="species"></td>
-            <td data-detail="castec5s" data-index="5" data-source="species"></td>
-            <td data-detail="castec5s" data-index="6" data-source="species"></td>
-        </tr>
-        <tr>
-            <td><span data-detail="c6" data-source="species"></span></td>
-            <td><span data-detail="c6val" data-source="species"></span></td>
-            <td data-detail="genderc6s" data-index="1" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="2" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="3" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="4" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="5" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="6" data-source="species"></td>
-            <td data-detail="castec6s" data-index="1" data-source="species"></td>
-            <td data-detail="castec6s" data-index="2" data-source="species"></td>
-            <td data-detail="castec6s" data-index="3" data-source="species"></td>
-            <td data-detail="castec6s" data-index="4" data-source="species"></td>
-            <td data-detail="castec6s" data-index="5" data-source="species"></td>
-            <td data-detail="castec6s" data-index="6" data-source="species"></td>
-        </tr>
-    </table>
+        
 </fieldset>
 <fieldset>
     <legend>Habitat</legend>
@@ -326,7 +338,7 @@
             </tr>
             <tr>
                 <td>Vision</td>
-                <td>the electromagnetic spectrum</td>
+                <td>the electromagnetic spectrum.<br/>ANIFXZ=Infrared CRGBP=Visible VHDUS=Ultraviolet</td>
                 <td><span data-detail="vision" data-source="species"></span></td>
             </tr>
             <tr>
@@ -359,6 +371,10 @@
             <legend>Language:</legend>
             <div data-detail="language" data-source="species"></div>
         </fieldset>
+        <fieldset>
+            <legend>Scent</legend>
+            <div data-detail="scent" data-source="species"></div>
+        </fieldset>
     </fieldset>
     
 </body>
@@ -379,7 +395,7 @@
                 MathRandom = pseudoRandomNumberGenerator(this.value);
                 generator.setRandom(MathRandom);
                 document.getElementById("chkUseRandom").checked = false;
-                renderDetails(generateRandomAlien(initializeRandomSpecies(generator),generator));
+                renderDetails(generateRandomAlien(initializeRandomSpecies(generator),MathRandom));
             }                   
         });
         window.addEventListener("hashchange", function(){
@@ -393,16 +409,16 @@
                     document.getElementById("txtSeed").value = newValue;
                     var wasChecked = document.getElementById("chkUseRandom").checked;
                     document.getElementById("chkUseRandom").checked = false;
-                    renderDetails(generateRandomAlien(initializeRandomSpecies(generator),generator));
+                    renderDetails(generateRandomAlien(initializeRandomSpecies(generator),MathRandom));
                     document.getElementById("chkUseRandom").checked = wasChecked;
                 }
             }
         });
         var species = initializeRandomSpecies(generator);
-        renderDetails(generateRandomAlien(species,generator));
+        renderDetails(generateRandomAlien(species,MathRandom));
        
         document.getElementById("btnGenerate").addEventListener("click", function(){
-            renderDetails(generateRandomAlien(initializeRandomSpecies(generator),generator));
+            renderDetails(generateRandomAlien(initializeRandomSpecies(generator),MathRandom));
         });
     }
     function initializeRandomSpecies(generator){
@@ -429,1086 +445,10 @@
         );
         while(species.homeworld.mainworld.atmo < 2 || species.homeworld.mainworld.pop < 7){
             species.homeworld  = generateSystemDetails(species.homeworld.name, 8, 16);
-            console.log(species.homeworld.stars.primary);
+       
         }
         species.homestar = species.homeworld.stars.primary.type + (typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal)  + species.homeworld.stars.primary.size;
         return species;
-    }
-    function generateRandomAlien(species,generator){
-        // species.name, species.homeworld.mainworld
-        var tc = species.homeworld.mainworld.tradecodes;
-        var EnvironmentDM = d6() - d6();
-        species.nativeTerrain = "Clear";
-        var homeworld = species.homeworld.mainworld;
-        if(homeworld.atmo >= 8){ EnvironmentDM -= 2;}
-        if(homeworld.size <= 5){ EnvironmentDM -= 1;}
-        if(homeworld.hydro >= 6){ EnvironmentDM += 1;}
-        if(homeworld.hydro >= 9){ EnvironmentDM += 1;}
-        if(tc.indexOf("Tz") >= 0 || tc.indexOf("Lk") >= 0){
-            if(EnvironmentDM < 0){ species.nativeTerrain = "Baked Lands"; EnvironmentDM = -1; }
-            else if(EnvironmentDM > 0){ species.nativeTerrain = "Frozen Lands"; EnvironmentDM = 1; }
-            else{ species.nativeTerrain = "Twilight Zone"; }
-        }else{
-            if(EnvironmentDM <= -5){
-                EnvironmentDM = -5;
-                species.nativeTerrain = "Mountain";
-            }else if(EnvironmentDM === -4){
-                species.nativeTerrain = "Desert";
-            }else if(EnvironmentDM === -3){
-                species.nativeTerrain = "Exotic";
-            }else if(EnvironmentDM === -2){
-                species.nativeTerrain = "Rough Wood";
-            }else if(EnvironmentDM === -1){
-                species.nativeTerrain = "Rough";
-            }else if(EnvironmentDM === 0){
-                species.nativeTerrain = "Clear";
-            }else if(EnvironmentDM === 1){
-                species.nativeTerrain = "Forest";
-            }else if(EnvironmentDM === 2){
-                species.nativeTerrain = "Wetlands";
-            }else if(EnvironmentDM === 3){
-                species.nativeTerrain = "Wetland Woods";
-            }else if(EnvironmentDM === 4){
-                species.nativeTerrain = "Ocean";
-            }else if(EnvironmentDM >= 5){
-                species.nativeTerrain = "Ocean Depths";
-                EnvironmentDM = 5;
-            }
-        }
-        var roll = d6();
-        niche = d6() - d6() + EnvironmentDM;
-        switch(EnvironmentDM){
-            case -5:
-                switch(roll){
-                    case 1:
-                        species.locomotion = "Walker";
-                        break;
-                    case 2:
-                        species.locomotion = "Walker";
-                        break;
-                    case 3:
-                        species.locomotion = "Walker";
-                        break;
-                    case 4:
-                        species.locomotion = "Walker";
-                        break;
-                    case 5:
-                        species.locomotion = "Walker";
-                        break;
-                    case 6:
-                        species.locomotion = "Flyer";
-                        break;
-                }
-                break;
-            case -4:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Walker";
-                        break;
-                    case 2:
-                        species.locomotion = "Walker";
-                        break;
-                    case 3:
-                        species.locomotion = "Walker";
-                        break;
-                    case 4:
-                        species.locomotion = "Walker";
-                        break;
-                    case 5:
-                        species.locomotion = "Walker";
-                        break;
-                    case 6:
-                        species.locomotion = "Flyer";
-                        break;
-                }
-                break;
-            case -3:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Amphib";
-                        break;
-                    case 2:
-                        species.locomotion = "Walker";
-                        break;
-                    case 3:
-                        species.locomotion = "Walker";
-                        break;
-                    case 4:
-                        species.locomotion = "Walker";
-                        break;
-                    case 5:
-                        species.locomotion = "Flyphib";
-                        break;
-                    case 6:
-                        species.locomotion = "Flyer";
-                        break;
-                }
-                break;
-            case -2:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Amphib";
-                        break;
-                    case 2:
-                        species.locomotion = "Walker";
-                        break;
-                    case 3:
-                        species.locomotion = "Walker";
-                        break;
-                    case 4:
-                        species.locomotion = "Walker";
-                        break;
-                    case 5:
-                        species.locomotion = "Walker";
-                        break;
-                    case 6:
-                        species.locomotion = "Flyer";
-                        break;
-                }
-                break;
-            case -1:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Amphib";
-                        break;
-                    case 2:
-                        species.locomotion = "Walker";
-                        break;
-                    case 3:
-                        species.locomotion = "Walker";
-                        break;
-                    case 4:
-                        species.locomotion = "Walker";
-                        break;
-                    case 5:
-                        species.locomotion = "Walker";
-                        break;
-                    case 6:
-                        species.locomotion = "Flyer";
-                        break;
-                }
-                break;
-            case 0:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Walker";
-                        break;
-                    case 2:
-                        species.locomotion = "Walker";
-                        break;
-                    case 3:
-                        species.locomotion = "Walker";
-                        break;
-                    case 4:
-                        species.locomotion = "Walker";
-                        break;
-                    case 5:
-                        species.locomotion = "Walker";
-                        break;
-                    case 6:
-                        species.locomotion = "Walker";
-                        break;
-                }
-                break;
-            case 1:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Walker";
-                        break;
-                    case 2:
-                        species.locomotion = "Walker";
-                        break;
-                    case 3:
-                        species.locomotion = "Walker";
-                        break;
-                    case 4:
-                        species.locomotion = "Walker";
-                        break;
-                    case 5:
-                        species.locomotion = "Walker";
-                        break;
-                    case 6:
-                        species.locomotion = "Walker";
-                        break;
-                }
-                break;
-            case 2:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Amphib";
-                        break;
-                    case 2:
-                        species.locomotion = "Aquatic";
-                        break;
-                    case 3:
-                        species.locomotion = "Walker";
-                        break;
-                    case 4:
-                        species.locomotion = "Walker";
-                        break;
-                    case 5:
-                        species.locomotion = "Triphib";
-                        break;
-                    case 6:
-                        species.locomotion = "Flyer";
-                        break;
-                }
-                break;
-            case 3:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Amphib";
-                        break;
-                    case 2:
-                        species.locomotion = "Walker";
-                        break;
-                    case 3:
-                        species.locomotion = "Walker";
-                        break;
-                    case 4:
-                        species.locomotion = "Walker";
-                        break;
-                    case 5:
-                        species.locomotion = "Triphib";
-                        break;
-                    case 6:
-                        species.locomotion = "Flyphib";
-                        break;
-                }
-                break;
-            case 4:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Flyphib";
-                        break;
-                    case 2:
-                        species.locomotion = "Swim";
-                        break;
-                    case 3:
-                        species.locomotion = "Swim";
-                        break;
-                    case 4:
-                        species.locomotion = "Swim";
-                        break;
-                    case 5:
-                        species.locomotion = "Aquatic";
-                        break;
-                    case 6:
-                        species.locomotion = "Diver";
-                        break;
-                }
-                break;
-            case 5:
-            switch(roll){
-                    case 1:
-                        species.locomotion = "Aquatic";
-                        break;
-                    case 2:
-                        species.locomotion = "Diver";
-                        break;
-                    case 3:
-                        species.locomotion = "Diver";
-                        break;
-                    case 4:
-                        species.locomotion = "Diver";
-                        break;
-                    case 5:
-                        species.locomotion = "Diver";
-                        break;
-                    case 6:
-                        species.locomotion = "Diver";
-                        break;
-                }
-                break;
-        }
-        switch(species.locomotion){
-            case "Walker":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
-                break;
-            case "Amphib":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " + " + (species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water");
-                break;
-            case "Flyer":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
-                break;
-            case "Flyphib":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " + " + (species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water");
-                break;
-            case "Swim":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
-                break;
-            case "Aquatic":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
-                break;
-            case "Diver":
-                species.breathes = species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water";
-                break;
-            case "Triphib":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
-                break;
-        }
-        roll = d6() - d6();
-        if(roll <= -5){
-            species.class = "Producer";
-            if(niche <= -1){
-                species.niche = "Collector";
-            }else{
-                species.niche = "Basker";
-            }
-        }else if(roll <= -3){
-            species.class = "Herbivore"
-            if(niche <= -4){
-                species.niche = "Grazer";
-            }else if(niche <= 0){
-                species.niche = "Intermittent";
-            }else if (niche <= 5){
-                species.niche = "Grazer";
-            }else{
-                species.niche = "Filter";
-            }
-        }else if(roll <= 2){
-            species.class = "Omnivore";
-            if(niche <= -2){
-                species.niche = "Hunter";
-            }else if(niche <= -1){
-                species.niche = "Gatherer";
-            }else if(niche === 0){
-                species.niche = "Hunter/Gatherer";
-            }else if(niche <= 5){
-                species.niche = "Gatherer";
-            }else{
-                species.niche = "Eater";
-            }
-        }else if(roll <= 4){
-            species.class = "Carnivore";
-            if(niche <= -1){
-                species.niche = "Pouncer";
-            }else if(niche <= 3){
-                species.niche = "Chaser";
-            }else if(niche <= 4){
-                species.niche = "Trapper";
-            }else if(niche <= 5){
-                species.niche = "Siren";
-            }else{
-                species.niche = "Killer";
-            }
-        }else{
-            species.class = "Scavenger";
-            if(niche <= -4){
-                species.niche = "Carrion-Eater";
-            }else if(niche <= -1){
-                species.niche = "Hijacker";
-            }else if(niche <= 4){
-                species.niche = "Intimidator";
-            }else{
-                species.niche = "Reducer";
-            }
-        }
-        roll = d6() - d6();
-        if(roll <= -4){
-            species.genderstructure = "Solitaire";
-            species.genders = ["Solo"];
-            species.gender2 = species.genders[0];
-            species.gender3 = species.genders[0];
-            species.gender4 = species.genders[0];
-            species.gender5 = species.genders[0];
-            species.gender6 = species.genders[0];
-            species.gender7 = species.genders[0];
-            species.gender8 = species.genders[0];
-            species.gender9 = species.genders[0];
-            species.gender10 = species.genders[0];
-            species.gender11 = species.genders[0];
-            species.gender12 = species.genders[0];
-        }else if(roll <= -2){
-            species.genderstructure = "EAB";
-            species.genders = ["Egg Donor","Activator","Bearer"];
-            species.gender2 = species.genders[0];
-            species.gender3 = species.genders[1];
-            species.gender4 = pickRandom(species.genders);
-            species.gender5 = pickRandom(species.genders);
-            species.gender6 = pickRandom(species.genders);
-            species.gender7 = pickRandom(species.genders);
-            species.gender8 = pickRandom(species.genders);
-            species.gender9 = pickRandom(species.genders);
-            species.gender10 = pickRandom(species.genders);
-            species.gender11 = pickRandom(species.genders);
-            species.gender12 = species.genders[2];
-        }else if(roll <= 1){
-            species.genderstructure = "Dual";
-            species.genders = ["Female","Male"];
-            species.gender2 = species.genders[0];
-            species.gender3 = species.genders[1];
-            species.gender4 = pickRandom(species.genders);
-            species.gender5 = pickRandom(species.genders);
-            species.gender6 = pickRandom(species.genders);
-            species.gender7 = pickRandom(species.genders);
-            species.gender8 = pickRandom(species.genders);
-            species.gender9 = pickRandom(species.genders);
-            species.gender10 = pickRandom(species.genders);
-            species.gender11 = pickRandom(species.genders);
-            species.gender12 = pickRandom(species.genders);
-        }else if(roll <= 3){
-            species.genderstructure = "FMN";
-            species.genders = ["Female","Male","Neuter"];
-            species.gender2 = species.genders[0];
-            species.gender3 = species.genders[1];
-            species.gender4 = pickRandom(species.genders);
-            species.gender5 = pickRandom(species.genders);
-            species.gender6 = pickRandom(species.genders);
-            species.gender7 = pickRandom(species.genders);
-            species.gender8 = pickRandom(species.genders);
-            species.gender9 = pickRandom(species.genders);
-            species.gender10 = pickRandom(species.genders);
-            species.gender11 = pickRandom(species.genders);
-            species.gender12 = species.genders[2];
-        }else{
-            species.genderstructure = "Group";
-            species.genders = [];
-            for(var i = 0; i < 6; i++){
-                //var gender = addCaps(generator.getRandomName("word.1or2sylword"), species.genders);
-                var gender = "Gender " + i;
-                species.genders.push(gender);
-            }
-            species.gender2 = species.genders[0];
-            species.gender3 = pickRandom(species.genders);
-            species.gender4 = pickRandom(species.genders);
-            species.gender5 = pickRandom(species.genders);
-            species.gender6 = pickRandom(species.genders);
-            species.gender7 = species.genders[1];
-            species.gender8 = pickRandom(species.genders);
-            species.gender9 = pickRandom(species.genders);
-            species.gender10 = pickRandom(species.genders);
-            species.gender11 = pickRandom(species.genders);
-            species.gender12 = species.genders[2];
-            var genderHash = {}
-            genderHash[species.gender2] = true;
-            species.genders = [species.gender2];
-            for(var i = 3; i<= 12; i++){
-                var g = species["gender"+i];
-                if(!genderHash[g]){
-                    genderHash[g] = true;
-                    species.genders.push(g);
-                }
-            }
-        }
-        species.genderc1s = [""];
-        species.genderc2s = [""];
-        species.genderc3s = [""];
-        species.genderc4s = [""];
-        species.genderc5s = [""];
-        species.genderc6s = [""];
-        for(var i = 1, len = species.genders.length; i < len; i++){
-            species.genderc6s.push("--");
-            roll = d6() - d6();
-            switch(roll){
-                case -5: species.genderc1s.push("-5"); break;
-                case -4: species.genderc1s.push("-4"); break;
-                case -3: species.genderc1s.push("-3"); break;
-                case -2: species.genderc1s.push("-2"); break;
-                case -1:
-                case 0: species.genderc1s.push("--"); break;
-                case 1: species.genderc1s.push("+1"); break;
-                case 2: species.genderc1s.push("+2"); break;
-                case 3: species.genderc1s.push("+1D"); break;
-                case 4: species.genderc1s.push("+2D"); break;
-                case 5: species.genderc1s.push("+3D"); break;
-            }
-            roll = d6() - d6();
-            switch(roll){
-                case -5: species.genderc2s.push("-5"); break;
-                case -4: species.genderc2s.push("-4"); break;
-                case -3: species.genderc2s.push("-3"); break;
-                case -2: species.genderc2s.push("-2"); break;
-                case -1:
-                case 0: 
-                case 1: species.genderc2s.push("--"); break;
-                case 2: species.genderc2s.push("+2"); break;
-                case 3: species.genderc2s.push("+3"); break;
-                case 4: species.genderc2s.push("+4"); break;
-                case 5: species.genderc2s.push("+5"); break;
-            }
-            roll = d6() - d6();
-            switch(roll){
-                case -5: species.genderc3s.push("-5"); break;
-                case -4: species.genderc3s.push("-4"); break;
-                case -3: species.genderc3s.push("-3"); break;
-                case -2: species.genderc3s.push("-2"); break;
-                case -1:
-                case 0: 
-                case 1: species.genderc3s.push("--"); break;
-                case 2: species.genderc3s.push("+2"); break;
-                case 3: species.genderc3s.push("+3"); break;
-                case 4: species.genderc3s.push("+4"); break;
-                case 5: species.genderc3s.push("+5"); break;
-            }
-            roll = d6() - d6();
-            switch(roll){
-                case -5: species.genderc4s.push("-5"); break;
-                case -4: species.genderc4s.push("-4"); break;
-                case -3: species.genderc4s.push("-3"); break;
-                case -2: species.genderc4s.push("-2"); break;
-                case -1:
-                case 0: 
-                case 1: species.genderc4s.push("--"); break;
-                case 2: species.genderc4s.push("+2"); break;
-                case 3: species.genderc4s.push("+3"); break;
-                case 4: species.genderc4s.push("+4"); break;
-                case 5: species.genderc4s.push("+5"); break;
-            }
-            roll = d6() - d6();
-            switch(roll){
-                case -5: species.genderc5s.push("-5"); break;
-                case -4: species.genderc5s.push("-4"); break;
-                case -3: species.genderc5s.push("-3"); break;
-                case -2: species.genderc5s.push("-2"); break;
-                case -1:
-                case 0: 
-                case 1: species.genderc5s.push("--"); break;
-                case 2: species.genderc5s.push("+2"); break;
-                case 3: species.genderc5s.push("+3"); break;
-                case 4: species.genderc5s.push("+4"); break;
-                case 5: species.genderc5s.push("+5"); break;
-            }
-        }
-        roll = d6() - d6();
-        if(roll <= -5){
-            species.genderassignment = "Assigned by family";
-            species.gendershift = "Progression";
-        }else if(roll <= -4){
-            species.genderassignment = "Assigned at life stage 2";
-            species.gendershift = "Progression";
-        }else if(roll <= -3){
-            species.genderassignment = "Assigned at life stage 2";
-            species.gendershift = "Fixed";
-        }else if(roll <= 2){
-            species.genderassignment = "Assigned at birth";
-            species.gendershift = "Fixed";
-        }else if(roll <= 3){
-            species.genderassignment = "Assigned at life stage 2";
-            species.gendershift = "Fixed";
-        }else if(roll <= 4){
-            species.genderassignment = "Assigned at life stage 2";
-            species.gendershift = "Transformation";
-        }else{
-            species.genderassignment = "Assigned by individual";
-            species.gendershift = "Transformation";
-        }
-
-        species.c1 = "Str";
-        roll = d6() - d6() + EnvironmentDM;
-        if(roll <= -4){
-            species.c1val = "1D";
-        }else if(roll <= 1){
-            species.c1val = "2D";
-        }else if(roll === 1){
-            species.c1val = "3D";
-        }else if (roll === 2){
-            species.c1val = "12+2D";
-        }else if (roll === 3){
-            species.c1val = "12+3D";
-        }else if (roll === 4){
-            species.c1val = "12+4D";
-        }else if(roll === 5){
-            species.c1val = "12+5D";
-        }else{
-            species.c1val = "12+6D";
-        }
-        var locMod = 0;
-        if(species.locomotion === "Flyer"){ locMod = -2;}
-        else if(species.locomotion === "Swimmer" || species.locomotion === "Diver"){
-            locMod = +2;
-        }
-        roll = d6() - d6() + locMod;
-        if(roll <= -2){
-            species.c2 = "Agi";
-        }else if(roll <= 1){
-            species.c2 = "Dex";
-        }else{
-            species.c2 = "Gra";
-        }
-        roll = d6() - d6() + EnvironmentDM;
-        if(roll <= -4){
-            species.c2val = "1D";
-        }else if(roll <= 1){
-            species.c2val = "2D";
-        }else{
-            species.c2val = "3D";
-        }
-        roll = d6() - d6() + locMod;
-        if(roll <= -2){
-            species.c3 = "Sta";
-        }else if(roll <= 1){
-            species.c3 = "End";
-        }else{
-            species.c3 = "Vig";
-        }
-        roll = d6() - d6() + EnvironmentDM;
-        if(species.niche === "Pouncer"){ roll -= 2;}
-        else if(species.niche === "Chaser"){ roll += 2;}
-        if(roll <= -4){
-            species.c3val = "1D";
-        }else if(roll <= 1){
-            species.c3val = "2D";
-        }else{
-            species.c3val = "3D";
-        }
-        species.c4 = "Int";
-        roll = d6() - d6();
-        if(roll <= -4){
-            species.c4val = "1D";
-        }else if(roll <= 1){
-            species.c4val = "2D";
-        }else{
-            species.c4val = "3D";
-        }
-        roll = d6() - d6();
-        if(roll <= -2){
-            species.c5 = "Ins";
-        }else if(roll <= 1){
-            species.c5 = "Edu";
-        }else{
-            species.c5 = "Tra";
-        }
-        if(species.c5 === "Ins"){
-            roll = d6() - d6();
-            if(roll <= -3){
-                species.c5val = "1D";
-            }else if(roll <= 3){
-                species.c5val = "2D";
-            }else{
-                species.c5val = "3D";
-            }
-        }else{
-            species.c5val = "2D";
-        }
-        roll = d6() - d6();
-        if(roll <= -3){
-            species.c6 = "Cas";
-        }else if(roll <= 1){
-            species.c6 = "Soc";
-        }else{
-            species.c6 = "Cha";
-        }
-        species.caste2 = "";
-        species.caste3 = "";
-        species.caste4 = "";
-        species.caste5 = "";
-        species.caste6 = "";
-        species.caste7 = "";
-        species.caste8 = "";
-        species.caste9 = "";
-        species.caste10 = "";
-        species.caste11 = "";
-        species.caste12 = "";
-        species.castes = ["baseline"];
-            species.castec1s = ["--"];
-            species.castec2s = ["--"];
-            species.castec3s = ["--"];
-            species.castec4s = ["--"];
-            species.castec5s = ["--"];
-            species.castec6s = ["--"];
-        if(species.c6 !== "Cas"){
-            roll = d6() - d6();
-            if(roll <= -4){
-                species.c6val = "1D";
-            }else{
-                species.c6val = "2D";
-            }
-            species.castestructure = "No";
-            species.casteassignment = "";
-            species.casteshift = "N/A";
-            
-        }else{
-            // figure out caste here
-            species.castes = [];
-            species.castec1s = [];
-            species.castec2s = [];
-            species.castec3s = [];
-            species.castec4s = [];
-            species.castec5s = [];
-            species.castec6s = [];
-            var casteHash = {};
-            roll = d6();
-            switch(roll){
-                case 1: species.castestructure = "Body";  
-                    species.castes.push("Muscle");
-                    casteHash["Muscle"] = true;
-                    for(var i = 2; i<= 12; i++){
-                        if(i === 7){
-                            species.caste7 = "Muscle";
-                        }else if(i === 12){
-                            species.caste12 = "Brain";
-                            species.castes.push("Brain");
-                            casteHash["Brain"] = true;
-                        }else{
-                            var cRoll = d6() - d6();
-                            var caste = "";
-                            switch(cRoll){
-                                case -5: caste = "Healer"; break;
-                                case -4: caste = species["gender"+i]; break;
-                                case -3: caste = "Antibody"; break;
-                                case -2: caste = "Sensor"; break;
-                                case -1: caste = "Memory"; break;
-                                case 0: caste = "Muscle"; break;
-                                case 1: caste = "Muscle"; break;
-                                case 2: caste = "Muscle"; break;
-                                case 3: caste = "Voice"; break;
-                                case 4: caste = getSpecialCaste(); break;
-                                case 5: caste = "Claw"; break;
-                            }
-                            if(!casteHash[caste]){
-                                casteHash[caste] = true;
-                                species.castes.push(caste);
-                            }
-                            species["caste"+i] = caste;
-                        }
-                    }
-                break;
-                case 2: species.castestructure = "Economic"; 
-                    species.castes.push("Laborer");
-                    casteHash["Laborer"] = true;
-                    for(var i = 2; i<= 12; i++){
-                        if(i === 7){
-                            species.caste7 = "Laborer"; 
-                        }else if(i === 12){
-                            species.caste12 = "Director";
-                            species.castes.push("Director");
-                            casteHash["Director"] = true;
-                        }else{
-                            var cRoll = d6() - d6();
-                            var caste = "";
-                            switch(cRoll){
-                                case -5: caste = "Innovator"; break;
-                                case -4: caste = species["gender"+i]; break;
-                                case -3: caste = "Guard"; break;
-                                case -2: caste = "Researcher"; break;
-                                case -1: caste = "Artisan"; break;
-                                case 0: caste = "Laborer"; break;
-                                case 1: caste = "Craftsman"; break;
-                                case 2: caste = "Clerk"; break;
-                                case 3: caste = "Manager"; break;
-                                case 4: caste = getSpecialCaste(); break;
-                                case 5: caste = "Entrepreneur"; break;
-                            }
-                            if(!casteHash[caste]){
-                                casteHash[caste] = true;
-                                species.castes.push(caste);
-                            }
-                            species["caste"+i] = caste;
-                        }
-                    }   
-                    break;
-                case 3: species.castestructure = "Family"; 
-                    species.castes.push("Breadwinner");
-                    casteHash["Breadwinner"] = true;
-                    for(var i = 2; i<= 12; i++){
-                        if(i === 7){
-                            species.caste7 = "Breadwinner"; 
-                        }else if(i === 12){
-                            species.caste12 = "Archon";
-                            species.castes.push("Archon");
-                            casteHash["Archon"] = true;
-                        }else{
-                            var cRoll = d6() - d6();
-                            var caste = "";
-                            switch(cRoll){
-                                case -5: caste = "Healer"; break;
-                                case -4: caste = species["gender"+i]; break;
-                                case -3: caste = "Defender"; break;
-                                case -2: caste = "Caregiver"; break;
-                                case -1: caste = "Caregiver"; break;
-                                case 0: caste = "Breadwinner"; break;
-                                case 1: caste = "Breadwinner"; break;
-                                case 2: caste = "Breadwinner"; break;
-                                case 3: caste = "Uncle"; break;
-                                case 4: caste = getSpecialCaste(); break;
-                                case 5: caste = "Leader"; break;
-                            }
-                            if(!casteHash[caste]){
-                                casteHash[caste] = true;
-                                species.castes.push(caste);
-                            }
-                            species["caste"+i] = caste;
-                        }
-                    }
-                    break;
-                case 4: species.castestructure = "Military"; 
-                    species.castes.push("Soldier");
-                    casteHash["Soldier"] = true;
-                    for(var i = 2; i<= 12; i++){
-                        if(i === 7){
-                            species.caste7 = "Soldier"; 
-                        }else if(i === 12){
-                            species.caste12 = "General";
-                            species.castes.push("General");
-                        casteHash["General"] = true;
-                        }else{
-                            var cRoll = d6() - d6();
-                            var caste = "";
-                            switch(cRoll){
-                                case -5: caste = "Medic"; break;
-                                case -4: caste = species["gender"+i]; break;
-                                case -3: caste = "Aide"; break;
-                                case -2: caste = "Scout"; break;
-                                case -1: caste = "Specialist"; break;
-                                case 0: caste = "Soldier"; break;
-                                case 1: caste = "Technician"; break;
-                                case 2: caste = "Warrior"; break;
-                                case 3: caste = "Leader"; break;
-                                case 4: caste = getSpecialCaste(); break;
-                                case 5: caste = "Staff"; break;
-                            }
-                            if(!casteHash[caste]){
-                                casteHash[caste] = true;
-                                species.castes.push(caste);
-                            }
-                            species["caste"+i] = caste;
-                        }
-                    }
-                    break;
-                case 5: species.castestructure = "Social"; 
-                    species.castes.push("Unit");
-                    casteHash["Unit"] = true;
-                    for(var i = 2; i<= 12; i++){
-                        if(i === 7){
-                            species.caste7 = "Unit"; 
-                        }else if(i === 12){
-                            species.caste12 = "Ruler";
-                            species.castes.push("Ruler");
-                            casteHash["Ruler"] = true;
-                        }else{
-                            var cRoll = d6() - d6();
-                            var caste = "";
-                            switch(cRoll){
-                                case -5: caste = "Artist"; break;
-                                case -4: caste = species["gender"+i]; break;
-                                case -3: caste = "Enforcer"; break;
-                                case -2: caste = "Drone"; break;
-                                case -1: caste = "Artist"; break;
-                                case 0: caste = "Unit"; break;
-                                case 1: caste = "Unit"; break;
-                                case 2: caste = "Unit"; break;
-                                case 3: caste = "Patron"; break;
-                                case 4: caste = getSpecialCaste(); break;
-                                case 5: caste = "Entertainer"; break;
-                            }
-                            if(!casteHash[caste]){
-                                casteHash[caste] = true;
-                                species.castes.push(caste);
-                            }
-                            species["caste"+i] = caste;
-                        }
-                    }
-                     break;
-                case 6: species.castestructure = "Skilled";  species.castes = ["baseline"]; break;
-            }
-            if(!(species.castestructure === "Skilled")){
-                species.castec1s = [];
-                species.castec2s = [];
-                species.castec3s = [];
-                species.castec4s = [];
-                species.castec5s = [];
-                species.castec6s = [];
-                for(var i = 0, len = species.castes.length; i < len; i++){
-                    var genderIndex = species.genders.indexOf(species.castes[i]);
-                    if(genderIndex >= 0){
-                        species.castec1s.push(species.genderc1s[genderIndex]);
-                        species.castec2s.push(species.genderc2s[genderIndex]);
-                        species.castec3s.push(species.genderc3s[genderIndex]);
-                        species.castec4s.push(species.genderc4s[genderIndex]);
-                        species.castec5s.push(species.genderc5s[genderIndex]);
-                        species.castec6s.push(species.genderc6s[genderIndex]);
-                    }else{
-                        species.castec6s.push("--");
-                        roll = d6() - d6();
-                        switch(roll){
-                            case -5: species.castec1s.push("-5"); break;
-                            case -4: species.castec1s.push("-4"); break;
-                            case -3: species.castec1s.push("-3"); break;
-                            case -2: species.castec1s.push("-2"); break;
-                            case -1:
-                            case 0: species.castec1s.push("--"); break;
-                            case 1: species.castec1s.push("+1"); break;
-                            case 2: species.castec1s.push("+2"); break;
-                            case 3: species.castec1s.push("+1D"); break;
-                            case 4: species.castec1s.push("+2D"); break;
-                            case 5: species.castec1s.push("+3D"); break;
-                        }
-                        roll = d6() - d6();
-                        switch(roll){
-                            case -5: species.castec2s.push("-5"); break;
-                            case -4: species.castec2s.push("-4"); break;
-                            case -3: species.castec2s.push("-3"); break;
-                            case -2: species.castec2s.push("-2"); break;
-                            case -1:
-                            case 0: 
-                            case 1: species.castec2s.push("--"); break;
-                            case 2: species.castec2s.push("+2"); break;
-                            case 3: species.castec2s.push("+3"); break;
-                            case 4: species.castec2s.push("+4"); break;
-                            case 5: species.castec2s.push("+5"); break;
-                        }
-                        roll = d6() - d6();
-                        switch(roll){
-                            case -5: species.castec3s.push("-5"); break;
-                            case -4: species.castec3s.push("-4"); break;
-                            case -3: species.castec3s.push("-3"); break;
-                            case -2: species.castec3s.push("-2"); break;
-                            case -1:
-                            case 0: 
-                            case 1: species.castec3s.push("--"); break;
-                            case 2: species.castec3s.push("+2"); break;
-                            case 3: species.castec3s.push("+3"); break;
-                            case 4: species.castec3s.push("+4"); break;
-                            case 5: species.castec3s.push("+5"); break;
-                        }
-                        roll = d6() - d6();
-                        switch(roll){
-                            case -5: species.castec4s.push("-5"); break;
-                            case -4: species.castec4s.push("-4"); break;
-                            case -3: species.castec4s.push("-3"); break;
-                            case -2: species.castec4s.push("-2"); break;
-                            case -1:
-                            case 0: 
-                            case 1: species.castec4s.push("--"); break;
-                            case 2: species.castec4s.push("+2"); break;
-                            case 3: species.castec4s.push("+3"); break;
-                            case 4: species.castec4s.push("+4"); break;
-                            case 5: species.castec4s.push("+5"); break;
-                        }
-                        roll = d6() - d6();
-                        switch(roll){
-                            case -5: species.castec5s.push("-5"); break;
-                            case -4: species.castec5s.push("-4"); break;
-                            case -3: species.castec5s.push("-3"); break;
-                            case -2: species.castec5s.push("-2"); break;
-                            case -1:
-                            case 0: 
-                            case 1: species.castec5s.push("--"); break;
-                            case 2: species.castec5s.push("+2"); break;
-                            case 3: species.castec5s.push("+3"); break;
-                            case 4: species.castec5s.push("+4"); break;
-                            case 5: species.castec5s.push("+5"); break;
-                        }
-                    }
-                }
-            }
-            roll = d6();
-            switch(roll){
-                case 1: species.casteassignment = "assigned at birth"; break;
-                case 2: species.casteassignment = "assigned at adolescence"; break;
-                case 3: species.casteassignment = "assigned by heredity"; break;
-                case 4: species.casteassignment = "assigned by community"; break;
-                case 5: species.casteassignment = "assigned by family choice"; break;
-                case 6: species.casteassignment = "assigned by personal choice"; break;
-            }
-            roll = d6();
-            switch(roll){
-                case 1: 
-                case 2:  
-                case 3: 
-                case 4: species.casteshift = "fixed"; break;
-                case 5: species.casteshift = "shifts at life stage 6"; break;
-                case 6: species.casteshift = "rotates at every life stage"; break;
-            }
-            species.c6val = "2D*";
-        }
-        species.geneticprofile = "S" + species.c2[0] + species.c3[0] + species.c4[0] + species.c5[0] + (species.c6 === "Cas" ? "K" : species.c6[0]);
-        
-        species.lifestages = [];
-        for(var i = 0; i <= 9; i++){
-            roll = d6() - d6();
-            if(i === 0){
-                species.lifestages.push(2);
-            }else if(roll === -5){
-                if(i === 1 || i === 5 || i === 9){
-                    species.lifestages.push(4);
-                }else{
-                    species.lifestages.push(0);
-                }
-            }else{
-                if(roll <= -2){
-                    species.lifestages.push(4);
-                }else if(roll <= 1){
-                    species.lifestages.push(8);
-                }else if(roll <= 3){
-                    species.lifestages.push(12)
-                }else if(roll === 4){
-                    species.lifestages.push(16);
-                }else{
-                    species.lifestages.push(24);
-                }
-            }
-        }
-        var sum = 0;
-        species.lifestagelower = [];
-        species.lifestageupper = [];
-        for(var i = 0, len = species.lifestages.length; i < len; i++){
-            species.lifestagelower.push(sum);
-            sum += species.lifestages[i];
-            species.lifestageupper.push(species.lifestages[i] > 0 ? sum-1 : sum);
-        }
-        species.lifeexpectancy = sum;
-        roll = d6() - d6();
-        if(roll <= -3){
-            species.vision = "Blind";
-        }else{
-            species.vision = "Vision"; // TODO: add vision band by native star
-        }
-        roll = d6() - d6();
-        if(roll <= -2){
-            species.hearing = "Deaf";
-        }else{
-            species.hearing = "Hearing"; // TODO: add hearing frequency, span, voice, range
-        }
-        roll = d6() - d6();
-        if(roll <= -1){
-            species.smell = "Anosmic";
-        }else{
-            species.smell = "Smell"; // TODO: add sharpness
-        }
-        roll = d6() - d6();
-        species.touch = "Touch";
-
-        roll = d6() - d6();
-        if(roll <= 0){
-            species.aware = "Unaware";
-        }else{
-            species.aware = "Aware";
-        }
-
-        roll = d6() - d6();
-        if(roll <= 1){
-            species.percep = "Oblivious";
-        }else{
-            species.percep = "Percept";
-        }
-        if(species.hearing === "Hearing"){ species.language = "Verbal Language";}
-        else if(species.percep === "Percept"){ species.language = "Perceptual Language";}
-        else if(species.vision === "Blind" && species.aware === "Aware"){
-            species.language = "Awareness Language";
-        }else if(species.vision === "Vision" && species.percep === "Oblivious" && species.hearing === "Deaf"){
-            species.language = "Visual Sign Language";
-        }else if(species.vision === "Blind" && species.percep === "Oblivious" && species.hearing === "Deaf"){
-            species.language = "Tactile Sign Language";
-        }
-        return species;
-    }
-    function getSpecialCaste(){
-        var roll = d6() - d6();
-        switch(roll){
-            case -5: return "DeMinimis";
-            case -4: return "Useless";
-            case -3: return "Advisor Minus";
-            case -2: return "Instructor";
-            case -1: return "Shaman";
-            case 0: return "Expendable";
-            case 1: return "Defective";
-            case 2: return "Valuable";
-            case 3: return "Advisor Plus";
-            case 4: return "Sport";
-            case 5: return "Vice-Leader";
-        }
     }
     function renderDetails(species){
         console.log(species);
@@ -1528,15 +468,14 @@
                 elmt.appendChild(document.createTextNode(value));
             }
         });
+
     }
     function removeChildElements(element){
         while(element.childNodes.length > 0){
             element.removeChild(element.childNodes[element.childNodes.length-1]);
         }
     }
-    function pickRandom(arr){
-        return arr[Math.floor(MathRandom() * arr.length)];
-    }
+    
     function addCaps(text) {
             var capitalizedString = "";
             var lastCharacter = null, currCharacter = " ";
