@@ -18,6 +18,10 @@
         ],
         "3sylword":[
             "{ept.initialsyl}{ept.syllable}{ept.finalsyllable}"
+        ],
+        "1or2sylword": [
+            "{ept.initialsyl}{ept.finalsyllable}",
+            "{ept.initialfinalsyl}"
         ]
     },
     "ept": { // English Phonotactics
