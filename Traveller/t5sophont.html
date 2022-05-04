@@ -314,30 +314,37 @@
         <table>
             <tr>
                 <th>Sense</th>
+                <th>Perceives...</th>
                 <th>Capability</th>
             </tr>
             <tr>
                 <td>Vision</td>
+                <td>the electromagnetic spectrum</td>
                 <td><span data-detail="vision" data-source="species"></span></td>
             </tr>
             <tr>
                 <td>Hearing</td>
+                <td>vibrations in atmosphere</td>
                 <td><span data-detail="hearing" data-source="species"></span></td>
             </tr>
             <tr>
                 <td>Smell</td>
+                <td>volatiles in the environment</td>
                 <td><span data-detail="smell" data-source="species"></span></td>
             </tr>
             <tr>
                 <td>Touch</td>
+                <td>physical contact</td>
                 <td><span data-detail="touch" data-source="species"></span></td>
             </tr>
             <tr>
                 <td>Aware</td>
+                <td>auras emitted by all objects</td>
                 <td><span data-detail="aware" data-source="species"></span></td>
             </tr>
             <tr>
                 <td>Percept</td>
+                <td>projected life force of living beings</td>
                 <td><span data-detail="percep" data-source="species"></span></td>
             </tr>
         </table>
@@ -713,10 +720,10 @@
                 species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " + " + (species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water");
                 break;
             case "Flyer":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " + " + (species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water");;
+                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
                 break;
             case "Flyphib":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
+                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " + " + (species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water");
                 break;
             case "Swim":
                 species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
@@ -1293,7 +1300,6 @@
                 species.castec5s = [];
                 species.castec6s = [];
                 for(var i = 0, len = species.castes.length; i < len; i++){
-                    console.log(species.castes[i]);
                     var genderIndex = species.genders.indexOf(species.castes[i]);
                     if(genderIndex >= 0){
                         species.castec1s.push(species.genderc1s[genderIndex]);
@@ -1375,7 +1381,6 @@
                             case 5: species.castec5s.push("+5"); break;
                         }
                     }
-                    console.log(species.castec2s);
                 }
             }
             roll = d6();
