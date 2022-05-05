@@ -18,8 +18,35 @@
     th, th td{text-align:left; font-weight:bold; vertical-align:text-top; }
     td + td, th + th{border-left:0.01rem solid black;}
     td:empty, th:empty{border:0px solid transparent !important; }
-    fieldset{display:inline-block; vertical-align:text-top;}
     .hidden{display:none;}
+    fieldset{
+            display:inline-block;
+            vertical-align: text-top;
+        }
+        fieldset legend{
+            cursor:pointer;       
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        fieldset legend:hover{
+            color:red;
+        }
+        fieldset > fieldset{
+            background-color:rgba(0,0,0,0.05);
+        }
+        fieldset *{
+            line-height:1.5em;
+        }
+        fieldset.collapsed *:not(legend){
+            display:none;
+        }
+        fieldset > legend::before{
+            content:"▼ ";
+        }
+        fieldset.collapsed > legend::before{
+            content:"► ";
+        }
 </style>
 <body>
     <h1>Traveller Sophont Creation System</h1>
@@ -28,7 +55,60 @@
     <input type="button" id="btnGenerate" value="Generate Sophont" />
     <hr />
     <h2 id="name"></h2>
+    <fieldset>
+        <legend>Physical Appearance</legend>
+        <div><strong>Locomotion:</strong> <span data-detail="locomotion" data-source="species"></span></div>
+        <div><strong>Breathes:</strong> <span data-detail="breathes" data-source="species"></span></div>
+        <div><strong>Diet:</strong> <span data-detail="class" data-source="species"></span> (<span data-detail="niche" data-source="species"></span>)</div>
     
+        <div><strong>Symmetry: </strong><span data-detail="symmetry" data-source="species"></span></div>
+        <div><strong>Stance: </strong></strong><span data-detail="stance" data-source="species"></span></div>
+        <div><strong>Skeletal Structure: </strong><span data-detail="skeleton" data-source="species"></span></div>
+        <div><strong>Body Fluids: </strong><span data-detail="fluids" data-source="species"></span></div>
+        <div><strong>Body Covering: </strong><span data-detail="skin" data-source="species"></span></div>
+        <div><strong>Natural Weapons: </strong><span data-detail="naturalweapon" data-source="species"></span></div>
+        <div><strong>Manipulators: </strong><span data-detail="manipulators" data-source="species"></span> <span data-detail="manipulatordesc" data-source="species"></span></div>
+        <div><strong>Size:</strong> <span data-detail="sizeclass" data-source="species"></span> (<span data-detail="size" data-source="species"></span> kg, <span data-detail="height" data-source="species"></span>)</div>
+        <div><strong>Body Plan: </strong><span data-detail="bodystructure" data-source="species"></span></div>
+        <table>
+            <tr>
+                <th>Segment</th>
+                <th>Value</th>
+                <th>Limbs</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>Head</td>
+                <td><span data-detail="head" data-source="species"></span></td>
+                <td> </td>
+                <td><span data-detail="headdesc" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td>Torso</td>
+                <td><span data-detail="torso" data-source="species"></span></td>
+                <td> </td>
+                <td><span data-detail="torsodesc" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td>Front Limbs</td>
+                <td><span data-detail="frontlimbs" data-source="species"></span></td>
+                <td><span data-detail="frontlimbs1" data-source="species"></span> <span data-detail="frontlimbs2" data-source="species"></span></td>
+                <td><span data-detail="frontlimbsdesc" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td>Rear Limbs</td>
+                <td><span data-detail="rearlimbs" data-source="species"></span></td>
+                <td><span data-detail="rearlimbs1" data-source="species"></span> <span data-detail="rearlimbs2" data-source="species"></span></td>
+                <td><span data-detail="rearlimbsdesc" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td>Other</td>
+                <td><span data-detail="tail" data-source="species"></span></td>
+                <td><span data-detail="taillimbs" data-source="species"></span></span></td>
+                <td><span data-detail="taildesc" data-source="species"></span></td>
+            </tr>
+        </table>
+    </fieldset>
     <fieldset>
         <legend>Lifespan</legend>
         <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy" data-source="species"></span> years</div>
@@ -252,6 +332,23 @@
             <td data-detail="castec6s" data-index="5" data-source="species"></td>
             <td data-detail="castec6s" data-index="6" data-source="species"></td>
         </tr>
+        <tr>
+            <td colspan="2">Special Abilities</td>
+            <td data-detail="genderabilities" data-index="0" data-source="species"></td>
+            <td data-detail="genderabilities" data-index="1" data-source="species"></td>
+            <td data-detail="genderabilities" data-index="2" data-source="species"></td>
+            <td data-detail="genderabilities" data-index="3" data-source="species"></td>
+            <td data-detail="genderabilities" data-index="4" data-source="species"></td>
+            <td data-detail="genderabilities" data-index="5" data-source="species"></td>
+            <td data-detail="genderabilities" data-index="6" data-source="species"></td>
+            <td data-detail="casteabilities" data-index="0" data-source="species"></td>
+            <td data-detail="casteabilities" data-index="1" data-source="species"></td>
+            <td data-detail="casteabilities" data-index="2" data-source="species"></td>
+            <td data-detail="casteabilities" data-index="3" data-source="species"></td>
+            <td data-detail="casteabilities" data-index="4" data-source="species"></td>
+            <td data-detail="casteabilities" data-index="5" data-source="species"></td>
+            <td data-detail="casteabilities" data-index="6" data-source="species"></td>
+        </tr>
     </table>
         <table>
             <tr>
@@ -333,41 +430,42 @@
         <table>
             <tr>
                 <th>Sense</th>
-                <th>Perceives...</th>
                 <th>Capability</th>
+                <th>Notes</th>
             </tr>
             <tr>
                 <td>Vision</td>
-                <td>the electromagnetic spectrum.<br/>ANIFXZ=Infrared CRGBP=Visible VHDUS=Ultraviolet</td>
                 <td><span data-detail="vision" data-source="species"></span></td>
+                <td>ANIFXZ=Infrared<br/>CRGBP=Visible<br/>VHDUS=Ultraviolet<br/>
+                    Humans = V-16-RGB</td>
             </tr>
             <tr>
                 <td>Hearing</td>
-                <td>vibrations in atmosphere</td>
                 <td><span data-detail="hearing" data-source="species"></span></td>
+                <td>Humans = H-16-9382</td>
             </tr>
             <tr>
                 <td>Smell</td>
-                <td>volatiles in the environment</td>
                 <td><span data-detail="smell" data-source="species"></span></td>
+                <td>Humans = S-10-02 </td>
             </tr>
             <tr>
                 <td>Touch</td>
-                <td>physical contact</td>
                 <td><span data-detail="touch" data-source="species"></span></td>
+                <td>Humans = T-06-02</td>
             </tr>
             <tr>
                 <td>Aware</td>
-                <td>auras emitted by all objects</td>
                 <td><span data-detail="aware" data-source="species"></span></td>
+                <td>auras emitted by all objects</td>
             </tr>
             <tr>
                 <td>Percept</td>
-                <td>projected life force of living beings</td>
                 <td><span data-detail="percep" data-source="species"></span></td>
+                <td>projected life force of living beings</td>
             </tr>
         </table>
-        <fieldset style="display:inline-block; max-width:50%; vertical-align: text-top;">
+        <fieldset>
             <legend>Language:</legend>
             <div data-detail="language" data-source="species"></div>
         </fieldset>
@@ -379,6 +477,18 @@
     
 </body>
 <script>
+     var collapserHandles = document.querySelectorAll("fieldset legend");
+    for(var i = 0, len = collapserHandles.length; i < len; i++){
+        var handle = collapserHandles[i];
+        handle.addEventListener("click",function(e){
+            var parent = e.target.parentElement;
+            if(parent.classList.contains("collapsed")){
+                parent.classList.remove("collapsed");
+            }else{
+                parent.classList.add("collapsed");
+            }
+        });
+    }
     if(window.location.hash){
         processHash();
     }
