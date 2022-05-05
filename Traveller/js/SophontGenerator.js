@@ -2346,7 +2346,7 @@ function generateRandomAlien(species,rand){
                 species.tail = "P";
                 species.taildesc = "Proboscis/Extended Snout";
                 species.taillimbs = 1;
-                species.mouthmanipulator = true;
+                species.manipulators += 1;
                 break;
             case -4:
                 species.tail = "V";
