@@ -3103,7 +3103,7 @@ function generateRandomAlien(species,rand){
         if(species.locomotion === "Triphib" || species.locomotion === "Flyphib"){ bfp += 20;}
         if(species.locomotion === "Flyer"){
             if(species.bodystructure.indexOf("W") >= 0){
-             bfp += 70;
+             bfp += (posFlux() * 15);
             }else{
                 bfp -= 1;
             }
