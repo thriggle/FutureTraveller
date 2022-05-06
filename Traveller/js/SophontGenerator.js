@@ -1563,6 +1563,7 @@ function generateRandomAlien(species,rand){
                         species.frontlimbs1 = limbsPerGroup;
                     }
                     species.frontlimbs2 = 0;
+                    species.manipulators += species.frontlimbs1;
                     break;
                 case 5: 
                     species.frontlimbs = "AA"; 
@@ -1573,6 +1574,7 @@ function generateRandomAlien(species,rand){
                         species.frontlimbs1 = limbsPerGroup;
                         species.frontlimbs2 = limbsPerGroup;
                     }
+                    species.manipulators += species.frontlimbs2 + species.frontlimbs1;
                     break;
             }
             // flyer rear limbs
@@ -2380,182 +2382,182 @@ function generateRandomAlien(species,rand){
                 species.taillimbs = species.symmetry === "Asymmetrical" ? d6() : limbsPerGroup;
                 break;
         }
-        if(species.manipulators === 0){ species.mouthmanipulator = true; species.manipulators += 1; }else{
-            var featureMod = 0;
-            if(species.locomotion === "Swim"){
-                featureMod += 1;
-            }else if(species.locomotion === "Flyer"){
-                featureMod -= 1;
-            }
-            roll = d6() - d6() + featureMod;
-            switch(roll){
-                case -6:
-                case -5:
-                case -4:
-                    species.skeleton = "Fluid Interior Sacs";
-                    break;
-                case -3:
-                case -2:
-                    species.skeleton = "Cartilage Interior";
-                    break;
-                case -1:
-                case 0:
-                case 1:
-                    species.skeleton = "Bony Interior";
-                    break;
-                case 2:
-                case 3:
-                    species.skeleton = "Exoskeleton";
-                    break;
-                case 4:
-                case 5:
-                case 6:
-                    species.skeleton = "Segmented Shell";
-                    break;
-            }
-            roll = d6() - d6() + featureMod;
-            switch(roll){
-                case -6:
-                case -5:
-                    species.fluids = "Foam";
-                    break;
-                case -4:
-                    species.fluids = "Lymph";
-                    break;
-                case -3:
-                    species.fluids = "Hemolymph";
-                    break;
-                case -2:
-                    species.fluids = "Ichor";
-                    break;
-                case -1:
-                case 0:
-                case 1:
-                    species.fluids = "Blood";
-                    break;
-                case 2:
-                    species.fluids = "Gore";
-                    break;
-                case 3:
-                    species.fluids = "Slime";
-                    break;
-                case 4:
-                    species.fluids = "Scum";
-                    break;
-                case 5:
-                case 6:
-                    species.fluids = "Humours";
-                    break;
-            }
-            roll = d6() - d6() + featureMod;
-            switch(roll){
-                case -6:
-                case -5:
-                    species.skin = "Feathery Pelt";
-                    break;
-                case -4:
-                    species.skin = "Furry Pelt";
-                    break;
-                case -3:
-                    species.skin = "Hairy Pelt";
-                    break;
-                case -2:
-                    species.skin = "Leather";
-                    break;
-                case -1:
-                case 0:
-                case 1:
-                    species.skin = "Skin";
-                    break;
-                case 2:
-                    species.skin = "Fine Scales";
-                    break;
-                case 3:
-                    species.skin = "Scales";
-                    break;
-                case 4:
-                    species.skin = "Spines";
-                    break;
-                case 5:
-                case 6:
-                    species.skin = "Plates";
-                    break; 
-            }
-            roll = d6() - d6() + featureMod;
-            switch(roll){
-                case -6:
-                case -5:
-                    species.naturalweapon = "";
-                    break;
-                case -4:
-                    species.naturalweapon = "Tusks";
-                    break;
-                case -3:
-                    species.naturalweapon = "Fangs";
-                    break;
-                case -2:
-                    species.naturalweapon = "Teeth";
-                    break;
-                case -1:
-                case 0:
-                case 1:
-                    species.naturalweapon = "";
-                    break;
-                case 2:
-                    species.naturalweapon = "Claws";
-                    break;
-                case 3:
-                    species.naturalweapon = "Hooves";
-                    break;
-                case 4:
-                    species.naturalweapon = "Spikes";
-                    break;
-                case 5:
-                case 6:
-                    species.naturalweapon = "Sting";
-                    break;
-            }
-            if(species.mouthmanipulator){
-                roll = d6() - d6() - featureMod;
-                if(roll <= -2){
-                    species.manipulatordesc = "Mouth (Gripper)";
-                }else if(roll <= 2){
-                    species.manipulatordesc = "Mouth (Socket)";
-                }else{
-                    species.manipulatordesc = "Mouth (Tentacles)";
-                }
-            }else{
-                roll = d6() - d6() + featureMod;
-                switch(roll){
-                    case -6:
-                    case -5:
-                    case -4:
-                        species.manipulatordesc = "Tentacles";
-                        break;
-                    case -3:
-                    case -2:
-                        species.manipulatordesc = "Grippers";
-                        break;
-                    case -1:
-                    case 0:
-                        species.manipulatordesc = "Hands";
-                        break;
-                    case 1:
-                    case 2:
-                        species.manipulatordesc = "Paws";
-                        break;
-                    case 3:
-                    case 4:
-                        species.manipulatordesc = "Graspers";
-                        break;
-                    case 5:
-                    case 6:
-                        species.manipulatordesc = "Sockets";
-                        break;
-                }
-            }
-            
+        var featureMod = 0;
+        if(species.locomotion === "Swim"){
+            featureMod += 1;
+        }else if(species.locomotion === "Flyer"){
+            featureMod -= 1;
         }
+        roll = d6() - d6() + featureMod;
+        switch(roll){
+            case -6:
+            case -5:
+            case -4:
+                species.skeleton = "Fluid Interior Sacs";
+                break;
+            case -3:
+            case -2:
+                species.skeleton = "Cartilage Interior";
+                break;
+            case -1:
+            case 0:
+            case 1:
+                species.skeleton = "Bony Interior";
+                break;
+            case 2:
+            case 3:
+                species.skeleton = "Exoskeleton";
+                break;
+            case 4:
+            case 5:
+            case 6:
+                species.skeleton = "Segmented Shell";
+                break;
+        }
+        roll = d6() - d6() + featureMod;
+        switch(roll){
+            case -6:
+            case -5:
+                species.fluids = "Foam";
+                break;
+            case -4:
+                species.fluids = "Lymph";
+                break;
+            case -3:
+                species.fluids = "Hemolymph";
+                break;
+            case -2:
+                species.fluids = "Ichor";
+                break;
+            case -1:
+            case 0:
+            case 1:
+                species.fluids = "Blood";
+                break;
+            case 2:
+                species.fluids = "Gore";
+                break;
+            case 3:
+                species.fluids = "Slime";
+                break;
+            case 4:
+                species.fluids = "Scum";
+                break;
+            case 5:
+            case 6:
+                species.fluids = "Humours";
+                break;
+        }
+        roll = d6() - d6() + featureMod;
+        switch(roll){
+            case -6:
+            case -5:
+                species.skin = "Feathery Pelt";
+                break;
+            case -4:
+                species.skin = "Furry Pelt";
+                break;
+            case -3:
+                species.skin = "Hairy Pelt";
+                break;
+            case -2:
+                species.skin = "Leather";
+                break;
+            case -1:
+            case 0:
+            case 1:
+                species.skin = "Skin";
+                break;
+            case 2:
+                species.skin = "Fine Scales";
+                break;
+            case 3:
+                species.skin = "Scales";
+                break;
+            case 4:
+                species.skin = "Spines";
+                break;
+            case 5:
+            case 6:
+                species.skin = "Plates";
+                break; 
+        }
+        roll = d6() - d6() + featureMod;
+        switch(roll){
+            case -6:
+            case -5:
+                species.naturalweapon = "";
+                break;
+            case -4:
+                species.naturalweapon = "Tusks";
+                break;
+            case -3:
+                species.naturalweapon = "Fangs";
+                break;
+            case -2:
+                species.naturalweapon = "Teeth";
+                break;
+            case -1:
+            case 0:
+            case 1:
+                species.naturalweapon = "";
+                break;
+            case 2:
+                species.naturalweapon = "Claws";
+                break;
+            case 3:
+                species.naturalweapon = "Hooves";
+                break;
+            case 4:
+                species.naturalweapon = "Spikes";
+                break;
+            case 5:
+            case 6:
+                species.naturalweapon = "Sting";
+                break;
+        }
+        if(species.manipulators === 0){ species.mouthmanipulator = true; species.manipulators += 1; }
+        if(species.mouthmanipulator){
+            roll = d6() - d6() - featureMod;
+            if(roll <= -2){
+                species.manipulatordesc = "Mouth (Gripper)";
+            }else if(roll <= 2){
+                species.manipulatordesc = "Mouth (Socket)";
+            }else{
+                species.manipulatordesc = "Mouth (Tentacles)";
+            }
+        }else{
+            roll = d6() - d6() + featureMod;
+            switch(roll){
+                case -6:
+                case -5:
+                case -4:
+                    species.manipulatordesc = "Tentacles";
+                    break;
+                case -3:
+                case -2:
+                    species.manipulatordesc = "Grippers";
+                    break;
+                case -1:
+                case 0:
+                    species.manipulatordesc = "Hands";
+                    break;
+                case 1:
+                case 2:
+                    species.manipulatordesc = "Paws";
+                    break;
+                case 3:
+                case 4:
+                    species.manipulatordesc = "Graspers";
+                    break;
+                case 5:
+                case 6:
+                    species.manipulatordesc = "Sockets";
+                    break;
+            }
+        }
+            
+        
         for(var i = 0; i < 2; i++){
             switch(species.frontlimbs[i]){
                 case "W": species.frontlimbsdesc += (i === 0 ? species.frontlimbs1 : species.frontlimbs2)  + " wings"; break;
