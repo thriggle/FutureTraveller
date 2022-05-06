@@ -1248,6 +1248,7 @@ function generateRandomAlien(species,rand){
             }
         }
         species.hearingdesc = "Cannot hear";
+        species.hearingrangedesc = "";
         roll = d6() - d6();
         if(roll <= -2){
             species.hearing = "Deaf";
@@ -1306,25 +1307,25 @@ function generateRandomAlien(species,rand){
                 audible = true;
             }
             if(infrasound && ultrasound){
-                species.hearingdesc = "Hears both infrasonics and ultrasonics";
+                species.hearingrangedesc = "Hears both infrasonics and ultrasonics";
             }else if(infrasound && audible){
-                species.hearingdesc = "Hears infrasonics and human-audible";
+                species.hearingrangedesc = "Hears infrasonics and human-audible";
             }else if(ultrasound && audible){
-                species.hearingdesc = "Hears ultrasonics and human-audible";
+                species.hearingrangedesc = "Hears ultrasonics and human-audible";
             }else if(infrasound){
-                species.hearingdesc = "Hears infrasonics";
+                species.hearingrangedesc = "Hears infrasonics";
             }else if(ultrasound){
-                species.hearingdesc = "Hears ultrasonics";
+                species.hearingrangedesc = "Hears ultrasonics";
             }else if(audible){
-                species.hearingdesc = "Hears within human-audible range";
+                species.hearingrangedesc = "Hears within human-audible range";
             }
-            species.hearingdesc += " (" +(Math.pow(2,lowerFreq))+ (lowerFreq === upperFreq ? "":"-"+(Math.pow(2,upperFreq)))+" Hz)"
+            species.hearingrangedesc += " (" +(Math.pow(2,lowerFreq))+ (lowerFreq === upperFreq ? "":"-"+(Math.pow(2,upperFreq)))+" Hz)"
             if(species.hearingconstant > 16){
-                species.hearingdesc = "More sensitive compared to humans. " + species.hearingdesc;
+                species.hearingdesc = "More sensitive compared to humans. "
             }else if(species.hearingconstant === 16){
-                species.hearingdesc = "Similar sensitivity compared to humans. " + species.hearingdesc;
+                species.hearingdesc = "Similar sensitivity compared to humans. "
             }else{
-                species.hearingdesc = "Less sensitive compared to humans. " + species.hearingdesc;
+                species.hearingdesc = "Less sensitive compared to humans. "
             }
             var voice = d6() - d6();
             switch(voice){
@@ -1467,7 +1468,7 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6();
         if(roll <= 0){
             species.aware = "Unaware";
-            species.awaredesc = "Does not perceive electricity/magnetic fields";
+            species.awaredesc = "Cannot perceive auras or electricity/magnetic fields";
         }else{
             species.awarenessconstant = getSenseConstant();
             var acuity = d6() - d6();
@@ -1485,13 +1486,13 @@ function generateRandomAlien(species,rand){
                 case 5: species.awarenessacuity = "5"; break;
             }
             species.aware = "A-"+species.awarenessconstant+"-"+species.awarenessacuity;
-            species.awaredesc = "Sensitive to the auras emitted by all objects";
+            species.awaredesc = "Sensitive to the auras, electricity, and magnetic fields";
         }
     
         roll = d6() - d6();
         if(roll <= 1){
             species.percep = "Oblivious";
-            species.percepdesc = "Does not perceive life force";
+            species.percepdesc = "Cannot perceive life force";
         }else{
             species.percepconstant = getSenseConstant();
             var poice = d6() - d6();
