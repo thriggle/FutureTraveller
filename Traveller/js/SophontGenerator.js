@@ -2795,6 +2795,7 @@ function generateRandomAlien(species,rand){
                 [
                     ["Biologics","Actor"],
                     ["Craftsman","Artist"],
+                    ["Electronics","Author"],
                     ["Fluidics","Chef"],
                     ["Gravitics","Dancer"],
                     ["Magnetics","Musician"]
