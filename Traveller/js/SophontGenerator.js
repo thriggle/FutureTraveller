@@ -1467,7 +1467,7 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6();
         if(roll <= 0){
             species.aware = "Unaware";
-            species.awaredesc = "Does not perceive electricity/magnetic fields";
+            species.awaredesc = "Cannot perceive auras or electricity/magnetic fields";
         }else{
             species.awarenessconstant = getSenseConstant();
             var acuity = d6() - d6();
@@ -1485,13 +1485,13 @@ function generateRandomAlien(species,rand){
                 case 5: species.awarenessacuity = "5"; break;
             }
             species.aware = "A-"+species.awarenessconstant+"-"+species.awarenessacuity;
-            species.awaredesc = "Sensitive to the auras emitted by all objects";
+            species.awaredesc = "Sensitive to the auras, electricity, and magnetic fields";
         }
     
         roll = d6() - d6();
         if(roll <= 1){
             species.percep = "Oblivious";
-            species.percepdesc = "Does not perceive life force";
+            species.percepdesc = "Cannot perceive life force";
         }else{
             species.percepconstant = getSenseConstant();
             var poice = d6() - d6();
