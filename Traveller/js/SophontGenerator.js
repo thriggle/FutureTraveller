@@ -1063,14 +1063,14 @@ function generateRandomAlien(species,rand){
             roll = d6();
             switch(roll){
                 case 1: 
-                case 2: species.castegenderrelation = "dependent"; break;
+                case 2: species.castegenderrelation = "Dependent"; break;
                 case 3: 
-                case 4: species.castegenderrelation = "casted breeder"; break;
+                case 4: species.castegenderrelation = "Casted Breeder"; break;
                 case 5: 
-                case 6: species.castegenderrelation = "independent"; break;
+                case 6: species.castegenderrelation = "Independent"; break;
             }
         }else{
-            species.castegenderrelation = "independent";
+            species.castegenderrelation = "(N/A)";
         }
     }
     function setLifeStages(){
