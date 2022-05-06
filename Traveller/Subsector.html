@@ -557,11 +557,11 @@
                 </li>
             </ul>
         </fieldset>
-        <fieldset>
-            <legend>System Map</legend>
+        <fieldset class="collapsed">
+            <legend >System Map</legend>
             <ul id="maplist"></ul>
         </fieldset>
-        <fieldset id="nativedetailscontainer">
+        <fieldset id="nativedetailscontainer" class="collapsed">
             <legend>Native Sophonts</legend>
             <div id="nativedetails">
                 <h1>The <span data-detail="name" data-source="species"></span> of <span data-system="name"></span></h1>
@@ -639,7 +639,8 @@
                         <tr>
                             <td>Hearing</td>
                             <td><span data-detail="hearing" data-source="species"></span></td>
-                            <td><span data-detail="hearingdesc" data-source="species"></span>
+                            <td><span data-detail="hearingdesc" data-source="species"></span><br/>
+                                <span data-detail="hearingrangedesc" data-source="species"></span>
                                 <br/><span data-detail="voicedesc" data-source="species"></span></td>
                         </tr>
                         <tr>
@@ -967,7 +968,7 @@
                             <td><span data-detail="caste12" data-source="species"></span></td>
                         </tr>
                     </table>
-                    <fieldset>
+                    <fieldset style="display:inline-block;">
                         <legend>Roll for Special</legend>
                         <input type="button" value="Roll for Special Ability" id="btnGetSpecialAbility"/>
                         <br/><span id="specialAbility"></span>
