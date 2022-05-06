@@ -79,12 +79,7 @@ function generateRandomAlien(species,rand){
     }
     function setEnvironmentNiche(){ 
         var tc = species.homeworld.mainworld.tradecodes;
-        species.climate = species.homeworld.mainworld.climate;
-        if(tc.indexOf("Co") >= 0 || tc.indexOf("Tu") >= 0 || tc.indexOf("Fr") >= 0){
-            species.climate += " Ignores Cold-2 or less.";
-        }else if(tc.indexOf("Ho") >= 0 || tc.indexOf("Tr") >= 0){
-            species.climate += " Ignores Hot-2 or less.";
-        }
+        
 
         var EnvironmentDM = d6() - d6();
         species.nativeTerrain = "Clear";
@@ -124,6 +119,17 @@ function generateRandomAlien(species,rand){
                 species.nativeTerrain = "Ocean Depths";
                 EnvironmentDM = 5;
             }
+        }
+        species.climate = species.homeworld.mainworld.climate;
+        if(tc.indexOf("Co") >= 0 || tc.indexOf("Tu") >= 0 || tc.indexOf("Fr") >= 0){
+            species.climate += " Ignores Cold-2 or less.";
+        }else if(tc.indexOf("Ho") >= 0 || tc.indexOf("Tr") >= 0){
+            species.climate += " Ignores Hot-2 or less.";
+        }
+        if(species.nativeTerrain === "Frozen Lands"){
+            species.climate = "Cold. Ignores Cold-2 or less.";
+        }else if(species.nativeTerrain === "Baked Lands"){
+            species.climate = "Hot. Ignores Hot-2 or less.";
         }
         species.EnvironmentDM = EnvironmentDM;
         var roll = d6();
@@ -372,30 +378,49 @@ function generateRandomAlien(species,rand){
                 }
                 break;
         }
+        var atmolookup ={
+            "0":"Vacuum",
+            "1":"Trace",
+            "2":"Very Thin / Tainted",
+            "3":"Very Thin",
+            "4":"Thin / Tainted",
+            "5":"Thin",
+            "6":"Standard",
+            "7":"Standard / Tainted",
+            "8":"Dense",
+            "9":"Dense / Tainted",
+            "10":"Exotic",
+            "11":"Corrosive",
+            "12":"Insidious",
+            "13":"Dense, high",
+            "14":"Ellipsoid",
+            "15":"Thin, low"
+        }
+        var atmoDesc = atmolookup[species.homeworld.mainworld.atmo.toString()];
         switch(species.locomotion){
             case "Walker":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
+                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " (" + atmoDesc + ")";
                 break;
             case "Amphib":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " + " + (species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water");
+                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " (" + atmoDesc + ") + " + (species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water");
                 break;
             case "Flyer":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
+                species.breathes = "Atmo " + species.homeworld.mainworld.atmo+ " (" + atmoDesc + ")";
                 break;
             case "Flyphib":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " + " + (species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water");
+                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " (" + atmoDesc + ") + " + (species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water");
                 break;
             case "Swim":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
+                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " (" + atmoDesc + ")";
                 break;
             case "Aquatic":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
+                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " (" + atmoDesc + ")";
                 break;
             case "Diver":
                 species.breathes = species.homeworld.mainworld.atmo >= 10 && species.homeworld.mainworld.atmo <= 12 ? "Exotic Liquid" : "Water";
                 break;
             case "Triphib":
-                species.breathes = "Atmo " + species.homeworld.mainworld.atmo;
+                species.breathes = "Atmo " + species.homeworld.mainworld.atmo + " (" + atmoDesc + ")";
                 break;
         }
         roll = d6() - d6();
