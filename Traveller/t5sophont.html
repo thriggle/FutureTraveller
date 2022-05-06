@@ -56,16 +56,24 @@
     <hr />
     <h2 id="name"></h2>
     <fieldset>
+        <legend>Habitat</legend>
+        <div><strong>Homeworld:</strong> <span data-detail="name" data-source="homeworld"></span> <span data-detail="uwp" data-source="mainworld"></span> <span data-detail="tradecodes" data-source="homeworld"></span></div>
+        <div><strong>Home Star:</strong> <span data-detail="homestar" data-source="species"></span></div>
+        <div><strong>Native Terrain:</strong> <span data-detail="nativeTerrain" data-source="species"></span></div>
+        <div><strong>Locomotion:</strong> <span data-detail="locomotion" data-source="species"></span></div>
+        <div><strong>Niche:</strong> <span data-detail="class" data-source="species"></span> (<span data-detail="niche" data-source="species"></span>)</div>
+        <div><strong>Breathes:</strong> <span data-detail="breathes" data-source="species"></span></div>
+    </fieldset>
+    <fieldset>
         <legend>Physical Appearance</legend>
         <div><strong>Locomotion:</strong> <span data-detail="locomotion" data-source="species"></span></div>
         <div><strong>Symmetry: </strong><span data-detail="symmetry" data-source="species"></span></div>
         <div><strong>Stance: </strong></strong><span data-detail="stance" data-source="species"></span></div>
-        <div><strong>Skeletal Structure: </strong><span data-detail="skeleton" data-source="species"></span></div>
-        <div><strong>Body Fluids: </strong><span data-detail="fluids" data-source="species"></span></div>
-        <div><strong>Body Covering: </strong><span data-detail="skin" data-source="species"></span></div>
-        <div><strong>Natural Weapon: </strong><span data-detail="naturalweapon" data-source="species"></span></div>
         <div><strong>Manipulators: </strong><span data-detail="allmanipulators" data-source="species"></span></div>
-        <div><strong>Size:</strong> <span data-detail="sizeclass" data-source="species"></span> (<span data-detail="size" data-source="species"></span> kg, <span data-detail="height" data-source="species"></span>) <strong>Body Form Profile:</strong> <span data-detail="bfp" data-source="species"></span> (<span data-detail="bfpdesc" data-source="species"></span>)</div>
+        <div><strong>Natural Weapon: </strong><span data-detail="naturalweapon" data-source="species"></span></div>
+        <div><strong>Skeletal Structure: </strong><span data-detail="skeleton" data-source="species"></span> <strong>Body Fluids: </strong><span data-detail="fluids" data-source="species"></span> </div>
+        <div><strong>Body Covering: </strong><span data-detail="skin" data-source="species"></span> <strong>Odor Profile: </strong><span data-detail="scent" data-source="species"></span></div>
+        <div><strong>Size:</strong> <span data-detail="sizeclass" data-source="species"></span> (<span data-detail="size" data-source="species"></span> kg, <span data-detail="height" data-source="species"></span>) <strong>Profile:</strong> <span data-detail="bfp" data-source="species"></span> (<span data-detail="bfpdesc" data-source="species"></span>)</div>
         <div><strong>Body Plan: </strong><span data-detail="bodystructure" data-source="species"></span></div>
         <table>
             <tr>
@@ -107,7 +115,11 @@
         </table>
     </fieldset>
     <fieldset>
-        <legend>Lifespan</legend>
+        <legend>Life and Culture</legend>
+        <div><strong>Language: </strong><span data-detail="language" data-source="species"></span></div>
+        <div><strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span> <strong>Assignment:</strong> <span data-detail="genderassignment" data-source="species"></span> (<span data-detail="gendershift" data-source="species"></span>)</div>
+       <div><strong>Caste:</strong> <span data-detail="castestructure" data-source="species">No</span> caste structure <strong>Assignment:</strong> <span data-detail="casteassignment" data-source="species"></span> (<span data-detail="casteshift" data-source="species"></span>)</div>
+        <div><strong>Caste-Gender Relation:</strong> <span data-detail="castegenderrelation" data-source="species"></span></div>  
         <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy" data-source="species"></span> years</div>
         <table>
             <tr>
@@ -191,12 +203,14 @@
         
         
     </fieldset>
-   
     <fieldset>
-        <legend>Characteristics, Genders, and Castes</legend><div><strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span> <strong>Assignment:</strong> <span data-detail="genderassignment" data-source="species"></span> (<span data-detail="gendershift" data-source="species"></span>)</div>
+        <legend>Genetics and Variations</legend>
         <div><strong>Genetic Profile:</strong> <span data-detail="geneticprofile" data-source="species"></span> </div>
-        <div><strong>Caste:</strong> <span data-detail="castestructure" data-source="species">No</span> caste structure <strong>Assignment:</strong> <span data-detail="casteassignment" data-source="species"></span> (<span data-detail="casteshift" data-source="species"></span>)</div>
-        <div><strong>Caste-Gender Relation:</strong> <span data-detail="castegenderrelation" data-source="species"></span></div>
+        <div><strong>DNA:</strong> <span data-detail="dna" data-source="species"></span> </div>
+        <div><strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span> (<span data-detail="genders" data-source="species"></span>)
+        </div><div><strong>Gender Assignment:</strong> <span data-detail="genderassignment" data-source="species"></span> (<span data-detail="gendershift" data-source="species"></span>)</div>
+       <div><strong>Castes:</strong> <span data-detail="castestructure" data-source="species">No</span> caste structure (<span data-detail="castes" data-source="species"></span>)</div>
+       <div><strong>Caste Assignment:</strong> <span data-detail="casteassignment" data-source="species"></span> (<span data-detail="casteshift" data-source="species"></span>)</div>
         <table>
             <tr>
                 <th colspan="2"></th>
@@ -412,18 +426,9 @@
         
         
 </fieldset>
-<fieldset>
-    <legend>Habitat</legend>
-    <div><strong>Homeworld:</strong> <span data-detail="name" data-source="homeworld"></span> <span data-detail="uwp" data-source="mainworld"></span> <span data-detail="tradecodes" data-source="homeworld"></span></div>
-    <div><strong>Home Star:</strong> <span data-detail="homestar" data-source="species"></span></div>
-    <div><strong>Native Terrain:</strong> <span data-detail="nativeTerrain" data-source="species"></span></div>
-    <div><strong>Locomotion:</strong> <span data-detail="locomotion" data-source="species"></span></div>
-    <div><strong>Niche:</strong> <span data-detail="class" data-source="species"></span> (<span data-detail="niche" data-source="species"></span>)</div>
-    <div><strong>Breathes:</strong> <span data-detail="breathes" data-source="species"></span></div>
-</fieldset>
+
     <fieldset>
         <legend>Senses</legend>
-        
         <table>
             <tr>
                 <th>Sense</th>
@@ -465,14 +470,6 @@
                 <td><span data-detail="percepdesc" data-source="species"></span></td>
             </tr>
         </table>
-        <fieldset>
-            <legend>Language:</legend>
-            <div data-detail="language" data-source="species"></div>
-        </fieldset>
-        <fieldset>
-            <legend>Scent</legend>
-            <div data-detail="scent" data-source="species"></div>
-        </fieldset>
     </fieldset>
     
 </body>

@@ -452,6 +452,7 @@ function generateRandomAlien(species,rand){
     function setGender(){
         var roll = d6() - d6();
         if(roll <= -4){
+            species.dna = "1NA";
             species.genderstructure = "Solitaire";
             species.genders = ["Solo"];
             species.gender2 = species.genders[0];
@@ -466,6 +467,7 @@ function generateRandomAlien(species,rand){
             species.gender11 = species.genders[0];
             species.gender12 = species.genders[0];
         }else if(roll <= -2){
+            species.dna = "3NA";
             species.genderstructure = "EAB";
             species.genders = ["Egg Donor","Activator","Bearer"];
             species.gender2 = species.genders[0];
@@ -480,6 +482,7 @@ function generateRandomAlien(species,rand){
             species.gender11 = pickRandom(species.genders);
             species.gender12 = species.genders[2];
         }else if(roll <= 1){
+            species.dna = "2NA";
             species.genderstructure = "Dual";
             species.genders = ["Female","Male"];
             species.gender2 = species.genders[0];
@@ -494,6 +497,7 @@ function generateRandomAlien(species,rand){
             species.gender11 = pickRandom(species.genders);
             species.gender12 = pickRandom(species.genders);
         }else if(roll <= 3){
+            species.dna = "2NA";
             species.genderstructure = "FMN";
             species.genders = ["Female","Male","Neuter"];
             species.gender2 = species.genders[0];
@@ -536,6 +540,7 @@ function generateRandomAlien(species,rand){
                     species.genders.push(g);
                 }
             }
+            species.dna = species.genders.length.toString() +"NA";
         }
         species.genderc1s = ["--"];
         species.genderc2s = ["--"];
@@ -1507,6 +1512,8 @@ function generateRandomAlien(species,rand){
         }
     }
     function setLanguageMedium(){
+        species.lowerLanguageFreq = -1;
+        species.upperLanguageFreq = -1;
         if(species.hearing !== "Deaf"){             
             var voiceIsInHearingRange = false;
             var voicerange = parseInt(species.voicerange, 16),
@@ -1517,8 +1524,25 @@ function generateRandomAlien(species,rand){
                 var voiceFreq = voice + i;
                 if(voiceFreq >= hearingfreq - hearingspan && voiceFreq <= hearingfreq + hearingspan){
                     voiceIsInHearingRange = true;
-                    break;
+                    if(species.lowerLanguageFreq = -1){
+                        species.lowerLanguageFreq = voiceFreq;
+                    }
+                    species.upperLanguageFreq = voiceFreq;
                 }
+            }
+            var languageFreq = "";
+            if(species.lowerLanguageFreq <= 5 && species.upperLanguageFreq <= 5){
+                languageFreq = "Infrasonic";
+            }else if(species.lowerLanguageFreq <= 5 && species.upperLanguageFreq <= 12){   
+                languageFreq = "Infrasonic to Human-Audible";
+            }else if(species.lowerLanguageFreq <= 5 && species.upperLanguageFreq > 12){
+                languageFreq = "Infrasonic, Human-Audible, and Ultrasonic";
+            }else if(species.lowerLanguageFreq <= 12 && species.upperLanguageFreq <= 12){
+                languageFreq = "Human-Audible";
+            }else if(species.lowerLanguageFreq <= 12 && species.upperLanguageFreq > 12){
+                languageFreq = "Human-Audible and Ultrasonic";
+            }else if(species.lowerLanguageFreq > 12){
+                languageFreq = "Ultrasonic";
             }
             if(voiceIsInHearingRange){
                 var roll = d6() - d6();
@@ -1535,7 +1559,7 @@ function generateRandomAlien(species,rand){
                     case 4: species.voicedescriptor = "Clicks, Pops"; break;
                     case 5: species.voicedescriptor = "Mimic"; break;
                 }
-                species.language = "Verbal Language" + (species.voicedescriptor === "Standard" ? "" : " (" + species.voicedescriptor +")");
+                species.language = "Verbal Language (" + languageFreq + (species.voicedescriptor === "Standard" ? "" :  " " + species.voicedescriptor) + ")";
             }else{
                 species.language = "Multi-Modal Language (species cannot vocalize at a frequency it can hear)";
             }
@@ -3323,9 +3347,9 @@ function generateRandomAlien(species,rand){
                 nD += +(species.c3val[0])/2;
                 break;
         }
-        if(nD <= 3){
+        if(nD <= 4){
             species.sizeclass = "Small";
-        }else if(nD <= 6){
+        }else if(nD <= 7){
             species.sizeclass = "Standard ";
         }else if(nD <= 12){
             species.sizeclass = "Oversize";
