@@ -79,6 +79,13 @@ function generateRandomAlien(species,rand){
     }
     function setEnvironmentNiche(){ 
         var tc = species.homeworld.mainworld.tradecodes;
+        species.climate = species.homeworld.mainworld.climate;
+        if(tc.indexOf("Co") >= 0 || tc.indexOf("Tu") >= 0 || tc.indexOf("Fr") >= 0){
+            species.climate += " Ignores Cold-2 or less.";
+        }else if(tc.indexOf("Ho") >= 0 || tc.indexOf("Tr") >= 0){
+            species.climate += " Ignores Hot-2 or less.";
+        }
+
         var EnvironmentDM = d6() - d6();
         species.nativeTerrain = "Clear";
         var homeworld = species.homeworld.mainworld;
@@ -86,6 +93,7 @@ function generateRandomAlien(species,rand){
         if(homeworld.size <= 5){ EnvironmentDM -= 1;}
         if(homeworld.hydro >= 6){ EnvironmentDM += 1;}
         if(homeworld.hydro >= 9){ EnvironmentDM += 1;}
+        
         if(tc.indexOf("Tz") >= 0 || tc.indexOf("Lk") >= 0){
             if(EnvironmentDM < 0){ species.nativeTerrain = "Baked Lands"; EnvironmentDM = -1; }
             else if(EnvironmentDM > 0){ species.nativeTerrain = "Frozen Lands"; EnvironmentDM = 1; }
