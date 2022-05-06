@@ -3128,7 +3128,7 @@ function generateRandomAlien(species,rand){
         }else if(nD <= 12){
             species.sizeclass = "Oversize";
         }else{
-            species.sizeClass = "Titan";
+            species.sizeclass = "Titan";
         }
         
         switch(strD){
@@ -3148,7 +3148,7 @@ function generateRandomAlien(species,rand){
         if(planetSize <= 6){ bfp +=1;}
         if(planetSize >= 9){ bfp -=1;}
         if(planetSize >= 11){ bfp -=1;}
-        if(species.sizeClass === "Oversize"){ bfp -= 1;}
+        if(species.sizeclass === "Oversize"){ bfp -= 1;}
         if(species.locomotion === "Swim" || species.locomotion === "Diver"){ bfp += 10;}
         if(species.locomotion === "Triphib" || species.locomotion === "Flyphib"){ bfp += 20;}
         if(species.locomotion === "Flyer"){
@@ -3159,6 +3159,12 @@ function generateRandomAlien(species,rand){
             }
         }
         species.bfp = bfp;
+        if(bfp <= 5){ species.bfpdesc = "Compact"; }
+        else if(bfp <= 7){ species.bfpdesc = "Thick"; }
+        else if(bfp <= 9){ species.bfpdesc = "Typical"; }
+        else if(bfp <= 11){ species.bfpdesc = "Slender"; }
+        else if(bfp <= 20){ species.bfpdesc = "Elongated"; }
+        else{ species.bfpdesc = "Extremely Thin"; }
         species.height = getHeight(species.size, species.bfp);
     }
     function getHeight(size, bfp){
