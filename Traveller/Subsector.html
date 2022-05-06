@@ -482,16 +482,18 @@
             </fieldset>
             
         </fieldset>
-        <fieldset>
+        <fieldset class="collapsed">
             <legend>Native Life</legend>
             <label for="chkGenerateNatives"><input type="checkbox" id="chkGenerateNatives" title="chkGenerateNatives" checked="checked"> Generate Native Sophonts </label><br/>
             <label for="slctNativeLikelihood">Likelihood <select id="slctNativeLikelihood">
-                <option value="really">Every inhabitable planet</option>
-                <option value="everywhere">Every breathable planet</option>
-                <option value="common" selected="selected">Common</option>
+                <option value="really">All Candidate Worlds</option>
+                <option value="everywhere" selected="selected">Pervasive</option>
+                <option value="common">Common</option>
                 <option value="reasonable">Reasonable</option>
                 <option value="rare">Rare</option>
             </select></label>
+            <br/><span style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Candidate homeworlds have Atmo 2+ and Pop 7+.
+                <br/>Unless "All Candidate Worlds" selected, natives less likely in exotic atmo.</span>
         </fieldset>
     </fieldset>
     <br/>
@@ -1505,7 +1507,7 @@
                     if(mapContent[i].system){
                         if(mapContent[i].system.mainworld.atmo >= 9 && mapContent[i].system.mainworld.pop >= 7){
                             var isExotic = likelihood !== "really" && mapContent[i].system.mainworld.atmo >= 10 && mapContent[i].system.mainworld.atmo <= 12;
-                            var exoticMod = isExotic ? mapContent[i].system.mainworld.atmo - 10 : 0;
+                            var exoticMod = isExotic ? mapContent[i].system.mainworld.atmo - 9 : 0;
                             var check = ((MathRandom()*(max+exoticMod)) >>> 0)+1;
                             if(check === 1){
                                 lifecount++;
