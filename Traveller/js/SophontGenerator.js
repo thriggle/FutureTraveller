@@ -1371,9 +1371,13 @@ function generateRandomAlien(species,rand){
     function setLanguageMedium(){
         if(species.hearing !== "Deaf"){             
             var voiceIsInHearingRange = false;
-            for(var i = +(species.voicerange) * -1; i <= +(species.voicerange); i++){
-                var voiceFreq = +(species.voice) + i;
-                if(voiceFreq >= +(species.hearingfreq) - +(species.hearingspan) && voiceFreq <= +(species.hearingfreq) + +(species.hearingspan)){
+            var voicerange = parseInt(species.voicerange, 16),
+                voice = parseInt(species.voice, 16),
+                hearingspan = parseInt(species.hearingspan,16),
+                hearingfreq = parseInt(species.hearingfreq,16);
+            for(var i = voicerange * -1; i <= voicerange; i++){
+                var voiceFreq = voice + i;
+                if(voiceFreq >= hearingfreq - hearingspan && voiceFreq <= hearingfreq + hearingspan){
                     voiceIsInHearingRange = true;
                     break;
                 }
@@ -2342,13 +2346,14 @@ function generateRandomAlien(species,rand){
         }
         
         // tail
+        species.nonstandardmanipulators = 0;
         roll = d6() - d6() + structureMod; if(roll > 5){ roll = 5;}else if(roll < -5){ roll = -5;}
         switch(roll){
             case -5:
                 species.tail = "P";
                 species.taildesc = "Proboscis/Extended Snout";
                 species.taillimbs = 1;
-                species.manipulators += 1;
+                species.nonstandardmanipulators += 1;
                 break;
             case -4:
                 species.tail = "V";
@@ -2374,7 +2379,7 @@ function generateRandomAlien(species,rand){
                 species.tail = "M";
                 species.taildesc = "Prehensile Tail";
                 species.taillimbs = 1;
-                species.manipulators += 1;
+                species.nonstandardmanipulators += 1;
                 break;
             case 5:
                 species.tail = "A";
@@ -2483,10 +2488,15 @@ function generateRandomAlien(species,rand){
                 break; 
         }
         roll = d6() - d6() + featureMod;
+        if(species.bodystructure.indexOf("L") < 0){
+            while(roll === 3){ // re-roll hooves if no legs
+                roll = d6() - d6() + featureMod;
+            }
+        }
         switch(roll){
             case -6:
             case -5:
-                species.naturalweapon = "";
+                species.naturalweapon = "None";
                 break;
             case -4:
                 species.naturalweapon = "Tusks";
@@ -2500,7 +2510,7 @@ function generateRandomAlien(species,rand){
             case -1:
             case 0:
             case 1:
-                species.naturalweapon = "";
+                species.naturalweapon = "None";
                 break;
             case 2:
                 species.naturalweapon = "Claws";
@@ -2516,7 +2526,7 @@ function generateRandomAlien(species,rand){
                 species.naturalweapon = "Sting";
                 break;
         }
-        if(species.manipulators === 0){ species.mouthmanipulator = true; species.manipulators += 1; }
+        if(species.manipulators + species.nonstandardmanipulators === 0){ species.mouthmanipulator = true; species.manipulators += 1; }
         if(species.mouthmanipulator){
             roll = d6() - d6() - featureMod;
             if(roll <= -2){
@@ -2524,7 +2534,7 @@ function generateRandomAlien(species,rand){
             }else if(roll <= 2){
                 species.manipulatordesc = "Mouth (Socket)";
             }else{
-                species.manipulatordesc = "Mouth (Tentacles)";
+                species.manipulatordesc = "Mouth (Grasper)";
             }
         }else{
             roll = d6() - d6() + featureMod;
@@ -2554,6 +2564,44 @@ function generateRandomAlien(species,rand){
                 case 6:
                     species.manipulatordesc = "Sockets";
                     break;
+            }
+            species.allmanipulators = species.manipulators + " " + species.manipulatordesc;
+            if(species.tail === "P"){
+                // add proboscis descriptor to manipulator desc
+                roll = d6() - d6();
+                var proboscis = "";
+                switch(roll){
+                    case -5: proboscis = "Hand"; break;
+                    case -4: proboscis = "Grasper"; break;
+                    case -3: proboscis = "Gripper"; break;
+                    case -2: proboscis = "Tentacle"; break;
+                    case -1:
+                    case 0:
+                    case 1: proboscis = "Socket"; break;
+                    case 2: proboscis = "Gripper"; break;
+                    case 3: proboscis = "Tentacle"; break;
+                    case 4: proboscis = "Grasper"; break;
+                    case 5: proboscis = "Tentacle"; break;
+                }
+                species.allmanipulators += ", "+species.nonstandardmanipulators + " Proboscis (" + proboscis +")";
+            }else if(species.tail === "M"){
+                // add tail descriptor to manipulator desc
+                roll = d6() - d6();
+                var tail = "";
+                switch(roll){
+                    case -5: tail = "Hand"; break;
+                    case -4: tail = "Grasper"; break;
+                    case -3: tail = "Gripper"; break;
+                    case -2: tail = "Socket"; break;
+                    case -1:
+                    case 0:
+                    case 1: tail = "Tentacle"; break;
+                    case 2: tail = "Socket"; break;
+                    case 3: tail = "Gripper"; break;
+                    case 4: tail = "Grasper"; break;
+                    case 5: tail = "Hand"; break;
+                }
+                species.allmanipulators += ", "+species.nonstandardmanipulators + " Tail (" + proboscis +")";
             }
         }
             
