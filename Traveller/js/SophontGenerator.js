@@ -1730,6 +1730,7 @@ function generateRandomAlien(species,rand){
                         species.rearlimbs1 = limbsPerGroup;
                         species.rearlimbs2 = limbsPerGroup;
                     }
+                    species.stance = "Horizontal";
                     break;
                 case -4:
                     species.rearlimbs = "WM"; 
@@ -1763,6 +1764,7 @@ function generateRandomAlien(species,rand){
                     }else{
                         species.rearlimbs1 = limbsPerGroup;
                     }
+                    species.stance = "Horizontal";
                     break;
                 case 0:
                 case 1:
