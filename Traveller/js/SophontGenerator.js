@@ -1,5 +1,4 @@
 function generateRandomAlien(species,rand){
-    
     // species.name, species.homeworld.mainworld
     setEnvironmentNiche();
     setGender();
@@ -2829,7 +2828,7 @@ function generateRandomAlien(species,rand){
                     ["Fluidics","Chef"],
                     ["Gravitics","Dancer"],
                     ["Magnetics","Musician"]
-
+    
                 ],
                 [
                     ["Mechanic","Fighter"],
@@ -3437,5 +3436,168 @@ function generateRandomAlien(species,rand){
     }
 
     return species;
+}
+function getCasteSkill(){
+    var d6 = function d6(num){
+        if(!num){ num = 1;}
+        var sum = 0;
+        for(var i = 0; i < num; i++){
+            sum += ((Math.random()*6) >>> 0) + 1;
+        }           
+        return sum;
+    }
+    var ability = "--"
+    roll1 = d6()-1;
+    roll2 = d6()-1;
+    roll3 = d6();
+    while(roll3 > 2){ roll3 = d6();}
+    roll3-=1;
+    var tablec2 = [
+        [
+            ["Biologics","Actor"],
+            ["Craftsman","Artist"],
+            ["Electronics","Author"],
+            ["Fluidics","Chef"],
+            ["Gravitics","Dancer"],
+            ["Magnetics","Musician"]
+
+        ],
+        [
+            ["Mechanic","Fighter"],
+            ["Photonics","Forward Obs"],
+            ["Polymers","Heavy Wpns"],
+            ["Programmer","Navigator"],
+            ["Craftsman","Recon"],
+            ["Athlete","Sapper"]
+        ],
+        [
+            ["Archeology","Medic"],
+            ["Biology","Counsellor"],
+            ["Chemistry","Advocate"],
+            ["History","Leader"],
+            ["Linguistics","Liaison"],
+            ["Philosophy","Diplomat"]
+        ],
+        [
+            ["Pysics","Broker"],
+            ["Planetology","Trader"],
+            ["Psychohistory","Teacher"],
+            ["Psionicology","Survey"],
+            ["Psychology","Survival"],
+            ["Sophontology","Designer"]
+        ],
+        [
+            ["Automotive","Driver"],
+            ["Aquanautic","Seafarer"],
+            ["Aeronautic","Flyer"],
+            ["Animals","Rider"],
+            ["Animals","Teamster"],
+            ["Animals","Trainer"]
+        ],
+        [
+            ["Biologics","Mechanic"],
+            ["Craftsman","Photonics"],
+            ["Electronics","Polymers"],
+            ["Fluidics","Programmer"],
+            ["Gravitics","Crafstman"],
+            ["Magnetics","Athlete"]
+        ]
+    ];
+    ability = tablec2[roll1][roll2][roll3];
+    return ability;
+}
+function getRandomSpecialAbility(){
+    var d6 = function d6(num){
+        if(!num){ num = 1;}
+        var sum = 0;
+        for(var i = 0; i < num; i++){
+            sum += ((Math.random()*6) >>> 0) + 1;
+        }           
+        return sum;
+    }
+    var roll1 = d6();
+    var roll2 = d6(2)-2;
+    var abilities = [
+        ["Actor","Actor","Dancer","Artist","--","--","--","Music","Artist","Osmance","Osmance"],
+        ["Insight","Empath","Hibernate","Hypno","--","--","--","Intuition","Rage","ReGen","Curiosity"],
+        ["Math","Math","Memorize","SoundMimic","--","--","--","Mem","Mem","Mem","Morph"],
+        ["Touch","Touch","Vision","Vision","Hearing","--","--","--","Awareness","Perception","Smell","Smell"],
+        ["--","Stench","Blind","Deaf","--","--","--","Unaware","Oblivious","Anosmic","Anosmic"],
+        ["Table C2","Biologics","Mechanics","Mechanics","--","--","--","Craftsman","Craftsman","Electronics","Table C2"]
+    ];
+    var ability = abilities[roll1-1][roll2];
+    if(ability === "Table C2"){
+        roll1 = d6()-1;
+        roll2 = d6()-1;
+        roll3 = d6();
+        while(roll3 > 2){ roll3 = d6();}
+        roll3-=1;
+        var tablec2 = [
+            [
+                ["Biologics","Actor"],
+                ["Craftsman","Artist"],
+                ["Electronics","Author"],
+                ["Fluidics","Chef"],
+                ["Gravitics","Dancer"],
+                ["Magnetics","Musician"]
+
+            ],
+            [
+                ["Mechanic","Fighter"],
+                ["Photonics","Forward Obs"],
+                ["Polymers","Heavy Wpns"],
+                ["Programmer","Navigator"],
+                ["Craftsman","Recon"],
+                ["Athlete","Sapper"]
+            ],
+            [
+                ["Archeology","Medic"],
+                ["Biology","Counsellor"],
+                ["Chemistry","Advocate"],
+                ["History","Leader"],
+                ["Linguistics","Liaison"],
+                ["Philosophy","Diplomat"]
+            ],
+            [
+                ["Pysics","Broker"],
+                ["Planetology","Trader"],
+                ["Psychohistory","Teacher"],
+                ["Psionicology","Survey"],
+                ["Psychology","Survival"],
+                ["Sophontology","Designer"]
+            ],
+            [
+                ["Automotive","Driver"],
+                ["Aquanautic","Seafarer"],
+                ["Aeronautic","Flyer"],
+                ["Animals","Rider"],
+                ["Animals","Teamster"],
+                ["Animals","Trainer"]
+            ],
+            [
+                ["Biologics","Mechanic"],
+                ["Craftsman","Photonics"],
+                ["Electronics","Polymers"],
+                ["Fluidics","Programmer"],
+                ["Gravitics","Crafstman"],
+                ["Magnetics","Athlete"]
+            ]
+        ];
+        ability = tablec2[roll1][roll2][roll3];
+        
+    }
+    if(ability === "Mem"){
+        var roll = d6();
+        while(d6 === 4){ roll = d6();}
+        switch(roll){
+            case 1: ability = "MemVision"; break;
+            case 2: ability = "MemAudio"; break;
+            case 3: ability = "MemScent"; break;
+            case 5: ability = "MemAware"; break;
+            case 6: ability = "MemPercept"; break;
+        }
+            
+    }
+    return ability;
 }
 

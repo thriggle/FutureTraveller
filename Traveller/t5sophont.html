@@ -474,7 +474,14 @@
                         <td><span data-detail="caste12" data-source="species"></span></td>
                     </tr>
                 </table>
-                
+                <fieldset>
+                    <legend>Roll for Special</legend>
+                    <input type="button" value="Roll for Special" id="btnGetSpecialAbility"/>
+                    <span id="specialAbility"></span>
+                    <br>
+                    <input type="button" value="Roll for Skilled Caste" id="btnGetCasteSkill"/>
+                    <span id="casteSkill"></span>
+                </fieldset>
                 
         </fieldset></td>
         </tr>
@@ -484,6 +491,17 @@
     
 </body>
 <script>
+    var abilityRoll = 0, skillRoll = 0;
+    document.getElementById("btnGetSpecialAbility").addEventListener("click",function(){
+        var output = document.getElementById("specialAbility");
+        removeChildElements(output);
+        output.innerHTML = "Roll " + ++abilityRoll + ": " + getRandomSpecialAbility();
+    });
+    document.getElementById("btnGetCasteSkill").addEventListener("click",function(){
+        var output = document.getElementById("casteSkill");
+        removeChildElements(output);
+        output.innerHTML = "Roll " + ++skillRoll + ": " + getCasteSkill();
+    });
      var collapserHandles = document.querySelectorAll("fieldset legend");
     for(var i = 0, len = collapserHandles.length; i < len; i++){
         var handle = collapserHandles[i];
