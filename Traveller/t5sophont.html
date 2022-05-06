@@ -74,6 +74,7 @@
         @media (max-width:768px){
             .jsonbuttons{ display:block; width:100%; text-align:right;}
         }
+        table label{text-align:right;}
 </style>
 <body>
     <h1>Traveller Sophont Creation System</h1>
@@ -96,12 +97,36 @@
     <hr />
     <div id="homeworldcontainer" class="hidden">
         <h2>Specify Homeworld Details</h2>
-        <label for="inWorldName">World Name: <input type="text" id="inWorldName" title="inWorldName" placeholder="World Name"></label><br>
-        <label for="inUWP">UWP: <input type="text" id="inUWP" title="inUWP" placeholder="UWP"></label><br/>
-        <label for="inStarType">Star Type: <input type="text" id="inStarType" title="inStarType" placeholder="StarType"></label><br/>
-        <label for="inStarSize">Star Size <input type="text" id="inStarSize" title="inStarSize" placeholder="StarSize"></label><br/>
-        <label for="inStarDecimal">Star Decimal <input type="text" id="inStarDecimal" title="inStarDecimal" placeholder="StarDecimal"></larbel><br/>
-        <label for="inTradeCodes">Trade Codes <input type="text" id="inTradeCodes" title="inTradeCodes" placeholder="TradeCodes"></label><br/>
+        <table>
+            <tr>
+                <td>
+                    <label for="inWorldName">World Name:</label>
+                </td>
+                <td><input type="text" id="inWorldName" title="inWorldName" placeholder="World Name"></td>
+            </tr>
+            <tr>
+                <td><label for="inUWP">UWP: </label></td>
+                <td><input type="text" id="inUWP" title="inUWP" placeholder="UWP"></td>
+            </tr>
+            <tr>
+                <td><label for="inStarType">Star Type: </label></td>
+                    <td><input type="text" id="inStarType" title="inStarType" placeholder="StarType"></td>
+            </tr>
+            <tr>
+                <td><label for="inStarSize">Star Size:</label></td>
+                <td><input type="text" id="inStarSize" title="inStarSize" placeholder="StarSize"></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="inStarDecimal">Star Decimal: </label>
+                </td>
+                <td><input type="text" id="inStarDecimal" title="inStarDecimal" placeholder="StarDecimal"></td>
+            </tr>
+            <tr>
+                <td><label for="inTradeCodes">Trade Codes: </label></td>
+                <td><input type="text" id="inTradeCodes" title="inTradeCodes" placeholder="TradeCodes"></td>
+            </tr>
+            </table>
         <hr>
     </div>
     <h2 id="name"></h2>
