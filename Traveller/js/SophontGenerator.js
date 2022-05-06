@@ -662,22 +662,22 @@ function generateRandomAlien(species,rand){
         }
         roll = d6() - d6();
         if(roll <= -5){
-            species.genderassignment = "assigned by family";
+            species.genderassignment = "Assigned by family";
             species.gendershift = "progresses along gender table at each life stage";
         }else if(roll <= -4){
-            species.genderassignment = "initially assigned at life stage 2";
+            species.genderassignment = "Initially assigned at life stage 2";
             species.gendershift = "progresses along gender table at each life stage";
         }else if(roll <= -3){
-            species.genderassignment = "neuter until life stage 2";
+            species.genderassignment = "Neuter until life stage 2";
             species.gendershift = "fixed";
         }else if(roll <= 2){
-            species.genderassignment = "assigned at birth";
+            species.genderassignment = "Assigned at birth";
             species.gendershift = "fixed";
         }else if(roll <= 3){
-            species.genderassignment = "neuter until life stage 2";
+            species.genderassignment = "Neuter until life stage 2";
             species.gendershift = "fixed";
         }else if(roll <= 4){
-            species.genderassignment = "neuter until life stage 2";
+            species.genderassignment = "Neuter until life stage 2";
             species.gendershift = "transforms at life stage 6";
         }else{
             species.genderassignment = "Assigned by individual";
@@ -1076,12 +1076,12 @@ function generateRandomAlien(species,rand){
             }
             roll = d6();
             switch(roll){
-                case 1: species.casteassignment = "assigned at birth"; break;
-                case 2: species.casteassignment = "assigned at life stage 2"; break;
-                case 3: species.casteassignment = "assigned by heredity"; break;
-                case 4: species.casteassignment = "assigned by community"; break;
-                case 5: species.casteassignment = "assigned by family choice"; break;
-                case 6: species.casteassignment = "assigned by personal choice"; break;
+                case 1: species.casteassignment = "Assigned at birth"; break;
+                case 2: species.casteassignment = "Assigned at life stage 2"; break;
+                case 3: species.casteassignment = "Assigned by heredity"; break;
+                case 4: species.casteassignment = "Assigned by community"; break;
+                case 5: species.casteassignment = "Assigned by family choice"; break;
+                case 6: species.casteassignment = "Assigned by personal choice"; break;
             }
             roll = d6();
             switch(roll){
