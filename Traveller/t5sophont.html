@@ -476,11 +476,12 @@
                 </table>
                 <fieldset>
                     <legend>Roll for Special</legend>
-                    <input type="button" value="Roll for Special" id="btnGetSpecialAbility"/>
+                    <input type="button" value="Roll for Special Ability" id="btnGetSpecialAbility"/>
                     <span id="specialAbility"></span>
-                    <br>
-                    <input type="button" value="Roll for Skilled Caste" id="btnGetCasteSkill"/>
-                    <span id="casteSkill"></span>
+                    <div data-if="Skilled" data-ifdetail="castestructure" data-source="species">
+                        <input type="button" value="Roll for Skilled Caste" id="btnGetCasteSkill"/>
+                        <span id="casteSkill"></span>
+                    </div>
                 </fieldset>
                 
         </fieldset></td>
@@ -603,7 +604,17 @@
                 elmt.appendChild(document.createTextNode(value));
             }
         });
-
+        document.querySelectorAll("[data-if]").forEach(function(elmt){
+            var source = elmt.getAttribute("data-source");
+            var detail = elmt.getAttribute("data-ifdetail");
+            var value = source === "species" ? species[detail] : ( source === "mainworld" ? species.homeworld.mainworld[detail] : species[source][detail]);
+            var target = elmt.getAttribute("data-if");
+            if(value === target){
+                elmt.classList.remove("hidden");
+            }else{
+                elmt.classList.add("hidden");
+            }
+        });
     }
     function removeChildElements(element){
         while(element.childNodes.length > 0){
