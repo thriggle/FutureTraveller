@@ -1246,6 +1246,7 @@ function generateRandomAlien(species,rand){
             var audible = false;
             var upperFreq = parseInt(species.hearingfreq,16) + parseInt(species.hearingspan,16);
             var lowerFreq = parseInt(species.hearingfreq,16) - parseInt(species.hearingspan,16);
+            if(lowerFreq <= 0){ lowerFreq = 1;}
             if( lowerFreq <= 5){
                 infrasound = true; 
                 if(upperFreq >= 6){
@@ -1318,6 +1319,7 @@ function generateRandomAlien(species,rand){
             var audible = false;
             var upperFreq = parseInt(species.voice,16) + parseInt(species.voicerange,16);
             var lowerFreq = parseInt(species.voice,16) - parseInt(species.voicerange,16);
+            if(lowerFreq <= 0){ lowerFreq = 1;}
             if( lowerFreq <= 5){
                 infrasound = true; 
                 if(upperFreq >= 6){
