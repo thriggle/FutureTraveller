@@ -48,12 +48,31 @@
         fieldset.collapsed > legend::before{
             content:"► ";
         }
+        input[type=button],input[type=file]::file-selector-button{
+            background-color:black; color:white;
+            cursor:pointer;
+            border-radius: 0.5rem;
+            padding:0.4rem;
+            font-family:Bahnschrift;
+            box-shadow:1px 2px 3px #555;
+            margin-bottom:3px;
+        }
+        input[type=button]:hover,input[type=file]::file-selector-button:hover{
+            background-color:red;
+        }
+        label{ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
 </style>
 <body>
     <h1>Traveller Sophont Creation System</h1>
-    <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
-        <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
     <input type="button" id="btnGenerate" value="Generate Sophont" />
+    <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
+    <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
+    <span style="float:right;">
+
+        <input type="button" value="Save to .json" id="btnExportJSON"/>
+        <label for="btnImportJSON">Load from .json: <input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/></label>
+    </span>
+    
     <hr />
     <h2 id="name"></h2>
     <table>
@@ -478,10 +497,10 @@
                 <fieldset>
                     <legend>Roll for Special</legend>
                     <input type="button" value="Roll for Special Ability" id="btnGetSpecialAbility"/>
-                    <span id="specialAbility"></span>
+                    <br/><span id="specialAbility"></span>
                     <div data-if="Skilled" data-ifdetail="castestructure" data-source="species">
                         <input type="button" value="Roll for Skilled Caste" id="btnGetCasteSkill"/>
-                        <span id="casteSkill"></span>
+                        <br/><span id="casteSkill"></span>
                     </div>
                 </fieldset>
                 
@@ -489,7 +508,16 @@
         </tr>
         
     </table>
-    
+    <hr/>
+    <fieldset class="collapsed">
+        <legend>Data</legend>
+        <fieldset>
+            <legend>JSON</legend>
+            <textarea id="json" rows="10" cols="50"></textarea><br/>
+            
+            <input type="button" value="Apply above JSON" id="btnLoadFromJson"/>
+        </fieldset>
+    </fieldset>
     
 </body>
 <script>
@@ -520,6 +548,31 @@
         processHash();
     }
     NameGenerator("js/names.jsonc",setup,null,MathRandom);
+    document.getElementById("btnLoadFromJson").addEventListener("click",function(){
+        var json = document.getElementById("json").value;
+        var species = JSON.parse(json);
+        renderDetails(species);
+    });
+    document.getElementById("btnExportJSON").addEventListener("click",function(){
+        var data = document.getElementById("json").value;
+        var species = JSON.parse(data);
+        var a = document.createElement("a");
+        a.href = "data:text/json;charset=utf-8,"+encodeURIComponent(data);
+        a.download = species.name + " of " +species.homeworld.name +".json";
+        a.click();
+    });
+    document.getElementById("btnImportJSON").addEventListener("change", function(){
+        var curFiles = document.getElementById("btnImportJSON").files;
+        if(curFiles.length > 0){
+            var reader = new FileReader();
+            reader.onload = function(event){
+                document.getElementById("json").value = event.target.result;
+                document.getElementById("btnLoadFromJson").click();
+                //document.getElementById("txtSeed").value = curFiles[0].name.replace(".json","");
+            }
+            reader.readAsText(curFiles[0]);
+        }
+    });
     function processHash(){
         var seed = window.location.hash.substr(1);
         document.getElementById("txtSeed").value = decodeURI(seed);
@@ -616,6 +669,7 @@
                 elmt.classList.add("hidden");
             }
         });
+        document.getElementById("json").value = JSON.stringify(species);
     }
     function removeChildElements(element){
         while(element.childNodes.length > 0){
