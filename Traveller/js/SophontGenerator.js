@@ -2867,15 +2867,7 @@ function generateRandomAlien(species,rand){
                             (ability === "SoundMimic" && species.hearing === "Deaf") ||
                             (ability === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious")
                         ){
-                            ability = getSpecialAbility();
-                            // no effect if disability for a sense species does not have
-                            if((ability === "Deaf" && species.hearing === "Deaf") || 
-                            (ability === "Oblivious" && species.percep === "Oblivious") ||
-                            (ability === "Anosmic" && species.smell === "Anosmic") ||
-                            (ability === "Blind" && species.vision === "Blind") ||
-                            (ability === "Unaware" && species.aware === "Unaware")){
-                                ability = "--";
-                            }
+                            ability = getSpecialAbility();                           
                         }
                         if(ability === "Mem"){
                             var reroll = true;
@@ -2916,6 +2908,14 @@ function generateRandomAlien(species,rand){
                                 }
                             }
                             
+                        }
+                        // no effect if disability for a sense species does not have
+                        if((ability === "Deaf" && species.hearing === "Deaf") || 
+                        (ability === "Oblivious" && species.percep === "Oblivious") ||
+                        (ability === "Anosmic" && species.smell === "Anosmic") ||
+                        (ability === "Blind" && species.vision === "Blind") ||
+                        (ability === "Unaware" && species.aware === "Unaware")){
+                            ability = "--";
                         }
                         species.genderabilities.push(ability);
                         break;
@@ -2937,8 +2937,7 @@ function generateRandomAlien(species,rand){
                             (ability === "SoundMimic" && species.hearing === "Deaf") ||
                             (ability === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious")
                         ){
-                            ability = getSpecialAbility();
-                            // no effect if disability for a sense species does not have
+                            ability = getSpecialAbility();    
                             
                         }
                         if(ability === "Mem"){
@@ -2981,6 +2980,7 @@ function generateRandomAlien(species,rand){
                             }
                             
                         }
+                         // no effect if disability for a sense species does not have
                         if((ability === "Deaf" && species.hearing === "Deaf") || 
                             (ability === "Oblivious" && species.percep === "Oblivious") ||
                             (ability === "Anosmic" && species.smell === "Anosmic") ||
