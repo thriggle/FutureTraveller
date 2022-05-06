@@ -67,7 +67,7 @@
             background-color:red;
         }
         input[type=file]{width:0px; opacity:0;}
-        label{ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        label{ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; -ms-user-select: none; -webkit-user-select: none; -moz-user-select: none;;}
         @media (min-width:769px){
             .jsonbuttons{ display:inline-block; text-align:right;}
         }
@@ -78,11 +78,13 @@
 <body>
     <h1>Traveller Sophont Creation System</h1>
     <div>
-
-        <span style="display:inline-block; width:40%; min-width:30rem; text-align:left;">
+        <span style="display:inline-block; min-width:30rem; text-align:left;">
             <input type="button" id="btnGenerate" value="Generate Sophont" />
             <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
             <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
+        </span>
+        <span style="display:inline-block; min-width:20rem; text-align:left;">
+            <label for="chkRandomHomeworld"><input id="chkRandomHomeworld" type="checkbox" checked="checked"> Use Random Homeworld</label>
         </span>
         <div class="jsonbuttons">
             <span style="display:inline-block;">
@@ -90,10 +92,18 @@
                 <label role="button" for="btnImportJSON">Load from .json<input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/></label>
             </span>
         </div>
-        
-        
     </div>
     <hr />
+    <div id="homeworldcontainer" class="hidden">
+        <h2>Specify Homeworld Details</h2>
+        <label for="inWorldName">World Name: <input type="text" id="inWorldName" title="inWorldName" placeholder="World Name"></label><br>
+        <label for="inUWP">UWP: <input type="text" id="inUWP" title="inUWP" placeholder="UWP"></label><br/>
+        <label for="inStarType">Star Type: <input type="text" id="inStarType" title="inStarType" placeholder="StarType"></label><br/>
+        <label for="inStarSize">Star Size <input type="text" id="inStarSize" title="inStarSize" placeholder="StarSize"></label><br/>
+        <label for="inStarDecimal">Star Decimal <input type="text" id="inStarDecimal" title="inStarDecimal" placeholder="StarDecimal"></larbel><br/>
+        <label for="inTradeCodes">Trade Codes <input type="text" id="inTradeCodes" title="inTradeCodes" placeholder="TradeCodes"></label><br/>
+        <hr>
+    </div>
     <h2 id="name"></h2>
     <table>
         <tr>
@@ -552,6 +562,15 @@
         removeChildElements(output);
         output.innerHTML = "Roll " + ++skillRoll + ": " + getCasteSkill();
     });
+    document.getElementById("chkRandomHomeworld").addEventListener("change",function(){
+        var manual = !(document.getElementById("chkRandomHomeworld").checked);
+        if(manual){
+            
+            document.getElementById("homeworldcontainer").classList.remove("hidden");
+        }else{
+            document.getElementById("homeworldcontainer").classList.add("hidden");
+        }
+    });
      var collapserHandles = document.querySelectorAll("fieldset legend");
     for(var i = 0, len = collapserHandles.length; i < len; i++){
         var handle = collapserHandles[i];
@@ -647,20 +666,68 @@
         generator.setRandom(MathRandom);
         var species = {};
         species.name = addCaps(generator.getRandomName("word"));
-        var systemName = addCaps(generator.getRandomName("system"));
-        species.homeworld = generateSystemDetails(
-            addCaps(generator.getRandomName("system")), 
-            8, // gas giant frequency
-            16 // max tech level
-        );
-        while(species.homeworld.mainworld.atmo < 2 || species.homeworld.mainworld.pop < 7){
-            species.homeworld  = generateSystemDetails(species.homeworld.name, 8, 16);
-       
+        var systemName = document.getElementById("inWorldName").value;
+        if(document.getElementById("chkRandomHomeworld").checked){
+            systemName = addCaps(generator.getRandomName("system"));
+            species.homeworld = generateSystemDetails(
+                systemName, 
+                8, // gas giant frequency
+                16 // max tech level
+            );
+            while(species.homeworld.mainworld.atmo < 2 || species.homeworld.mainworld.pop < 7){
+                species.homeworld  = generateSystemDetails(species.homeworld.name, 8, 16);
+            }
+            species.homestar = species.homeworld.stars.primary.type + (typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal)  + species.homeworld.stars.primary.size;
+        }else{
+            var throwawayName = generator.getRandomName("system");
+            var throwawayWorld = generateSystemDetails(throwawayName,8,16);
+            while(throwawayWorld.mainworld.atmo < 2 || throwawayWorld.mainworld.pop < 7){
+                throwawayWorld  = generateSystemDetails(throwawayWorld.name, 8, 16);
+            }
+            species.homeworld = {};
+            species.homeworld.name = systemName;
+            species.homeworld.uwp = document.getElementById("inUWP").value;
+            species.homeworld.mainworld = {};
+            species.homeworld.mainworld.size = parseInt(species.homeworld.uwp[1],16);
+            species.homeworld.mainworld.atmo = parseInt(species.homeworld.uwp[2],16);
+            species.homeworld.mainworld.hydro = parseInt(species.homeworld.uwp[3],16);
+            var tc = [];
+            if(document.getElementById("inTradeCodes").value.length > 0){
+                tc = document.getElementById("inTradeCodes").value.split(",");
+            }
+            species.homeworld.tradecodes = tc;
+            species.homeworld.mainworld.tradecodes = tc;
+            species.homeworld.mainworld.uwp =  species.homeworld.uwp;
+            var climate = "Temperate.";
+            if(tc.indexOf("Tr") >= 0){
+                climate = "Tropic.";
+            }else if(tc.indexOf("Ho") >= 0){
+                climate = "Hot.";
+            }else if(tc.indexOf("Tu") >= 0){
+                climate = "Tundra.";
+            }else if(tc.indexOf("Co") >= 0){
+                climate = "Cold.";
+            }else if(tc.indexOf("Fr") >= 0){
+                climate = "Frozen.";
+            }
+            species.homeworld.mainworld.climate = climate;
+            species.homeworld.stars = {};
+            species.homeworld.stars.primary = {};
+            species.homeworld.stars.primary.type =  document.getElementById("inStarType").value;
+            var decimal = document.getElementById("inStarDecimal").value
+            if(decimal.length > 0){ species.homeworld.stars.primary.decimal = decimal; }
+            species.homeworld.stars.primary.size = document.getElementById("inStarSize").value;
+            species.homestar = species.homeworld.stars.primary.type + (typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal)  + species.homeworld.stars.primary.size;
         }
-        species.homestar = species.homeworld.stars.primary.type + (typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal)  + species.homeworld.stars.primary.size;
         return species;
     }
     function renderDetails(species){
+        document.getElementById("inWorldName").value = species.homeworld.name;
+        document.getElementById("inUWP").value = species.homeworld.uwp;
+        document.getElementById("inStarType").value = species.homeworld.stars.primary.type;
+        document.getElementById("inStarSize").value = species.homeworld.stars.primary.size;
+        document.getElementById("inStarDecimal").value = typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal;
+        document.getElementById("inTradeCodes").value = species.homeworld.mainworld.tradecodes;
         console.log(species);
         var elmtName = document.getElementById("name");
         removeChildElements(elmtName);

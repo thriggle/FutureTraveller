@@ -94,6 +94,9 @@ function generateRandomAlien(species,rand){
             else if(EnvironmentDM > 0){ species.nativeTerrain = "Frozen Lands"; EnvironmentDM = 1; }
             else{ species.nativeTerrain = "Twilight Zone"; }
         }else{
+            if(homeworld.hydro === 0){
+                EnvironmentDM -= 1;
+            }
             if(EnvironmentDM <= -5){
                 EnvironmentDM = -5;
                 species.nativeTerrain = "Mountain";
