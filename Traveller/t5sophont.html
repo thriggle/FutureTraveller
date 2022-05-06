@@ -48,31 +48,51 @@
         fieldset.collapsed > legend::before{
             content:"► ";
         }
-        input[type=button],input[type=file]::file-selector-button{
+        input[type=button], label[for='btnImportJSON']{
             background-color:black; color:white;
             cursor:pointer;
+            
             border-radius: 0.5rem;
             padding:0.4rem;
             font-family:Bahnschrift;
+            font-size: 1rem;
             box-shadow:1px 2px 3px #555;
             margin-bottom:3px;
         }
-        input[type=button]:hover,input[type=file]::file-selector-button:hover{
+        label[for='btnImportJSON']{
+            border:2px solid black;
+            padding: 0.5rem;
+        }
+        input[type=button]:hover, label[for='btnImportJSON']:hover{
             background-color:red;
         }
+        input[type=file]{width:0px; opacity:0;}
         label{ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        @media (min-width:769px){
+            .jsonbuttons{ display:inline-block; text-align:right;}
+        }
+        @media (max-width:768px){
+            .jsonbuttons{ display:block; width:100%; text-align:right;}
+        }
 </style>
 <body>
     <h1>Traveller Sophont Creation System</h1>
-    <input type="button" id="btnGenerate" value="Generate Sophont" />
-    <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
-    <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
-    <span style="float:right;">
+    <div>
 
-        <input type="button" value="Save to .json" id="btnExportJSON"/>
-        <label for="btnImportJSON">Load from .json: <input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/></label>
-    </span>
-    
+        <span style="display:inline-block; width:40%; min-width:30rem; text-align:left;">
+            <input type="button" id="btnGenerate" value="Generate Sophont" />
+            <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
+            <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
+        </span>
+        <div class="jsonbuttons">
+            <span style="display:inline-block;">
+                <input type="button" value="Save as .json" id="btnExportJSON"/>
+                <label role="button" for="btnImportJSON">Load from .json<input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/></label>
+            </span>
+        </div>
+        
+        
+    </div>
     <hr />
     <h2 id="name"></h2>
     <table>
