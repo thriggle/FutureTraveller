@@ -3598,6 +3598,7 @@ function getRandomSpecialAbility(){
         }
             
     }
+    if(ability === "--"){ ability = "(No Special Ability)";}
     return ability;
 }
 
