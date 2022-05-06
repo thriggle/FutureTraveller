@@ -2769,14 +2769,14 @@ function generateRandomAlien(species,rand){
                         species.genderabilities.push(ability);
                         break;
                     case 2:
-                        species.genderabilities.push("Roll on Special Abilities table");
+                        species.genderabilities.push("Roll");
                         break;
                     case 3:
                     case 4:
                         species.genderabilities.push("--");
                         break;
                     case 5:
-                        species.genderabilities.push("Roll twice on Special Abilities table"); 
+                        species.genderabilities.push("Roll twice"); 
                         break;
                     case 6:
                         var ability = getSpecialAbility();
@@ -2958,14 +2958,14 @@ function generateRandomAlien(species,rand){
                         species.casteabilities.push(ability);
                         break;
                     case 2:
-                        species.casteabilities.push("Roll on Special Abilities table");
+                        species.casteabilities.push("Roll");
                         break;
                     case 3:
                     case 4:
                         species.casteabilities.push("--");
                         break;
                     case 5:
-                        species.casteabilities.push("Roll twice on Special Abilities table"); 
+                        species.casteabilities.push("Roll twice"); 
                         break;
                     case 6:
                         var ability = getSpecialAbility();
