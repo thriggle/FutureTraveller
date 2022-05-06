@@ -1378,7 +1378,7 @@ function generateRandomAlien(species,rand){
             }
             species.smell = "S-"+species.smellconstant+"-"+species.smellsharpness; 
             if(species.smellconstant > 10){
-                if(parseInt(species.smellsharpness,16) >= 2){
+                if(species.smellconstant + parseInt(species.smellsharpness,16) >= 12){
                     species.smelldesc = "More sensitive sense of smell than humans";
                 }else{
                     species.smelldesc = "More sensitive but less sharp sense of smell than humans";
@@ -1392,7 +1392,7 @@ function generateRandomAlien(species,rand){
                     species.smelldesc = "Similar but less sharp sense of smell compared to humans";
                 }
             }else if(species.smellconstant < 10){
-                if(parseInt(species.smellsharpness,16) > 2){
+                if(species.smellconstant + parseInt(species.smellsharpness,16) > 12){
                     species.smelldesc = "Less sensitive but more sharp sense of smell than humans";
                 }else{
                     species.smelldesc = "Less sensitive sense of smell compared to humans";
