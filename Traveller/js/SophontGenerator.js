@@ -2522,7 +2522,7 @@ function generateRandomAlien(species,rand){
             case -4:
                 species.tail = "V";
                 species.taildesc = "Vestigial Tail";
-                species.taillimbs = 1;
+                species.taillimbs = 0;
                 break;
             case -3:
             case -2: 
