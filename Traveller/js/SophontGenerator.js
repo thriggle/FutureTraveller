@@ -512,20 +512,20 @@ function generateRandomAlien(species,rand){
             species.genders = [];
             for(var i = 0; i < 6; i++){
                 //var gender = addCaps(generator.getRandomName("word.1or2sylword"), species.genders);
-                var gender = "Gender " + i;
+                var gender = "Gender " + (i+1);
                 species.genders.push(gender);
             }
             species.gender2 = species.genders[0];
-            species.gender3 = pickRandom(species.genders);
+            species.gender3 = species.genders[1];
             species.gender4 = pickRandom(species.genders);
             species.gender5 = pickRandom(species.genders);
             species.gender6 = pickRandom(species.genders);
-            species.gender7 = species.genders[1];
+            species.gender7 = pickRandom(species.genders);
             species.gender8 = pickRandom(species.genders);
             species.gender9 = pickRandom(species.genders);
             species.gender10 = pickRandom(species.genders);
             species.gender11 = pickRandom(species.genders);
-            species.gender12 = species.genders[2];
+            species.gender12 = pickRandom(species.genders);
             var genderHash = {}
             genderHash[species.gender2] = true;
             species.genders = [species.gender2];
@@ -3267,7 +3267,7 @@ function generateRandomAlien(species,rand){
                 nD += +(species.c3val[0])*2;
                 break;
             case "Vig": 
-                nD += +(species.c3val[0])/3;
+                nD += +(species.c3val[0])/2;
                 break;
         }
         if(nD <= 3){
@@ -3279,16 +3279,15 @@ function generateRandomAlien(species,rand){
         }else{
             species.sizeclass = "Titan";
         }
-        
         switch(strD){
             case 1:
             case 2:
-            case 3: species.size = nD * 12;
-            case 4: species.size = nD * 48;
-            case 5: species.size = nD * 60;
-            case 6: species.size = nD * 72;
-            case 7: species.size = nD * 84;
-            case 8: species.size = nD * 96;
+            case 3: species.size = nD * 12; break;
+            case 4: species.size = nD * 48; break;
+            case 5: species.size = nD * 60; break;
+            case 6: species.size = nD * 72; break;
+            case 7: species.size = nD * 84; break;
+            case 8: species.size = nD * 96; break;
         }
         var bfp = d6(2) + 2;
         var planetSize = species.homeworld.mainworld.size;
@@ -3359,6 +3358,7 @@ function generateRandomAlien(species,rand){
         return heightsByBFP[bfp-1][indexOfSize] + "m"
         
     }
+
     return species;
 }
 
