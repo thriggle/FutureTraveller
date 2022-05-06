@@ -1486,7 +1486,7 @@ function generateRandomAlien(species,rand){
                 case 5: species.awarenessacuity = "5"; break;
             }
             species.aware = "A-"+species.awarenessconstant+"-"+species.awarenessacuity;
-            species.awaredesc = "Sensitive to the auras, electricity, and magnetic fields";
+            species.awaredesc = "Sensitive to auras, electricity, and magnetic fields";
         }
     
         roll = d6() - d6();
