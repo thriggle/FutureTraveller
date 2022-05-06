@@ -1563,6 +1563,7 @@ function generateRandomAlien(species,rand){
         species.manipulators = 0;
         species.mouthmanipulator = false;
         species.stance = "Vertical";
+        species.allmanipulators = "None";
         var limbsPerGroup = 0;
         // determine symmetry
         var roll = d6() - d6();
@@ -2672,6 +2673,7 @@ function generateRandomAlien(species,rand){
             }else{
                 species.manipulatordesc = "Mouth (Grasper)";
             }
+            species.allmanipulators = species.manipulatordesc;
         }else{
             roll = d6() - d6() + featureMod;
             switch(roll){
