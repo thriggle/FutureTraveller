@@ -2886,13 +2886,7 @@ function generateRandomAlien(species,rand){
                         ){
                             ability = getSpecialAbility();
                             // no effect if disability for a sense species does not have
-                            if((ability === "Deaf" && species.hearing === "Deaf") || 
-                            (ability === "Oblivious" && species.percep === "Oblivious") ||
-                            (ability === "Anosmic" && species.smell === "Anosmic") ||
-                            (ability === "Blind" && species.vision === "Blind") ||
-                            (ability === "Unaware" && species.aware === "Unaware")){
-                                ability = "--";
-                            }
+                            
                         }
                         if(ability === "Mem"){
                             var reroll = true;
@@ -2933,6 +2927,13 @@ function generateRandomAlien(species,rand){
                                 }
                             }
                             
+                        }
+                        if((ability === "Deaf" && species.hearing === "Deaf") || 
+                            (ability === "Oblivious" && species.percep === "Oblivious") ||
+                            (ability === "Anosmic" && species.smell === "Anosmic") ||
+                            (ability === "Blind" && species.vision === "Blind") ||
+                            (ability === "Unaware" && species.aware === "Unaware")){
+                                ability = "--";
                         }
                         var ability2 = getSpecialAbility();
                         while (
@@ -3075,6 +3076,14 @@ function generateRandomAlien(species,rand){
                                 }
                                 
                             }
+                            // no effect if disability for a sense species does not have
+                            if((ability === "Deaf" && species.hearing === "Deaf") || 
+                            (ability === "Oblivious" && species.percep === "Oblivious") ||
+                            (ability === "Anosmic" && species.smell === "Anosmic") ||
+                            (ability === "Blind" && species.vision === "Blind") ||
+                            (ability === "Unaware" && species.aware === "Unaware")){
+                                ability = "--";
+                            }
                             species.casteabilities.push(ability);
                             break;
                         case 2:
@@ -3137,6 +3146,14 @@ function generateRandomAlien(species,rand){
                                 }
                                 
                             }
+                            // no effect if disability for a sense species does not have
+                            if((ability === "Deaf" && species.hearing === "Deaf") || 
+                            (ability === "Oblivious" && species.percep === "Oblivious") ||
+                            (ability === "Anosmic" && species.smell === "Anosmic") ||
+                            (ability === "Blind" && species.vision === "Blind") ||
+                            (ability === "Unaware" && species.aware === "Unaware")){
+                                ability = "--";
+                            }
                             var ability2 = getSpecialAbility();
                             while (
                                 (ability2 === "Music" && (species.hearing === "Deaf" && ability !== "Hearing") && (species.percep === "Oblivious" && ability !== "Perception") ) ||
@@ -3186,7 +3203,17 @@ function generateRandomAlien(species,rand){
                                 }
                                 
                             }
-                            if(ability === "--"){
+                            // no effect if disability for a sense species does not have
+                            if((ability2 === "Deaf" && species.hearing === "Deaf" ) || 
+                            (ability2 === "Oblivious" && species.percep === "Oblivious") ||
+                            (ability2 === "Anosmic" && species.smell === "Anosmic") ||
+                            (ability2 === "Blind" && species.vision === "Blind") ||
+                            (ability2 === "Unaware" && species.aware === "Unaware")){
+                                ability2 = "--";
+                            }
+                            if(ability === "--" && ability2 === "--"){
+                                species.casteabilities.push(ability2);
+                            }else if(ability === "--"){
                                 species.casteabilities.push(ability2);
                             }else if(ability2 === "--"){
                                 species.casteabilities.push(ability);
