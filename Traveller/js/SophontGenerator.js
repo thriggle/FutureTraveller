@@ -1239,9 +1239,10 @@ function generateRandomAlien(species,rand){
                 }
             }
             species.vision = "V-"+species.visionconstant+"-"+species.visionbands; 
-            if(species.visionconstant > 16){
+            var vc = parseInt(species.visionconstant,10);
+            if(vc > 16){
                 species.visiondesc = "Sharper than human eyesight. " + species.visiondesc;
-            }else if(species.visionconstant === 16){
+            }else if(vc === 16){
                 species.visiondesc = "Similar eyesight compared to humans. " + species.visiondesc;
             }else{
                 species.visiondesc = "Poorer than human eyesight. " + species.visiondesc;
@@ -1320,9 +1321,10 @@ function generateRandomAlien(species,rand){
                 species.hearingrangedesc = "Hears within human-audible range";
             }
             species.hearingrangedesc += " (" +(Math.pow(2,lowerFreq))+ (lowerFreq === upperFreq ? "":"-"+(Math.pow(2,upperFreq)))+" Hz)"
-            if(species.hearingconstant > 16){
+            var hc = parseInt(species.hearingconstant,10);
+            if(hc > 16){
                 species.hearingdesc = "More sensitive compared to humans. "
-            }else if(species.hearingconstant === 16){
+            }else if(hc === 16){
                 species.hearingdesc = "Similar sensitivity compared to humans. "
             }else{
                 species.hearingdesc = "Less sensitive compared to humans. "
@@ -1420,13 +1422,15 @@ function generateRandomAlien(species,rand){
 
             }
             species.smell = "S-"+species.smellconstant+"-"+species.smellsharpness; 
-            if(species.smellconstant > 10){
-                if(species.smellconstant + parseInt(species.smellsharpness,16) >= 12){
+            var sc = parseInt(species.smellconstant,10);
+            if(sc > 10){
+                if(sc + parseInt(species.smellsharpness,16) >= 12){
                     species.smelldesc = "More sensitive sense of smell than humans";
                 }else{
                     species.smelldesc = "More sensitive but less sharp sense of smell than humans";
                 }
-            }else if(species.smellconstant === 10){
+            }else if(sc === 10){
+                
                 if(parseInt(species.smellsharpness,16) > 2){
                     species.smelldesc = "More sensitive sense of smell than humans";
                 }else if(parseInt(species.smellsharpness,16) === 2){
@@ -1434,8 +1438,8 @@ function generateRandomAlien(species,rand){
                 }else{
                     species.smelldesc = "Similar but less sharp sense of smell compared to humans";
                 }
-            }else if(species.smellconstant < 10){
-                if(species.smellconstant + parseInt(species.smellsharpness,16) > 12){
+            }else if(sc < 10){
+                if(sc + parseInt(species.smellsharpness,16) > 12){
                     species.smelldesc = "Less sensitive but more sharp sense of smell than humans";
                 }else{
                     species.smelldesc = "Less sensitive sense of smell compared to humans";
@@ -1458,9 +1462,10 @@ function generateRandomAlien(species,rand){
             case 5: species.touchsensitivity = "5"; break;
         }
         species.touch = "T-"+species.touchconstant+"-"+species.touchsensitivity;
-        if(species.touchconstant + parseInt(species.touchsensitivity,16) > 8){
+        var tc = parseInt(species.touchconstant,10);
+        if(tc + parseInt(species.touchsensitivity,16) > 8){
             species.touchdesc = "More sensitive sense of touch than humans";
-        }else if(species.touchconstant + parseInt(species.touchsensitivity,16) === 8){
+        }else if(tc + parseInt(species.touchsensitivity,16) === 8){
             species.touchdesc = "Similar sense of touch compared to humans";
         }else{
             species.touchdesc = "Less sensitive sense of touch compared to humans";
