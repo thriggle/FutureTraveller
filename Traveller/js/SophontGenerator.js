@@ -947,7 +947,7 @@ function generateRandomAlien(species,rand){
                         }
                     }
                      break;
-                case 6: species.castestructure = "Skilled";  species.castes = ["baseline"]; break;
+                case 6: species.castestructure = "Skilled";  species.castes = ["(Skilled)"]; break;
             }
             if(!(species.castestructure === "Skilled")){
                 for(var i = 1, len = species.castes.length; i < len; i++){
@@ -1124,6 +1124,7 @@ function generateRandomAlien(species,rand){
         }
     }
     function setSenses(){
+        species.visiondesc = "Cannot see";
         var roll = d6() - d6();
         if(roll <= -3){
             species.vision = "Blind";
@@ -1132,6 +1133,7 @@ function generateRandomAlien(species,rand){
             var startype = species.homeworld.stars.primary.type;
             var stardecimal = species.homeworld.stars.primary.decimal;
             if(startype === "B"){
+                species.visiondesc = "Sees in ultraviolet";
                 if(typeof stardecimal == "undefined" || stardecimal <= 3){
                     species.visionbands = "DHV";
                 }else if(stardecimal <= 8){
@@ -1142,18 +1144,24 @@ function generateRandomAlien(species,rand){
             }else if(startype === "A" ){
                 if(typeof stardecimal == "undefined" || stardecimal <= 1){
                     species.visionbands = "SUD";
+                    species.visiondesc = "Sees in ultraviolet";
                 }else if(stardecimal <= 8){
                     species.visionbands = "PSU";
+                    species.visiondesc = "Sees in ultraviolet";
                 }else{
                     species.visionbands = "BPS";
+                    species.visiondesc = "Sees in UV + visible spectrum";
                 }
             }else if(startype === "F"){
                 if(typeof stardecimal == "undefined" || stardecimal <= 6){
                     species.visionbands = "BPS";
+                    species.visiondesc = "Sees in UV + visible spectrum";
                 }else{
                     species.visionbands = "GBP";
+                    species.visiondesc = "Sees in visible spectrum";
                 }
             }else if(startype === "G"){
+                species.visiondesc = "Sees in visible spectrum";
                 if(typeof stardecimal == "undefined" || stardecimal <= 1){
                     species.visionbands = "GBP";
                 }else{
@@ -1162,14 +1170,19 @@ function generateRandomAlien(species,rand){
             }else if(startype === "K"){
                 if(typeof stardecimal == "undefined" || stardecimal <= 0){
                     species.visionbands = "RGB";
+                    species.visiondesc = "Sees in visible spectrum";
                 }else if( stardecimal <= 3){
                     species.visionbands = "CRG";
+                    species.visiondesc = "Sees in visible spectrum";
                 }else if(stardecimal <= 6){
                     species.visionbands = "ACR";
+                    species.visiondesc = "Sees in infrared + visible spectrum";
                 }else{
                     species.visionbands = "NAC";
+                    species.visiondesc = "Sees in infrared";
                 }
             }else if(startype === "M"){
+                species.visiondesc = "Sees in infrared";
                 if(typeof stardecimal == "undefined" || stardecimal <= 1){
                     species.visionbands = "INA";
                 }else if(stardecimal <= 4){
@@ -1178,6 +1191,7 @@ function generateRandomAlien(species,rand){
                     species.visionbands = "XFI";
                 }
             }else if(startype === "L" || startype === "BD"){
+                species.visiondesc = "Sees in infrared";
                 if(typeof stardecimal == "undefined" || stardecimal <= 8){
                     species.visionbands = "XFI";
                 }else{
@@ -1186,6 +1200,7 @@ function generateRandomAlien(species,rand){
             }
             species.vision = "V-"+species.visionconstant+"-"+species.visionbands; 
         }
+        species.hearingdesc = "Cannot hear";
         roll = d6() - d6();
         if(roll <= -2){
             species.hearing = "Deaf";
@@ -1219,6 +1234,43 @@ function generateRandomAlien(species,rand){
                 case 4: species.hearingspan = "5"; break;
                 case 5: species.hearingspan = "6"; break;
             }
+            var infrasound = false;
+            var ultrasound = false;
+            var audible = false;
+            var upperFreq = parseInt(species.hearingfreq,16) + parseInt(species.hearingspan,16);
+            var lowerFreq = parseInt(species.hearingfreq,16) - parseInt(species.hearingspan,16);
+            if( lowerFreq <= 5){
+                infrasound = true; 
+                if(upperFreq >= 6){
+                    audible = true;
+                }
+            }
+            if(upperFreq >= 13){
+                ultrasound = true;
+                if(lowerFreq <= 12){
+                    audible = true;
+                }
+            }
+            if(upperFreq >= 6 && upperFreq <=12){
+                audible = true;
+            }
+            if(lowerFreq >= 6 && lowerFreq <=12){
+                audible = true;
+            }
+            if(infrasound && ultrasound){
+                species.hearingdesc = "Hears both infrasonics and ultrasonics";
+            }else if(infrasound && audible){
+                species.hearingdesc = "Hears infrasonics and human-audible";
+            }else if(ultrasound && audible){
+                species.hearingdesc = "Hears ultrasonics and human-audible";
+            }else if(infrasound){
+                species.hearingdesc = "Hears infrasonics";
+            }else if(ultrasound){
+                species.hearingdesc = "Hears ultrasonics";
+            }else if(audible){
+                species.hearingdesc = "Hears within human-audible range";
+            }
+            species.hearingdesc += " (" +(Math.pow(2,lowerFreq))+ (lowerFreq === upperFreq ? "":"-"+(Math.pow(2,upperFreq)))+" Hz)"
             var voice = d6() - d6();
             switch(voice){
                 case -5: species.voice = "1"; break;
@@ -1247,6 +1299,44 @@ function generateRandomAlien(species,rand){
                 case 4:
                 case 5: species.voicerange = "4"; break;
             }
+            var infrasound = false;
+            var ultrasound = false;
+            var audible = false;
+            var upperFreq = parseInt(species.voice,16) + parseInt(species.voicerange,16);
+            var lowerFreq = parseInt(species.voice,16) - parseInt(species.voicerange,16);
+            if( lowerFreq <= 5){
+                infrasound = true; 
+                if(upperFreq >= 6){
+                    audible = true;
+                }
+            }
+            if(upperFreq >= 13){
+                ultrasound = true;
+                if(lowerFreq <= 12){
+                    audible = true;
+                }
+            }
+            if(upperFreq >= 6 && upperFreq <=12){
+                audible = true;
+            }
+            if(lowerFreq >= 6 && lowerFreq <=12){
+                audible = true;
+            }
+            if(infrasound && ultrasound){
+                species.voicedesc = "Vocalizes both infrasound and ultrasound";
+            }else if(infrasound && audible){
+                species.voicedesc = "Vocalizes infrasound and human-audible";
+            }else if(ultrasound && audible){
+                species.voicedesc = "Vocalizes ultrasound and human-audible";
+            }else if(infrasound){
+                species.voicedesc = "Vocalizes infrasound";
+            }else if(ultrasound){
+                species.voicedesc = "Vocalizes ultrasound";
+            }else if(audible){
+                species.voicedesc = "Vocalizes within human-audible range";
+            }
+            species.voicedesc += " (" +(Math.pow(2,lowerFreq))+ (lowerFreq === upperFreq ? "":"-"+(Math.pow(2,upperFreq)))+" Hz)"
+            
             species.hearing = "H-"+species.hearingconstant + "-" 
                 + species.hearingfreq + species.hearingspan 
                 + species.voice + species.voicerange;
@@ -2601,7 +2691,7 @@ function generateRandomAlien(species,rand){
                     case 4: tail = "Grasper"; break;
                     case 5: tail = "Hand"; break;
                 }
-                species.allmanipulators += ", "+species.nonstandardmanipulators + " Tail (" + proboscis +")";
+                species.allmanipulators += ", "+species.nonstandardmanipulators + " Tail (" + tail +")";
             }
         }
             
@@ -2643,7 +2733,7 @@ function generateRandomAlien(species,rand){
         var abilities = [
             ["Actor","Actor","Dancer","Artist","--","--","--","Music","Artist","Osmance","Osmance"],
             ["Insight","Empath","Hibernate","Hypno","--","--","--","Intuition","Rage","ReGen","Curiosity"],
-            ["Math","Math","Memorize","SoundMimic","--","--","--","Mem","Mem","Mem","Mem"],
+            ["Math","Math","Memorize","SoundMimic","--","--","--","Mem","Mem","Mem","Morph"],
             ["Touch","Touch","Vision","Vision","Hearing","--","--","--","Awareness","Perception","Smell","Smell"],
             ["--","Stench","Blind","Deaf","--","--","--","Unaware","Oblivious","Anosmic","Anosmic"],
             ["Table C2","Biologics","Mechanics","Mechanics","--","--","--","Craftsman","Craftsman","Electronics","Table C2"]
@@ -2725,6 +2815,14 @@ function generateRandomAlien(species,rand){
                             (ability === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious")
                         ){
                             ability = getSpecialAbility();
+                            // no effect if disability for a sense species does not have
+                            if((ability === "Deaf" && species.hearing === "Deaf") || 
+                            (ability === "Oblivious" && species.percep === "Oblivious") ||
+                            (ability === "Anosmic" && species.smell === "Anosmic") ||
+                            (ability === "Blind" && species.vision === "Blind") ||
+                            (ability === "Unaware" && species.aware === "Unaware")){
+                                ability = "--";
+                            }
                         }
                         if(ability === "Mem"){
                             var reroll = true;
@@ -2733,32 +2831,32 @@ function generateRandomAlien(species,rand){
                                 switch(senseRoll){
                                     case 1: 
                                         if(species.vision !== "Blind"){
-                                            ability = "Mem <Vision>";
+                                            ability = "MemVision";
                                             reroll = false;
                                         }
                                         break;
                                     case 2:
                                         if(species.hearing !== "Deaf"){
-                                            ability = "Mem <Hearing>";
+                                            ability = "MemSound";
                                             reroll = false;
                                         }
                                         break;
                                     case 3:
                                         if(species.smell !== "Anosmic"){
-                                            ability = "Mem <Smell>";
+                                            ability = "MemScent";
                                             reroll = false;
                                         }
                                         break;
                                     case 4: reroll = true; break;
                                     case 5: 
                                         if(species.aware !== "Unaware"){
-                                            ability = "Mem <Awareness>";
+                                            ability = "MemAware";
                                             reroll = false;
                                         }
                                         break;
                                     case 6:
                                         if(species.percep !== "Oblivious"){
-                                            ability = "Mem <Percep>";
+                                            ability = "MemPercept";
                                             reroll = false;
                                         }
                                         break;
@@ -2787,6 +2885,14 @@ function generateRandomAlien(species,rand){
                             (ability === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious")
                         ){
                             ability = getSpecialAbility();
+                            // no effect if disability for a sense species does not have
+                            if((ability === "Deaf" && species.hearing === "Deaf") || 
+                            (ability === "Oblivious" && species.percep === "Oblivious") ||
+                            (ability === "Anosmic" && species.smell === "Anosmic") ||
+                            (ability === "Blind" && species.vision === "Blind") ||
+                            (ability === "Unaware" && species.aware === "Unaware")){
+                                ability = "--";
+                            }
                         }
                         if(ability === "Mem"){
                             var reroll = true;
@@ -2795,32 +2901,32 @@ function generateRandomAlien(species,rand){
                                 switch(senseRoll){
                                     case 1: 
                                         if(species.vision !== "Blind"){
-                                            ability = "Mem <Vision>";
+                                            ability = "MemVision";
                                             reroll = false;
                                         }
                                         break;
                                     case 2:
                                         if(species.hearing !== "Deaf"){
-                                            ability = "Mem <Hearing>";
+                                            ability = "MemSound";
                                             reroll = false;
                                         }
                                         break;
                                     case 3:
                                         if(species.smell !== "Anosmic"){
-                                            ability = "Mem <Smell>";
+                                            ability = "MemScent";
                                             reroll = false;
                                         }
                                         break;
                                     case 4: reroll = true; break;
                                     case 5: 
                                         if(species.aware !== "Unaware"){
-                                            ability = "Mem <Awareness>";
+                                            ability = "MemAware";
                                             reroll = false;
                                         }
                                         break;
                                     case 6:
                                         if(species.percep !== "Oblivious"){
-                                            ability = "Mem <Percep>";
+                                            ability = "MemPercept";
                                             reroll = false;
                                         }
                                         break;
@@ -2837,6 +2943,14 @@ function generateRandomAlien(species,rand){
                         ){
                             ability2 = getSpecialAbility();
                         }
+                        // no effect if disability for a sense species does not have
+                        if((ability2 === "Deaf" && species.hearing === "Deaf" ) || 
+                        (ability2 === "Oblivious" && species.percep === "Oblivious") ||
+                        (ability2 === "Anosmic" && species.smell === "Anosmic") ||
+                        (ability2 === "Blind" && species.vision === "Blind") ||
+                        (ability2 === "Unaware" && species.aware === "Unaware")){
+                            ability2 = "--";
+                        }
                         if(ability2 === "Mem"){
                             var reroll = true;
                             while(reroll){
@@ -2844,32 +2958,32 @@ function generateRandomAlien(species,rand){
                                 switch(senseRoll){
                                     case 1: 
                                         if(ability === "Vision" || (species.vision !== "Blind" && ability !== "Blind")){
-                                            ability2 = "Mem <Vision>";
+                                            ability2 = "MemVision";
                                             reroll = false;
                                         }
                                         break;
                                     case 2:
                                         if(ability === "Hearing" || (species.hearing !== "Deaf" && ability !== "Deaf")){
-                                            ability2 = "Mem <Hearing>";
+                                            ability2 = "MemSound";
                                             reroll = false;
                                         }
                                         break;
                                     case 3:
                                         if(ability === "Smell" || (species.smell !== "Anosmic" && ability !== "Anosmic")){
-                                            ability2 = "Mem <Smell>";
+                                            ability2 = "MemScent";
                                             reroll = false;
                                         }
                                         break;
                                     case 4: reroll = true; break;
                                     case 5: 
                                         if(ability === "Awareness" || (species.aware !== "Unaware" && ability !== "Unaware")){
-                                            ability2 = "Mem <Awareness>";
+                                            ability2 = "MemAware";
                                             reroll = false;
                                         }
                                         break;
                                     case 6:
                                         if(ability === "Perception" || (species.percep !== "Oblivious" && ability !== "Oblivious")){
-                                            ability2 = "Mem <Percep>";
+                                            ability2 = "MemPercept";
                                             reroll = false;
                                         }
                                         break;
@@ -2877,7 +2991,9 @@ function generateRandomAlien(species,rand){
                             }
                             
                         }
-                        if(ability === "--"){
+                        if(ability === "--" && ability2 === "--"){
+                            species.genderabilities.push("--");
+                        }else if(ability === "--"){
                             species.genderabilities.push(ability2);
                         }else if(ability2 === "--"){
                             species.genderabilities.push(ability);
@@ -2903,189 +3019,195 @@ function generateRandomAlien(species,rand){
             var determinant = d6();
             species.casteabilities = [];
             for(var i = 0, len = species.castes.length; i < len; i++){
-                var determinant = d6();
-                switch(determinant){
-                    case  1:
-                        var ability = getSpecialAbility();
-                        while (
-                            (ability === "Music" && species.hearing === "Deaf" && species.percep === "Oblivious") ||
-                            (ability === "Osmance" && species.smell === "Anosmic") ||
-                            (ability === "SoundMimic" && species.hearing === "Deaf") ||
-                            (ability === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious")
-                        ){
-                            ability = getSpecialAbility();
-                        }
-                        if(ability === "Mem"){
-                            var reroll = true;
-                            while(reroll){
-                                var senseRoll = d6();
-                                switch(senseRoll){
-                                    case 1: 
-                                        if(species.vision !== "Blind"){
-                                            ability = "Mem <Vision>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 2:
-                                        if(species.hearing !== "Deaf"){
-                                            ability = "Mem <Hearing>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 3:
-                                        if(species.smell !== "Anosmic"){
-                                            ability = "Mem <Smell>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 4: reroll = true; break;
-                                    case 5: 
-                                        if(species.aware !== "Unaware"){
-                                            ability = "Mem <Awareness>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 6:
-                                        if(species.percep !== "Oblivious"){
-                                            ability = "Mem <Percep>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                }
+                var genderIndex = species.genders.indexOf(species.castes[i]);
+                if(genderIndex >= 0){
+                    species.casteabilities.push(species.genderabilities[generIndex]);
+                }else{
+                    var determinant = d6();
+                    switch(determinant){
+                        case  1:
+                            var ability = getSpecialAbility();
+                            while (
+                                (ability === "Music" && species.hearing === "Deaf" && species.percep === "Oblivious") ||
+                                (ability === "Osmance" && species.smell === "Anosmic") ||
+                                (ability === "SoundMimic" && species.hearing === "Deaf") ||
+                                (ability === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious")
+                            ){
+                                ability = getSpecialAbility();
                             }
-                            
-                        }
-                        species.casteabilities.push(ability);
-                        break;
-                    case 2:
-                        species.casteabilities.push("Roll");
-                        break;
-                    case 3:
-                    case 4:
-                        species.casteabilities.push("--");
-                        break;
-                    case 5:
-                        species.casteabilities.push("Roll twice"); 
-                        break;
-                    case 6:
-                        var ability = getSpecialAbility();
-                        while (
-                            (ability === "Music" && species.hearing === "Deaf" && species.percep === "Oblivious") ||
-                            (ability === "Osmance" && species.smell === "Anosmic") ||
-                            (ability === "SoundMimic" && species.hearing === "Deaf") ||
-                            (ability === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious")
-                        ){
-                            ability = getSpecialAbility();
-                        }
-                        if(ability === "Mem"){
-                            var reroll = true;
-                            while(reroll){
-                                var senseRoll = d6();
-                                switch(senseRoll){
-                                    case 1: 
-                                        if(species.vision !== "Blind"){
-                                            ability = "Mem <Vision>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 2:
-                                        if(species.hearing !== "Deaf"){
-                                            ability = "Mem <Hearing>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 3:
-                                        if(species.smell !== "Anosmic"){
-                                            ability = "Mem <Smell>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 4: reroll = true; break;
-                                    case 5: 
-                                        if(species.aware !== "Unaware"){
-                                            ability = "Mem <Awareness>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 6:
-                                        if(species.percep !== "Oblivious"){
-                                            ability = "Mem <Percep>";
-                                            reroll = false;
-                                        }
-                                        break;
+                            if(ability === "Mem"){
+                                var reroll = true;
+                                while(reroll){
+                                    var senseRoll = d6();
+                                    switch(senseRoll){
+                                        case 1: 
+                                            if(species.vision !== "Blind"){
+                                                ability = "MemVision";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 2:
+                                            if(species.hearing !== "Deaf"){
+                                                ability = "MemSound";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 3:
+                                            if(species.smell !== "Anosmic"){
+                                                ability = "MemScent";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 4: reroll = true; break;
+                                        case 5: 
+                                            if(species.aware !== "Unaware"){
+                                                ability = "MemAware";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 6:
+                                            if(species.percep !== "Oblivious"){
+                                                ability = "MemPercept";
+                                                reroll = false;
+                                            }
+                                            break;
+                                    }
                                 }
+                                
                             }
-                            
-                        }
-                        var ability2 = getSpecialAbility();
-                        while (
-                            (ability2 === "Music" && (species.hearing === "Deaf" && ability !== "Hearing") && (species.percep === "Oblivious" && ability !== "Perception") ) ||
-                            (ability2 === "Osmance" && (species.smell === "Anosmic" && ability !== "Smell")) ||
-                            (ability2 === "SoundMimic" && (species.hearing === "Deaf" && ability !== "Hearing")) ||
-                            (ability2 === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious" && ability !== "Vision" && ability !== "Hearing" && ability !== "Awareness" && ability !== "Perception")
-                        ){
-                            ability2 = getSpecialAbility();
-                        }
-                        if(ability2 === "Mem"){
-                            var reroll = true;
-                            while(reroll){
-                                var senseRoll = d6();
-                                switch(senseRoll){
-                                    case 1: 
-                                        if(ability === "Vision" || (species.vision !== "Blind" && ability !== "Blind")){
-                                            ability2 = "Mem <Vision>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 2:
-                                        if(ability === "Hearing" || (species.hearing !== "Deaf" && ability !== "Deaf")){
-                                            ability2 = "Mem <Hearing>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 3:
-                                        if(ability === "Smell" || (species.smell !== "Anosmic" && ability !== "Anosmic")){
-                                            ability2 = "Mem <Smell>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 4: reroll = true; break;
-                                    case 5: 
-                                        if(ability === "Awareness" || (species.aware !== "Unaware" && ability !== "Unaware")){
-                                            ability2 = "Mem <Awareness>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                    case 6:
-                                        if(ability === "Perception" || (species.percep !== "Oblivious" && ability !== "Oblivious")){
-                                            ability2 = "Mem <Percep>";
-                                            reroll = false;
-                                        }
-                                        break;
-                                }
-                            }
-                            
-                        }
-                        if(ability === "--"){
-                            species.casteabilities.push(ability2);
-                        }else if(ability2 === "--"){
                             species.casteabilities.push(ability);
-                        }else if(ability === ability2 && ability === "Touch" || ability === "Vision" || ability === "Hearing" || ability === "Awareness" || ability === "Perception" || ability === "Smell"){
-                            species.casteabilities.push(ability+"x2");
-                        }else if(
-                            (ability === "Vision" && ability2 === "Blind" || ability2 === "Vision" && ability === "Blind") ||
-                            (ability === "Hearing" && ability2 === "Deaf" || ability2 === "Hearing" && ability === "Deaf") ||
-                            (ability === "Awareness" && ability2 === "Unaware" || ability2 === "Awareness" && ability === "Unaware") ||
-                            (ability === "Perception" && ability2 === "Oblivious" || ability2 === "Perception" && ability === "Oblivious") ||
-                            (ability === "Smell" && ability2 === "Anosmic" || ability2 === "Smell" && ability === "Anosmic")
-                        ){
+                            break;
+                        case 2:
+                            species.casteabilities.push("Roll");
+                            break;
+                        case 3:
+                        case 4:
                             species.casteabilities.push("--");
-                        }else{
-                            species.casteabilities.push(ability + " and " + ability2);
-                        }
+                            break;
+                        case 5:
+                            species.casteabilities.push("Roll twice"); 
+                            break;
+                        case 6:
+                            var ability = getSpecialAbility();
+                            while (
+                                (ability === "Music" && species.hearing === "Deaf" && species.percep === "Oblivious") ||
+                                (ability === "Osmance" && species.smell === "Anosmic") ||
+                                (ability === "SoundMimic" && species.hearing === "Deaf") ||
+                                (ability === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious")
+                            ){
+                                ability = getSpecialAbility();
+                            }
+                            if(ability === "Mem"){
+                                var reroll = true;
+                                while(reroll){
+                                    var senseRoll = d6();
+                                    switch(senseRoll){
+                                        case 1: 
+                                            if(species.vision !== "Blind"){
+                                                ability = "MemVision";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 2:
+                                            if(species.hearing !== "Deaf"){
+                                                ability = "MemSound";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 3:
+                                            if(species.smell !== "Anosmic"){
+                                                ability = "MemScent";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 4: reroll = true; break;
+                                        case 5: 
+                                            if(species.aware !== "Unaware"){
+                                                ability = "MemAware";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 6:
+                                            if(species.percep !== "Oblivious"){
+                                                ability = "MemPercept";
+                                                reroll = false;
+                                            }
+                                            break;
+                                    }
+                                }
+                                
+                            }
+                            var ability2 = getSpecialAbility();
+                            while (
+                                (ability2 === "Music" && (species.hearing === "Deaf" && ability !== "Hearing") && (species.percep === "Oblivious" && ability !== "Perception") ) ||
+                                (ability2 === "Osmance" && (species.smell === "Anosmic" && ability !== "Smell")) ||
+                                (ability2 === "SoundMimic" && (species.hearing === "Deaf" && ability !== "Hearing")) ||
+                                (ability2 === "Mem" && species.vision === "Blind" && species.hearing === "Deaf" && species.smell === "Anosmic" && species.aware === "Unaware" && species.percep === "Oblivious" && ability !== "Vision" && ability !== "Hearing" && ability !== "Awareness" && ability !== "Perception")
+                            ){
+                                ability2 = getSpecialAbility();
+                            }
+                            if(ability2 === "Mem"){
+                                var reroll = true;
+                                while(reroll){
+                                    var senseRoll = d6();
+                                    switch(senseRoll){
+                                        case 1: 
+                                            if(ability === "Vision" || (species.vision !== "Blind" && ability !== "Blind")){
+                                                ability2 = "MemVision";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 2:
+                                            if(ability === "Hearing" || (species.hearing !== "Deaf" && ability !== "Deaf")){
+                                                ability2 = "MemSound";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 3:
+                                            if(ability === "Smell" || (species.smell !== "Anosmic" && ability !== "Anosmic")){
+                                                ability2 = "MemScent";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 4: reroll = true; break;
+                                        case 5: 
+                                            if(ability === "Awareness" || (species.aware !== "Unaware" && ability !== "Unaware")){
+                                                ability2 = "MemAware";
+                                                reroll = false;
+                                            }
+                                            break;
+                                        case 6:
+                                            if(ability === "Perception" || (species.percep !== "Oblivious" && ability !== "Oblivious")){
+                                                ability2 = "MemPercept";
+                                                reroll = false;
+                                            }
+                                            break;
+                                    }
+                                }
+                                
+                            }
+                            if(ability === "--"){
+                                species.casteabilities.push(ability2);
+                            }else if(ability2 === "--"){
+                                species.casteabilities.push(ability);
+                            }else if(ability === ability2 && ability === "Touch" || ability === "Vision" || ability === "Hearing" || ability === "Awareness" || ability === "Perception" || ability === "Smell"){
+                                species.casteabilities.push(ability+"x2");
+                            }else if(
+                                (ability === "Vision" && ability2 === "Blind" || ability2 === "Vision" && ability === "Blind") ||
+                                (ability === "Hearing" && ability2 === "Deaf" || ability2 === "Hearing" && ability === "Deaf") ||
+                                (ability === "Awareness" && ability2 === "Unaware" || ability2 === "Awareness" && ability === "Unaware") ||
+                                (ability === "Perception" && ability2 === "Oblivious" || ability2 === "Perception" && ability === "Oblivious") ||
+                                (ability === "Smell" && ability2 === "Anosmic" || ability2 === "Smell" && ability === "Anosmic")
+                            ){
+                                species.casteabilities.push("--");
+                            }else{
+                                species.casteabilities.push(ability + " and " + ability2);
+                            }
+                    }
                 }
-
             }
+        }else if(species.castestructure === "Skilled"){
+            species.casteabilities = ["Roll for Skill"];
         }
     }
     function setSizeAndWeight(){
