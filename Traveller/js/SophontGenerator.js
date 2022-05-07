@@ -3479,7 +3479,7 @@ function generateRandomAlien(species,rand){
     }
     function setUniqueTraits(){
         if(typeof species.uniqueTraitsCount === "undefined"){
-            species.uniqueTraitsCount = Math.max(posFlux() - posFlux(), 0);
+            species.uniqueTraitsCount = Math.max(posFlux() - posFlux() - 1, 0);
         }
         if(species.uniqueTraitsCount > 0){
             species.uniqueTraits = [];
