@@ -583,14 +583,42 @@ function getInnermostOrbit(star){
     return -1;
 }
 function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
+
     var availableOrbits = stars.primary.numOrbits;
     var arrStars = [stars.primary];
     var closeIndex = -1;
-    if(stars.close){ arrStars.push(stars.close); closeIndex = arrStars.length-1; availableOrbits -= 1; availableOrbits += stars.close.numOrbits;}
+    if(stars.close){ 
+        arrStars.push(stars.close); 
+        closeIndex = arrStars.length-1; 
+        availableOrbits -= 1; 
+        for(var i = 0, len = stars.close.satellites.length; i < len; i++){
+            if(typeof stars.close.satellites[i] !== "undefined"){
+                availableOrbits += 1;
+            }
+        }
+    }
     var nearIndex = -1;
-    if(stars.near){ arrStars.push(stars.near); nearIndex = arrStars.length-1; availableOrbits -= 1; availableOrbits += stars.near.numOrbits;}
+    if(stars.near){ 
+        arrStars.push(stars.near); 
+        nearIndex = arrStars.length-1; 
+        availableOrbits -= 1; 
+        for(var i = 0, len = stars.near.satellites.length; i < len; i++){
+            if(typeof stars.near.satellites[i] !== "undefined"){
+                availableOrbits += 1;
+            }
+        }
+    }
     var farIndex = -1;
-    if(stars.far){arrStars.push(stars.far); farIndex = arrStars.length-1; availableOrbits -= 1; availableOrbits += stars.far.numOrbits;}
+    if(stars.far){
+        arrStars.push(stars.far); 
+        farIndex = arrStars.length-1; 
+        availableOrbits -= 1;
+        for(var i = 0, len = stars.far.satellites.length; i < len; i++){
+            if(typeof stars.far.satellites[i] !== "undefined"){
+                availableOrbits += 1;
+            }
+        }
+    }
 
     var planetsToPlace = [];
     var SGGCount = 0;
@@ -640,7 +668,27 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech){
         planetsToPlace.push(createOtherWorld());
     }
     s = 0;
+    var attemptCounterMax = planetsToPlace.length;
+    var attemptCounter = 0;
     while(planetsToPlace.length > 0 && availableOrbits >= planetsToPlace.length){
+        attemptCounter+=1;
+        if(attemptCounter >= attemptCounterMax){
+            var numAvailableOrbits = 0;
+            for(var i = 0, len = arrStars.length; i < len; i++){
+                for(var j = 0, jlen = arrStars[i].satellites.length; j < jlen; j++){
+                    if(typeof arrStars[i].satellites[j] === "undefined"){
+                        numAvailableOrbits += 1;
+                    }
+                }
+            }
+            if(numAvailableOrbits === 0){
+                console.log(mainworld);
+                console.log("Problem detected for " + mainworld.uwp + ". " +planetsToPlace.length+" worlds left to place. Only "+numAvailableOrbits+" orbits available.");  
+                console.log(arrStars);
+                planetsToPlace = [];
+                break;
+            }
+        }
         var planet = planetsToPlace[0];
         var star = arrStars[s];
         if(typeof planet.orbit !== "undefined"){ // if planet already has a preferred orbit...

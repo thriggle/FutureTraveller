@@ -1488,10 +1488,10 @@
                 var max = 0;
                 switch(likelihood){
                     case "rare": // ~1 per sector
-                        max = 20
+                        max = 45;
                         break;
                     case "reasonable": // ~1 per subsector
-                        max = 4;
+                        max = 9;
                         break;
                     case "common": // 1 in 2 chance per candidate world
                         max = 2;
@@ -1506,13 +1506,14 @@
                 var lifecount = 0;
                 for(var i = 0, len = mapContent.length; i < len; i++){
                     if(mapContent[i].system){
-                        if(mapContent[i].system.mainworld.atmo >= 9 && mapContent[i].system.mainworld.pop >= 7){
+                        if(mapContent[i].system.mainworld.atmo >= 2 && mapContent[i].system.mainworld.pop >= 7){
+                            //console.log( mapContent[i].system.name + ": " + mapContent[i].system.mainworld.atmo +", " + mapContent[i].system.mainworld.pop);
                             var isExotic = likelihood !== "really" && mapContent[i].system.mainworld.atmo >= 10 && mapContent[i].system.mainworld.atmo <= 12;
                             var exoticMod = isExotic ? mapContent[i].system.mainworld.atmo - 9 : 0;
                             var check = ((MathRandom()*(max+exoticMod)) >>> 0)+1;
                             if(check === 1){
                                 lifecount++;
-                                console.log("Native Life at " + mapContent[i].system.name + "!");
+                                console.log("Native Intelligence on " + mapContent[i].system.tcoord + " " + mapContent[i].system.name + "!");
                                 var species = {name:addCaps(wordMaker.getRandomName("word"))};
                                 species.homeworld = mapContent[i].system;
                                 generateRandomAlien(species, MathRandom);
