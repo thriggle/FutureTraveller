@@ -75,6 +75,8 @@
             .jsonbuttons{ display:block; width:100%; text-align:right;}
         }
         table label{text-align:right;}
+        .traitlist ul{list-style:none; padding:0px; margin:0px;}
+        .traitlist li{padding-left:2rem;}
 </style>
 <body>
     <h1>Traveller Sophont Creation System</h1>
@@ -140,6 +142,7 @@
                     <div><strong>Stance: </strong></strong><span data-detail="stance" data-source="species"></span></div>
                     <div><strong>Manipulators: </strong><span data-detail="allmanipulators" data-source="species"></span></div>
                     <div><strong>Natural Weapon: </strong><span data-detail="naturalweapon" data-source="species"></span></div>
+                    <div><strong>Unique Traits: </strong><span class="traitlist" data-html="true" data-detail="uniqueTraitDesc" data-source="species">None</span></div>
                     <div><strong>Body Covering: </strong><span data-detail="skin" data-source="species"></span> <strong>Odor Profile: </strong><span data-detail="scent" data-source="species"></span></div>
                     <div><strong>Skeletal Structure: </strong><span data-detail="skeleton" data-source="species"></span> <strong>Body Fluids: </strong><span data-detail="fluids" data-source="species"></span> </div>
                     <div><strong>Size:</strong> <span data-detail="sizeclass" data-source="species"></span> (<span data-detail="size" data-source="species"></span> kg, <span data-detail="height" data-source="species"></span>) <strong>Profile:</strong> <span data-detail="bfp" data-source="species"></span> (<span data-detail="bfpdesc" data-source="species"></span>)</div>
@@ -767,8 +770,11 @@
             }
             removeChildElements(elmt);
             if(typeof value !== "undefined"){
-
-                elmt.appendChild(document.createTextNode(value));
+                if(elmt.getAttribute("data-html")){                            
+                    elmt.insertAdjacentHTML("beforeend", value);
+                }else{
+                    elmt.appendChild(document.createTextNode(value));
+                }
             }
         });
         document.querySelectorAll("[data-if]").forEach(function(elmt){

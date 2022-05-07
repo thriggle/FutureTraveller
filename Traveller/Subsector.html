@@ -216,6 +216,8 @@
         #nativedetails .table th, #nativedetails .table th td{text-align:left; font-weight:bold; vertical-align:text-top; }
         #nativedetails .table td + td, #nativedetails .table th + th{border-left:0.01rem solid black;}
         #nativedetails .table td:empty, #nativedetails .table th:empty{border:0px solid transparent !important; }
+        .traitlist ul{list-style:none; padding:0px; margin:0px;}
+        .traitlist li{padding-left:2rem;}
     </style>
     <fieldset>
         <legend>Controls</legend>
@@ -487,8 +489,8 @@
             <label for="chkGenerateNatives"><input type="checkbox" id="chkGenerateNatives" title="chkGenerateNatives" checked="checked"> Generate Native Sophonts </label><br/>
             <label for="slctNativeLikelihood">Likelihood <select id="slctNativeLikelihood">
                 <option value="really">All Candidate Worlds</option>
-                <option value="everywhere" selected="selected">Pervasive</option>
-                <option value="common">Common</option>
+                <option value="everywhere">Pervasive</option>
+                <option value="common" selected="selected">Common</option>
                 <option value="reasonable">Reasonable</option>
                 <option value="rare">Rare</option>
             </select></label>
@@ -621,6 +623,7 @@
                             <td><span data-detail="taildesc" data-source="species"></span></td>
                         </tr>
                     </table>
+                    
                 </fieldset>
                 <fieldset>
                     <legend>Senses</legend>
@@ -668,6 +671,7 @@
                 </fieldset>
                 <fieldset>
                     <legend>Life and Society</legend>
+                    <div><strong>Unique Traits:</strong><span class="traitlist" data-detail="uniqueTraitDesc" data-html="true" data-source="species"></span></div>
                     <div><strong>Language: </strong><span data-detail="language" data-source="species"></span></div>
                     <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy" data-source="species"></span> years</div>
                     <div><strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span> <strong>Assignment:</strong> <span data-detail="genderassignment" data-source="species"></span> (<span data-detail="gendershift" data-source="species"></span>)</div>
@@ -1513,7 +1517,7 @@
                             var check = ((MathRandom()*(max+exoticMod)) >>> 0)+1;
                             if(check === 1){
                                 lifecount++;
-                                console.log("Native Intelligence on " + mapContent[i].system.tcoord + " " + mapContent[i].system.name + "!");
+                                //console.log("Native Intelligence on " + mapContent[i].system.tcoord + " " + mapContent[i].system.name + "!");
                                 var species = {name:addCaps(wordMaker.getRandomName("word"))};
                                 species.homeworld = mapContent[i].system;
                                 generateRandomAlien(species, MathRandom);
@@ -2965,8 +2969,12 @@
                     }
                     removeChildElements(elmt);
                     if(typeof value !== "undefined"){
-
-                        elmt.appendChild(document.createTextNode(value));
+                        if(elmt.getAttribute("data-html")){                            
+                            elmt.insertAdjacentHTML("beforeend", value);
+                        }else{
+                            
+                            elmt.appendChild(document.createTextNode(value));
+                        }
                     }
                 });
             }else{
