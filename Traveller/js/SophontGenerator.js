@@ -2972,6 +2972,7 @@ function generateRandomAlien(species,rand){
             species.genderabilities = [];
             for(var i = 0, len = species.genders.length; i < len; i++){
                 var determinant = d6();
+                
                 switch(determinant){
                     case  1:
                         var ability = getSpecialAbility();
@@ -3031,6 +3032,7 @@ function generateRandomAlien(species,rand){
                         (ability === "Unaware" && species.aware === "Unaware")){
                             ability = "--";
                         }
+                        
                         if(ability === "Touch" || ability === "Vision" || ability === "Hearing" || ability === "Awareness" || ability === "Perception" || ability === "Smell"){
                             switch(ability){
                                 case "Touch": 
@@ -3275,66 +3277,70 @@ function generateRandomAlien(species,rand){
                         ){
                             species.genderabilities.push("--");
                         }else{
+                            var temp = "";
                             for(var inc = 0, arr = [ability,ability2]; inc < 2; inc++){
                                 var ab = arr[inc];
+
                                 if(ab === "Touch" || ab === "Vision" || ab === "Hearing" || ab === "Awareness" || ab === "Perception" || ab === "Smell"){
                                     switch(ab){
                                         case "Touch": 
+
                                         var constant = parseInt(species.touchconstant,10)+2;
-                                        ability = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
+                                        ab = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
                                         break;
                                     case "Vision": 
                                         if(species.vision === "Blind"){
                                             var k = parseInt(getSenseConstant(),10);
-                                            ability = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands(); 
+                                            ab = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands(); 
                                         }else{
                                             var constant = parseInt(species.visionconstant,10)+2;
-                                            ability = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
+                                            ab = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
                                         }
                                         break;
                                     case "Hearing": 
                                         if(species.hearing === "Deaf"){
                                             var k = parseInt(getSenseConstant(),10);
-                                            ability = "H-"+(k < 10 ? "0" + k : k)+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
+                                            ab = "H-"+(k < 10 ? "0" + k : k)+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
                                         }else{
                                             var constant = parseInt(species.hearingconstant,10)+2;
-                                            ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voicefreq+species.vocalrange;
+                                            ab = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voicefreq+species.vocalrange;
                                         }
                                         break;
                                     case "Awareness": 
                                         if(species.aware === "Unaware"){
                                             var k = parseInt(getSenseConstant(),10);
-                                            ability = "A-"+(k < 10 ? "0" + k : k)+"-"+getAwarenessAcuity(); 
+                                            ab = "A-"+(k < 10 ? "0" + k : k)+"-"+getAwarenessAcuity(); 
                                         }else{
                                             var constant = parseInt(species.awareconstant,10)+2;
-                                            ability = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
+                                            ab = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
                                         }
                                         break;
                                     case "Perception": 
                                         if(species.percep === "Oblivious"){
                                             var k = parseInt(getSenseConstant(),10);
-                                            ability = "P-"+(k < 10 ? "0" + k : k)+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
+                                            ab = "P-"+(k < 10 ? "0" + k : k)+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
                                         }else{
                                             var constant = parseInt(species.percepconstant,10)+2;
-                                            ability = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
+                                            ab = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
                                         }
                                         break;
                                     case "Smell": 
                                         if(species.smell === "Anosmic"){
                                             var k = parseInt(getSenseConstant(),10);
-                                            ability = "S-"+(k < 10 ? "0" + k : k)+"-"+getSmellSharpness(); 
+                                            ab = "S-"+(k < 10 ? "0" + k : k)+"-"+getSmellSharpness(); 
                                         }else{
                                             var constant = parseInt(species.smellconstant,10)+2;
-                                            ability = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
+                                            ab = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
                                         }
                                         break;
                                     }
                                 }
-                                species.genderabilities.push(ab);
+                                temp += ab;
                                 if(inc === 0){
-                                    species.genderabilities.push(" and ");
+                                    temp += (" and ");
                                 }
                             }
+                            species.genderabilities.push(temp);
                         }
                 }
 
@@ -3657,6 +3663,7 @@ function generateRandomAlien(species,rand){
                             ){
                                 species.casteabilities.push("--");
                             }else{
+                                var temp = "";
                                 for(var inc = 0, arr = [ability,ability2]; inc < 2; inc++){
                                     var ab = arr[inc];
                                     if(ab === "Touch" || ab === "Vision" || ab === "Hearing" || ab === "Awareness" || ab === "Perception" || ab === "Smell"){
@@ -3710,11 +3717,13 @@ function generateRandomAlien(species,rand){
                                                 break;
                                         }
                                     }
+                                    temp += ab;
                                     species.casteabilities.push(ab);
                                     if(inc === 0){
-                                        species.casteabilities.push(" and ");
+                                        temp += (" and ");
                                     }
                                 }
+                                species.casteabilities.push(temp);
                             }
                     }
                 }
@@ -3868,7 +3877,7 @@ function generateRandomAlien(species,rand){
     }
     function getUniqueTrait(){
         var traits = [
-            {key:"Hibernation", name:"Hibernation", description:"The sophont passes some period of time in a state of total suspended animation. The sophont culture often makes provision for the care and protection of the individual during the hibernation period."},
+            //{key:"Hibernation", name:"Hibernation", description:"The sophont passes some period of time in a state of total suspended animation. The sophont culture often makes provision for the care and protection of the individual during the hibernation period."},
             [
                 [
                     {key:"Symbiont", name:"Symbiont (Dominated Carrier)", description:"It actually consists of two distinct lifeforms, the primary body (the carrier) and the controlling primary mind (the rider), although only the rider is sapient. When attached, the rider sophont is entirely concealed within the carrier."},
