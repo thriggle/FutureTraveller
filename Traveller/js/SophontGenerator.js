@@ -3050,7 +3050,7 @@ function generateRandomAlien(species,rand){
                                         ability = "H-"+(getSenseConstant())+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
                                     }else{
                                         var constant = parseInt(species.hearingconstant,10)+2;
-                                        ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voicefreq+species.vocalrange;
+                                        ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
                                     }
                                     break;
                                 case "Awareness": 
@@ -3205,7 +3205,7 @@ function generateRandomAlien(species,rand){
                                         break;
                                 }
                             }
-                            
+                            if(ability === ability2){ ability2 = "--"; }
                         }
                         if(ability === "--" && ability2 === "--"){
                             species.genderabilities.push("--");
@@ -3234,7 +3234,7 @@ function generateRandomAlien(species,rand){
                                         ability = "H-"+(k < 10 ? "0" + k : k)+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
                                     }else{
                                         var constant = parseInt(species.hearingconstant,10)+4;
-                                        ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voicefreq+species.vocalrange;
+                                        ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
                                     }
                                     break;
                                 case "Awareness": 
@@ -3301,7 +3301,7 @@ function generateRandomAlien(species,rand){
                                             ab = "H-"+(k < 10 ? "0" + k : k)+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
                                         }else{
                                             var constant = parseInt(species.hearingconstant,10)+2;
-                                            ab = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voicefreq+species.vocalrange;
+                                            ab = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
                                         }
                                         break;
                                     case "Awareness": 
@@ -3432,7 +3432,7 @@ function generateRandomAlien(species,rand){
                                             ability = "H-"+(getSenseConstant())+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
                                         }else{
                                             var constant = parseInt(species.hearingconstant,10)+2;
-                                            ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voicefreq+species.vocalrange;
+                                            ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
                                         }
                                         break;
                                     case "Awareness": 
@@ -3550,7 +3550,6 @@ function generateRandomAlien(species,rand){
                                         case 1: 
                                             if(ability === "Vision" || (species.vision !== "Blind" && ability !== "Blind")){
                                                 ability2 = "MemVision";
-                                                reroll = false;
                                             }
                                             break;
                                         case 2:
@@ -3580,7 +3579,7 @@ function generateRandomAlien(species,rand){
                                             break;
                                     }
                                 }
-                                
+                                if(ability === ability2){ ability2 = "--"; }
                             }
                             
                             // no effect if disability for a sense species does not have
@@ -3619,7 +3618,7 @@ function generateRandomAlien(species,rand){
                                         }else{
                                         
                                             var constant = parseInt(species.hearingconstant,10)+4;
-                                            ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voicefreq+species.vocalrange;
+                                            ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
                                         }
                                         break;
                                     case "Awareness": 
@@ -3682,7 +3681,7 @@ function generateRandomAlien(species,rand){
                                                     ab = "H-"+(getSenseConstant())+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
                                                 }else{
                                                     var constant = parseInt(species.hearingconstant,10)+2;
-                                                    ab = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voicefreq+species.vocalrange;
+                                                    ab = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
                                                 }
                                                 break;
                                             case "Awareness": 
