@@ -1579,9 +1579,9 @@ function generateRandomAlien(species,rand){
                 languageFreq = "Infrasonic to Human-Audible";
             }else if(species.lowerLanguageFreq <= 5 && species.upperLanguageFreq > 12){
                 languageFreq = "Infrasonic, Human-Audible, and Ultrasonic";
-            }else if(species.lowerLanguageFreq <= 12 && species.upperLanguageFreq <= 12){
+            }else if(species.lowerLanguageFreq > 5 && species.upperLanguageFreq <= 12){
                 languageFreq = "Human-Audible";
-            }else if(species.lowerLanguageFreq <= 12 && species.upperLanguageFreq > 12){
+            }else if(species.lowerLanguageFreq > 5 && species.upperLanguageFreq > 12){
                 languageFreq = "Human-Audible and Ultrasonic";
             }else if(species.lowerLanguageFreq > 12){
                 languageFreq = "Ultrasonic";
