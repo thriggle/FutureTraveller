@@ -3057,7 +3057,7 @@ function generateRandomAlien(species,rand){
                                     if(species.aware === "Unaware"){
                                         ability = "A-"+(getSenseConstant())+"-"+getAwarenessAcuity(); 
                                     }else{
-                                        var constant = parseInt(species.awareconstant,10)+2;
+                                        var constant = parseInt(species.awarenessconstant,10)+2;
                                         ability = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
                                     }
                                     break;
@@ -3242,7 +3242,7 @@ function generateRandomAlien(species,rand){
                                         var k = parseInt(getSenseConstant(),10)+2;
                                         ability = "A-"+(k < 10 ? "0" + k : k)+"-"+getAwarenessAcuity(); 
                                     }else{
-                                        var constant = parseInt(species.awareconstant,10)+4;
+                                        var constant = parseInt(species.awarenessconstant,10)+4;
                                         ability = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
                                     }
                                     break;
@@ -3309,7 +3309,7 @@ function generateRandomAlien(species,rand){
                                             var k = parseInt(getSenseConstant(),10);
                                             ab = "A-"+(k < 10 ? "0" + k : k)+"-"+getAwarenessAcuity(); 
                                         }else{
-                                            var constant = parseInt(species.awareconstant,10)+2;
+                                            var constant = parseInt(species.awarenessconstant,10)+2;
                                             ab = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
                                         }
                                         break;
@@ -3439,7 +3439,7 @@ function generateRandomAlien(species,rand){
                                         if(species.aware === "Unaware"){
                                             ability = "A-"+(getSenseConstant())+"-"+getAwarenessAcuity(); 
                                         }else{
-                                            var constant = parseInt(species.awareconstant,10)+2;
+                                            var constant = parseInt(species.awarenessconstant,10)+2;
                                             ability = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
                                         }
                                         break;
@@ -3626,7 +3626,7 @@ function generateRandomAlien(species,rand){
                                             var constant = parseInt(getSenseConstant(),10)+2;
                                             ability = "A-"+(k < 10 ? "0"+k : k)+"-"+getAwarenessAcuity(); 
                                         }else{
-                                            var constant = parseInt(species.awareconstant,10)+4;
+                                            var constant = parseInt(species.awarenessconstant,10)+4;
                                             ability = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
                                         }
                                         break;
@@ -3688,7 +3688,7 @@ function generateRandomAlien(species,rand){
                                                 if(species.aware === "Unaware"){
                                                     ab = "A-"+(getSenseConstant())+"-"+getAwarenessAcuity(); 
                                                 }else{
-                                                    var constant = parseInt(species.awareconstant,10)+2;
+                                                    var constant = parseInt(species.awarenessconstant,10)+2;
                                                     ab = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
                                                 }
                                                 break;
@@ -3935,7 +3935,7 @@ function generateRandomAlien(species,rand){
             [
                 {key:"Regenerative", name:"Defensive Regeneration", description:"The sophont can detach parts of its body at will; the parts eventually regrow."},
                 {key:"Regenerative", name:"Regeneration", description:"The sophont can regrow parts of its body that are severed or destroyed."},
-                {key:"Regenerative", name:"Perfect Regeneration", description:"The sophont can regrow any severed limbs or organs. Under proper conditions, even a severed piece of the sophont could regrow a complete body."}
+                {key:"Regenerative", name:"Perfect Regeneration", description:"The sophont can regrow any severed limbs or organs. Under proper conditions, a complete body can even regrow from a severed piece of the sophont."}
             ],
             [
                 {key:"Chemical Defense", name:"Corrosive Spray", description:"As a biochemical defense, the sophont can spray a corrosive substance when threatened."},
