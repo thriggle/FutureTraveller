@@ -12,21 +12,22 @@
 <style>
     h1,h2,h3{ margin:0px; font-weight:normal;}
     body{font-family:Bahnschrift;}
-    body.dark{background-color: #181818; color: #fff;  text-shadow:0px 1px 2px black;}
+    body.dark{background-color: rgb(13, 17, 23); color: #fff;  text-shadow:0px 1px 2px black;}
     body.light{background-color: #fff; color: #000;}
     body.dark strong{color:#dfdfdf;}
     table, tr, td{vertical-align: top;}
     body.light table.table{ box-shadow:1px 1px 3px #555; border-radius:0.3rem; border-collapse:collapse; overflow:hidden; border:0.1rem solid black; display:inline-block; vertical-align: text-top;}
-    body.dark table.table{ box-shadow:1px 1px 3px #555; border-radius:0.3rem; border-collapse:collapse; overflow:hidden; border:0.1rem solid #dfdfdf; display:inline-block; vertical-align: text-top;}
+    body.dark table.table{ border-radius:0.3rem; border-collapse:collapse; overflow:hidden; border:1px solid rgba(56, 139, 253, 0.4); display:inline-block; vertical-align: text-top;}
     body.light .table tr:first-child{ border-bottom:1px solid black; background-color:#dfdfdf;}
-    body.dark .table tr:first-child{ border-bottom:1px solid #dfdfdf; background-color:#393939;}
+    body.dark .table tr:first-child{ border-bottom:1px solid rgb(48, 54, 61); background-color:rgba(56, 139, 253, 0.15);}
     body.light .table tr:nth-child(even){ background-color:#f0f0f0;}
-    body.dark .table tr:nth-child(even){ background-color:#2f2f2f;}
+    body.dark .table tr:nth-child(even){ background-color:rgb(22, 27, 34);}
     .table th, .table th td{text-align:left; font-weight:bold; vertical-align:text-top; }
     body.light .table td + td, .table th + th{border-left:0.01rem solid black;}
-    body.dark .table td + td, .table th + th{border-left:0.01rem solid #dfdfdf;}
+    body.dark .table td + td, .table th + th{border-left:0.01rem solid rgb(48, 54, 61);}
     .table td:empty, .table th:empty{border:0px solid transparent !important; }
     .hidden{display:none;}
+    body.dark fieldset{ border:1px solid rgb(48, 54, 61);}
     fieldset{
             display:inline-block;
             vertical-align: text-top;
