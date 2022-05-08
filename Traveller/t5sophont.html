@@ -12,14 +12,22 @@
 <style>
     h1,h2,h3{ margin:0px; font-weight:normal;}
     body{font-family:Bahnschrift;}
+    body.dark{background-color: rgb(13, 17, 23); color: #fff;  text-shadow:0px 1px 2px black;}
+    body.light{background-color: #fff; color: #000;}
+    body.dark strong{color:#dfdfdf;}
     table, tr, td{vertical-align: top;}
-    table.table{ box-shadow:1px 1px 3px #555; border-radius:0.3rem; border-collapse:collapse; overflow:hidden; border:0.1rem solid black; display:inline-block; vertical-align: text-top;}
-    .table tr:first-child{ border-bottom:1px solid black; background-color:#dfdfdf;}
-    .table tr:nth-child(even){ background-color:#f0f0f0;}
+    body.light table.table{ box-shadow:1px 1px 3px #555; border-radius:0.3rem; border-collapse:collapse; overflow:hidden; border:0.1rem solid black; display:inline-block; vertical-align: text-top;}
+    body.dark table.table{ border-radius:0.3rem; border-collapse:collapse; overflow:hidden; border:1px solid rgba(56, 139, 253, 0.4); display:inline-block; vertical-align: text-top;}
+    body.light .table tr:first-child{ border-bottom:1px solid black; background-color:#dfdfdf;}
+    body.dark .table tr:first-child{ border-bottom:1px solid rgb(48, 54, 61); background-color:rgba(56, 139, 253, 0.15);}
+    body.light .table tr:nth-child(even){ background-color:#f0f0f0;}
+    body.dark .table tr:nth-child(even){ background-color:rgb(22, 27, 34);}
     .table th, .table th td{text-align:left; font-weight:bold; vertical-align:text-top; }
-    .table td + td, .table th + th{border-left:0.01rem solid black;}
+    body.light .table td + td, .table th + th{border-left:0.01rem solid black;}
+    body.dark .table td + td, .table th + th{border-left:0.01rem solid rgb(48, 54, 61);}
     .table td:empty, .table th:empty{border:0px solid transparent !important; }
     .hidden{display:none;}
+    body.dark fieldset{ border:1px solid rgb(48, 54, 61);}
     fieldset{
             display:inline-block;
             vertical-align: text-top;
@@ -48,7 +56,7 @@
         fieldset.collapsed > legend::before{
             content:"► ";
         }
-        input[type=button], label[for='btnImportJSON']{
+        input[type=button], label[for='btnImportJSON'],select{
             background-color:black; color:white;
             cursor:pointer;
             
@@ -59,11 +67,11 @@
             box-shadow:1px 2px 3px #555;
             margin-bottom:3px;
         }
-        label[for='btnImportJSON']{
+        label[for='btnImportJSON'], select{
             border:2px solid black;
             padding: 0.5rem;
         }
-        input[type=button]:hover, label[for='btnImportJSON']:hover{
+        input[type=button]:hover, label[for='btnImportJSON']:hover, select:hover{
             background-color:red;
         }
         input[type=file]{width:0px; opacity:0;}
@@ -78,7 +86,7 @@
         .traitlist ul{list-style:none; padding:0px; margin:0px;}
         .traitlist li{padding-left:2rem;}
 </style>
-<body>
+<body class="dark">
     <h1>Traveller Sophont Creation System</h1>
     <div>
         <span style="display:inline-block; min-width:30rem; text-align:left;">
@@ -91,8 +99,13 @@
         </span>
         <div class="jsonbuttons">
             <span style="display:inline-block;">
+                
                 <input type="button" value="Save as .json" id="btnExportJSON"/>
                 <label role="button" for="btnImportJSON">Load from .json<input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/></label>
+                <select title="Select theme" name="slctStyle" id="slctStyle">
+                    <option value="light">Light Theme</option>
+                    <option selected="selected" value="dark">Dark Theme</option>
+                </select>
             </span>
         </div>
     </div>
@@ -581,6 +594,10 @@
 </body>
 <script>
     var abilityRoll = 0, skillRoll = 0;
+    document.getElementById("slctStyle").addEventListener("change",function(){
+        var style = document.getElementById("slctStyle").value;
+        document.body.className = style;
+    });
     document.getElementById("btnGetSpecialAbility").addEventListener("click",function(){
         var output = document.getElementById("specialAbility");
         removeChildElements(output);
