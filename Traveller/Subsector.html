@@ -217,7 +217,10 @@
         #nativedetails .table td + td, #nativedetails .table th + th{border-left:0.01rem solid black;}
         #nativedetails .table td:empty, #nativedetails .table th:empty{border:0px solid transparent !important; }
         .traitlist ul{list-style:none; padding:0px; margin:0px;}
+        #nativedetails .collapsed .table{display:none;}
         .traitlist li{padding-left:2rem;}
+        #nativedetails .roller{display:inline-block;}
+        #nativedetails .collapsed .roller{display:none;}
     </style>
     <fieldset>
         <legend>Controls</legend>
@@ -676,7 +679,7 @@
                     <div><strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span> <strong>Assignment:</strong> <span data-detail="genderassignment" data-source="species"></span> (<span data-detail="gendershift" data-source="species"></span>)</div>
                     <div><strong>Caste:</strong> <span data-detail="castestructure" data-source="species">No</span> caste structure <strong>Assignment:</strong> <span data-detail="casteassignment" data-source="species"></span> (<span data-detail="casteshift" data-source="species"></span>)</div>
                     <div><strong>Caste-Gender Relation:</strong> <span data-detail="castegenderrelation" data-source="species"></span></div>  
-                    <div><strong>Unique Traits: </strong><span class="traitlist" data-detail="uniqueTraitDesc" data-html="true" data-source="species"></span></div>
+                    <div><strong>Other Features: </strong><span class="traitlist" data-detail="uniqueTraitDesc" data-html="true" data-source="species"></span></div>
                     <table class="table">
                         <tr>
                             <th>#</th>
@@ -972,7 +975,7 @@
                             <td><span data-detail="caste12" data-source="species"></span></td>
                         </tr>
                     </table>
-                    <fieldset style="display:inline-block;">
+                    <fieldset class="roller">
                         <legend>Roll for Special</legend>
                         <input type="button" value="Roll for Special Ability" id="btnGetSpecialAbility"/>
                         <br/><span id="specialAbility"></span>

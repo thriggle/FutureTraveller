@@ -3479,7 +3479,7 @@ function generateRandomAlien(species,rand){
     }
     function setUniqueTraits(){
         if(typeof species.uniqueTraitsCount === "undefined"){
-            species.uniqueTraitsCount = Math.max(posFlux() - posFlux() - 1, 0);
+            species.uniqueTraitsCount = Math.max(d6() - d6() - posFlux() - posFlux() - 1, 0);
         }
         if(species.uniqueTraitsCount > 0){
             species.uniqueTraits = [];
@@ -3503,54 +3503,71 @@ function generateRandomAlien(species,rand){
         var traits = [
             {key:"Hibernation", name:"Hibernation", description:"The sophont passes some period of time in a state of total suspended animation. The sophont culture often makes provision for the care and protection of the individual during the hibernation period."},
             [
-                [{key:"Symbiont", name:"Symbiont (Dominated Carrier)", description:"It actually consists of two distinct lifeforms, the primary body (the carrier) and the controlling primary mind (the rider), although only the rider is sapient. When attached, the rider sophont is entirely concealed within the carrier."},
-                {key:"Symbiont", name:"Symbiont (Dominated Carrier)", description:"It actually consists of two distinct lifeforms, the primary body (the carrier) and the controlling primary mind (the rider), although the carrier is also sapient. When attached, the rider sophont is entirely concealed within the carrier."},
-                {key:"Symbiont", name:"Symbiont (Dominated Carrier)", description:"It actually consists of two distinct lifeforms, the primary body (the carrier) and the controlling primary mind (the rider), although only the rider is sapient. The rider sophont attaches externally to the carrier."},
-                {key:"Symbiont", name:"Symbiont (Dominated Carrier)", description:"It actually consists of two distinct lifeforms, the primary body (the carrier) and the controlling primary mind (the rider), although the carrier is also sapient. The rider sophont attaches externally to the carrier."}],
-                [{key:"Symbiont", name:"Symbiont (Assisted Carrier)", description:"It actually consists of two sophonts, the primary body (the carrier) and an accompanying rider, both with comparable intelligence. When attached, the rider sophont is entirely concealed within the carrier sophont."},
-                {key:"Symbiont", name:"Symbiont (Assisted Carrier)", description:"It actually consists of two sophonts, the primary body (the carrier) and an accompanying rider, both with comparable intelligence. The rider sophont attaches externally to the carrier sophont."},
-                {key:"Symbiont", name:"Symbiont (Attendees)", description:"It is attended by multiple non-sapient symbionts."}]
+                [
+                    {key:"Symbiont", name:"Symbiont (Dominated Carrier)", description:"It actually consists of two distinct lifeforms, the primary body (the carrier) and the controlling primary mind (the rider), although only the rider is sapient. When attached, the rider sophont is entirely concealed within the carrier."},
+                    {key:"Symbiont", name:"Symbiont (Dominated Carrier)", description:"It actually consists of two distinct lifeforms, the primary body (the carrier) and the controlling primary mind (the rider), although the carrier is also sapient. When attached, the rider sophont is entirely concealed within the carrier."},
+                    {key:"Symbiont", name:"Symbiont (Dominated Carrier)", description:"It actually consists of two distinct lifeforms, the primary body (the carrier) and the controlling primary mind (the rider), although only the rider is sapient. The rider sophont attaches externally to the carrier."},
+                    {key:"Symbiont", name:"Symbiont (Dominated Carrier)", description:"It actually consists of two distinct lifeforms, the primary body (the carrier) and the controlling primary mind (the rider), although the carrier is also sapient. The rider sophont attaches externally to the carrier."}
+                ],
+                [
+                    {key:"Symbiont", name:"Symbiont (Assisted Carrier)", description:"It actually consists of two sophonts, the primary body (the carrier) and an accompanying rider, both with comparable intelligence. When attached, the rider sophont is entirely concealed within the carrier sophont."},
+                    {key:"Symbiont", name:"Symbiont (Assisted Carrier)", description:"It actually consists of two sophonts, the primary body (the carrier) and an accompanying rider, both with comparable intelligence. The rider sophont attaches externally to the carrier sophont."}],
+                    {key:"Symbiont", name:"Symbiont (Attendees)", description:"It is attended by multiple non-sapient symbionts."},
+                    {key:"Symbiont", name:"Willing Host", description:"The sophont's body is inhabited by other lifeforms which are either parasitic or provide it with no discernable advantage."}
             ],
             [
                 {key:"Molt", name:"Superficial Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering with changed markings and color."},
                 [
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c3+"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c2 +"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c3 +"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+" and "+ species.c3 +"."}
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c3+"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c2 +"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c3 +"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+" and "+ species.c3 +"."}
                 ],
                 [
-                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c4+"."},
-                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c4 +"."},
-                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+" and "+ species.c4 +"."},
-                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c3+" and "+ species.c4 +"."}
+                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c4+"."},
+                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c4 +"."},
+                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+" and "+ species.c4 +"."},
+                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c3+" and "+ species.c4 +"."}
                 ],
-                {key:"Molt", name:"Random Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and a chance for increased or decreased physical and mental attributes."},
-                {key:"Molt", name:"Random Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and a chance for increased or decreased physical attributes."}
+                {key:"Molt", name:"Random Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and a chance for increased or decreased physical and mental attributes."},
+                {key:"Molt", name:"Random Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and a chance for increased or decreased physical attributes."}
             ],
-            [{key:"Metamorph", name:"Simple Metamorphosis", description:"The sophont undergoes a metamorphosis at life stage " +(posFlux()+3)+ ". It has dramatically different first and ultimate forms."},
-            {key:"Metamorph", name:"Complex Metamorphosis", description:"The sophont undergoes several stages of metamorphosis, ultimately embodying " + (posFlux()+3) + " completely different forms."}],
-            {key:"Senescence", name:"Early Senescence", description:"The sophont begins both physical and mental aging at life stage 2."},
             [
-                {key:"Group", name:"Tight Colonial Lifeform", description:"The sophont is composed of many separately born zooids that combine to create a functional lifeform. The functionally and morphologically specialized zooids cannot survive independently."},
-                {key:"Group", name:"Loose Colonial Lifeform", description:"The sophont is composed of several separately born zooids that combine to create a functional lifeform. Though functionally and morphologically specialized, the zooids can survive independently."},
-                {key:"Group", name:"Loose Detachable Colonial Lifeform", description:"The sophont is composed of several separately born zooids that combine to create a functional lifeform. Some of the zooids are capable of detaching, surviving independently to perform functional tasks, and later reattaching to the primary body."}
+                {key:"Metamorph", name:"Simple Metamorphosis", description:"The sophont undergoes a metamorphosis at life stage " +(posFlux()+3)+ ". It has dramatically different first and ultimate forms."},
+                {key:"Metamorph", name:"Complex Metamorphosis", description:"The sophont undergoes several stages of metamorphosis, ultimately embodying " + (posFlux()+3) + " completely different forms."},
+                {key:"Metamorph", name:"Sessile Senescence", description:"At the start of life stage " + Math.min(posFlux()+6,9) + ", the sophont changes into a sessile (immobile) form."}
             ],
-            [{key:"Phototrophic", name:"Phototrophic", description:"The sophont derives some of its energy from photosynthesis."},
-            {key:"Radiotrophic", name:"Radiotrophic", description:"The sophont derives some of its energy from radiation."},
-            {key:"Lithotrophic", name:"Lithotrophic", description:"The sophont ingests inorganic stone and minerals."}],
-            [{key:"Lethal Reproduction", name:"Lethal Reproduction", description:"When producing offspring, the parent sophont does not survive."},
-            {key:"Parasitic Reproduction", name:"Parasitic Reproduction", description:"The sophont implants its eggs or offspring into an unrelated host."}],
+            [
+                {key:"Senescence", name:"Early Senescence", description:"The sophont begins both physical and mental aging at life stage 2."},
+                {key:"Senescence", name:"Delayed Senescence", description:"The sophont does not experience physical or mental aging until life stage 9."}
+            ],
+            [
+                {key:"Symbiont", name:"Colonial Lifeform", description:"The sophont is composed of many separately born zooids that combine to create a functional lifeform. The functionally and morphologically specialized zooids cannot survive independently."},
+                {key:"Symbiont", name:"Loose Colonial Lifeform", description:"The sophont is composed of several separately born zooids that combine to create a functional lifeform. Though functionally and morphologically specialized, the zooids can survive independently."},
+                {key:"Symbiont", name:"Loose Detachable Colonial Lifeform", description:"The sophont is composed of several separately born zooids that combine to create a functional lifeform. Some of the zooids are capable of detaching, surviving independently to perform functional tasks, and later reattaching to the primary body."}
+            ],
+            [
+                {key:"Metabolic", name:"Phototrophic", description:"The sophont is able to derive some energy from photosynthesis."},
+                {key:"Non-Respiratory", name:"Fermentrophic", description:"The sophont is able survive periods deprived of its native atmosphere in a low energy state, supported by anaerobic metabolic processes."},
+                {key:"Metabolic", name:"Radiotrophic", description:"The sophont is able to supplement its metabolic processes using environmental radiation."},
+                {key:"Metabolic", name:"Lithotrophic", description:"The sophont ingests inorganic stone and minerals."},
+                {key:"Metabolic", name:"Food Stores", description:"The sophont is produces a concentrated high-energy treacle which it stores internally. The product can be disgorged to feed itself or others when food is otherwise scarce."},
+            ],
+            [
+                {key:"Lethal Reproduction", name:"Lethal Reproduction", description:"When producing offspring, the parent sophont does not survive."},
+                {key:"Parasitic Reproduction", name:"Parasitic Reproduction", description:"The sophont spends its first life stage parasitizing an unrelated host."},
+                {key:"Parasitic Reproduction", name:"Brood Parasite", description:"The sophont evolved to rely upon other native species to raise its young as their own."}
+            ],
             [
                 {key:"Multihead", name:"Multiple brains", description:"The sophont has multiple distinct central nervous systems capable of independent thought."},
                 {key:"Multihead", name:"Multiple "+(species.head.indexOf("H")>=0?"heads":"brains"), description:"The sophont has multiple "+(species.head.indexOf("H")>=0?"heads. " : "distinct central nervous systems capable of independent thought.")}
             ],
             [
-                {key:"Regenerative", name:"Defensive Regeneration", description:"The sophont can detach parts of its body at will; the parts eventually grow back."},
-                {key:"Regenerative", name:"Simple Regeneration", description:"The sophont can regrow parts of its body that are severed or destroyed."},
-                {key:"Regenerative", name:"Perfect Regeneration", description:"Every part of the sophont can eventually regrow if severed or removed, including vital organs, sensory organs, and nerves."}
+                {key:"Regenerative", name:"Defensive Regeneration", description:"The sophont can detach parts of its body at will; the parts eventually regrow."},
+                {key:"Regenerative", name:"Regeneration", description:"The sophont can regrow parts of its body that are severed or destroyed."},
+                {key:"Regenerative", name:"Perfect Regeneration", description:"The sophont can regrow any severed limbs or organs. Under proper conditions, even a severed piece of the sophont could regrow a complete body."}
             ],
             [
                 {key:"Chemical Defense", name:"Corrosive Spray", description:"As a biochemical defense, the sophont can spray a corrosive substance when threatened."},
@@ -3559,16 +3576,23 @@ function generateRandomAlien(species,rand){
                 {key:"Chemical Defense", name:"Tranquilizing Toxin", description:"As a biochemical defense, the sophont can exude a tranquilizing toxin when threatened."},
                 {key:"Chemical Defense", name:"Toxic Skin", description:"As a biochemical defense, the sophont's body surface is coated with a substance that is poisonous to most living beings."},
                 {key:"Inflate", name:"Inflates", description:"The sophont can inflate to many times its size as a defensive reaction."},
-                {key:"Color Changing", name:"Color Changing", description:"The sophont is able to change its color to match its surroundings."},
-                {key:"Translucent", name:"Translucent", description:"In its natural environment, under certain conditions, the sophont's body covering and organs are translucent and may appear almost invisible."},
-                {key:"Batesian Mimicry", name:"Batesian Mimicry",description:"To deter predators, the sophont has evolved to resemble a more dangerous organism from its homeworld."}
+                {key:"Color", name:"Color Changing", description:"The sophont is able to change its color to match its surroundings."},
+                {key:"Color", name:"Translucent", description:"In its natural environment, under certain conditions, the sophont's body covering and organs are translucent and may appear almost invisible."},
+                {key:"Color", name:"Batesian Mimicry",description:"To deter predators, the sophont has evolved to resemble a more dangerous organism from its homeworld."}
             ],
-            {key:"Bioluminescent", name:"Bioluminescent", description:"The sophont emits bioluminescent signals." + (species.vision === "Blind" ? " Although incapable of seeing these signals itself, they may have originally served to attract prey or confuse predators." : "")},
-            {key:"Non-Respiratory", name:"Non-Respiratory", description:"The sophont does not require fresh air to function."},
-            {key:"Life Stage", name:"Feral Life Stage", description:"For the duration of life stage "+(posFlux()+2)+", the sophont is not fully sapient."},
-            {key:"Life Stage", name:"Feral End of Life", description:"Starting at life stage "+(posFlux()+4)+", the sophont reverts to a non-sapient feral state."},
             [
-                {key:"Ecology", name:"Ecological Lynchpin", description:"The sophont occupies a key position in its homeworld's ecology, such that all other lifeforms have evolved around it."},
+                // normal things from terra 
+                {key:"Bioluminescent", name:"Bioluminescent", description:"The sophont emits bioluminescent signals." + (species.vision === "Blind" ? " Although incapable of recognizing the signals itself, they may have originally served to attract prey or confuse predators." : "")},
+                {key:"Web", name:"Web Spinner", description:"The sophont is able to produce a natural silken thread from its body."},
+                {key:(species.hearing==="Deaf"?"Symbiont":"Echolocation"), description:(species.hearing==="Deaf"?"The sophont relies upon a symbiont to sense vibrations in its surroundings.":"The sophont can visually map its surrounding using sonic vibrations.")}
+            ],
+            {key:"Non-Respiratory", name:"Non-Respiratory", description:"The sophont does not require fresh air to function."},
+            [
+                {key:"Life Stage", name:"Feral Life Stage", description:"For the duration of life stage "+Math.min(posFlux()+posFlux()+1,8)+", the sophont is not fully sapient."},
+                {key:"Life Stage", name:"Feral End of Life", description:"Starting at life stage "+Math.min(posFlux()+6,9)+", the sophont descends into a non-sapient feral state."}
+            ],
+            [
+                {key:"Ecology", name:"Ecological Lynchpin", description:"The sophont occupies a key position in its homeworld's ecology. Many other life forms depend on it to survive."},
                 {key:"Ecology", name:"Evolutionary Co-dependency", description:"The sophont has a physiological dependency on another lifeform from its homeworld."},
                 {key:"Ecology", name:"Evolutionary Psychological Dependency", description:"The sophont has a psychological dependency on another lifeform from its homeworld."},
 
