@@ -2862,11 +2862,12 @@ function generateRandomAlien(species,rand){
             
         
         for(var i = 0; i < 2; i++){
+            var lc = (i === 0 ? species.frontlimbs1 : species.frontlimbs2);
             switch(species.frontlimbs[i]){
-                case "W": species.frontlimbsdesc += (i === 0 ? species.frontlimbs1 : species.frontlimbs2)  + " wings"; break;
-                case "A": species.frontlimbsdesc += (i === 0 ? species.frontlimbs1 : species.frontlimbs2)  + " arms"; break;
-                case "L": species.frontlimbsdesc += (i === 0 ? species.frontlimbs1 : species.frontlimbs2)  + " legs with manipulators"; break;
-                case "F": species.frontlimbsdesc += (i === 0 ? species.frontlimbs1 : species.frontlimbs2)  + " flippers"; break;
+                case "W": species.frontlimbsdesc += lc  + " wing"+(lc > 1? "s":""); break;
+                case "A": species.frontlimbsdesc += lc  + " arm"+(lc > 1? "s":""); break;
+                case "L":  species.frontlimbsdesc += lc + " leg"+(lc > 1? "s":"")+" with manipulators"; break;
+                case "F": species.frontlimbsdesc += lc  + " flipper"+(lc > 1? "s":""); break;
                 case "N": break;
             }
             if(i == 0 && species.frontlimbs[1] !== "N"){
@@ -2874,16 +2875,17 @@ function generateRandomAlien(species,rand){
             }
         }     
         for(var i = 0; i < 2; i++){
+            var lc = (i === 0 ? species.rearlimbs1 : species.rearlimbs2);
             switch(species.rearlimbs[i]){
                 case "W": 
-                    species.rearlimbsdesc += (i === 0 ? species.rearlimbs1 : species.rearlimbs2) + " wings"; break;
+                    species.rearlimbsdesc += lc + " wing"+(lc > 1? "s":""); break;
                 case "M": 
                     species.rearlimbsdesc += (i === 0 ? 
-                        species.rearlimbs1 + " legs (in "+species.rearlimbgroups1+" groups)" :  
-                        species.rearlimbs2 + " legs (in "+species.rearlimbgroups2+" groups)"); 
+                        species.rearlimbs1 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups1+" groups)" :  
+                        species.rearlimbs2 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups2+" groups)"); 
                     break;
-                case "L": species.rearlimbsdesc += (i === 0 ? species.rearlimbs1 : species.rearlimbs2)  + " legs"; break;
-                case "F": species.rearlimbsdesc += (i === 0 ? species.rearlimbs1 : species.rearlimbs2)  + " flippers"; break;
+                case "L": species.rearlimbsdesc += lc  + " leg"+(lc > 1? "s":""); break;
+                case "F": species.rearlimbsdesc += lc  + " flipper"+(lc > 1? "s":""); break;
                 case "N": break;
             }
             if(i == 0 && species.rearlimbs[1] !== "N"){
