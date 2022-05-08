@@ -692,6 +692,7 @@ function generateRandomAlien(species,rand){
         
     }
     function setStats(){
+        species.statnotes = [];
         species.c1 = "Str";
         var roll = d6() - d6() + species.EnvironmentDM;
         if(roll <= -4){
@@ -711,6 +712,7 @@ function generateRandomAlien(species,rand){
         }else{
             species.c1val = "12+6D";
         }
+        if(roll >= 2){ species.statnotes.push("This sophont possesses incredible Strength."); }
         var locMod = 0;
         if(species.locomotion === "Flyer"){ locMod = -2;}
         else if(species.locomotion === "Swim" || species.locomotion === "Diver"){
@@ -719,10 +721,12 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6() + locMod;
         if(roll <= -2){
             species.c2 = "Agi";
+            species.statnotes.push("This sophont possesses Agility instead of dexterity. Agility measures overall body coordination. For tasks involving fine manipulation that would ordinarily use Dex, the sophont uses Agi at half value.");
         }else if(roll <= 1){
             species.c2 = "Dex";
         }else{
             species.c2 = "Gra";
+            species.statnotes.push("This sophont possesses Grace instead of dexterity. Grace measures body-limb coordination and is especially used for activities in water. For tasks involving fine manipulation that would ordinarily use Dex, the sophont uses Gra at half value.");
         }
         roll = d6() - d6() + species.EnvironmentDM;
         if(roll <= -4){
@@ -735,10 +739,12 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6() + locMod;
         if(roll <= -2){
             species.c3 = "Sta";
+            species.statnotes.push("This sophont possesses Stamina instead of endurance. Stamina measures long-term task persistance and is in some ways superior to End. The sophont's personal day is about 48 hours long, requiring about 16 hours of sleep each day to function optimally. In a continued running situation, check Sta instead of End.");
         }else if(roll <= 1){
             species.c3 = "End";
         }else{
             species.c3 = "Vig";
+            species.statnotes.push("This sophont possesses Vigor instead of endurance. Vigor measures short-term fatigue resistances and is in some ways an inferior alternative to End. The sophont's personal day is about 12 hours long, and it can function for twice its Vig hours before becoming sleepy, but can function optimally again after about 4 hours of sleep. Short distant sprints use Vig; for most other feats of endurance, the sophont uses Vig at half value.");
         }
         roll = d6() - d6() + species.EnvironmentDM;
         if(species.niche === "Pouncer"){ roll -= 2;}
@@ -762,10 +768,12 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6();
         if(roll <= -2){
             species.c5 = "Ins";
+            species.statnotes.push("This sophont possesses Instinct instead of education, reacting instinctively when confronted with a task requiring Education or Training. Instinct is an inborn complex of behaviors comparable to aquired learning. Cannot learn skills through formal training/education, only by experience. Tasks completed using Instinct receive a time advantage. The sophont receives a native store of 3 instinctual skills or knowledges each at same level as Ins.");
         }else if(roll <= 1){
             species.c5 = "Edu";
         }else{
             species.c5 = "Tra";
+            species.statnotes.push("This sophont possesses Training rather than education. Training is learning based on behavior modification; the sophont is ill prepared to learn in typical educational environments, but can prosper in specially adapted hands-on training courses and mentor-mentee relationships. Training and Education can be substituted for each other at half value.");
         }
         if(species.c5 === "Ins"){
             roll = d6() - d6();
@@ -782,10 +790,12 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6();
         if(roll <= -3){
             species.c6 = "Cas";
+            species.statnotes.push("This sophont possesses Caste rather than social standing. Caste indicates the sophont's position in group hierarchies based on genetics. Characters with caste are oblivious to their position in social hierarchies outside their own species; they use a Social Standing of 4 in any situations that call for Soc.");
         }else if(roll <= 1){
             species.c6 = "Soc";
         }else{
             species.c6 = "Cha";
+            species.statnotes.push("This sophont possesses Charisma rather than social standing. Species with charisma automatically defer to the leadership of others with higher Cha, but if they are within 2 of another with higher Cha, they may challenge the other; if successful, the challenger rises in Cha and the loser has Cha reduced. Charisma typically functions at half value against characters with Soc.");
         }
     }
     function setCaste(){
@@ -2866,23 +2876,33 @@ function generateRandomAlien(species,rand){
             }
         }
             
-        
-        for(var i = 0; i < 2; i++){
-            var lc = (i === 0 ? species.frontlimbs1 : species.frontlimbs2);
-            switch(species.frontlimbs[i]){
+        if(species.frontlimbs[0] === species.frontlimbs[1]){
+            var lc = (species.frontlimbs1 + species.frontlimbs2).toString();
+            switch(species.frontlimbs[0]){
                 case "W": species.frontlimbsdesc += lc  + " wing"+(lc > 1? "s":""); break;
                 case "A": species.frontlimbsdesc += lc  + " arm"+(lc > 1? "s":""); break;
                 case "L":  species.frontlimbsdesc += lc + " leg"+(lc > 1? "s":"")+" with manipulators"; break;
                 case "F": species.frontlimbsdesc += lc  + " flipper"+(lc > 1? "s":""); break;
                 case "N": break;
             }
-            if(i == 0 && species.frontlimbs[1] !== "N"){
-                species.frontlimbsdesc += " and ";
-            }
-        }     
-        for(var i = 0; i < 2; i++){
-            var lc = (i === 0 ? species.rearlimbs1 : species.rearlimbs2);
-            switch(species.rearlimbs[i]){
+        }else{
+            for(var i = 0; i < 2; i++){
+                var lc = (i === 0 ? species.frontlimbs1 : species.frontlimbs2);
+                switch(species.frontlimbs[i]){
+                    case "W": species.frontlimbsdesc += lc  + " wing"+(lc > 1? "s":""); break;
+                    case "A": species.frontlimbsdesc += lc  + " arm"+(lc > 1? "s":""); break;
+                    case "L":  species.frontlimbsdesc += lc + " leg"+(lc > 1? "s":"")+" with manipulators"; break;
+                    case "F": species.frontlimbsdesc += lc  + " flipper"+(lc > 1? "s":""); break;
+                    case "N": break;
+                }
+                if(i == 0 && species.frontlimbs[1] !== "N"){
+                    species.frontlimbsdesc += " and ";
+                }
+            }     
+        }
+        if(species.rearlimbs[0] === species.rearlimbs[1]){
+            var lc = (species.rearlimbs1 + species.rearlimbs2).toString();
+            switch(species.rearlimbs[0]){
                 case "W": 
                     species.rearlimbsdesc += lc + " wing"+(lc > 1? "s":""); break;
                 case "M": 
@@ -2894,8 +2914,24 @@ function generateRandomAlien(species,rand){
                 case "F": species.rearlimbsdesc += lc  + " flipper"+(lc > 1? "s":""); break;
                 case "N": break;
             }
-            if(i == 0 && species.rearlimbs[1] !== "N"){
-                species.rearlimbsdesc += " and ";
+        }else{
+            for(var i = 0; i < 2; i++){
+                var lc = (i === 0 ? species.rearlimbs1 : species.rearlimbs2);
+                switch(species.rearlimbs[i]){
+                    case "W": 
+                    species.rearlimbsdesc += lc + " wing"+(lc > 1? "s":""); break;
+                    case "M": 
+                    species.rearlimbsdesc += (i === 0 ? 
+                        species.rearlimbs1 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups1+" groups)" :  
+                        species.rearlimbs2 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups2+" groups)"); 
+                        break;
+                        case "L": species.rearlimbsdesc += lc  + " leg"+(lc > 1? "s":""); break;
+                        case "F": species.rearlimbsdesc += lc  + " flipper"+(lc > 1? "s":""); break;
+                        case "N": break;
+                }
+                if(i == 0 && species.rearlimbs[1] !== "N"){
+                    species.rearlimbsdesc += " and ";
+                }
             }
         }
         species.bodystructure = species.head + "-" + species.torso + "-" + species.frontlimbs + "-" + species.rearlimbs + "-" + species.tail;
