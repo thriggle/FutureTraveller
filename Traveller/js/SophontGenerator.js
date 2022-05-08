@@ -1421,7 +1421,6 @@ function generateRandomAlien(species,rand){
             species.hearingconstant = getSenseConstant();
             species.hearingfreq = getHearingFreq();
             species.hearingspan = getHearingSpan();
-           console.log(species.hearingspan);
             var infrasound = false;
             var ultrasound = false;
             var audible = false;
@@ -2972,7 +2971,6 @@ function generateRandomAlien(species,rand){
             species.genderabilities = [];
             for(var i = 0, len = species.genders.length; i < len; i++){
                 var determinant = d6();
-                
                 switch(determinant){
                     case  1:
                         var ability = getSpecialAbility();
@@ -3348,7 +3346,6 @@ function generateRandomAlien(species,rand){
         }
         species.casteabilities = ["--"];
         if(species.castes.length > 1){
-            var determinant = d6();
             species.casteabilities = [];
             for(var i = 0, len = species.castes.length; i < len; i++){
                 var genderIndex = species.genders.indexOf(species.castes[i]);
@@ -3465,6 +3462,7 @@ function generateRandomAlien(species,rand){
                                 }
                             }
                             species.casteabilities.push(ability);
+                            
                             break;
                         case 2:
                             species.casteabilities.push("Roll");
@@ -3543,6 +3541,7 @@ function generateRandomAlien(species,rand){
                             ){
                                 ability2 = getSpecialAbility();
                             }
+                            
                             if(ability2 === "Mem"){
                                 var reroll = true;
                                 while(reroll){
@@ -3583,6 +3582,7 @@ function generateRandomAlien(species,rand){
                                 }
                                 
                             }
+                            
                             // no effect if disability for a sense species does not have
                             if((ability2 === "Deaf" && species.hearing === "Deaf" ) || 
                             (ability2 === "Oblivious" && species.percep === "Oblivious") ||
@@ -3608,11 +3608,8 @@ function generateRandomAlien(species,rand){
                                             var constant = parseInt(getSenseConstant(),10)+2;
                                             ability = "V-"+(k < 10 ? "0"+k : k)+"-"+getVisionBands(); 
                                         }else{
-                                            console.log(species.visionconstant);
                                             var constant = parseInt(species.visionconstant,10)+4;
-                                            console.log(constant);
                                             ability = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
-                                            console.log(ability);
                                         }
                                         break;
                                     case "Hearing": 
@@ -3676,11 +3673,8 @@ function generateRandomAlien(species,rand){
                                                 if(species.vision === "Blind"){
                                                     ab = "V-"+(getSenseConstant())+"-"+getVisionBands(); 
                                                 }else{
-                                                    console.log(species.visionconstant);
                                                     var constant = parseInt(species.visionconstant,10)+2;
-                                                    console.log(constant);
                                                     ab = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
-                                                    console.log(ab);
                                                 }
                                                 break;
                                             case "Hearing": 
@@ -3718,7 +3712,6 @@ function generateRandomAlien(species,rand){
                                         }
                                     }
                                     temp += ab;
-                                    species.casteabilities.push(ab);
                                     if(inc === 0){
                                         temp += (" and ");
                                     }
