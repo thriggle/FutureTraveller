@@ -3422,7 +3422,7 @@ function generateRandomAlien(species,rand){
                                 }
                                 if(ability === ability2){ ability2 = "--"; }
                             }
-                            
+                            console.log(ability + " " + ability2);
                             // no effect if disability for a sense species does not have
                             if((ability2 === "Deaf" && species.hearing === "Deaf" ) || 
                             (ability2 === "Oblivious" && species.percep === "Oblivious") ||
@@ -3451,7 +3451,7 @@ function generateRandomAlien(species,rand){
                             }else{
                                 var temp = "";
                                 for(var inc = 0, arr = [ability,ability2]; inc < 2; inc++){
-                                    temp += getNewSenseString(ab);
+                                    temp += getNewSenseString(arr[inc]);
                                     if(inc === 0){
                                         temp += (" and ");
                                     }
