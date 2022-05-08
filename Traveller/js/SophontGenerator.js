@@ -661,29 +661,35 @@ function generateRandomAlien(species,rand){
                 case 5: species.genderc5s.push("+5"); break;
             }
         }
-        roll = d6() - d6();
-        if(roll <= -5){
-            species.genderassignment = "Assigned by family";
-            species.gendershift = "progresses along gender table at each life stage";
-        }else if(roll <= -4){
-            species.genderassignment = "Initially assigned at life stage 2";
-            species.gendershift = "progresses along gender table at each life stage";
-        }else if(roll <= -3){
-            species.genderassignment = "Neuter until life stage 2";
-            species.gendershift = "fixed";
-        }else if(roll <= 2){
-            species.genderassignment = "Assigned at birth";
-            species.gendershift = "fixed";
-        }else if(roll <= 3){
-            species.genderassignment = "Neuter until life stage 2";
-            species.gendershift = "fixed";
-        }else if(roll <= 4){
-            species.genderassignment = "Neuter until life stage 2";
-            species.gendershift = "transforms at life stage 6";
+        if(species.genders.length > 1){
+            roll = d6() - d6();
+            if(roll <= -5){
+                species.genderassignment = "Assigned by family";
+                species.gendershift = "progresses along gender table at each life stage";
+            }else if(roll <= -4){
+                species.genderassignment = "Initially assigned at life stage 2";
+                species.gendershift = "progresses along gender table at each life stage";
+            }else if(roll <= -3){
+                species.genderassignment = "Neuter until life stage 2";
+                species.gendershift = "then fixed";
+            }else if(roll <= 2){
+                species.genderassignment = "Assigned at birth";
+                species.gendershift = "fixed";
+            }else if(roll <= 3){
+                species.genderassignment = "Neuter until life stage 2";
+                species.gendershift = "then fixed";
+            }else if(roll <= 4){
+                species.genderassignment = "Neuter until life stage 2";
+                species.gendershift = "transforms again at life stage 6";
+            }else{
+                species.genderassignment = "Assigned by individual (neuter until chosen)";
+                species.gendershift = "transforms randomly at life stage 6";
+            }
         }else{
-            species.genderassignment = "Assigned by individual";
-            species.gendershift = "transforms at life stage 6";
+            species.genderassignment = "(N/A)";
+            species.gendershift = "fixed";
         }
+        
     }
     function setStats(){
         species.c1 = "Str";
@@ -1613,7 +1619,7 @@ function generateRandomAlien(species,rand){
                 var voiceFreq = voice + i;
                 if(voiceFreq >= hearingfreq - hearingspan && voiceFreq <= hearingfreq + hearingspan){
                     voiceIsInHearingRange = true;
-                    if(species.lowerLanguageFreq = -1){
+                    if(species.lowerLanguageFreq === -1){
                         species.lowerLanguageFreq = voiceFreq;
                     }
                     species.upperLanguageFreq = voiceFreq;
@@ -3032,56 +3038,7 @@ function generateRandomAlien(species,rand){
                         (ability === "Unaware" && species.aware === "Unaware")){
                             ability = "--";
                         }
-                        
-                        if(ability === "Touch" || ability === "Vision" || ability === "Hearing" || ability === "Awareness" || ability === "Perception" || ability === "Smell"){
-                            switch(ability){
-                                case "Touch": 
-                                    var constant = parseInt(species.touchconstant,10)+2;
-                                    ability = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
-                                    break;
-                                case "Vision": 
-                                    if(species.vision === "Blind"){
-                                        ability = "V-"+(getSenseConstant())+"-"+getVisionBands(); 
-                                    }else{
-                                        var constant = parseInt(species.visionconstant,10)+2;
-                                        ability = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
-                                    }
-                                    break;
-                                case "Hearing": 
-                                    if(species.hearing === "Deaf"){
-                                        ability = "H-"+(getSenseConstant())+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
-                                    }else{
-                                        var constant = parseInt(species.hearingconstant,10)+2;
-                                        ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
-                                    }
-                                    break;
-                                case "Awareness": 
-                                    if(species.aware === "Unaware"){
-                                        ability = "A-"+(getSenseConstant())+"-"+getAwarenessAcuity(); 
-                                    }else{
-                                        var constant = parseInt(species.awarenessconstant,10)+2;
-                                        ability = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
-                                    }
-                                    break;
-                                case "Perception": 
-                                    if(species.percep === "Oblivious"){
-                                        ability = "P-"+(getSenseConstant())+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
-                                    }else{
-                                        var constant = parseInt(species.percepconstant,10)+2;
-                                        ability = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
-                                    }
-                                    break;
-                                case "Smell": 
-                                    if(species.smell === "Anosmic"){
-                                        ability = "S-"+(getSenseConstant())+"-"+getSmellSharpness(); 
-                                    }else{
-                                        var constant = parseInt(species.smellconstant,10)+2;
-                                        ability = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
-                                    }
-                                    break;
-                            }
-                        }
-                        species.genderabilities.push(ability);
+                        species.genderabilities.push(getNewSenseString(ability));
                         break;
                     case 2:
                         species.genderabilities.push("Roll");
@@ -3212,61 +3169,11 @@ function generateRandomAlien(species,rand){
                         if(ability === "--" && ability2 === "--"){
                             species.genderabilities.push("--");
                         }else if(ability === "--"){
-                            species.genderabilities.push(ability2);
+                            species.genderabilities.push(getNewSenseString(ability2));
                         }else if(ability2 === "--"){
-                            species.genderabilities.push(ability);
+                            species.genderabilities.push(getNewSenseString(ability));
                         }else if(ability === ability2 && ability === "Touch" || ability === "Vision" || ability === "Hearing" || ability === "Awareness" || ability === "Perception" || ability === "Smell"){
-                            switch(ability){
-                                case "Touch": 
-                                    var constant = parseInt(species.touchconstant,10)+4;
-                                    ability = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
-                                    break;
-                                case "Vision": 
-                                    if(species.vision === "Blind"){
-                                        var k = parseInt(getSenseConstant(),10)+2;
-                                        ability = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands(); 
-                                    }else{
-                                        var constant = parseInt(species.visionconstant,10)+4;
-                                        ability = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
-                                    }
-                                    break;
-                                case "Hearing": 
-                                    if(species.hearing === "Deaf"){
-                                        var k = parseInt(getSenseConstant(),10)+2;
-                                        ability = "H-"+(k < 10 ? "0" + k : k)+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
-                                    }else{
-                                        var constant = parseInt(species.hearingconstant,10)+4;
-                                        ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
-                                    }
-                                    break;
-                                case "Awareness": 
-                                    if(species.aware === "Unaware"){
-                                        var k = parseInt(getSenseConstant(),10)+2;
-                                        ability = "A-"+(k < 10 ? "0" + k : k)+"-"+getAwarenessAcuity(); 
-                                    }else{
-                                        var constant = parseInt(species.awarenessconstant,10)+4;
-                                        ability = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
-                                    }
-                                    break;
-                                case "Perception": 
-                                    if(species.percep === "Oblivious"){
-                                        var k = parseInt(getSenseConstant(),10)+2;
-                                        ability = "P-"+(k < 10 ? "0" + k : k)+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
-                                    }else{
-                                        var constant = parseInt(species.percepconstant,10)+4;
-                                        ability = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
-                                    }
-                                    break;
-                                case "Smell": 
-                                    if(species.smell === "Anosmic"){
-                                        var k = parseInt(getSenseConstant(),10)+2;
-                                        ability = "S-"+(k < 10 ? "0" + k : k)+"-"+getSmellSharpness(); 
-                                    }else{
-                                        var constant = parseInt(species.smellconstant,10)+4;
-                                        ability = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
-                                    }
-                                    break;
-                            }
+                            ability = getDoubleEnhancedSenseString(ability);
                             species.genderabilities.push(ability);
                         }else if(
                             (ability === "Vision" && ability2 === "Blind" || ability2 === "Vision" && ability === "Blind") ||
@@ -3280,62 +3187,7 @@ function generateRandomAlien(species,rand){
                             var temp = "";
                             for(var inc = 0, arr = [ability,ability2]; inc < 2; inc++){
                                 var ab = arr[inc];
-
-                                if(ab === "Touch" || ab === "Vision" || ab === "Hearing" || ab === "Awareness" || ab === "Perception" || ab === "Smell"){
-                                    switch(ab){
-                                        case "Touch": 
-
-                                        var constant = parseInt(species.touchconstant,10)+2;
-                                        ab = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
-                                        break;
-                                    case "Vision": 
-                                        if(species.vision === "Blind"){
-                                            var k = parseInt(getSenseConstant(),10);
-                                            ab = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands(); 
-                                        }else{
-                                            var constant = parseInt(species.visionconstant,10)+2;
-                                            ab = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
-                                        }
-                                        break;
-                                    case "Hearing": 
-                                        if(species.hearing === "Deaf"){
-                                            var k = parseInt(getSenseConstant(),10);
-                                            ab = "H-"+(k < 10 ? "0" + k : k)+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
-                                        }else{
-                                            var constant = parseInt(species.hearingconstant,10)+2;
-                                            ab = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
-                                        }
-                                        break;
-                                    case "Awareness": 
-                                        if(species.aware === "Unaware"){
-                                            var k = parseInt(getSenseConstant(),10);
-                                            ab = "A-"+(k < 10 ? "0" + k : k)+"-"+getAwarenessAcuity(); 
-                                        }else{
-                                            var constant = parseInt(species.awarenessconstant,10)+2;
-                                            ab = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
-                                        }
-                                        break;
-                                    case "Perception": 
-                                        if(species.percep === "Oblivious"){
-                                            var k = parseInt(getSenseConstant(),10);
-                                            ab = "P-"+(k < 10 ? "0" + k : k)+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
-                                        }else{
-                                            var constant = parseInt(species.percepconstant,10)+2;
-                                            ab = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
-                                        }
-                                        break;
-                                    case "Smell": 
-                                        if(species.smell === "Anosmic"){
-                                            var k = parseInt(getSenseConstant(),10);
-                                            ab = "S-"+(k < 10 ? "0" + k : k)+"-"+getSmellSharpness(); 
-                                        }else{
-                                            var constant = parseInt(species.smellconstant,10)+2;
-                                            ab = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
-                                        }
-                                        break;
-                                    }
-                                }
-                                temp += ab;
+                                temp += getNewSenseString(ab);
                                 if(inc === 0){
                                     temp += (" and ");
                                 }
@@ -3414,56 +3266,7 @@ function generateRandomAlien(species,rand){
                             (ability === "Unaware" && species.aware === "Unaware")){
                                 ability = "--";
                             }
-                            if(ability === "Touch" || ability === "Vision" || ability === "Hearing" || ability === "Awareness" || ability === "Perception" || ability === "Smell"){
-                                switch(ability){
-                                    case "Touch": 
-                                        var constant = parseInt(species.touchconstant,10)+2;
-                                        ability = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
-                                        break;
-                                    case "Vision": 
-                                        if(species.vision === "Blind"){
-                                            ability = "V-"+(getSenseConstant())+"-"+getVisionBands(); 
-                                        }else{
-                                            var constant = parseInt(species.visionconstant,10);
-                                            constant += 2;
-                                            ability = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
-                                        }
-                                        break;
-                                    case "Hearing": 
-                                        if(species.hearing === "Deaf"){
-                                            ability = "H-"+(getSenseConstant())+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
-                                        }else{
-                                            var constant = parseInt(species.hearingconstant,10)+2;
-                                            ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
-                                        }
-                                        break;
-                                    case "Awareness": 
-                                        if(species.aware === "Unaware"){
-                                            ability = "A-"+(getSenseConstant())+"-"+getAwarenessAcuity(); 
-                                        }else{
-                                            var constant = parseInt(species.awarenessconstant,10)+2;
-                                            ability = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
-                                        }
-                                        break;
-                                    case "Perception": 
-                                        if(species.percep === "Oblivious"){
-                                            ability = "P-"+(getSenseConstant())+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
-                                        }else{
-                                            var constant = parseInt(species.percepconstant,10)+2;
-                                            ability = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
-                                        }
-                                        break;
-                                    case "Smell": 
-                                        if(species.smell === "Anosmic"){
-                                            ability = "S-"+(getSenseConstant())+"-"+getSmellSharpness(); 
-                                        }else{
-                                            var constant = parseInt(species.smellconstant,10)+2;
-                                            ability = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
-                                        }
-                                        break;
-                                }
-                            }
-                            species.casteabilities.push(ability);
+                            species.casteabilities.push(getNewSenseString(ability));
                             
                             break;
                         case 2:
@@ -3595,63 +3398,12 @@ function generateRandomAlien(species,rand){
                             if(ability === "--" && ability2 === "--"){
                                 species.casteabilities.push(ability2);
                             }else if(ability === "--"){
-                                species.casteabilities.push(ability2);
+                                
+                                species.casteabilities.push(getNewSenseString(ability2));
                             }else if(ability2 === "--"){
-                                species.casteabilities.push(ability);
+                                species.casteabilities.push(getNewSenseString(ability));
                             }else if(ability === ability2 && ability === "Touch" || ability === "Vision" || ability === "Hearing" || ability === "Awareness" || ability === "Perception" || ability === "Smell"){
-                                switch(ability){
-                                    case "Touch": 
-                                        var constant = parseInt(species.touchconstant,10)+4;
-                                        ability = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
-                                        break;
-                                    case "Vision": 
-                                        if(species.vision === "Blind"){
-                                            var constant = parseInt(getSenseConstant(),10)+2;
-                                            ability = "V-"+(k < 10 ? "0"+k : k)+"-"+getVisionBands(); 
-                                        }else{
-                                            var constant = parseInt(species.visionconstant,10)+4;
-                                            ability = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
-                                        }
-                                        break;
-                                    case "Hearing": 
-                                        if(species.hearing === "Deaf"){
-                                            var constant = parseInt(getSenseConstant(),10)+2;
-                                            ability = "H-"+(k < 10 ? "0"+k : k)+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
-                                        }else{
-                                        
-                                            var constant = parseInt(species.hearingconstant,10)+4;
-                                            ability = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
-                                        }
-                                        break;
-                                    case "Awareness": 
-                                        if(species.aware === "Unaware"){
-                                            var constant = parseInt(getSenseConstant(),10)+2;
-                                            ability = "A-"+(k < 10 ? "0"+k : k)+"-"+getAwarenessAcuity(); 
-                                        }else{
-                                            var constant = parseInt(species.awarenessconstant,10)+4;
-                                            ability = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
-                                        }
-                                        break;
-                                    case "Perception": 
-                                        if(species.percep === "Oblivious"){
-                                            var constant = parseInt(getSenseConstant(),10)+2;
-                                            ability = "P-"+(k < 10 ? "0"+k : k)+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
-                                        }else{
-                                            var constant = parseInt(species.percepconstant,10)+4;
-                                            ability = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
-                                        }
-                                        break;
-                                    case "Smell": 
-                                        if(species.smell === "Anosmic"){
-                                            var constant = parseInt(getSenseConstant(),10)+2;
-                                            ability = "S-"+(k < 10 ? "0"+k : k)+"-"+getSmellSharpness(); 
-                                        }else{
-                                            var constant = parseInt(species.smellconstant,10)+4;
-                                            ability = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
-                                        }
-                                        break;
-                                }
-                                species.casteabilities.push(ability);
+                                species.casteabilities.push(getDoubleEnhancedSenseString(ability));
                             }else if(
                                 (ability === "Vision" && ability2 === "Blind" || ability2 === "Vision" && ability === "Blind") ||
                                 (ability === "Hearing" && ability2 === "Deaf" || ability2 === "Hearing" && ability === "Deaf") ||
@@ -3663,56 +3415,7 @@ function generateRandomAlien(species,rand){
                             }else{
                                 var temp = "";
                                 for(var inc = 0, arr = [ability,ability2]; inc < 2; inc++){
-                                    var ab = arr[inc];
-                                    if(ab === "Touch" || ab === "Vision" || ab === "Hearing" || ab === "Awareness" || ab === "Perception" || ab === "Smell"){
-                                        switch(ab){
-                                            case "Touch": 
-                                                var constant = parseInt(species.touchconstant,10);
-                                                ab = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
-                                                break;
-                                            case "Vision": 
-                                                if(species.vision === "Blind"){
-                                                    ab = "V-"+(getSenseConstant())+"-"+getVisionBands(); 
-                                                }else{
-                                                    var constant = parseInt(species.visionconstant,10)+2;
-                                                    ab = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
-                                                }
-                                                break;
-                                            case "Hearing": 
-                                                if(species.hearing === "Deaf"){
-                                                    ab = "H-"+(getSenseConstant())+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
-                                                }else{
-                                                    var constant = parseInt(species.hearingconstant,10)+2;
-                                                    ab = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
-                                                }
-                                                break;
-                                            case "Awareness": 
-                                                if(species.aware === "Unaware"){
-                                                    ab = "A-"+(getSenseConstant())+"-"+getAwarenessAcuity(); 
-                                                }else{
-                                                    var constant = parseInt(species.awarenessconstant,10)+2;
-                                                    ab = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
-                                                }
-                                                break;
-                                            case "Perception": 
-                                                if(species.percep === "Oblivious"){
-                                                    ab = "P-"+(getSenseConstant())+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
-                                                }else{
-                                                    var constant = parseInt(species.percepconstant,10)+2;
-                                                    ab = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
-                                                }
-                                                break;
-                                            case "Smell": 
-                                                if(species.smell === "Anosmic"){
-                                                    ab = "S-"+(getSenseConstant())+"-"+getSmellSharpness(); 
-                                                }else{
-                                                    var constant = parseInt(species.smellconstant,10)+2;
-                                                    ab = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
-                                                }
-                                                break;
-                                        }
-                                    }
-                                    temp += ab;
+                                    temp += getNewSenseString(ab);
                                     if(inc === 0){
                                         temp += (" and ");
                                     }
@@ -3725,6 +3428,118 @@ function generateRandomAlien(species,rand){
         }else if(species.castestructure === "Skilled"){
             species.casteabilities = ["Roll for Skill"];
         }
+    }
+    function getDoubleEnhancedSenseString(ab){
+        if(ab === "Touch" || ab === "Vision" || ab === "Hearing" || ab === "Awareness" || ab === "Perception" || ab === "Smell"){
+            switch(ab){
+                case "Touch": 
+                var constant = parseInt(species.touchconstant,10)+4;
+                ab = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
+                break;
+            case "Vision": 
+                if(species.vision === "Blind"){
+                    var k = parseInt(getSenseConstant(),10)+2;
+                    ab = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands(); 
+                }else{
+                    var constant = parseInt(species.visionconstant,10)+4;
+                    ab = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
+                }
+                break;
+            case "Hearing": 
+                if(species.hearing === "Deaf"){
+                    var k = parseInt(getSenseConstant(),10)+2;
+                    ab = "H-"+(k < 10 ? "0" + k : k)+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
+                }else{
+                    var constant = parseInt(species.hearingconstant,10)+4;
+                    ab = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
+                }
+                break;
+            case "Awareness": 
+                if(species.aware === "Unaware"){
+                    var k = parseInt(getSenseConstant(),10)+2;
+                    ab = "A-"+(k < 10 ? "0" + k : k)+"-"+getAwarenessAcuity(); 
+                }else{
+                    var constant = parseInt(species.awarenessconstant,10)+4;
+                    ab = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
+                }
+                break;
+            case "Perception": 
+                if(species.percep === "Oblivious"){
+                    var k = parseInt(getSenseConstant(),10)+2;
+                    ab = "P-"+(k < 10 ? "0" + k : k)+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
+                }else{
+                    var constant = parseInt(species.percepconstant,10)+4;
+                    ab = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
+                }
+                break;
+            case "Smell": 
+                if(species.smell === "Anosmic"){
+                    var k = parseInt(getSenseConstant(),10)+2;
+                    ab = "S-"+(k < 10 ? "0" + k : k)+"-"+getSmellSharpness(); 
+                }else{
+                    var constant = parseInt(species.smellconstant,10)+4;
+                    ab = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
+                }
+                break;
+            }
+        }
+        return ab;
+    }
+    function getNewSenseString(ab){
+        if(ab === "Touch" || ab === "Vision" || ab === "Hearing" || ab === "Awareness" || ab === "Perception" || ab === "Smell"){
+            switch(ab){
+                case "Touch": 
+                var constant = parseInt(species.touchconstant,10)+2;
+                ab = "T-"+(constant < 10 ? "0"+constant : constant)+"-"+species.touchsensitivity; 
+                break;
+            case "Vision": 
+                if(species.vision === "Blind"){
+                    var k = parseInt(getSenseConstant(),10);
+                    ab = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands(); 
+                }else{
+                    var constant = parseInt(species.visionconstant,10)+2;
+                    ab = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
+                }
+                break;
+            case "Hearing": 
+                if(species.hearing === "Deaf"){
+                    var k = parseInt(getSenseConstant(),10);
+                    ab = "H-"+(k < 10 ? "0" + k : k)+"-"+getHearingFreq()+getHearingSpan()+getVoiceFreq()+getVocalRange(); 
+                }else{
+                    var constant = parseInt(species.hearingconstant,10)+2;
+                    ab = "H-"+(constant < 10 ? "0"+constant : constant)+"-"+species.hearingfreq+species.hearingspan+species.voice+species.voicerange;
+                }
+                break;
+            case "Awareness": 
+                if(species.aware === "Unaware"){
+                    var k = parseInt(getSenseConstant(),10);
+                    ab = "A-"+(k < 10 ? "0" + k : k)+"-"+getAwarenessAcuity(); 
+                }else{
+                    var constant = parseInt(species.awarenessconstant,10)+2;
+                    ab = "A-"+(constant < 10 ? "0"+constant : constant)+"-"+species.awarenessacuity;
+                }
+                break;
+            case "Perception": 
+                if(species.percep === "Oblivious"){
+                    var k = parseInt(getSenseConstant(),10);
+                    ab = "P-"+(k < 10 ? "0" + k : k)+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
+                }else{
+                    var constant = parseInt(species.percepconstant,10)+2;
+                    ab = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
+                }
+                break;
+            case "Smell": 
+                if(species.smell === "Anosmic"){
+                    var k = parseInt(getSenseConstant(),10);
+                    ab = "S-"+(k < 10 ? "0" + k : k)+"-"+getSmellSharpness(); 
+                }else{
+                    var constant = parseInt(species.smellconstant,10)+2;
+                    ab = "S-"+(constant < 10 ? "0"+constant : constant)+"-"+species.smellsharpness;
+                }
+                break;
+            }
+        }
+        return ab;
     }
     function setSizeAndWeight(){
         var nD = 0, strD = 0;
@@ -3923,7 +3738,7 @@ function generateRandomAlien(species,rand){
                 {key:"Non-Respiratory", name:"Fermentrophic", description:"The sophont is able survive periods deprived of its native atmosphere in a low energy state, supported by anaerobic metabolic processes."},
                 {key:"Metabolic", name:"Radiotrophic", description:"The sophont is able to supplement its metabolic processes using environmental radiation."},
                 {key:"Metabolic", name:"Lithotrophic", description:"The sophont ingests inorganic stone and minerals."},
-                {key:"Metabolic", name:"Food Stores", description:"The sophont is produces a concentrated high-energy treacle which it stores internally. The product can be disgorged to feed itself or others when food is otherwise scarce."},
+                {key:"Metabolic", name:"Food Stores", description:"The sophont produces a concentrated high-energy treacle which it stores internally. The product can be disgorged to feed itself or others when food is otherwise scarce."},
             ],
             [
                 {key:"Lethal Reproduction", name:"Lethal Reproduction", description:"When producing offspring, the parent sophont does not survive."},
