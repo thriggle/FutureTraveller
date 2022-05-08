@@ -359,6 +359,7 @@
             <td><fieldset>
                 <legend>Genetics and Abilities</legend>
                 <div><strong>Genetic Profile:</strong> <span data-detail="geneticprofile" data-source="species"></span>  <strong>DNA:</strong> <span data-detail="dna" data-source="species"></span> </div>
+                
                 <table class="table">
                     <tr>
                         <th colspan="2"></th>
@@ -581,10 +582,12 @@
                     </div>
                 </fieldset>
                 
+                
         </fieldset></td>
         </tr>
         
     </table>
+    <ul class="statnotes"></ul>
     <hr/>
     <fieldset class="collapsed">
         <legend>Data</legend>
@@ -782,6 +785,7 @@
         console.log(species);
         var elmtName = document.getElementById("name");
         removeChildElements(elmtName);
+        
         elmtName.appendChild(document.createTextNode("The " + species.name + " of " + species.homeworld.name));
         document.querySelectorAll("[data-detail]").forEach(function(elmt){
             var source = elmt.getAttribute("data-source");
@@ -811,6 +815,25 @@
             }
         });
         document.getElementById("json").value = JSON.stringify(species);
+        var noteContainer = document.querySelector(".statnotes");
+        removeChildElements(noteContainer);
+        var notes = species.statnotes;
+        for(var i = 0; i < notes.length; i++){
+            var note = notes[i];
+            var noteElmt = document.createElement("li");
+            noteElmt.classList.add("note");
+            note = note.replace(/Strength/g,"<strong>Strength</strong>");
+            note = note.replace(/Agility/g,"<strong>Agility</strong>");
+            note = note.replace(/Grace/g,"<strong>Grace</strong>");
+            note = note.replace(/Vigor/g,"<strong>Vigor</strong>");
+            note = note.replace(/Stamina/g,"<strong>Stamina</strong>");
+            note = note.replace(/Instinct/g,"<strong>Instinct</strong>");
+            note = note.replace(/Training/g,"<strong>Training</strong>");
+            note = note.replace(/Caste/g,"<strong>Caste</strong>");
+            note = note.replace(/Charisma/g,"<strong>Charisma</strong>");
+            noteElmt.insertAdjacentHTML("beforeend",note);
+            noteContainer.appendChild(noteElmt);
+        }
     }
     function removeChildElements(element){
         while(element.childNodes.length > 0){
