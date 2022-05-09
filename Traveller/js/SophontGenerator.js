@@ -712,7 +712,7 @@ function generateRandomAlien(species,rand){
         }else{
             species.c1val = "12+6D";
         }
-        if(roll >= 2){ species.statnotes.push("This sophont possesses incredible Strength."); }
+        if(roll >= 3){ species.statnotes.push("This sophont possesses incredible [Str] strength."); }
         var locMod = 0;
         if(species.locomotion === "Flyer"){ locMod = -2;}
         else if(species.locomotion === "Swim" || species.locomotion === "Diver"){
@@ -721,12 +721,12 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6() + locMod;
         if(roll <= -2){
             species.c2 = "Agi";
-            species.statnotes.push("This sophont possesses Agility instead of dexterity. Agility measures overall body coordination. For tasks involving fine manipulation that would ordinarily use Dex, the sophont uses Agi at half value.");
+            species.statnotes.push("This sophont possesses agility [Agi] instead of dexterity [Dex]. Agility measures overall body coordination, benefiting particularly from a flexible skeletal structure. For tasks involving fine manipulation that would ordinarily use dexterity, the sophont uses agility at half value.");
         }else if(roll <= 1){
             species.c2 = "Dex";
         }else{
             species.c2 = "Gra";
-            species.statnotes.push("This sophont possesses Grace instead of dexterity. Grace measures body-limb coordination and is especially used for activities in water. For tasks involving fine manipulation that would ordinarily use Dex, the sophont uses Gra at half value.");
+            species.statnotes.push("This sophont possesses grace [Gra] instead of dexterity [Dex]. Grace measures body-limb coordination, benefiting particularly from finely-tuned muscle control. It is used for activities in water, for example. For tasks involving fine manipulation that would ordinarily use dexterity, the sophont uses grace at half value.");
         }
         roll = d6() - d6() + species.EnvironmentDM;
         if(roll <= -4){
@@ -739,12 +739,12 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6() + locMod;
         if(roll <= -2){
             species.c3 = "Sta";
-            species.statnotes.push("This sophont possesses Stamina instead of endurance. Stamina measures long-term task persistance and is in some ways superior to End. The sophont's personal day is about 48 hours long, requiring about 16 hours of sleep each day to function optimally. In a continued running situation, check Sta instead of End.");
+            species.statnotes.push("This sophont possesses stamina [Sta] instead of endurance [End]. Stamina measures long-term task persistance and is in some ways superior to endurance. The sophont's personal day is about 48 hours long, requiring about 16 hours of sleep each day to function optimally. In a continued running situation, check stamina instead of endurance.");
         }else if(roll <= 1){
             species.c3 = "End";
         }else{
             species.c3 = "Vig";
-            species.statnotes.push("This sophont possesses Vigor instead of endurance. Vigor measures short-term fatigue resistances and is in some ways an inferior alternative to End. The sophont's personal day is about 12 hours long, and it can function for twice its Vig hours before becoming sleepy, but can function optimally again after about 4 hours of sleep. Short distant sprints use Vig; for most other feats of endurance, the sophont uses Vig at half value.");
+            species.statnotes.push("This sophont possesses vigor [Vig] instead of endurance [End]. Vigor measures short-term fatigue resistances and is in some ways an inferior alternative to endurance. The sophont's personal day is about 12 hours long, and it can function for twice its vigor hours before becoming sleepy, but can function optimally again after only about 4 hours of sleep. Short distant sprints use vigor; for most other feats of endurance, the sophont uses their vigor score at half value.");
         }
         roll = d6() - d6() + species.EnvironmentDM;
         if(species.niche === "Pouncer"){ roll -= 2;}
@@ -768,12 +768,12 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6();
         if(roll <= -2){
             species.c5 = "Ins";
-            species.statnotes.push("This sophont possesses Instinct instead of education, reacting instinctively when confronted with a task requiring Education or Training. Instinct is an inborn complex of behaviors comparable to aquired learning. Cannot learn skills through formal training/education, only by experience. Tasks completed using Instinct receive a time advantage. The sophont receives a native store of 3 instinctual skills or knowledges each at same level as Ins.");
+            species.statnotes.push("This sophont possesses instinct [Ins] instead of education [Edu], reacting instinctively when confronted with a task requiring education or training. Instinct is an inborn complex of behaviors comparable to aquired learning. The sophont cannot learn skills through formal training/education, only by experience. Tasks completed using instinct receive a time advantage. The sophont receives a native store of 3 instinctual skills or knowledges each at the same level as its instinct score.");
         }else if(roll <= 1){
             species.c5 = "Edu";
         }else{
             species.c5 = "Tra";
-            species.statnotes.push("This sophont possesses Training rather than education. Training is learning based on behavior modification; the sophont is ill prepared to learn in typical educational environments, but can prosper in specially adapted hands-on training courses and mentor-mentee relationships. Training and Education can be substituted for each other at half value.");
+            species.statnotes.push("This sophont possesses training [Tra] instead of education [Edu]. Training is learning based on behavior modification; the sophont is ill-prepared to learn in typical educational environments, but can prosper in specially adapted hands-on training courses and mentor-mentee relationships. Training and education can be substituted for each other at half value.");
         }
         if(species.c5 === "Ins"){
             roll = d6() - d6();
@@ -790,12 +790,12 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6();
         if(roll <= -3){
             species.c6 = "Cas";
-            species.statnotes.push("This sophont possesses Caste rather than social standing. Caste indicates the sophont's position in group hierarchies based on genetics. Characters with caste are oblivious to their position in social hierarchies outside their own species; they use a Social Standing of 4 in any situations that call for Soc.");
+            species.statnotes.push("This sophont possesses caste [Cas] instead of social standing [Soc]. Caste indicates the sophont's position in group hierarchies based on genetics. Characters with caste are oblivious to their position in social hierarchies outside their own species; they use a social standing of 4 in any situations that call for Soc.");
         }else if(roll <= 1){
             species.c6 = "Soc";
         }else{
             species.c6 = "Cha";
-            species.statnotes.push("This sophont possesses Charisma rather than social standing. Species with charisma automatically defer to the leadership of others with higher Cha, but if they are within 2 of another with higher Cha, they may challenge the other; if successful, the challenger rises in Cha and the loser has Cha reduced. Charisma typically functions at half value against characters with Soc.");
+            species.statnotes.push("This sophont possesses charisma [Cha] instead of social standing [Soc]. Species with charisma automatically defer to the leadership of others with higher charisma, but may challenge the superior if their own charisma score is within 2; if successful, the challenger rises in charisma and the loser's is reduced. Charisma typically functions at half value against characters with Soc.");
         }
     }
     function setCaste(){
@@ -1255,7 +1255,7 @@ function generateRandomAlien(species,rand){
         var startype = species.homeworld.stars.primary.type;
         var stardecimal = species.homeworld.stars.primary.decimal;
         if(startype === "B"){
-            visiondesc = "Sees in ultraviolet";
+            visiondesc = "Sees in ultraviolet.";
             if(typeof stardecimal == "undefined" || stardecimal <= 3){
                 visionbands = "DHV";
             }else if(stardecimal <= 8){
@@ -1266,24 +1266,24 @@ function generateRandomAlien(species,rand){
         }else if(startype === "A" ){
             if(typeof stardecimal == "undefined" || stardecimal <= 1){
                 visionbands = "SUD";
-                visiondesc = "Sees in ultraviolet";
+                visiondesc = "Sees in ultraviolet.";
             }else if(stardecimal <= 8){
                 visionbands = "PSU";
-                visiondesc = "Sees in ultraviolet";
+                visiondesc = "Sees in ultraviolet.";
             }else{
                 visionbands = "BPS";
-                visiondesc = "Sees in UV + visible spectrum";
+                visiondesc = "Sees in UV + visible spectrum.";
             }
         }else if(startype === "F"){
             if(typeof stardecimal == "undefined" || stardecimal <= 6){
                 visionbands = "BPS";
-                visiondesc = "Sees in UV + visible spectrum";
+                visiondesc = "Sees in UV + visible spectrum.";
             }else{
                 visionbands = "GBP";
-                visiondesc = "Sees in visible spectrum";
+                visiondesc = "Sees in visible spectrum.";
             }
         }else if(startype === "G"){
-            visiondesc = "Sees in visible spectrum";
+            visiondesc = "Sees in visible spectrum.";
             if(typeof stardecimal == "undefined" || stardecimal <= 1){
                 visionbands = "GBP";
             }else{
@@ -1292,19 +1292,19 @@ function generateRandomAlien(species,rand){
         }else if(startype === "K"){
             if(typeof stardecimal == "undefined" || stardecimal <= 0){
                 visionbands = "RGB";
-                visiondesc = "Sees in visible spectrum";
+                visiondesc = "Sees in visible spectrum.";
             }else if( stardecimal <= 3){
                 visionbands = "CRG";
-                visiondesc = "Sees in visible spectrum";
+                visiondesc = "Sees in visible spectrum.";
             }else if(stardecimal <= 6){
                 visionbands = "ACR";
-                visiondesc = "Sees in infrared + visible spectrum";
+                visiondesc = "Sees in infrared + visible spectrum.";
             }else{
                 visionbands = "NAC";
-                visiondesc = "Sees in infrared";
+                visiondesc = "Sees in infrared.";
             }
         }else if(startype === "M"){
-            visiondesc = "Sees in infrared";
+            visiondesc = "Sees in infrared.";
             if(typeof stardecimal == "undefined" || stardecimal <= 1){
                 visionbands = "INA";
             }else if(stardecimal <= 4){
@@ -1313,7 +1313,7 @@ function generateRandomAlien(species,rand){
                 visionbands = "XFI";
             }
         }else if(startype === "L" || startype === "BD"){
-            visiondesc = "Sees in infrared";
+            visiondesc = "Sees in infrared.";
             if(typeof stardecimal == "undefined" || stardecimal <= 8){
                 visionbands = "XFI";
             }else{
@@ -1409,7 +1409,7 @@ function generateRandomAlien(species,rand){
         return poicetone;
     }
     function setSenses(){
-        species.visiondesc = "Cannot see";
+        species.visiondesc = "Cannot see.";
         var roll = d6() - d6();
         if(roll <= -3){
             species.vision = "Blind";
@@ -1428,7 +1428,7 @@ function generateRandomAlien(species,rand){
                 species.visiondesc = "Poorer than human eyesight. " + species.visiondesc;
             }
         }
-        species.hearingdesc = "Cannot hear";
+        species.hearingdesc = "Cannot hear.";
         species.hearingrangedesc = "";
         roll = d6() - d6();
         if(roll <= -2){
@@ -1474,14 +1474,14 @@ function generateRandomAlien(species,rand){
             }else if(audible){
                 species.hearingrangedesc = "Hears within human-audible range";
             }
-            species.hearingrangedesc += " (" +(Math.pow(2,lowerFreq))+ (lowerFreq === upperFreq ? "":"-"+(Math.pow(2,upperFreq)))+" Hz)"
+            species.hearingrangedesc += " (" +(Math.pow(2,lowerFreq))+ (lowerFreq === upperFreq ? "":"-"+(Math.pow(2,upperFreq)))+" Hz)."
             var hc = parseInt(species.hearingconstant,10);
             if(hc > 16){
-                species.hearingdesc = "More sensitive compared to humans. "
+                species.hearingdesc = "More sensitive than human hearing. "
             }else if(hc === 16){
                 species.hearingdesc = "Similar sensitivity compared to humans. "
             }else{
-                species.hearingdesc = "Less sensitive compared to humans. "
+                species.hearingdesc = "Less sensitive than human hearing. "
             }
             species.voice = getVoiceFreq();
 
@@ -1524,7 +1524,7 @@ function generateRandomAlien(species,rand){
             }else if(audible){
                 species.voicedesc = "Vocalizes within human-audible range";
             }
-            species.voicedesc += " (" +(Math.pow(2,lowerFreq))+ (lowerFreq === upperFreq ? "":"-"+(Math.pow(2,upperFreq)))+" Hz)"
+            species.voicedesc += " (" +(Math.pow(2,lowerFreq))+ (lowerFreq === upperFreq ? "":"-"+(Math.pow(2,upperFreq)))+" Hz)."
             
             species.hearing = "H-"+species.hearingconstant + "-" 
                 + species.hearingfreq + species.hearingspan 
@@ -1533,7 +1533,7 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6();
         if(roll <= -1){
             species.smell = "Anosmic";
-            species.smelldesc = "Cannot smell";
+            species.smelldesc = "Cannot smell.";
         }else{
             species.smellconstant = getSenseConstant();
             species.smellsharpness = getSmellSharpness();
@@ -1541,24 +1541,24 @@ function generateRandomAlien(species,rand){
             var sc = parseInt(species.smellconstant,10);
             if(sc > 10){
                 if(sc + parseInt(species.smellsharpness,16) >= 12){
-                    species.smelldesc = "More sensitive sense of smell than humans";
+                    species.smelldesc = "More sensitive than human sense of smell.";
                 }else{
-                    species.smelldesc = "More sensitive but less sharp sense of smell than humans";
+                    species.smelldesc = "More sensitive but less sharp than human sense of smell.";
                 }
             }else if(sc === 10){
                 
                 if(parseInt(species.smellsharpness,16) > 2){
-                    species.smelldesc = "More sensitive sense of smell than humans";
+                    species.smelldesc = "More sensitive than human sense of smell.";
                 }else if(parseInt(species.smellsharpness,16) === 2){
-                    species.smelldesc = "Similar sense of smell compared humans";
+                    species.smelldesc = "Similar sense of smell compared humans.";
                 }else{
-                    species.smelldesc = "Similar but less sharp sense of smell compared to humans";
+                    species.smelldesc = "Similar but less sharp sense of smell compared to humans.";
                 }
             }else if(sc < 10){
                 if(sc + parseInt(species.smellsharpness,16) > 12){
-                    species.smelldesc = "Less sensitive but more sharp sense of smell than humans";
+                    species.smelldesc = "Less sensitive but more sharp than human sense of smell.";
                 }else{
-                    species.smelldesc = "Less sensitive sense of smell compared to humans";
+                    species.smelldesc = "Less sensitive than human sense of smell.";
                 }
             }
         }
@@ -1567,27 +1567,27 @@ function generateRandomAlien(species,rand){
         species.touch = "T-"+species.touchconstant+"-"+species.touchsensitivity;
         var tc = parseInt(species.touchconstant,10);
         if(tc + parseInt(species.touchsensitivity,16) > 8){
-            species.touchdesc = "More sensitive sense of touch than humans";
+            species.touchdesc = "More sensitive than human sense of touch.";
         }else if(tc + parseInt(species.touchsensitivity,16) === 8){
-            species.touchdesc = "Similar sense of touch compared to humans";
+            species.touchdesc = "Similar sense of touch compared to humans.";
         }else{
-            species.touchdesc = "Less sensitive sense of touch compared to humans";
+            species.touchdesc = "Less sensitive than human sense of touch.";
         }
         roll = d6() - d6();
         if(roll <= 0){
             species.aware = "Unaware";
-            species.awaredesc = "Cannot perceive auras or electricity/magnetic fields";
+            species.awaredesc = "Cannot perceive auras or electricity/magnetic fields.";
         }else{
             species.awarenessconstant = getSenseConstant();
             species.awarenessacuity = getAwarenessAcuity();
             species.aware = "A-"+species.awarenessconstant+"-"+species.awarenessacuity;
-            species.awaredesc = "Sensitive to auras, electricity, and magnetic fields";
+            species.awaredesc = "Sensitive to auras, electricity, and magnetic fields.";
         }
     
         roll = d6() - d6();
         if(roll <= 1){
             species.percep = "Oblivious";
-            species.percepdesc = "Cannot perceive life force";
+            species.percepdesc = "Cannot perceive life force.";
         }else{
             species.percepconstant = getSenseConstant();
             species.poice = getPerceptionPoice();
@@ -1613,7 +1613,7 @@ function generateRandomAlien(species,rand){
             species.poicetonedescriptor = pd1;
             species.poicedescriptor= pd2;
             species.percep = "P-"+species.percepconstant+"-"+species.poicetone+species.poice;
-            species.percepdesc = "Sensitive to projected life force as if it were sound";
+            species.percepdesc = "Sensitive to projected life force as if it were sound.";
         }
     }
     function setLanguageMedium(){
@@ -3786,7 +3786,7 @@ function generateRandomAlien(species,rand){
                 {key:"Multihead", name:"Multiple "+(species.head.indexOf("H")>=0?"heads":"brains"), description:"The sophont has multiple "+(species.head.indexOf("H")>=0?"heads. " : "distinct central nervous systems capable of independent thought.")}
             ],
             [
-                {key:"Regenerative", name:"Defensive Regeneration", description:"The sophont can detach parts of its body at will; the parts eventually regrow."},
+                {key:"Regenerative", name:"Defensive Regeneration", description:"The sophont can detach parts of its body when threatened; the parts eventually regrow."},
                 {key:"Regenerative", name:"Regeneration", description:"The sophont can regrow parts of its body that are severed or destroyed."},
                 {key:"Regenerative", name:"Perfect Regeneration", description:"The sophont can regrow any severed limbs or organs. Under proper conditions, a complete body can even regrow from a severed piece of the sophont."}
             ],
@@ -3794,8 +3794,8 @@ function generateRandomAlien(species,rand){
                 {key:"Chemical Defense", name:"Corrosive Spray", description:"As a biochemical defense, the sophont can spray a corrosive substance when threatened."},
                 {key:"Chemical Defense", name:"Flame Emitter", description:"As a biochemical defense, the sophont can emit a flame when threatened."},
                 {key:"Chemical Defense", name:"Obscuring Cloud", description:"As a biochemical defense, the sophont can emit a concealing cloud of smoke or ink when threatened."},
-                {key:"Chemical Defense", name:"Tranquilizing Toxin", description:"As a biochemical defense, the sophont can exude a tranquilizing toxin when threatened."},
-                {key:"Chemical Defense", name:"Toxic Skin", description:"As a biochemical defense, the sophont's body surface is coated with a substance that is poisonous to most living beings."},
+                {key:"Chemical Defense", name:"Tranquilizing Toxin", description:"As a biochemical defense, the sophont can exude a non-lethal tranquilizer when threatened."},
+                {key:"Chemical Defense", name:"Toxicity", description:"As a biochemical defense, the sophont exudes a harmful poison or allergen."},
                 {key:"Inflate", name:"Inflates", description:"The sophont can inflate to many times its size as a defensive reaction."},
                 {key:"Color", name:"Color Changing", description:"The sophont is able to change its color to match its surroundings."},
                 {key:"Color", name:"Translucent", description:"In its natural environment, under certain conditions, the sophont's body covering and organs are translucent and may appear almost invisible."},

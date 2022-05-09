@@ -822,15 +822,8 @@
             var note = notes[i];
             var noteElmt = document.createElement("li");
             noteElmt.classList.add("note");
-            note = note.replace(/Strength/g,"<strong>Strength</strong>");
-            note = note.replace(/Agility/g,"<strong>Agility</strong>");
-            note = note.replace(/Grace/g,"<strong>Grace</strong>");
-            note = note.replace(/Vigor/g,"<strong>Vigor</strong>");
-            note = note.replace(/Stamina/g,"<strong>Stamina</strong>");
-            note = note.replace(/Instinct/g,"<strong>Instinct</strong>");
-            note = note.replace(/Training/g,"<strong>Training</strong>");
-            note = note.replace(/Caste/g,"<strong>Caste</strong>");
-            note = note.replace(/Charisma/g,"<strong>Charisma</strong>");
+            note = note.replace(/(?<=\[)(Str)?(Agi)?(Gra)?(Vig)?(Sta)?(Ins)?(Tra)?(Cas)?(Cha)?(?=\])/g,"<strong>$&</strong>");
+            note = note.replace(/(?<=\. ).+/g,"<p style=\"font-size:smaller; margin-top:0px;\">$&</p>")
             noteElmt.insertAdjacentHTML("beforeend",note);
             noteContainer.appendChild(noteElmt);
         }
