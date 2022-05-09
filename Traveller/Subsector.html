@@ -984,6 +984,7 @@
                             <br/><span id="casteSkill"></span>
                         </div>
                     </fieldset>
+                    <ul class="statnotes"></ul>
                 </fieldset>
             </div>
         </fieldset>
@@ -2979,7 +2980,22 @@
                             elmt.appendChild(document.createTextNode(value));
                         }
                     }
+                    
                 });
+                var noteContainer = document.querySelector(".statnotes");
+                    if(noteContainer){
+                        removeChildElements(noteContainer);
+                        var notes = system.natives.statnotes;
+                        for(var i = 0; i < notes.length; i++){
+                            var note = notes[i];
+                            var noteElmt = document.createElement("li");
+                            noteElmt.classList.add("note");
+                            note = note.replace(/(?<=\[)(Str)?(Agi)?(Gra)?(Vig)?(Sta)?(Ins)?(Tra)?(Cas)?(Cha)?(?=\])/g,"<strong>$&</strong>");
+                            note = note.replace(/(?<=\. ).+/g,"<p style=\"font-size:smaller; margin-top:0px; max-width:520px\">$&</p>")
+                            noteElmt.insertAdjacentHTML("beforeend",note);
+                            noteContainer.appendChild(noteElmt);
+                        }
+                    }
             }else{
                 document.getElementById("nativedetailscontainer").style.display = "none";
             }
