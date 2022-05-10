@@ -13,6 +13,7 @@ function generateRandomAlien(species,rand){
     setSpecialAbilities();
     setSizeAndWeight();
     setUniqueTraits();
+    setGenderCasteScents();
     function binSearch(arr, target, comparator){
         var l = 0, h = arr.length - 1, m, comparison;
         while(l <= h){
@@ -31,6 +32,11 @@ function generateRandomAlien(species,rand){
         return ~l;
     }
     function setScent(){
+        species.scent = getScentDigit()
+            + getScentDigit()
+            + getScentDigit();
+    }
+    function getScentDigit(){
         var digits = 
         [
             ["1","2","3","4","5","6"],
@@ -40,9 +46,7 @@ function generateRandomAlien(species,rand){
             ["S","T","U","V","W","X"],
             ["Y","Z","7","8","9","0"]
         ];
-        species.scent = pickRandom(pickRandom(digits))
-            + pickRandom(pickRandom(digits))
-            + pickRandom(pickRandom(digits));
+        return pickRandom(pickRandom(digits));
     }
     function d6(num){
 
@@ -3822,6 +3826,24 @@ function generateRandomAlien(species,rand){
         var rand = pickRandom(traits);
         while(rand.length && rand.length > 0){ rand = pickRandom(rand);}
         return rand;
+    }
+    function setGenderCasteScents(){
+        species.genderscents = [];
+        species.castescents = [];
+        for(var i = 0, len = species.genders.length; i < len; i++){
+            species.genderscents.push(getScentDigit()+"--");
+        }
+        for(var i = 0, len = species.castes.length; i < len; i++){
+            var genderIndex = species.genders.indexOf(species.castes[i]);
+            var castescent = getScentDigit();
+            if(genderIndex >= 0){
+                species.castescents.push(genderscents[genderindex].replace("-",castescent));
+            }else if(i===0 && species.castes.length === 1){
+                species.castescents.push("--");
+            }else{
+                species.castescents.push("-"+castescent+"-");
+            }
+    }
     }
     return species;
 }
