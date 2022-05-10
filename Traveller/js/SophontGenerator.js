@@ -2910,9 +2910,9 @@ function generateRandomAlien(species,rand){
                 case "W": 
                     species.rearlimbsdesc += lc + " wing"+(lc > 1? "s":""); break;
                 case "M": 
-                    species.rearlimbsdesc += (i === 0 ? 
-                        species.rearlimbs1 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups1+" groups)" :  
-                        species.rearlimbs2 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups2+" groups)"); 
+                    species.rearlimbsdesc += (species.rearlimbs1+species.rearlimbs2) + " leg"+(lc > 1? "s":"")+" ( in " + (species.rearlimbgroups1 + species.rearlimbgroups2) + " groups)";
+                        //species.rearlimbs1 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups1+" groups) and "+ 
+                        //species.rearlimbs2 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups2+" groups)"; 
                     break;
                 case "L": species.rearlimbsdesc += lc  + " leg"+(lc > 1? "s":""); break;
                 case "F": species.rearlimbsdesc += lc  + " flipper"+(lc > 1? "s":""); break;
