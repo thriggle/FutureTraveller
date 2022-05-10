@@ -2910,9 +2910,9 @@ function generateRandomAlien(species,rand){
                 case "W": 
                     species.rearlimbsdesc += lc + " wing"+(lc > 1? "s":""); break;
                 case "M": 
-                    species.rearlimbsdesc += (i === 0 ? 
-                        species.rearlimbs1 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups1+" groups)" :  
-                        species.rearlimbs2 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups2+" groups)"); 
+                    species.rearlimbsdesc += (species.rearlimbs1+species.rearlimbs2) + " leg"+(lc > 1? "s":"")+" ( in " + (species.rearlimbgroups1 + species.rearlimbgroups2) + " groups)";
+                        //species.rearlimbs1 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups1+" groups) and "+ 
+                        //species.rearlimbs2 + " leg"+(lc > 1? "s":"")+" (in "+species.rearlimbgroups2+" groups)"; 
                     break;
                 case "L": species.rearlimbsdesc += lc  + " leg"+(lc > 1? "s":""); break;
                 case "F": species.rearlimbsdesc += lc  + " flipper"+(lc > 1? "s":""); break;
@@ -3837,7 +3837,7 @@ function generateRandomAlien(species,rand){
             var genderIndex = species.genders.indexOf(species.castes[i]);
             var castescent = getScentDigit();
             if(genderIndex >= 0){
-                species.castescents.push(genderscents[genderindex].replace("-",castescent));
+                species.castescents.push(species.genderscents[genderIndex].replace("-",castescent));
             }else if(i===0 && species.castes.length === 1){
                 species.castescents.push("--");
             }else{
