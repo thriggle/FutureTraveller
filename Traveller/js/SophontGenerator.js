@@ -3837,7 +3837,7 @@ function generateRandomAlien(species,rand){
             var genderIndex = species.genders.indexOf(species.castes[i]);
             var castescent = getScentDigit();
             if(genderIndex >= 0){
-                species.castescents.push(genderscents[genderindex].replace("-",castescent));
+                species.castescents.push(species.genderscents[genderIndex].replace("-",castescent));
             }else if(i===0 && species.castes.length === 1){
                 species.castescents.push("--");
             }else{
