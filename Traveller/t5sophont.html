@@ -81,7 +81,7 @@
         .traitlist li{padding-left:2rem;}
         #hamnav{
             display:inline-block; 
-            text-align:right; vertical-align: text-top; position:fixed; top:0px; right:0px; z-index:1; 
+            text-align:left; vertical-align: text-top; position:fixed; top:0px; left:0px; z-index:1; 
             padding:2rem;
         }
         #hamburger{display:none;}
@@ -99,10 +99,10 @@
         #hamnav .hamlabel:hover{
             background:red;
         }
-        .hamlink{ min-width:20rem; text-align:right; padding:1rem;}
+        .hamlink{ min-width:20rem; text-align:left; padding:1rem;}
         #hamnav .hamlink { display: none; }
         #hamnav input:checked ~ .jsonbuttons { display: block; }
-        #hamnav input:checked ~ .hamlink{display:block; max-width:20rem;}
+        #hamnav input:checked ~ .hamlink{display:block; max-width:15rem;}
         #homeworldcontainer{text-align:right;}
         #homeworldcontainer table{display:inline-block;}
         .hamlink + .hamlink { padding-top:1rem; }
@@ -110,10 +110,18 @@
         .light .hamlink{background-color:white; box-shadow:1px 1px 3px black;}
 </style>
 <body class="dark">
-    <div ><h1 style="display:inline-block; width:50%;">Traveller Sophont Creation System</h1><nav id="hamnav">
+    <nav id="hamnav">
         <label class="hamlabel" for="hamburger">&#9776;</label>
         <br/>
         <input type="checkbox" id="hamburger"/>
+        <span class="hamlink">
+            <input type="button" id="btnGenerate" value="Generate Sophont" />
+            
+        </span>
+        <span class="hamlink">
+            <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
+            <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
+        </span>
         <span class="hamlink">
             <label for="chkRandomHomeworld"><input id="chkRandomHomeworld" type="checkbox" checked="checked"> Use Random Homeworld</label>
             <div id="homeworldcontainer" class="hidden">
@@ -164,13 +172,13 @@
                 <label role="button" for="btnImportJSON">Load from .json<input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/></label>
 
         </span>
-    </nav></div>
+    </nav>
+
+        
+    <h1 style="text-align:right; padding:1rem;">Traveller Sophont Creation System</h1>
+
     <div>
-        <span style="display:inline-block; width:50%; text-align:left;">
-            <input type="button" id="btnGenerate" value="Generate Sophont" />
-            <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
-            <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
-        </span>
+        
         
     </div>
     <hr />
