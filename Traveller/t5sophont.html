@@ -76,74 +76,105 @@
         }
         input[type=file]{width:0px; opacity:0;}
         label{ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; -ms-user-select: none; -webkit-user-select: none; -moz-user-select: none;;}
-        @media (min-width:769px){
-            .jsonbuttons{ display:inline-block; text-align:right;}
-        }
-        @media (max-width:768px){
-            .jsonbuttons{ display:block; width:100%; text-align:right;}
-        }
         table label{text-align:right;}
         .traitlist ul{list-style:none; padding:0px; margin:0px;}
         .traitlist li{padding-left:2rem;}
+        #hamnav{
+            display:inline-block; 
+            text-align:right; vertical-align: text-top; position:fixed; top:0px; right:0px; z-index:1; 
+            padding:2rem;
+        }
+        #hamburger{display:none;}
+        #hamnav .hamlabel { 
+            display: inline-block; 
+            color: white;
+            background: rgb(33, 38, 45);
+            border-radius: 0.5rem;
+            font-style: normal;
+            font-size: 1.2em;
+            padding: 10px;
+            box-shadow:1px 1px 3px #555;
+            cursor:pointer;
+        }
+        #hamnav .hamlabel:hover{
+            background:red;
+        }
+        .hamlink{ min-width:20rem; text-align:right; padding:1rem;}
+        #hamnav .hamlink { display: none; }
+        #hamnav input:checked ~ .jsonbuttons { display: block; }
+        #hamnav input:checked ~ .hamlink{display:block; max-width:20rem;}
+        #homeworldcontainer{text-align:right;}
+        #homeworldcontainer table{display:inline-block;}
+        .hamlink + .hamlink { padding-top:1rem; }
+        .dark .hamlink{background-color:black; box-shadow: 1px 1px 3px #555;}
+        .light .hamlink{background-color:white; box-shadow:1px 1px 3px black;}
 </style>
 <body class="dark">
-    <h1>Traveller Sophont Creation System</h1>
+    <div ><h1 style="display:inline-block; width:50%;">Traveller Sophont Creation System</h1><nav id="hamnav">
+        <label class="hamlabel" for="hamburger">&#9776;</label>
+        <br/>
+        <input type="checkbox" id="hamburger"/>
+        <span class="hamlink">
+            <label for="chkRandomHomeworld"><input id="chkRandomHomeworld" type="checkbox" checked="checked"> Use Random Homeworld</label>
+            <div id="homeworldcontainer" class="hidden">
+                <h2>Specify Homeworld Details</h2>
+                <table>
+                    <tr>
+                        <td>
+                            <label for="inWorldName">World Name:</label>
+                        </td>
+                        <td><input type="text" id="inWorldName" title="inWorldName" placeholder="World Name"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="inUWP">UWP: </label></td>
+                        <td><input type="text" id="inUWP" title="inUWP" placeholder="UWP"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="inStarType">Star Type: </label></td>
+                            <td><input type="text" id="inStarType" title="inStarType" placeholder="StarType"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="inStarSize">Star Size:</label></td>
+                        <td><input type="text" id="inStarSize" title="inStarSize" placeholder="StarSize"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="inStarDecimal">Star Decimal: </label>
+                        </td>
+                        <td><input type="text" id="inStarDecimal" title="inStarDecimal" placeholder="StarDecimal"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="inTradeCodes">Trade Codes: </label></td>
+                        <td><input type="text" id="inTradeCodes" title="inTradeCodes" placeholder="TradeCodes"></td>
+                    </tr>
+                    </table>
+                <hr>
+            </div>
+        </span>
+        <span class="hamlink ">
+
+            <select title="Select theme" name="slctStyle" id="slctStyle">
+                <option value="light">Light Theme</option>
+                <option selected="selected" value="dark">Dark Theme</option>
+            </select>
+
+        </span>
+        <span class="hamlink">
+            <input type="button" value="Save as .json" id="btnExportJSON"/>
+                <label role="button" for="btnImportJSON">Load from .json<input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/></label>
+
+        </span>
+    </nav></div>
     <div>
-        <span style="display:inline-block; min-width:30rem; text-align:left;">
+        <span style="display:inline-block; width:50%; text-align:left;">
             <input type="button" id="btnGenerate" value="Generate Sophont" />
             <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
             <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
         </span>
-        <span style="display:inline-block; min-width:20rem; text-align:left;">
-            <label for="chkRandomHomeworld"><input id="chkRandomHomeworld" type="checkbox" checked="checked"> Use Random Homeworld</label>
-        </span>
-        <div class="jsonbuttons">
-            <span style="display:inline-block;">
-                
-                <input type="button" value="Save as .json" id="btnExportJSON"/>
-                <label role="button" for="btnImportJSON">Load from .json<input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/></label>
-                <select title="Select theme" name="slctStyle" id="slctStyle">
-                    <option value="light">Light Theme</option>
-                    <option selected="selected" value="dark">Dark Theme</option>
-                </select>
-            </span>
-        </div>
+        
     </div>
     <hr />
-    <div id="homeworldcontainer" class="hidden">
-        <h2>Specify Homeworld Details</h2>
-        <table>
-            <tr>
-                <td>
-                    <label for="inWorldName">World Name:</label>
-                </td>
-                <td><input type="text" id="inWorldName" title="inWorldName" placeholder="World Name"></td>
-            </tr>
-            <tr>
-                <td><label for="inUWP">UWP: </label></td>
-                <td><input type="text" id="inUWP" title="inUWP" placeholder="UWP"></td>
-            </tr>
-            <tr>
-                <td><label for="inStarType">Star Type: </label></td>
-                    <td><input type="text" id="inStarType" title="inStarType" placeholder="StarType"></td>
-            </tr>
-            <tr>
-                <td><label for="inStarSize">Star Size:</label></td>
-                <td><input type="text" id="inStarSize" title="inStarSize" placeholder="StarSize"></td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="inStarDecimal">Star Decimal: </label>
-                </td>
-                <td><input type="text" id="inStarDecimal" title="inStarDecimal" placeholder="StarDecimal"></td>
-            </tr>
-            <tr>
-                <td><label for="inTradeCodes">Trade Codes: </label></td>
-                <td><input type="text" id="inTradeCodes" title="inTradeCodes" placeholder="TradeCodes"></td>
-            </tr>
-            </table>
-        <hr>
-    </div>
+    
     <h2 id="name"></h2>
     <table>
         <tr>
