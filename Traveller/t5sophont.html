@@ -112,6 +112,7 @@
 <body class="dark">
     <nav id="hamnav">
         <label class="hamlabel" for="hamburger">&#9776;</label>
+        <label class="hamlabel" for="btnGenerate">&#x21af;</label>
         <br/>
         <input type="checkbox" id="hamburger"/>
         <span class="hamlink">
@@ -158,6 +159,20 @@
                     </table>
                 <hr>
             </div>
+        </span>
+        <span class="hamlink">
+            <label for="slctUniqueTraits">Unique Traits</label>
+            <select name="slctUniqueTraits" id="slctUniqueTraits">
+                <option value="0">None</option>
+                <option selected="selected" value="random">Unlikely</option>
+                <option value="1d6">Random 1d6</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+            </select>
         </span>
         <span class="hamlink ">
 
@@ -779,6 +794,15 @@
         var species = {};
         species.name = addCaps(generator.getRandomName("word"));
         var systemName = document.getElementById("inWorldName").value;
+        var uniqueTraits = document.getElementById("slctUniqueTraits").value;
+        if(uniqueTraits === "0"){ species.uniqueTraitsCount = 0;}
+        else if(uniqueTraits === "1"){ species.uniqueTraitsCount = 1;}
+        else if(uniqueTraits === "2"){ species.uniqueTraitsCount = 2;}
+        else if(uniqueTraits === "3"){ species.uniqueTraitsCount = 3;}
+        else if(uniqueTraits === "4"){ species.uniqueTraitsCount = 4;}
+        else if(uniqueTraits === "5"){ species.uniqueTraitsCount = 5;}
+        else if(uniqueTraits === "6"){ species.uniqueTraitsCount = 6;}
+        else if(uniqueTraits === "1d6"){ species.uniqueTraitsCount = MathRandom()*6+1>>>0;}
         if(document.getElementById("chkRandomHomeworld").checked){
             systemName = addCaps(generator.getRandomName("system"));
             species.homeworld = generateSystemDetails(
