@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Crap from Traveller 5th Edition</title>
+</head>
+<body>
+    <script src="js/t5randomstuff.js"></script>
+    <label for="slctType">Category</label> <select name="slctTtype" id="slctType">
+        <option value="crime">Crime</option>
+    </select>
+    <input type="button" value="Get Random" id="btnGet">
+    <div id="output"></div>
+    <script>
+        document.getElementById("btnGet").addEventListener("click", function() {
+            var type = document.getElementById("slctType").value;
+            document.getElementById("output").innerHTML = getRandomThing(type);
+        });
+    </script>
+</body>
+</html>
