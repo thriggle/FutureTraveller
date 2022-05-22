@@ -10,7 +10,17 @@
     <script src="js/SophontGenerator.js"></script>
 </head>
 <style>
-    h1,h2,h3{ margin:0px; font-weight:normal;}
+    @font-face {
+        font-family:Optima;
+        src:url(/Traveller/fonts/OPTIMA.TTF);
+    }
+    @font-face {
+        font-family:Bahnscrift;
+        src:url(/Traveller/fonts/BAHNSCHRIFT.TTF);
+    }
+    .footer{font-style:italic; text-align:right;}
+    h1{color:red; font-style:italic; text-align:right; background-color: black; padding-top:1em; padding-bottom:1em;}
+    h1,h2,h3{ margin:0px; font-weight:normal; font-family:Optima, Arial, Helvetica, sans-serif;}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";}
     body.dark{background-color: rgb(13, 17, 23); color: #fff;  text-shadow:0px 1px 2px black;}
     body.light{background-color: #fff; color: #000;}
@@ -28,6 +38,7 @@
     .table td:empty, .table th:empty{border:0px solid transparent !important; }
     .hidden{display:none;}
     body.dark fieldset{ border:1px solid rgb(48, 54, 61);}
+    body.dark a{color:rgb(150,200,255);}
     fieldset{
             display:inline-block;
             vertical-align: text-top;
@@ -95,6 +106,8 @@
             padding: 10px;
             box-shadow:1px 1px 3px #555;
             cursor:pointer;
+            min-width:1.1em;
+            text-align:center;
         }
         #hamnav .hamlabel:hover{
             background:red;
@@ -111,8 +124,8 @@
 </style>
 <body class="dark">
     <nav id="hamnav">
-        <label class="hamlabel" for="hamburger">&#9776;</label>
-        <label class="hamlabel" for="btnGenerate">&#x21af;</label>
+        <label class="hamlabel" for="hamburger" title="Advanced options">&#9776;</label>
+        <label class="hamlabel" for="btnGenerate" title="Generate new sophont">&#x21af;</label>
         <br/>
         <input type="checkbox" id="hamburger"/>
         <span class="hamlink">
@@ -188,16 +201,8 @@
 
         </span>
     </nav>
-
-        
-    <h1 style="text-align:right; padding:1rem;">Traveller Sophont Creation System</h1>
-
-    <div>
-        
-        
-    </div>
+    <h1>TRAVELLER Sophont Creation System</h1>
     <hr />
-    
     <h2 id="name"></h2>
     <table>
         <tr>
@@ -671,7 +676,8 @@
             <input type="button" value="Apply above JSON" id="btnLoadFromJson"/>
         </fieldset>
     </fieldset>
-    
+    <hr/>
+    <div class="footer">The Traveller game in all forms is owned by Far Future Enterprises. Copyright © 1977 – 2020 <a href="http://www.farfuture.net/" target="_blank">Far Future Enterprises</a>.</div>
 </body>
 <script>
     var abilityRoll = 0, skillRoll = 0;
@@ -710,8 +716,10 @@
             }
         });
     }
+    var fromDirectLink = false;
     if(window.location.hash){
         processHash();
+        fromDirectLink = true;
     }
     NameGenerator("js/names.jsonc",setup,null,MathRandom);
     document.getElementById("btnLoadFromJson").addEventListener("click",function(){
@@ -772,7 +780,10 @@
         });
         var species = initializeRandomSpecies(generator);
         renderDetails(generateRandomAlien(species,MathRandom));
-       
+       if(fromDirectLink){
+           fromDirectLink = false;
+           document.getElementById("chkUseRandom").checked = true;
+       }
         document.getElementById("btnGenerate").addEventListener("click", function(){
             renderDetails(generateRandomAlien(initializeRandomSpecies(generator),MathRandom));
         });
