@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roll Them Dice</title>
+</head>
+<body>
+    <style>
+        @font-face {
+            font-family:Bahnschrift;
+            src:url(/Traveller/fonts/BAHNSCHRIFT.TTF);
+        }
+        body{font-family:Bahnschrift;}
+        div{
+            display: inline-block;
+            margin: 5px;
+        }
+        input[type='number']{width:3em;}
+        #panel_numkeep{display:none;}
+        .die{ font-family:Consolas, Inconsolas, 'Courier New', monospace; padding-bottom:0.5em; padding-top:1.5em; padding-left:1em; padding-right:1em; min-width:2em; min-height:2em; text-align:center; border:1px solid black; background-color:#efefef; box-shadow:1px 1px 4px black;}
+        .die.discarded{ background-color:#ccc; box-shadow:none;}
+        #total{font-size:1.5em; font-weight:bold;}
+    </style>
+    <div>
+        <label for="nD">Number of Dice</label> <input name="nD" id="nD" title="Number of Dice" alt="Number of Dice" type="number" value="2" />
+    </div>
+    <div>
+        <label for="slctMode">Mode</label> <select name="slctMode" id="slctMode" title="Dice Rolling Mode" alt="Choose dice rolling mode">
+            <option value="normal">Normal (sum)</option>
+            <option value="keephigh">Keep Highest</option>
+            <option value="keeplow">Keep Lowest</option>
+        </select>
+        <span id="panel_numkeep">
+            <label for="nKeep">Number to Keep</label> <input type="number" name="nKeep" id="nKeep" title="Number of dice to keep" alt="Number of dice to keep" value="2">
+        </span>
+    </div>
+    <br>
+    <div>
+        <input type="button" value="Roll" id="btnRoll">
+        <input type="button" value="Roll Flux" name="btnRollFlux" id="btnRollFlux">
+        <input type="button" value="Roll Good Flux" name="btnRollGoodFlux" id="btnRollGoodFlux">
+        <input type="button" value="Roll Bad Flux" name="btnRollBadFlux" id="btnRollBadFlux">
+    </div>
+    <br>
+    <div id="output"><div class="die">?</div></div>
+    =<div id="total">Roll</div>
+    <script>
+        updateRollButton();
+        document.getElementById("nD").addEventListener("change", updateRollButton);
+        document.getElementById("slctMode").addEventListener("change", function(){
+            if(document.getElementById("slctMode").value == "keephigh" || document.getElementById("slctMode").value == "keeplow"){
+                document.getElementById("panel_numkeep").style.display = "inline-block";
+                document.getElementById("nD").value = 3;
+                document.getElementById("nKeep").value = 2;
+            }else{
+                document.getElementById("panel_numkeep").style.display = "none";
+                document.getElementById("nD").value = 2;
+                
+            }
+            updateRollButton();
+        });
+        document.getElementById("btnRollFlux").addEventListener("click", function(){
+            var total = 0;
+            var roll = Math.floor(Math.random() * 6) + 1;
+            var output = removeChildElements(document.getElementById("output"));
+            var dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(roll));
+            dieblock.className = "die";
+            total += roll;
+            output.appendChild(document.createTextNode(" - "));
+            roll = Math.floor(Math.random() * 6) + 1;
+            dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(roll));
+            dieblock.className = "die";
+            total -= roll;
+            document.getElementById("total").innerHTML = (total >= 0 ? "+" : "") + total;
+        });
+        document.getElementById("btnRollGoodFlux").addEventListener("click", function(){
+            var total = 0;
+            var rolls = [];
+            var output = removeChildElements(document.getElementById("output"));
+            for(var i = 0; i < 2; i++){
+                var roll = Math.floor(Math.random() * 6) + 1;
+                rolls.push(roll);
+            }
+            rolls.sort(function(a,b){return b-a});
+            var total = rolls[0] - rolls[1];
+            var dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(rolls[0]));
+            dieblock.className = "die";
+            output.appendChild(document.createTextNode(" - "));
+            dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(rolls[1]));
+            dieblock.className = "die";
+            document.getElementById("total").innerHTML = ("+") + total;
+        });
+        document.getElementById("btnRollBadFlux").addEventListener("click", function(){
+            var total = 0;
+            var rolls = [];
+            var output = removeChildElements(document.getElementById("output"));
+            for(var i = 0; i < 2; i++){
+                var roll = Math.floor(Math.random() * 6) + 1;
+                rolls.push(roll);
+            }
+            rolls.sort(function(a,b){return a-b});
+            var total = rolls[0] - rolls[1];
+            var dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(rolls[0]));
+            dieblock.className = "die";
+            output.appendChild(document.createTextNode(" - "));
+            dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(rolls[1]));
+            dieblock.className = "die";
+            document.getElementById("total").innerHTML =  total;
+        });
+        document.getElementById("nKeep").addEventListener("change", updateRollButton);
+        document.getElementById("btnRoll").addEventListener("click",function(){
+            var numDice = document.getElementById("nD").value;
+            var mode = document.getElementById("slctMode").value;
+            var output = removeChildElements(document.getElementById("output"));
+            if(mode === "normal"){
+                var total = 0;
+                for(var i = 0; i < numDice; i++){
+                    var roll = Math.floor(Math.random() * 6) + 1;
+                    var dieblock = output.appendChild(document.createElement("div"));
+                    dieblock.appendChild(document.createTextNode(roll));
+                    dieblock.className = "die";
+                    total += roll;
+                }               
+            }else if(mode === "keephigh"){
+                var numKeep = document.getElementById("nKeep").value;
+                var rolls = [];
+                for(var i = 0; i < numDice; i++){
+                    var roll = Math.floor(Math.random() * 6) + 1;
+                    rolls.push(roll);
+                }
+                rolls.sort(function(a,b){return b-a});
+                var total = 0;
+                for(var i = 0; i < numDice; i++){
+                    var dieblock = output.appendChild(document.createElement("div"));
+                    dieblock.appendChild(document.createTextNode(rolls[i]));
+                    dieblock.className = "die";
+                    if(i < numKeep){
+                        total += rolls[i];
+                    }else{
+                        dieblock.classList.add("discarded");
+                    }
+                }
+            }else if(mode === "keeplow"){
+                var numKeep = document.getElementById("nKeep").value;
+                var rolls = [];
+                for(var i = 0; i < numDice; i++){
+                    var roll = Math.floor(Math.random() * 6) + 1;
+                    rolls.push(roll);
+                }
+                rolls.sort(function(a,b){return a-b});
+                var total = 0;
+                for(var i = 0; i < numDice; i++){
+                    var dieblock = output.appendChild(document.createElement("div"));
+                    dieblock.appendChild(document.createTextNode(rolls[i]));
+                    dieblock.className = "die";
+                    if(i < numKeep){
+                        total += rolls[i];
+                    }else{
+                        dieblock.classList.add("discarded");
+                    }
+                }
+            }
+            document.getElementById("total").innerHTML = total;
+        });
+        function updateRollButton(){
+            var btn = document.getElementById("btnRoll");
+            var mode = document.getElementById("slctMode").value;
+            var numDice = document.getElementById("nD").value;
+            var numKeep =document.getElementById("nKeep").value;
+            if(numDice > 0){
+                btn.disabled = false;
+            }else{
+                btn.disabled = true;
+            }
+            var text = "Roll " + numDice + "d6";
+            if(mode == "keephigh"){
+                text += "k" + numKeep;
+            }else if(mode == "keeplow"){
+                text += "r" + (-1*(numKeep - numDice));
+            }
+            btn.value = text;
+        }
+        function removeChildElements(element){
+            while(element.childNodes.length > 0){
+                element.removeChild(element.childNodes[element.childNodes.length-1]);
+            }
+            return element;
+        }
+    </script>
+</body>
+</html>
