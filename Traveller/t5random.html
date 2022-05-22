@@ -8,8 +8,29 @@
 </head>
 <body>
     <script src="js/t5randomstuff.js"></script>
+    <style>
+        @font-face {
+            font-family:Bahnschrift;
+            src:url(/Traveller/fonts/BAHNSCHRIFT.TTF);
+        }   
+        body{font-family:Bahnschrift;}
+        #output{ font-size:2em; padding:1em;}
+    </style>
     <label for="slctType">Category</label> <select name="slctTtype" id="slctType">
+        <option value="majortheme">Adventure Theme (Major)</option>
+        <option value="theme">Adventure Theme (Any)</option>
         <option value="crime">Crime</option>
+        <option value="devicedamagelocation">Damage Location (Thing/device)</option>
+        <option value="tooldamagelocation">Damage Location (Thing/tool)</option>
+        <option value="weapondamagelocation">Damage Location (Thing/weapon)</option>
+        <option value="weapondamagelocation">Damage Location (Equipment/heavy weapon)</option>
+        <option value="vehicledamagelocation">Damage Location (Equipment/vehicle)</option>
+        <option value="anatomicaldamagelocation">Damage Location (Character/anatomical)</option>
+        <option value="biologicaldamagelocation">Damage Location (Character/biological)</option>
+        <option value="visibility">Visibility</option>
+        <option value="temperature">Temperature</option>
+        <option value="attitude">Attitude</option>
+
     </select>
     <input type="button" value="Get Random" id="btnGet">
     <div id="output"></div>
