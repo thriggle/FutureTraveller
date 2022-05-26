@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Generators from Mongoose Traveller</title>
+</head>
+<body>
+    <style>
+        fieldset{
+            font-family:'Consolas','Inconsolas','Courier New', Courier, monospace;
+            display:inline-block;
+            vertical-align: text-top;
+        }
+        fieldset legend{
+            cursor:pointer;
+            user-select: none;
+        }
+        fieldset legend:hover{
+            color:red;
+        }
+        fieldset.collapsed *:not(legend){
+            display:none;
+        }
+        fieldset > legend::before{
+            content:"▼ ";
+        }
+        fieldset.collapsed > legend::before{
+            content:"► ";
+        }
+    </style>
+     <fieldset class="collapsed">
+        <legend>Random NPCs</legend>
+        <input type="button" id="btnAllyEnemy" name="btnAllyEnemy" value="Ally or Enemy" data-key="AllyEnemy" /> 
+        <span data-for="btnAllyEnemy" >Generate a random Ally or Enemy</span><hr/>
+        <input type="button" id="btnPassenger" name="btnPassenger" value="Passenger" data-key="Passenger" />
+        <span data-for="btnPassenger" >Generate a random passenger</span><hr/>
+        <input type="button" id="btnCharacterQuirk" name="btnCharacterQuirk" value="Character Quirk" data-key="CharacterQuirk" />
+        <span data-for="btnCharacterQuirk" >Generate a random character quirk</span>
+    </fieldset><br>
+    <fieldset class="collapsed">
+        <legend>Random Missions</legend>
+        <input type="button" id="btnPatron" name="btnPatron" value="Patron" data-key="Patron" />
+        <span data-for="btnPatron" >Generate a random patron</span><hr/>
+        <input type="button" id="btnMission" name="btnMission" value="Mission" data-key="Mission" />
+        <span data-for="btnMission" >Generate a random mission</span><hr/>
+        <input type="button" id="btnTarget" name="btnTarget" value="Target" data-key="Target" />
+        <span data-for="btnTarget" >Generate random target</span><hr/>
+        <input type="button" id="btnOpposition" name="btnOpposition" value="Opposition" data-key="Opposition" />
+        <span data-for="btnOpposition" >Generate random opposition</span>
+    </fieldset><br>
+    <fieldset class="collapsed">
+        <legend>Random Encounters</legend>
+        <input type="button" id="btnStarport" name="btnStarport" value="Starport Encounter" data-key="Starport" /> 
+        <span data-for="btnStarport" >Generate a random starport encounter</span><hr/>
+        <input type="button" id="btnRural" name="btnRural" value="Rural Encounter" data-key="Rural" /> 
+        <span data-for="btnRural" >Generate a random rural encounter</span><hr/>
+        <input type="button" id="btnUrban" name="btnUrban" value="Urban Encounter" data-key="Urban" /> 
+        <span data-for="btnUrban" >Generate a random urban encounter</span><hr/>
+        <select name="slctSpaceEncounter" id="slctSpaceEncounter">
+            <option value="3">Highport</option>
+            <option value="2">High-Traffic Space</option>
+           <option value="1">Settled Space</option>
+           <option value="0">Border Systems</option>
+           <option value="-1">Wild Space</option>
+           <option value="-4">Empty Space</option>
+        </select><input type="button" id="btnSpace" name="btnSpace" value="Space Encounter" data-arginput="slctSpaceEncounter" data-function="getRandomSpaceEncounter" />
+        <span data-for="btnSpace">Generate random space encounter</span>
+    </fieldset><br>
+    <fieldset class="collapsed">
+        <legend>Random Cargo and Salvage</legend>
+        <input type="button" id="btnSalvage" name="btnSalvage" value="Random Salvage" data-function="getRandomSalvage" />
+        <span data-for="btnSalvage" >Generate random salvage</span><hr/>
+        <input type="button" id="btnCommonTradeGood" name="btnCommonTradeGood" value="Common Trade Good" data-key="CommonTradeGood" />
+        <span data-for="btnCommonTradeGood" >Generate a common trade good</span><hr/>
+        <input type="button" id="btnTradeGood" name="btnTradeGood" value="Random Trade Good" data-key="TradeGood" />
+        <span data-for="btnTradeGood" >Generate a trade good</span>
+    </fieldset>
+    <script>
+        var lists = {
+            "Passenger":[
+                "Refugee - Political",
+                "Refugee - Economic",
+                "Starting a New Life Offworld",
+                "Mercenary",
+                "Spy",
+                "Corporate Executive",
+                "Out to See the Universe",
+                "Tourist (1-3: Irritating, 4-6: Charming)",
+                "Wide-Eyed Yokel",
+                "Adventurer",
+                "Explorer",
+                "Claustrophobic",
+                "Expectant Mother",
+                "Wants to Stowaway or Join the Crew",
+                "Possesses Something Dangerous or Illegal",
+                "Causes Trouble (1-3: Drunkard, 4-5: Violent, 6: Insane)",
+                "Unusually Pretty or Handsome",
+                "Engineer (Mechanic and Engineer 1D-1 each)",
+                "Ex-Scout",
+                "Wanderer",
+                "Thief or Other Criminal",
+                "Scientist",
+                "Journalist or Researcher",
+                "Entertainer (Steward and Perform 1D-1 each)",
+                "Gambler (Gambler 1D-1)",
+                "Rich Noble - Complains a Lot",
+                "Rich Noble - Eccentric",
+                "Rich Noble - Raconteur",
+                "Diplomat on a Mission",
+                "Agent on a Mission",
+                "Patron",
+                "Alien",
+                "Bounty Hunter",
+                "On the Run",
+                "Wants to be on Board the Travellers' Ship for Some Reason",
+                "Hijacker or Pirate Agent"
+            ],
+            "CommonTradeGood":[
+                "Common Electronics",
+                "Common Industrial Goods",
+                "Common Manufactured Goods",
+                "Common Raw Materials",
+                "Common Consumables",
+                "Common Ore"
+            ],
+            "TradeGood":[
+            "Common Electronics",
+                "Common Industrial Goods",
+                "Common Manufactured Goods",
+                "Common Raw Materials",
+                "Common Consumables",
+                "Common Ore",
+                "Advanced Electronics",
+                "Advanced Machine Parts",
+                "Advanced Manufactured Goods",
+                "Advanced Weapons",
+                "Advanced Vehicles",
+                "Biochemicals",
+                "Crystals and Gems",
+                "Cybernetics",
+                "Live Animals",
+                "Luxury Consumables",
+                "Medical Supplies",
+                "Petrochemicals",
+                "Pharmaceuticals",
+                "Polymers",
+                "Precious Metals",
+                "Radioactives",
+                "Robots",
+                "Spices",
+                "Textiles",
+                "Uncommon Ore",
+                "Uncommon Raw Materials",
+                "Wood",
+                "Vehicles",
+                "Illegal Biochemicals",
+                "Cybernetics, Illegal",
+                "Drugs, Illegal",
+                "Luxuries, Illegal",
+                "Weapons, Illegal",
+                "Exotics"
+            ],
+            "AllyEnemy":[
+                "Naval officer",
+                "Imperial diplomat",
+                "Crooked trader",
+                "Medical doctor",
+                "Eccentric scientist",
+                "Mercenary",
+                "Famous performer",
+                "Alien thief",
+                "Free trader",
+                "Explorer",
+                "Marine captain",
+                "Corporate executive",
+                "Researcher",
+                "Culturalattaché",
+                "Religious leader",
+                "Conspirator",
+                "Rich noble",
+                "Artificial intelligence",
+                "Bored noble",
+                "Planetary governor",
+                "Inveterate gambler",
+                "Crusading journalist",
+                "Doomsday cultist",
+                "Corporate agent",
+                "Criminal syndicate",
+                "Military governor",
+                "Army quartermaster",
+                "Private investigator",
+                "Starport administrator",
+                "Retired admiral",
+                "Alien ambassador",
+                "Smuggler",
+                "Weapons inspector",
+                "Elder stateman",
+                "Planetary warlord",
+                "Imperial agent"
+            ],
+            "CharacterQuirk":[
+                "Loyal",
+                "Distracted by other worries",
+                "In debt to criminals",
+                "Makes very bad jokes",
+                "Will betray characters",
+                "Aggressive",
+                "Has secret allies",
+                "Secret anagathic user",
+                "Looking for something",
+                "Helpful",
+                "Forgetful",
+                "Wants to hire the Travellers",
+                "Has useful contacts",
+                "Artistic",
+                "Easily confused",
+                "Unusually ugly",
+                "Worried about current situation",
+                "Shows pictures of their children",
+                "Rumour-monger",
+                "Unusually provincial",
+                "Drunkard or drug addict",
+                "Grovernment informant",
+                "Mistakes a Traveller for someone else",
+                "Possesses unusually advanced technology",
+                "Unusually handsome or beautiful",
+                "Spying on the Travellers",
+                "Possesses TAS membership",
+                "Is secretly hostile towards the Travellers",
+                "Wants to borrow money",
+                "Is convinced the Travellers are dangerous",
+                "Involved in political intrigue",
+                "Has a dangerous secret",
+                "Wants to get off planet as soon as possible",
+                "Attracted to a Traveller",
+                "From offworld",
+                "Possesses telepathy or other unusual quality"
+            ],
+            "Starport": // starport encounters
+            [
+                "Maintenance robot at work",
+                "Trade ship arrives or departs",
+                "Captain argues about fuel prices",
+                "News report about pirate activity on a starport screen draws a crowd",
+                "Bored clerk makes life difficult for the Travellers",
+                "Local merchant with cargo to transport seeks a ship",
+                "Dissident tries to claim sanctuary from planetary authorities",
+                "Traders from offworld argue with local brokers",
+                "Technician repairing starport computer system",
+                "Reporter asks for news from offworld",
+                "BIzarre cultural performance",
+                "Patron argues with another group of Travellers",
+                "Military vessel arrives or departs",
+                "Demonstration outside starport",
+                "Escaped prisoners beg for passage offworld",
+                "Impromptu bazaar of bizarre items",
+                "Security patrol",
+                "Unusual alien",
+                "Traders offer spare parts and supplies at cut-price rates",
+                "Repair yard catches fire",
+                "Passenger liner arrives or departs",
+                "Servant robot offers to guide Travellers around the spaceport",
+                "Trader from a distant system selling strange curios",
+                "Old crippled belter asks for spare change and complains about drones taking their job",
+                "Patron offers the Travellers a job",
+                "Passenger looking for a ship",
+                "Religious pilgrims try to convert the Travellers",
+                "Cargo hauler arrives or departs",
+                "Scout ship arrives or departs",
+                "Illegal or dangerous goods are impounded",
+                "Pickpocket tries to steal from the Travellers",
+                "Drunken crew pick a fight",
+                "Government officials investigate the characters",
+                "Random security sweep scans Travellers and their baggage",
+                "Starport is temporarily shut down for security reasons",
+                "Damaged ship makes emergency docking"
+            ],
+            "Rural":[
+                "Wild animal",
+                "Agricultural robots",
+                "Crop sprayer drone flies overhead",
+                "Damaged agricultural robot being repaired",
+                "Small, isolationist community",
+                "Noble hunting party",
+                "Wild animal",
+                "Local landing field",
+                "Lost child",
+                "Travelling merchant caravan",
+                "Cargo convoy",
+                "Police chase",
+                "Wild animal",
+                "Telecommunications black spot",
+                "Security patrol",
+                "Military facility",
+                "Bar or waystation",
+                "Grounded spacecraft",
+                "Wild animal",
+                "Small community - quiet place to live",
+                "Small community - on a trade route",
+                "Small community - festival in progress",
+                "Small community - in danger",
+                "Small community - not what it seems",
+                "Wild animal",
+                "Unusual weather",
+                "Difficult terrain",
+                "Unusual creature",
+                "Isolated homestead - welcoming",
+                "Isolated homestead - unfriendly",
+                "Wild animal",
+                "Private villa",
+                "Monastery or retreat",
+                "Experimental farm",
+                "Ruined structure",
+                "Research facility"
+            ],
+            "Urban":[
+                "Street riot in progress",
+                "Travellers pass a charming restaurant",
+                "Trader in illegal goods",
+                "Public argument",
+                "Sudden change of weather",
+                "Travellers are asked for help",
+                "Travellers pass a bar or pub",
+                "Travellers pass a theatre or other entertainment venue",
+                "Curiosity shop",
+                "Street market stall tries to sell the Travellers something",
+                "Fire, dome breach or other emergency in progress",
+                "Attempted robbery of the Travellers",
+                "Vehicle accident involving the Travellers",
+                "Low-flying spacecraft flies overhead",
+                "Alien or other offworlder",
+                "Random character bumps into a Traveller",
+                "Pickpocket",
+                "Media team or journalist",
+                "Security patrol",
+                "Ancient building or archive",
+                "Festival",
+                "Someone is following the characters",
+                "Unusual cultural group or event",
+                "Planetary official",
+                "Travellers spot someone they recognise",
+                "Public demonstration",
+                "Robot or other servant passes Travelelrs",
+                "Prospective patron",
+                "Crime such as robbery or attack in progress",
+                "Street preacher rants at the Travellers",
+                "News broadcast on public screens",
+                "Sudden curfew or other restriction on movement",
+                "Unusually empty or quiet street",
+                "Public announcement",
+                "Sports event",
+                "Imperial dignitary"
+            ],
+            "Patron":[
+                "Assassin",
+                "Smuggler",
+                "Terrorist",
+                "Embezzler",
+                "Thief",
+                "Revolutionary",
+                "Clerk",
+                "Administrator",
+                "Mayor",
+                "Minor Noble",
+                "Physician",
+                "Tribal Leader",
+                "Diplomat",
+                "Courier",
+                "Spy",
+                "Ambassador",
+                "Noble",
+                "Police Officer",
+                "Merchant",
+                "Free Trader",
+                "Broker",
+                "Corporate Executive",
+                "Corporate Agent",
+                "Financier",
+                "Belter",
+                "Researcher",
+                "Naval Officer",
+                "Pilot",
+                "Startport Administrator",
+                "Scout",
+                "Alien",
+                "Playboy",
+                "Stowaway",
+                "Family Relative",
+                "Agent of Foreign Power",
+                "Imperial Agent"
+            ],
+            "Mission":[
+                "Assassinate a target",
+                "Frame a target",
+                "Destroy a target",
+                "Steal from a target",
+                "Aid in burglary",
+                "Stop a burglary",
+                "Retrieve data or an object from a secure facility",
+                "Discredit a target",
+                "Find a lost cargo",
+                "Find a lost person",
+                "Deceive a target",
+                "Sabotage a target",
+                "Transport goods",
+                "Transport a person",
+                "Transport data",
+                "Transport goods secretly",
+                "Transport goods quickly",
+                "Transport dangerous goods",
+                "Investigate a crime",
+                "Investigate a theft",
+                "Investigate a murder",
+                "Investigate a mystery",
+                "Investigate a target",
+                "Investigate an event",
+                "Join an expedition",
+                "Survey a planet",
+                "Explore a new system",
+                "Explore a ruin",
+                "Salvage a ship",
+                "Capture a creature",
+                "Hijack a ship",
+                "Entertain a noble",
+                "Protect a target",
+                "Save a target",
+                "Aid a target",
+                "It's a trap - the patron intends to betray the Traveller"
+            ],
+            "Target":[
+                "Common Trade Goods",
+                "Common Trade Goods",
+                "Random Trade Goods",
+                "Random Trade Goods",
+                "Illegal Trade Goods",
+                "Illegal Trade Goods",
+                "Computer Data",
+                "Alien Artefact",
+                "Personal Effects",
+                "Work of Art",
+                "Historical Artefact",
+                "Weapon",
+                "Starport",
+                "Asteroid Base",
+                "City",
+                "Research station",
+                "Bar or Nightclub",
+                "Medical Facility",
+                "Random Patron",
+                "Random Patron",
+                "Random Patron",
+                "Random Ally/Enemy",
+                "Random Ally/Enemy",
+                "Random Ally/Enemy",
+                "Local Government",
+                "Planetary Government",
+                "Corporation",
+                "Imperial Intelligence",
+                "Criminal Syndicate",
+                "Criminal Gang",
+                "Free Trader",
+                "Yacht",
+                "Cargo Hauler",
+                "Police Cutter",
+                "Space Station",
+                "Warship"
+            ],
+            "Opposition":[
+                "Animals",
+                "Large animal",
+                "Bandits and thieves",
+                "Fearful peasants",
+                "Local authorities",
+                "Local lord",
+                "Criminals - thugs or corsairs",
+                "Criminals - thieves or saboteurs",
+                "Police - ordinary security forces",
+                "Police - inspectors and detectives",
+                "Corporate - agents",
+                "Corporate - legal",
+                "Starport security",
+                "Imperial marines",
+                "Interstellar corporation",
+                "Alien - private citizen or corporation",
+                "Alien - government",
+                "Space travellers or rival ship",
+                "Target is in deep space",
+                "Target is in orbit",
+                "Hostile weather conditions",
+                "Dangerous organisms or radiation",
+                "Target is in a dangerous region",
+                "Target is in a restricted area",
+                "Target is under electronic observation",
+                "Hostile guard robots or ships",
+                "Biometric identification required",
+                "Mechanical failure or computer hacking",
+                "Travellers are under surveillance",
+                "Out of fuel or ammunition",
+                "Police investigation",
+                "Legal barriers",
+                "Nobility",
+                "Government officials",
+                "Target is protected by a third party",
+                "Hostages"
+            ]
+        }
+        
+        var buttons = document.querySelectorAll("input[data-key]");
+        for(var i = 0, len = buttons.length; i < len; i++){
+            var button = buttons[i];
+            button.addEventListener("click",function(e){
+                var key = e.srcElement.getAttribute("data-key");
+                var list = lists[key];
+                var value = list[Math.floor(Math.random()*list.length)];
+                var btnName = e.srcElement.getAttribute("name");
+                var label = document.querySelector("span[data-for=\""+btnName+"\"]");
+                label.innerText = value;
+            });
+        }
+        buttons = document.querySelectorAll("input[data-function]");
+        for(var i = 0, len = buttons.length; i < len; i++){
+            var button = buttons[i];
+            button.addEventListener("click",function(e){
+                var functionName = e.srcElement.getAttribute("data-function");
+                var argElement = e.srcElement.getAttribute("data-arginput");
+                var value = "";
+                if(argElement){
+                    var arg = document.getElementById(argElement).value;
+                    value = window[functionName](arg);
+                }else{
+                    value = window[functionName]();
+                }
+                var btnName = e.srcElement.getAttribute("name");
+                var label = document.querySelector("span[data-for=\""+btnName+"\"]");
+                label.innerText = value;
+            });
+        }
+        var collapserHandles = document.querySelectorAll("fieldset legend");
+        for(var i = 0, len = collapserHandles.length; i < len; i++){
+            var handle = collapserHandles[i];
+            handle.addEventListener("click",function(e){
+                var parent = e.target.parentElement;
+                if(parent.classList.contains("collapsed")){
+                    parent.classList.remove("collapsed");
+                }else{
+                    parent.classList.add("collapsed");
+                }
+            });
+        }
+        function getRandomSalvage(){
+            var roll = Math.floor(Math.random()*6) 
+                + Math.floor(Math.random()*6) + 2;
+            var salvage = "";
+            switch(roll){
+                case 2:
+                case 3: salvage = "Hazard! The ship's reactor is damaged, the ship is about to break up, there is a virus loose aboard ship, an alien monster killed the crew...";
+                break;
+                case 4: salvage = "No Salvage: Nothing useful can be recovered.";
+                break;
+                case 5: salvage = "Junk: Minor personal effects, spare parts, trophies and other junk.";
+                break;
+                case 6: salvage = "Fuel: 2D x 10 tons of fuel can be extracted from the salvage (not exceeding the derelict's maximum capacity).";
+                break;
+                case 7: salvage = "Equipment: Items such as vacc suits, medical supplies, weapons, with a total value of 2D x Cr2000.";
+                break;
+                case 8: salvage = "Cargo: 2D tons of derelict's cargo. Roll D66 on the Trade Goods table to determine the type.";
+                break;
+                case 9: salvage = "Considerable cargo: 2D x 10 tons of cargo (up to the derelict's maximum cargo).";
+                break;
+                case 10: salvage = "Interesting Artefact: An alien relic, useful personal data, mail cannister, or other adventure hook - or maybe a survivor in low berth.";
+                break;
+                case 11: salvage = "Fittings: Weapons turrets, ship's computers or air/raft, with a total value of 2D x Cr 250000.";
+                break;
+                case 12: salvage = "Ship: The ship is potentially repairable.";
+                break;
+            }
+            return salvage;
+        
+        }
+        function getRandomSpaceEncounter(mod){
+            var roll1 = Math.floor(Math.random()*6)+1;
+            roll1 += Number(mod);
+            if(roll1 < 0){ roll1 = 0;}
+            var roll2 = Math.floor(Math.random()*6)+1;
+            var key = roll1.toString() + roll2.toString();
+            console.log(mod);
+            console.log(key);
+            var encounters = {
+                "01":"Alien Derelict (Possible Salvage)",
+                "02":"Solar Flare (1D x 100 rads)",
+                "03":"Asteroid (Empty Rock)",
+                "04":"Ore-Bearing Asteroid",
+                "05":"Alien Vesselt (On a Mission)",
+                "06":"Rock Hermit (Inhabited Rock)",
+                "11":"Pirate",
+                "12":"Derelict Vessel (Possible Salvage)",
+                "13":"Space Station (1-4: Derelict, 5-6: Operational)",
+                "14":"Comet (May be an Ancient Derelict at its Core)",
+                "15":"Ore-Bearing Asteroid",
+                "16":"Ship in Distress (Roll Again for Type)",
+                "21":"Pirate",
+                "22":"Free Trader",
+                "23":"Micrometeorite Storm (Collision!)",
+                "24":"Hostile Vessel (Roll Again for Type)",
+                "25":"Mining Ship",
+                "26":"Scout Ship",
+                "31":"Alien Vessel (1-3: Trader, 4-6: Explorer, 6: Spy)",
+                "32":"Space Junk (Possible Salvage)",
+                "33":"Far Trader",
+                "34":"Derelict (Possible Salvage)",
+                "35":"Safari or Science Vessel",
+                "36":"Escape Pod",
+                "41":"Passenger Liner",
+                "42":"Ship in Distress (Roll Again for Type)",
+                "43":"Colony Ship or Passenger Liner",
+                "44":"Scout Ship",
+                "45":"Space Station",
+                "46":"X-Boat Courier",
+                "51":"Hostile Vessel (Roll Again for Type)",
+                "52":"Garbage Ejected From a Ship",
+                "53":"Medical Ship or Hospital",
+                "54":"Lab Ship or Scout",
+                "55":"Patron",
+                "56":"Police Ship",
+                "61":"Unusually Daring Pirate",
+                "62":"Noble Yacht",
+                "63":"Warship",
+                "64":"Cargo Vessel",
+                "65":"Navigational Buoy or Beacon",
+                "66":"Unusual Ship",
+                "71":"Collison With Space Junk (Collision!)",
+                "72":"Automated Vessel",
+                "73":"Free Trader",
+                "74":"Dumped Cargo Pod (Random Trade Goods)",
+                "75":"Police Vessel",
+                "76":"Cargo Hauler",
+                "81":"Passenger Liner",
+                "82":"Orbital Facory (Random Trade Goods)",
+                "83":"Orbital Habitat",
+                "84":"Orbital Habitat",
+                "85":"Communications Satellite",
+                "86":"Defence Satellite",
+                "91":"Pleasure Craft",
+                "92":"Space Station",
+                "93":"Police Vessel",
+                "94":"Cargo Hauler",
+                "95":"System Defence Boat",
+                "96":"Grand Fleet Warship"
+            }
+            return encounters[key];
+        }
+    </script>
+</body>
+</html>
