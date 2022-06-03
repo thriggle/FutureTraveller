@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex Crawler</title>
+</head>
+<body>
+    <style>
+        fieldset{
+            font-family:'Consolas','Inconsolas','Courier New', Courier, monospace;
+            display:inline-block;
+            vertical-align: text-top;
+        }
+        fieldset legend{
+            cursor:pointer;       
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        fieldset legend:hover{
+            color:red;
+        }
+        label{
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        fieldset > fieldset{
+            background-color:rgba(0,0,0,0.05);
+        }
+        fieldset *{
+            line-height:1.5em;
+        }
+        fieldset.collapsed *:not(legend){
+            display:none;
+        }
+        fieldset > legend::before{
+            content:"▼ ";
+        }
+        fieldset.collapsed > legend::before{
+            content:"► ";
+        }
+        canvas{
+            border:1px solid black;
+        }
+        input[type="number"]{width:2em;}
+        #highlightedHex{min-height:4em;}
+    </style>
+    
+    <input type="button" value="reset" id="btnReset">
+    <div id="highlightedHex"></div><br/>
+    <canvas>
+
+    </canvas><br/>
+    <fieldset class="collapsed">
+        <legend>Display</legend>
+        <label for="sizeSlider">Scale: <span id="sizeIndicator"></span><input type="range" name="sizeSlider" min="1" max="100" value="20" id="sizeSlider"></label>
+    </fieldset>
+    <fieldset class="collapsed">
+        <legend>Terrain</legend>
+        <fieldset>
+            <legend>Categories</legend>
+            <ol id="categories">
+            </ol>
+            <input id="btnAddCategory" type="button" value="add category"> <input type="button" id="btnRemoveCategory" value="remove category">
+        </fieldset>
+        <!-- <fieldset class="collapsed">
+            <legend>Hex Features</legend>
+            <fieldset>
+                <legend>Possible Features</legend>
+                <ol id="features">
+                    <li><label>Weight:<input data-type="weight" type="number" value="1"></label> <label>Name: <input type="text" value="Settlement"></label></li>
+                    <li><label>Weight:<input data-type="weight" type="number" value="1"></label> <label>Name: <input type="text" value="Ruins"></label></li>
+                    <li><label>Weight:<input data-type="weight" type="number" value="1"></label> <label>Name: <input type="text" value="Bandit Camp"></label></li>
+                    <li><label>Weight:<input data-type="weight" type="number" value="1"></label> <label>Name: <input type="text" value="Animal Den"></label></li>
+                    <li><label>Weight:<input data-type="weight" type="number" value="1"></label> <label>Name: <input type="text" value="Cave"></label></li>
+                    <li><label>Weight:<input data-type="weight" type="number" value="1"></label> <label>Name: <input type="text" value="Edible Plants"></label></li>
+                </ol>
+            </fieldset>
+            <fieldset >
+                <legend>Number Per Hex</legend>
+                <ol id="featurecount">
+                    <li><label>Weight: <input data-type="weight" type="number" value="1"></label> <label>Feature Count: <input type="number" value="0"/></label></li>
+                    <li><label>Weight: <input data-type="weight" type="number" value="2"></label> <label>Feature Count: <input type="number" value="1"/></label></li>
+                    <li><label>Weight: <input data-type="weight" type="number" value="1"></label> <label>Feature Count: <input type="number" value="2"/></label></li>
+                </ol>
+            </fieldset>
+        </fieldset>
+        // -->
+    </fieldset>
+    
+    <script>
+        var HEX_SIZE = 10,
+        HEX_BORDER_COLOR = "black",
+        HEX_BACKGROUND_COLOR = "rgba(0,0,0,0.7)",
+        CANVAS_BACKGROUND_COLOR = "rgb(50,50,50)",
+        CANVAS_PADDING= 0,
+        MAP_WIDTH = 8,
+        MAP_HEIGHT = 7;
+        var isDragging = false, dragStart = false,
+        startX, startY, canX, canY,
+        translationOffsetX = 0, translationOffsetY = 0;
+        var HEX_MATH = {
+            radius:HEX_SIZE,
+            xOffset:HEX_SIZE*3,
+            yOffset:HEX_SIZE*4,
+            diameter:HEX_SIZE*2
+        };
+        var canvas = document.querySelector("canvas");
+        var ctx = canvas.getContext("2d");
+        updateHexSize(+(document.getElementById("sizeSlider").value));
+        canvas.setAttribute("width",MAP_WIDTH*HEX_MATH.xOffset + HEX_MATH.radius+CANVAS_PADDING*2);
+        canvas.setAttribute("height",MAP_HEIGHT*HEX_MATH.yOffset + HEX_MATH.diameter+CANVAS_PADDING*2);
+        var highlightedHexContainer = document.getElementById("highlightedHex");
+        addEventListeners();
+        addCategory("#f8872a","Desert");
+        addCategory("#82f56b","Prairie");
+        addCategory("#0e770e","Forest");
+        addCategory("#769e7e","Swamp");
+        addCategory("#1f93ff","Lake");
+        addCategory("#7b0a7b","Mountain");
+        var highlightedHexKey = false;
+        var hexes = {};
+        var startHex = "2,2";
+        shadowHexes = {};
+        hexes[startHex] = createHex(2,2);
+        drawHexes();
+        function reset(){
+            hexes = {};
+            shadowHexes = {};
+            highlightedHexKey = false;
+            hexes[startHex] = createHex(2,2);
+            drawHexes();
+        }
+        function createHex(x,y){
+            var obj = {
+                x:x,
+                y:y,
+                key:x+","+y,
+                highlighted:false
+            };
+            obj.neighbors = [
+                {x:x-1,y:y},
+                {x:x+1,y:y},
+                {x:x,y:y-1},
+                {x:x,y:y+1},
+                (x%2 == 1 ? {x:x-1,y:y+1} : {x:x-1,y:y-1}),
+                (x%2 == 1 ? {x:x+1,y:y+1} : {x:x+1,y:y-1})
+            ];
+            obj.c = getContents();
+            return obj;
+        }
+        function addEventListeners(){
+            document.getElementById("btnReset").addEventListener("click",reset);
+            document.getElementById("btnAddCategory").addEventListener("click",function(){
+                addCategory(getRandomColor(),"New Terrain");
+            });
+            document.getElementById("btnRemoveCategory").addEventListener("click",removeCategory);
+            var collapserHandles = document.querySelectorAll("fieldset legend");
+            for(var i = 0, len = collapserHandles.length; i < len; i++){
+                collapserHandles[i].addEventListener("click",function(){
+                    var parent = this.parentNode;
+                    if(parent.classList.contains("collapsed")){
+                        parent.classList.remove("collapsed");
+                    }else{
+                        parent.classList.add("collapsed");
+                    }
+                });
+            }
+            document.getElementById("sizeSlider").addEventListener("change",function(){
+                updateHexSize(+(document.getElementById("sizeSlider").value));
+                drawHexes();
+            });
+            canvas.addEventListener("mousedown",handleMouseDown);
+            canvas.addEventListener("mousemove",handleMouseMove);
+            canvas.addEventListener("mouseup",handleMouseUp);
+            canvas.addEventListener("mouseout",handleMouseUp);
+            canvas.addEventListener("wheel",handleResize);
+        }
+        function addCategory(color,name,features){
+            var li = document.getElementById("categories").appendChild(document.createElement("li"));
+            var weightLabel = li.appendChild(document.createElement("label"));
+            weightLabel.appendChild(document.createTextNode("Weight:"));
+            var weightInput = weightLabel.appendChild(document.createElement("input"));
+            weightInput.setAttribute("type","number");
+            weightInput.setAttribute("data-type","weight");
+            weightInput.value = 1;
+            li.appendChild(document.createTextNode(" "));
+            var nameLabel = li.appendChild(document.createElement("label"));
+            nameLabel.appendChild(document.createTextNode("Name:"));
+            var colorInput = nameLabel.appendChild(document.createElement("input"));
+            colorInput.setAttribute("type","color");
+            colorInput.setAttribute("data-type","categorycolor");
+            colorInput.value = color;
+            var nameInput = nameLabel.appendChild(document.createElement("input"));
+            nameInput.setAttribute("type","text");
+            nameInput.setAttribute("data-type","categoryname");
+            nameInput.value = name;
+            /*var fieldset = li.appendChild(document.createElement("fieldset"));
+            fieldset.className = "collapsed";
+            var legend = fieldset.appendChild(document.createElement("legend"));
+            legend.appendChild(document.createTextNode("Features"));
+            legend.addEventListener("click",function(){
+                    var parent = this.parentNode;
+                    if(parent.classList.contains("collapsed")){
+                        parent.classList.remove("collapsed");
+                    }else{
+                        parent.classList.add("collapsed");
+                    }
+                });
+                */
+        }
+        function removeCategory(){
+            var categoryContainer =  document.getElementById("categories");
+            var categories = categoryContainer.querySelectorAll("li");
+            var len = categories.length;
+            if(len > 1){
+                categoryContainer.removeChild(categories[categories.length-1]);
+            }
+        }
+        function handleResize(e){
+            e.preventDefault();
+            var slider = document.getElementById("sizeSlider");
+            slider.value -= (event.deltaY * 0.01);
+            updateHexSize(+(slider.value));
+            drawHexes();
+        }
+        function handleMouseDown(e){
+            dragStart = true;
+            startX = parseInt(e.clientX);
+            startY = parseInt(e.clientY);
+            
+        }
+        function handleMouseMove(e){
+            canX = parseInt(e.clientX);
+            canY = parseInt(e.clientY);
+            if(dragStart && (canX !== startX || canY !== startY)){
+                isDragging = true;
+                var dx = canX - startX,
+                dy = canY - startY;
+                translationOffsetX += dx;
+                translationOffsetY += dy;
+                startX = canX;
+                startY = canY;
+                ctx.translate(dx,dy);
+                drawHexes();
+            }else{
+                var canvasRect = canvas.getBoundingClientRect();
+                var exampleCoords = roundCoords(e.clientX - canvasRect.left, e.clientY - canvasRect.top);
+                var testCoords = [
+                    {x:exampleCoords.x-1, y:exampleCoords.y-1}, { x:exampleCoords.x, y:exampleCoords.y-1}, {x:exampleCoords.x+1, y:exampleCoords.y-1},
+                    {x:exampleCoords.x-1, y:exampleCoords.y}, { x:exampleCoords.x, y:exampleCoords.y}, {x:exampleCoords.x+1, y:exampleCoords.y},
+                    {x:exampleCoords.x-1, y:exampleCoords.y+1}, { x:exampleCoords.x, y:exampleCoords.y+1}, {x:exampleCoords.x+1, y:exampleCoords.y+1}
+                ];
+                var hexWasHighlighted = false;
+                for(var i = 0; i < testCoords.length; i++){
+                    var testKey = testCoords[i].x + ","+ testCoords[i].y;
+                    var testHex = hexes[testKey];
+                    if(testHex){
+                        if(coordsInHexagon(e.clientX - canvasRect.left, e.clientY - canvasRect.top, testHex)){
+                            hexWasHighlighted = true;
+                            if(!testHex.highlighted){
+                                testHex.highlighted = true;
+                                if(highlightedHexKey && highlightedHexKey !== testKey){
+                                    if(hexes[highlightedHexKey]){
+                                        hexes[highlightedHexKey].highlighted = false;
+                                    }else if(shadowHexes[highlightedHexKey]){
+                                        shadowHexes[highlightedHexKey].highlighted = false;
+                                    }
+                                }
+                                highlightedHexKey = testKey;
+                                drawHexes(testHex,{});
+                            }
+                        }else{
+                            if(testHex.highlighted){
+                                testHex.highlighted = false;
+                                drawHexes();
+                            }
+                        }
+                    }
+                }
+                if(!hexWasHighlighted){
+                    for(var i = 0; i < testCoords.length; i++){
+                        var testKey = testCoords[i].x + ","+ testCoords[i].y;
+                        var testHex = shadowHexes[testKey];
+                        if(testHex){
+                            if(coordsInHexagon(e.clientX - canvasRect.left, e.clientY - canvasRect.top, testHex)){
+                                if(!testHex.highlighted){
+                                    testHex.highlighted = true;
+                                    if(highlightedHexKey && highlightedHexKey !== testKey){
+                                        if(hexes[highlightedHexKey]){
+                                            hexes[highlightedHexKey].highlighted = false;
+                                        }else if(shadowHexes[highlightedHexKey]){
+                                            shadowHexes[highlightedHexKey].highlighted = false;
+                                        }
+                                    }
+                                    highlightedHexKey = testKey;
+                                    drawHexes();
+                                }
+                            }else{
+                                if(testHex.highlighted){
+                                    testHex.highlighted = false;
+                                    drawHexes();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            highlightedHexContainer.innerHTML = getHighlightedHexDetails();
+        }
+        function getHighlightedHexDetails(){
+            var text ="";
+            if(highlightedHexKey){
+                text = "Hex " +highlightedHexKey;
+                if(hexes[highlightedHexKey]){
+                    text += ": ";
+                    var keys = Object.keys(hexes[highlightedHexKey].c);
+                    for(var i = 0, len = keys.length; i < len; i++){
+                        var key = keys[i];
+                        if(key !== "color"){
+                            text += "<br/>" + key + ": " + hexes[highlightedHexKey].c[key];
+                        }
+                    }
+                }else if(shadowHexes[highlightedHexKey]){
+                    text += ": (unexplored)";
+                }
+            }
+            return text; 
+        }
+        function coordsInHexagon(x,y,hex){
+            x = x - translationOffsetX;
+            y = y - translationOffsetY;
+            var isInside = false;
+            if(hex.vertx){
+                var numVertices = hex.vertx.length;
+                for(var i = 0, j = numVertices-1; i < numVertices; j = i++){
+                    if(((hex.verty[i] > y) != (hex.verty[j] > y)) &&
+                    ( x < (hex.vertx[j] - hex.vertx[i]) *  (y - hex.verty[i])/(hex.verty[j] - hex.verty[i]) + hex.vertx[i])){
+                        isInside = !isInside;
+                    }
+                }
+            }
+            return isInside;
+        }
+        function roundCoords(clientX,clientY){
+            clientX -= translationOffsetX;
+            clientY -= translationOffsetY;
+            var xZone = ((clientX + HEX_MATH.radius) / HEX_MATH.xOffset) >> 0;
+            var yZone = ((clientY) / HEX_MATH.yOffset) >> 0;
+            return{x:xZone,y:yZone};
+        }
+        function handleMouseUp(e){
+            dragStart = false;
+            if(isDragging){
+                isDragging = false;
+                canX = parseInt(e.clientX);
+                canY = parseInt(e.clientY);
+                var dx = (canX - startX),
+                dy = (canY - startY);
+                translationOffsetX += dx;
+                translationOffsetY += dy;
+                ctx.translate(dx,dy);
+                drawHexes();
+            }else{
+                if(highlightedHexKey && shadowHexes[highlightedHexKey] && shadowHexes[highlightedHexKey].highlighted && startX == canX && startY == canY){
+                delete shadowHexes[highlightedHexKey];
+                var arrCoords = highlightedHexKey.split(",");
+                hexes[highlightedHexKey] = createHex(+(arrCoords[0]), +(arrCoords[1]));
+                drawHexes();
+                highlightedHexContainer.innerHTML = getHighlightedHexDetails();
+            }
+            }
+            
+        }
+        function updateHexSize(newSize){
+            HEX_SIZE = newSize;
+            HEX_MATH.radius = HEX_SIZE;
+            HEX_MATH.xOffset = HEX_SIZE*3;
+            HEX_MATH.yOffset = HEX_SIZE*4;
+            HEX_MATH.diameter = HEX_SIZE*2;
+            document.getElementById("sizeIndicator").innerHTML = HEX_SIZE;
+        }
+        function drawHexes(start, drawnHexes){
+            if(typeof start == "undefined"){
+                start = hexes[startHex];
+                drawnHexes = {};
+                ctx.clearRect(0 - translationOffsetX, 0 - translationOffsetY, canvas.width, canvas.height);
+            }
+
+            for(var i = 0; i < start.neighbors.length; i++){
+               var nextHex = start.neighbors[i];
+               var nextKey = nextHex.x + "," + nextHex.y;
+               if(drawnHexes[nextKey]){
+               }else{
+                   if(hexes[nextKey]){
+                       drawnHexes[nextKey] = true;
+                       drawHexes(hexes[nextKey], drawnHexes);
+                   }else{
+                       var shadowHex; 
+                       if(shadowHexes[nextKey]){
+                           shadowHex = shadowHexes[nextKey];
+                       }else{
+                           shadowHex = createHex(nextHex.x, nextHex.y);
+                            shadowHex.c.color = "#efefef";
+                            shadowHexes[shadowHex.key] = shadowHex;
+                       }
+                       drawnHexes[nextKey] = true;
+                       drawHex(shadowHex);
+                   }
+               }
+            }
+            drawHex(start);
+        }
+        function getContents(){
+            var categoriesControls = document.getElementById("categories").querySelectorAll("li");
+            var categories = [];
+            for(var i = 0, len = categoriesControls.length; i < len; i++){
+                var weight = +(categoriesControls[i].querySelector("[data-type=\"weight\"]").value);
+                var color = categoriesControls[i].querySelector("[data-type=\"categorycolor\"]").value;
+                var name =  categoriesControls[i].querySelector("[data-type=\"categoryname\"]").value;
+                for(var j = 0; j < weight; j++){
+                    categories.push({color:color,name:name});
+                }
+            }
+            var category = categories[(Math.random()*categories.length) >> 0];
+            //var features = [];
+            return {color:category.color, Terrain:category.name};
+        }
+        function getRandomColor(){
+            var r = ((Math.random()*255) >> 0).toString(16);
+            var g = ((Math.random()*255) >> 0).toString(16);
+            var b = ((Math.random()*255) >> 0).toString(16);
+            if(r.length == 1){ r = "0" + r; }
+            if(g.length == 1){ g = "0" + g; }
+            if(b.length == 1){ b = "0" + b; }
+            var color = "#"+r+g+b;
+            return color;
+        }
+        function drawHex(hex){
+            var x = hex.x, y = hex.y;
+            var coords = {
+                x:x*HEX_MATH.xOffset,
+                y:x%2 == 0 ? y*HEX_MATH.yOffset : y*HEX_MATH.yOffset + HEX_MATH.diameter
+            };
+            var x1 = coords.x-HEX_MATH.radius, x2 = coords.x+HEX_MATH.radius;
+            var x0 = x1 - HEX_MATH.radius, x3 = x2 + HEX_MATH.radius;
+            var y0 = coords.y - HEX_MATH.diameter, y1 = coords.y; var y2 = y1+HEX_MATH.diameter;
+            if(hex.highlighted){
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = HEX_SIZE/4;
+                ctx.fillStyle = hex.c.color;
+            }else{
+                ctx.strokeStyle = HEX_BORDER_COLOR;
+                ctx.lineWidth = HEX_SIZE/20;
+                ctx.fillStyle = hex.c.color;
+            }
+            ctx.beginPath();
+            ctx.moveTo(x1,y2);
+            var vertx = [x1,x2,x3,x2,x1,x0,x1];
+            var verty = [y2,y2,y1,y0,y0,y1,y2];
+            hex.vertx = vertx;
+            hex.verty = verty;
+            for(var i = 1; i < vertx.length; i++){
+                ctx.lineTo(vertx[i],verty[i]);
+            }
+            ctx.fill();
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>
