@@ -231,12 +231,14 @@ canvas.addEventListener("touchown",handleMouseDown);
             drawHexes();
         }
         function handleMouseDown(e){
+e.preventDefault();
             dragStart = true;
             startX = parseInt(e.clientX);
             startY = parseInt(e.clientY);
             
         }
         function handleMouseMove(e){
+e.preventDefault();
             canX = parseInt(e.clientX);
             canY = parseInt(e.clientY);
             if(dragStart && (canX !== startX || canY !== startY)){
@@ -356,6 +358,7 @@ canvas.addEventListener("touchown",handleMouseDown);
             return{x:xZone,y:yZone};
         }
         function handleMouseUp(e){
+e.preventDefault();
             dragStart = false;
             if(isDragging){
                 isDragging = false;
