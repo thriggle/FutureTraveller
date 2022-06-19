@@ -1455,7 +1455,7 @@
                             var tcoord = XYCoordToTCoord(x,y);
                             //console.log("Adding " + name + " to " + tcoord);
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
-                            var details = generateSystemDetails(addCaps(name), ggFrequency,document.getElementById("chkPermitDieback").checked,maxTechLevel);
+                            var details = generateSystemDetails(addCaps(name), ggFrequency,document.getElementById("chkPermitDieback").checked,maxTechLevel,0,document.getElementById("slctMainworldRules").value,document.getElementById("chkPopulateNonMainworlds").checked);
                             //console.log(details);
                             for(var i = 0, len = mins.length; i < len; i++){
                                 var currValue;
