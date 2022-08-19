@@ -490,6 +490,7 @@ function generateRandomAlien(species,rand){
         }
     }
     function setGender(){
+        species.genderProbabilities = {};
         var roll = d6() - d6();
         if(roll <= -4){
             species.dna = "1NA";
@@ -506,6 +507,7 @@ function generateRandomAlien(species,rand){
             species.gender10 = species.genders[0];
             species.gender11 = species.genders[0];
             species.gender12 = species.genders[0];
+            species.genderProbabilities[species.genders[0]] = 36;           
         }else if(roll <= -2){
             species.dna = "3NA";
             species.genderstructure = "EAB";
@@ -521,6 +523,17 @@ function generateRandomAlien(species,rand){
             species.gender10 = pickRandom(species.genders);
             species.gender11 = pickRandom(species.genders);
             species.gender12 = species.genders[2];
+            species.genderProbabilities[species.genders[0]] = 1;
+            species.genderProbabilities[species.genders[1]] = 2;
+            species.genderProbabilities[species.gender4] = species.genderProbabilities[species.gender4] ? species.genderProbabilities[species.gender4] + 3 : 3;
+            species.genderProbabilities[species.gender5] = species.genderProbabilities[species.gender5] ? species.genderProbabilities[species.gender5] + 4 : 4;
+            species.genderProbabilities[species.gender6] = species.genderProbabilities[species.gender6] ? species.genderProbabilities[species.gender6] + 5 : 5;
+            species.genderProbabilities[species.gender7] = species.genderProbabilities[species.gender7] ? species.genderProbabilities[species.gender7] + 6 : 6;
+            species.genderProbabilities[species.gender8] = species.genderProbabilities[species.gender8] ? species.genderProbabilities[species.gender8] + 5 : 5;
+            species.genderProbabilities[species.gender9] = species.genderProbabilities[species.gender9] ? species.genderProbabilities[species.gender9] + 4 : 4;
+            species.genderProbabilities[species.gender10] = species.genderProbabilities[species.gender10] ? species.genderProbabilities[species.gender10] + 3 : 3;
+            species.genderProbabilities[species.gender11] = species.genderProbabilities[species.gender11] ? species.genderProbabilities[species.gender11] + 2 : 2;
+            species.genderProbabilities[species.gender12] = species.genderProbabilities[species.gender12] ? species.genderProbabilities[species.gender12] + 1 : 1;
         }else if(roll <= 1){
             species.dna = "2NA";
             species.genderstructure = "Dual";
@@ -536,6 +549,18 @@ function generateRandomAlien(species,rand){
             species.gender10 = pickRandom(species.genders);
             species.gender11 = pickRandom(species.genders);
             species.gender12 = pickRandom(species.genders);
+
+            species.genderProbabilities[species.genders[0]] = 1;
+            species.genderProbabilities[species.genders[1]] = 2;
+            species.genderProbabilities[species.gender4] = species.genderProbabilities[species.gender4] ? species.genderProbabilities[species.gender4] + 3 : 3;
+            species.genderProbabilities[species.gender5] = species.genderProbabilities[species.gender5] ? species.genderProbabilities[species.gender5] + 4 : 4;
+            species.genderProbabilities[species.gender6] = species.genderProbabilities[species.gender6] ? species.genderProbabilities[species.gender6] + 5 : 5;
+            species.genderProbabilities[species.gender7] = species.genderProbabilities[species.gender7] ? species.genderProbabilities[species.gender7] + 6 : 6;
+            species.genderProbabilities[species.gender8] = species.genderProbabilities[species.gender8] ? species.genderProbabilities[species.gender8] + 5 : 5;
+            species.genderProbabilities[species.gender9] = species.genderProbabilities[species.gender9] ? species.genderProbabilities[species.gender9] + 4 : 4;
+            species.genderProbabilities[species.gender10] = species.genderProbabilities[species.gender10] ? species.genderProbabilities[species.gender10] + 3 : 3;
+            species.genderProbabilities[species.gender11] = species.genderProbabilities[species.gender11] ? species.genderProbabilities[species.gender11] + 2 : 2;
+            species.genderProbabilities[species.gender12] = species.genderProbabilities[species.gender12] ? species.genderProbabilities[species.gender12] + 1 : 1;
         }else if(roll <= 3){
             species.dna = "2NA";
             species.genderstructure = "FMN";
@@ -551,6 +576,19 @@ function generateRandomAlien(species,rand){
             species.gender10 = pickRandom(species.genders);
             species.gender11 = pickRandom(species.genders);
             species.gender12 = species.genders[2];
+
+            species.genderProbabilities[species.genders[0]] = 1;
+            species.genderProbabilities[species.genders[1]] = 2;
+            species.genderProbabilities[species.gender4] = species.genderProbabilities[species.gender4] ? species.genderProbabilities[species.gender4] + 3 : 3;
+            species.genderProbabilities[species.gender5] = species.genderProbabilities[species.gender5] ? species.genderProbabilities[species.gender5] + 4 : 4;
+            species.genderProbabilities[species.gender6] = species.genderProbabilities[species.gender6] ? species.genderProbabilities[species.gender6] + 5 : 5;
+            species.genderProbabilities[species.gender7] = species.genderProbabilities[species.gender7] ? species.genderProbabilities[species.gender7] + 6 : 6;
+            species.genderProbabilities[species.gender8] = species.genderProbabilities[species.gender8] ? species.genderProbabilities[species.gender8] + 5 : 5;
+            species.genderProbabilities[species.gender9] = species.genderProbabilities[species.gender9] ? species.genderProbabilities[species.gender9] + 4 : 4;
+            species.genderProbabilities[species.gender10] = species.genderProbabilities[species.gender10] ? species.genderProbabilities[species.gender10] + 3 : 3;
+            species.genderProbabilities[species.gender11] = species.genderProbabilities[species.gender11] ? species.genderProbabilities[species.gender11] + 2 : 2;
+            species.genderProbabilities[species.gender12] = species.genderProbabilities[species.gender12] ? species.genderProbabilities[species.gender12] + 1 : 1;
+
         }else{
             species.genderstructure = "Group";
             species.genders = [];
@@ -569,7 +607,20 @@ function generateRandomAlien(species,rand){
             species.gender9 = pickRandom(species.genders);
             species.gender10 = pickRandom(species.genders);
             species.gender11 = pickRandom(species.genders);
-            species.gender12 = pickRandom(species.genders);
+            species.gender12 = pickRandom(species.genders);           
+            
+            species.genderProbabilities[species.genders[0]] = 1;
+            species.genderProbabilities[species.genders[1]] = 2;
+            species.genderProbabilities[species.gender4] = species.genderProbabilities[species.gender4] ? species.genderProbabilities[species.gender4] + 3 : 3;
+            species.genderProbabilities[species.gender5] = species.genderProbabilities[species.gender5] ? species.genderProbabilities[species.gender5] + 4 : 4;
+            species.genderProbabilities[species.gender6] = species.genderProbabilities[species.gender6] ? species.genderProbabilities[species.gender6] + 5 : 5;
+            species.genderProbabilities[species.gender7] = species.genderProbabilities[species.gender7] ? species.genderProbabilities[species.gender7] + 6 : 6;
+            species.genderProbabilities[species.gender8] = species.genderProbabilities[species.gender8] ? species.genderProbabilities[species.gender8] + 5 : 5;
+            species.genderProbabilities[species.gender9] = species.genderProbabilities[species.gender9] ? species.genderProbabilities[species.gender9] + 4 : 4;
+            species.genderProbabilities[species.gender10] = species.genderProbabilities[species.gender10] ? species.genderProbabilities[species.gender10] + 3 : 3;
+            species.genderProbabilities[species.gender11] = species.genderProbabilities[species.gender11] ? species.genderProbabilities[species.gender11] + 2 : 2;
+            species.genderProbabilities[species.gender12] = species.genderProbabilities[species.gender12] ? species.genderProbabilities[species.gender12] + 1 : 1;
+
             var genderHash = {}
             genderHash[species.gender2] = true;
             species.genders = [species.gender2];
@@ -580,6 +631,7 @@ function generateRandomAlien(species,rand){
                     species.genders.push(g);
                 }
             }
+
             species.dna = species.genders.length.toString() +"NA";
         }
         species.genderc1s = ["--"];
@@ -803,6 +855,7 @@ function generateRandomAlien(species,rand){
         }
     }
     function setCaste(){
+        var hasCastedGender = false;
         species.caste2 = "N/A";
         species.caste3 = "";
         species.caste4 = "";
@@ -1010,10 +1063,12 @@ function generateRandomAlien(species,rand){
                      break;
                 case 6: species.castestructure = "Skilled";  species.castes = ["(Skilled)"]; break;
             }
+
             if(!(species.castestructure === "Skilled")){
                 for(var i = 1, len = species.castes.length; i < len; i++){
                     var genderIndex = species.genders.indexOf(species.castes[i]);
                     if(genderIndex >= 0){
+                        hasCastedGender = true;
                         species.castec1s.push(species.genderc1s[genderIndex]);
                         species.castec2s.push(species.genderc2s[genderIndex]);
                         species.castec3s.push(species.genderc3s[genderIndex]);
@@ -1117,6 +1172,7 @@ function generateRandomAlien(species,rand){
         }
         if(species.genders.length > 1 && species.castes.length > 1){
             roll = d6();
+            if(hasCastedGender){ if(roll > 3){roll = 3;}else{roll = 2;}}
             switch(roll){
                 case 1: 
                 case 2: species.castegenderrelation = "Dependent"; break;
@@ -3426,7 +3482,7 @@ function generateRandomAlien(species,rand){
                                 }
                                 if(ability === ability2){ ability2 = "--"; }
                             }
-                            console.log(ability + " " + ability2);
+  
                             // no effect if disability for a sense species does not have
                             if((ability2 === "Deaf" && species.hearing === "Deaf" ) || 
                             (ability2 === "Oblivious" && species.percep === "Oblivious") ||
