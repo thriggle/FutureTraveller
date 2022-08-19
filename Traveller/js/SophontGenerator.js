@@ -491,6 +491,7 @@ function generateRandomAlien(species,rand){
     }
     function setGender(){
         species.genderProbabilities = {};
+       
         var roll = d6() - d6();
         if(roll <= -4){
             species.dna = "1NA";
@@ -640,8 +641,10 @@ function generateRandomAlien(species,rand){
         species.genderc4s = ["--"];
         species.genderc5s = ["--"];
         species.genderc6s = ["--"];
+        species.genderdesc = [ species.genders[0]+" " + " ("+(+(species.genderProbabilities[species.genders[0]]) / 36 * 100).toFixed(2)+ "%)" ];
         for(var i = 1, len = species.genders.length; i < len; i++){
             species.genderc6s.push("--");
+            species.genderdesc.push( species.genders[i]+" " + " ("+(+(species.genderProbabilities[species.genders[i]]) / 36 * 100).toFixed(2)+ "%)" )
             roll = d6() - d6();
             switch(roll){
                 case -5: species.genderc1s.push("-5"); break;
@@ -855,6 +858,7 @@ function generateRandomAlien(species,rand){
         }
     }
     function setCaste(){
+        species.genderProbabilities = {};
         var hasCastedGender = false;
         species.caste2 = "N/A";
         species.caste3 = "";
