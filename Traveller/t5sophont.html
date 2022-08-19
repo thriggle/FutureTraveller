@@ -204,9 +204,7 @@
     <h1>TRAVELLER Sophont Creation System</h1>
     <hr />
     <h2 id="name"></h2>
-    <table>
-        <tr>
-            <td rowspan="2">
+
                 <fieldset>
                     <legend>Physical Appearance</legend>
                     <div><strong>Locomotion:</strong> <span data-detail="locomotion" data-source="species"></span></div>
@@ -262,8 +260,7 @@
                         </tr>
                     </table>
                 </fieldset>
-            </td>
-            <td>
+            
                 <fieldset>
                     <legend>Habitat</legend>
                     <div><strong>Homeworld:</strong> <span data-detail="name" data-source="homeworld"></span> <span data-detail="uwp" data-source="mainworld"></span> <span data-detail="tradecodes" data-source="homeworld"></span></div>
@@ -275,10 +272,7 @@
                     <div><strong>Niche:</strong> <span data-detail="class" data-source="species"></span> (<span data-detail="niche" data-source="species"></span>)</div>
                     <div><strong>Breathes:</strong> <span data-detail="breathes" data-source="species"></span></div>
                 </fieldset>
-                </td>
-        </tr>
-        <tr>
-            <td colspan="2">
+               
                 <fieldset>
                     <legend>Senses</legend>
                     <table class="table">
@@ -323,10 +317,7 @@
                     </table>
                     <div><strong>Note:</strong> Human senses are V-16-RGB, H-16-938, S-10-02, and T-06-02</div>
                 </fieldset>
-            </td>
-        </tr>
-        <tr>
-            <td><fieldset>
+            <fieldset>
                 <legend>Life and Society</legend>
                 <div><strong>Language: </strong><span data-detail="language" data-source="species"></span></div>
                 <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy" data-source="species"></span> years</div>
@@ -414,8 +405,8 @@
                 </table>
                 
                 
-            </fieldset></td>
-            <td><fieldset>
+            </fieldset>
+            <fieldset>
                 <legend>Genetics and Abilities</legend>
                 <div><strong>Genetic Profile:</strong> <span data-detail="geneticprofile" data-source="species"></span>  <strong>DNA:</strong> <span data-detail="dna" data-source="species"></span> </div>
                 
@@ -423,18 +414,18 @@
                     <tr>
                         <th colspan="2"></th>
                         <th colspan="7">Genders</th>
-                        <th colspan="7" data-hideifzero="castes" data-source="species">Castes</th>
+                        <th colspan="11" data-hideifzero="castes" data-source="species">Castes</th>
                     </tr>
                     <tr>
                         <th></th>
                         <th>Baseline</th>
-                        <th data-detail="genders" data-index="0" data-source="species"></th>
-                        <th data-detail="genders" data-index="1" data-source="species"></th>
-                        <th data-detail="genders" data-index="2" data-source="species"></th>
-                        <th data-detail="genders" data-index="3" data-source="species"></th>
-                        <th data-detail="genders" data-index="4" data-source="species"></th>
-                        <th data-detail="genders" data-index="5" data-source="species"></th>
-                        <th data-detail="genders" data-index="6" data-source="species"></th>
+                        <th><span data-removeifempty="true" data-detail="genders" data-index="0" data-source="species"></span><span data-36="true" data-source="species" data-detail="genderProbabilities" data-complex-source="genders" data-complex-index="0"></span></th>
+                        <th><span data-removeifempty="true" data-detail="genders" data-index="1" data-source="species"></span><span data-36="true" data-source="species" data-detail="genderProbabilities" data-complex-source="genders" data-complex-index="1"></span></th>
+                        <th><span data-removeifempty="true" data-detail="genders" data-index="2" data-source="species"></span><span data-36="true" data-source="species" data-detail="genderProbabilities" data-complex-source="genders" data-complex-index="2"></span></th>
+                        <th><span data-removeifempty="true" data-detail="genders" data-index="3" data-source="species"></span><span data-36="true" data-source="species" data-detail="genderProbabilities" data-complex-source="genders" data-complex-index="3"></span></th>
+                        <th><span data-removeifempty="true" data-detail="genders" data-index="4" data-source="species"></span><span data-36="true" data-source="species" data-detail="genderProbabilities" data-complex-source="genders" data-complex-index="4"></span></th>
+                        <th><span data-removeifempty="true" data-detail="genders" data-index="5" data-source="species"></span><span data-36="true" data-source="species" data-detail="genderProbabilities" data-complex-source="genders" data-complex-index="5"></span></th>
+                        <th><span data-removeifempty="true" data-detail="genders" data-index="6" data-source="species"></span><span data-36="true" data-source="species" data-detail="genderProbabilities" data-complex-source="genders" data-complex-index="6"></span></th>
                         <th data-detail="castes" data-index="0" data-source="species"></th>
                         <th data-detail="castes" data-index="1" data-source="species"></th>
                         <th data-detail="castes" data-index="2" data-source="species"></th>
@@ -442,6 +433,10 @@
                         <th data-detail="castes" data-index="4" data-source="species"></th>
                         <th data-detail="castes" data-index="5" data-source="species"></th>
                         <th data-detail="castes" data-index="6" data-source="species"></th>
+                        <th data-detail="castes" data-index="7" data-source="species"></th>
+                        <th data-detail="castes" data-index="8" data-source="species"></th>
+                        <th data-detail="castes" data-index="9" data-source="species"></th>
+                        <th data-detail="castes" data-index="10" data-source="species"></th>
                     </tr>
                     <tr>
                         <td><span data-detail="c1" data-source="species"></span></td>
@@ -460,6 +455,11 @@
                         <td data-detail="castec1s" data-index="4" data-source="species"></td>
                         <td data-detail="castec1s" data-index="5" data-source="species"></td>
                         <td data-detail="castec1s" data-index="6" data-source="species"></td>
+                        <td data-detail="castec1s" data-index="7" data-source="species"></td>
+                        <td data-detail="castec1s" data-index="8" data-source="species"></td>
+                        <td data-detail="castec1s" data-index="9" data-source="species"></td>
+                        <td data-detail="castec1s" data-index="10" data-source="species"></td>
+
                     </tr>
                     <tr>
                         <td><span data-detail="c2" data-source="species"></span></td>
@@ -478,6 +478,10 @@
                         <td data-detail="castec2s" data-index="4" data-source="species"></td>
                         <td data-detail="castec2s" data-index="5" data-source="species"></td>
                         <td data-detail="castec2s" data-index="6" data-source="species"></td>
+                        <td data-detail="castec2s" data-index="7" data-source="species"></td>
+                        <td data-detail="castec2s" data-index="8" data-source="species"></td>
+                        <td data-detail="castec2s" data-index="9" data-source="species"></td>
+                        <td data-detail="castec2s" data-index="10" data-source="species"></td>
                     </tr>
                     <tr>
                         <td><span data-detail="c3" data-source="species"></span></td>
@@ -496,6 +500,10 @@
                         <td data-detail="castec3s" data-index="4" data-source="species"></td>
                         <td data-detail="castec3s" data-index="5" data-source="species"></td>
                         <td data-detail="castec3s" data-index="6" data-source="species"></td>
+                        <td data-detail="castec3s" data-index="7" data-source="species"></td>
+                        <td data-detail="castec3s" data-index="8" data-source="species"></td>
+                        <td data-detail="castec3s" data-index="9" data-source="species"></td>
+                        <td data-detail="castec3s" data-index="10" data-source="species"></td>
                     </tr>
                 <tr>
                     <td><span data-detail="c4" data-source="species"></span></td>
@@ -514,6 +522,10 @@
                     <td data-detail="castec4s" data-index="4" data-source="species"></td>
                     <td data-detail="castec4s" data-index="5" data-source="species"></td>
                     <td data-detail="castec4s" data-index="6" data-source="species"></td>
+                    <td data-detail="castec4s" data-index="7" data-source="species"></td>
+                    <td data-detail="castec4s" data-index="8" data-source="species"></td>
+                    <td data-detail="castec4s" data-index="9" data-source="species"></td>
+                    <td data-detail="castec4s" data-index="10" data-source="species"></td>
                 </tr>
                 <tr>
                     <td><span data-detail="c5" data-source="species"></span></td>
@@ -532,6 +544,10 @@
                     <td data-detail="castec5s" data-index="4" data-source="species"></td>
                     <td data-detail="castec5s" data-index="5" data-source="species"></td>
                     <td data-detail="castec5s" data-index="6" data-source="species"></td>
+                    <td data-detail="castec5s" data-index="7" data-source="species"></td>
+                    <td data-detail="castec5s" data-index="8" data-source="species"></td>
+                    <td data-detail="castec5s" data-index="9" data-source="species"></td>
+                    <td data-detail="castec5s" data-index="10" data-source="species"></td>
                 </tr>
                 <tr>
                     <td><span data-detail="c6" data-source="species"></span></td>
@@ -550,6 +566,10 @@
                     <td data-detail="castec6s" data-index="4" data-source="species"></td>
                     <td data-detail="castec6s" data-index="5" data-source="species"></td>
                     <td data-detail="castec6s" data-index="6" data-source="species"></td>
+                    <td data-detail="castec6s" data-index="7" data-source="species"></td>
+                    <td data-detail="castec6s" data-index="8" data-source="species"></td>
+                    <td data-detail="castec6s" data-index="9" data-source="species"></td>
+                    <td data-detail="castec6s" data-index="10" data-source="species"></td>
                 </tr>
                 <tr>
                     <td>Odor</td>
@@ -568,6 +588,10 @@
                     <td data-detail="castescents" data-index="4" data-source="species"></td>
                     <td data-detail="castescents" data-index="5" data-source="species"></td>
                     <td data-detail="castescents" data-index="6" data-source="species"></td>
+                    <td data-detail="castescents" data-index="7" data-source="species"></td>
+                    <td data-detail="castescents" data-index="8" data-source="species"></td>
+                    <td data-detail="castescents" data-index="9" data-source="species"></td>
+                    <td data-detail="castescents" data-index="10" data-source="species"></td>
                 </tr>
                 <tr>
                     <td colspan="2">Special Abilities</td>
@@ -585,6 +609,10 @@
                     <td data-detail="casteabilities" data-index="4" data-source="species"></td>
                     <td data-detail="casteabilities" data-index="5" data-source="species"></td>
                     <td data-detail="casteabilities" data-index="6" data-source="species"></td>
+                    <td data-detail="casteabilities" data-index="7" data-source="species"></td>
+                    <td data-detail="casteabilities" data-index="8" data-source="species"></td>
+                    <td data-detail="casteabilities" data-index="9" data-source="species"></td>
+                    <td data-detail="casteabilities" data-index="10" data-source="species"></td>
                 </tr>
                 
                 </table>
@@ -661,10 +689,7 @@
                 </fieldset>
                 
                 
-        </fieldset></td>
-        </tr>
-        
-    </table>
+        </fieldset>
     <ul class="statnotes"></ul>
     <hr/>
     <fieldset class="collapsed">
@@ -908,7 +933,20 @@
                 value = value[+(elmt.getAttribute("data-index"))];
             }else if(elmt.getAttribute("data-lookup")){
                 value = lookups[elmt.getAttribute("data-lookup")][value];
+            }else if(elmt.getAttribute("data-complex-source")){
+                var complexSource = elmt.getAttribute("data-complex-source");
+                var complexindex = +(elmt.getAttribute("data-complex-index"));
+                var temp = species[complexSource][complexindex];
+                if(typeof temp !== "undefined"){
+                    value = value[temp];
+                    if(elmt.getAttribute("data-36")){
+
+                        value = " ("+(+(value) / 36 * 100).toFixed(2)+ "%)";
+                    }
+
+                }else{ value = undefined; }
             }
+
             removeChildElements(elmt);
             if(typeof value !== "undefined"){
                 if(elmt.getAttribute("data-html")){                            
