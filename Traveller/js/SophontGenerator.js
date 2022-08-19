@@ -858,7 +858,7 @@ function generateRandomAlien(species,rand){
         }
     }
     function setCaste(){
-        species.genderProbabilities = {};
+        species.casteProbabilities = {};
         var hasCastedGender = false;
         species.caste2 = "N/A";
         species.caste3 = "";
@@ -889,6 +889,9 @@ function generateRandomAlien(species,rand){
             species.casteassignment = "";
             species.casteshift = "N/A";
             
+            species.castedesc = ["N/A"];
+           
+
         }else{
             // figure out caste here
             species.castes = [];
@@ -1067,7 +1070,7 @@ function generateRandomAlien(species,rand){
                      break;
                 case 6: species.castestructure = "Skilled";  species.castes = ["(Skilled)"]; break;
             }
-
+            
             if(!(species.castestructure === "Skilled")){
                 for(var i = 1, len = species.castes.length; i < len; i++){
                     var genderIndex = species.genders.indexOf(species.castes[i]);
@@ -1173,7 +1176,23 @@ function generateRandomAlien(species,rand){
                 case 6: species.casteshift = "progresses along caste table at every life stage"; break;
             }
             species.c6val = "2D*";
+            species.casteProbabilities[species.caste2] = 1;
+            species.casteProbabilities[species.caste3] = species.casteProbabilities[species.caste3] ? species.casteProbabilities[species.caste3] + 2 : 2;
+            species.casteProbabilities[species.caste4] = species.casteProbabilities[species.caste4] ? species.casteProbabilities[species.caste4] + 3 : 3;
+            species.casteProbabilities[species.caste5] = species.casteProbabilities[species.caste5] ? species.casteProbabilities[species.caste5] + 4 : 4;
+            species.casteProbabilities[species.caste6] = species.casteProbabilities[species.caste6] ? species.casteProbabilities[species.caste6] + 5 : 5;
+            species.casteProbabilities[species.caste7] = species.casteProbabilities[species.caste7] ? species.casteProbabilities[species.caste7] + 6 : 6;
+            species.casteProbabilities[species.caste8] = species.casteProbabilities[species.caste8] ? species.casteProbabilities[species.caste8] + 5 : 5;
+            species.casteProbabilities[species.caste9] = species.casteProbabilities[species.caste9] ? species.casteProbabilities[species.caste9] + 4 : 4;
+            species.casteProbabilities[species.caste10] = species.casteProbabilities[species.caste10] ? species.casteProbabilities[species.caste10] + 3 : 3;
+            species.casteProbabilities[species.caste11] = species.casteProbabilities[species.caste11] ? species.casteProbabilities[species.caste11] + 2 : 2;
+            species.casteProbabilities[species.caste12] = species.casteProbabilities[species.caste12] ? species.casteProbabilities[species.caste12] + 1 : 1;
+            species.castedesc = [];
+            for(var i = 0, len = species.castes.length; i < len; i++){
+                species.castedesc.push( species.castes[i]+" " + " ("+(+(species.casteProbabilities[species.castes[i]]) / 36 * 100).toFixed(2)+ "%)" )
+            }
         }
+            
         if(species.genders.length > 1 && species.castes.length > 1){
             roll = d6();
             if(hasCastedGender){ if(roll > 3){roll = 3;}else{roll = 2;}}
