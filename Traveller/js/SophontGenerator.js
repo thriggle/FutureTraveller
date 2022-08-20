@@ -1622,40 +1622,67 @@ function generateRandomAlien(species,rand){
             species.smellsharpness = getSmellSharpness();
             species.smell = "S-"+species.smellconstant+"-"+species.smellsharpness; 
             var sc = parseInt(species.smellconstant,10);
+            var ss = parseInt(species.smellsharpness,16);
             if(sc > 10){
-                if(sc + parseInt(species.smellsharpness,16) >= 12){
+                if(ss >= 2){
                     species.smelldesc = "More sensitive than human sense of smell.";
                 }else{
-                    species.smelldesc = "More sensitive but less sharp than human sense of smell.";
+                    species.smelldesc = "More sensitive but less discerning than human sense of smell.";
                 }
             }else if(sc === 10){
                 
-                if(parseInt(species.smellsharpness,16) > 2){
+                if(ss > 2){
                     species.smelldesc = "More sensitive than human sense of smell.";
-                }else if(parseInt(species.smellsharpness,16) === 2){
+                }else if(ss === 2){
                     species.smelldesc = "Similar sense of smell compared humans.";
                 }else{
-                    species.smelldesc = "Similar but less sharp sense of smell compared to humans.";
+                    species.smelldesc = "Similar but less discerning sense of smell compared to humans.";
                 }
             }else if(sc < 10){
-                if(sc + parseInt(species.smellsharpness,16) > 12){
-                    species.smelldesc = "Less sensitive but more sharp than human sense of smell.";
+                if(ss >= 3){
+                    species.smelldesc = "Less sensitive but more discerning than human sense of smell.";
                 }else{
                     species.smelldesc = "Less sensitive than human sense of smell.";
                 }
             }
         }
+        if(ss === 6){
+            species.smelldesc += " Can distinguish individuals by scent.";
+        }else if(ss === 5){
+            species.smelldesc += " Can identify species, gender, and caste by scent.";
+        }else if(ss === 4){
+            species.smelldesc += " Can identify species and gender by scent.";
+        }else if(ss === 3){
+            species.smelldesc += " Can identify species by scent.";
+        }
+
         species.touchconstant = getSenseConstant();
         species.touchsensitivity = getTouchSensitivity();
         species.touch = "T-"+species.touchconstant+"-"+species.touchsensitivity;
         var tc = parseInt(species.touchconstant,10);
-        if(tc + parseInt(species.touchsensitivity,16) > 8){
-            species.touchdesc = "More sensitive than human sense of touch.";
-        }else if(tc + parseInt(species.touchsensitivity,16) === 8){
-            species.touchdesc = "Similar sense of touch compared to humans.";
+        var ts = parseInt(species.touchsensitivity,16);
+        if(tc > 6){
+            if(ts >= 2){
+                species.touchdesc = "More sensitive than human sense of touch.";
+            }else{
+                species.touchdesc = "More sensitive but less discerning than human sense of touch.";
+            }
+        }else if(tc === 6){
+            if(ts > 2){
+                species.touchdesc = "More sensitive than human sense of touch.";
+            }else if(ts === 2){
+                species.touchdesc = "Similar sense of touch compared humans.";
+            }else{
+                species.touchdesc = "Similar but less discerning sense of touch compared to humans.";
+            }
         }else{
-            species.touchdesc = "Less sensitive than human sense of touch.";
+            if(ts >= 3){
+                species.touchdesc = "Less sensitive but more discerning than human sense of touch.";
+            }else{
+                species.touchdesc = "Less sensitive than human sense of touch.";
+            }
         }
+
         roll = d6() - d6();
         if(roll <= 0){
             species.aware = "Unaware";
