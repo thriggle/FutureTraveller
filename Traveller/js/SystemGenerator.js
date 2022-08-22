@@ -637,14 +637,14 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
             SGGCount += 1;
         }
         //giant.satellites = new Array(26);
-        giant.satellites = addSatellite(new Array(26), mainworld);
+        giant.satellites = addSatellite(new Array(26), mainworld, giant.size);
         giant.orbit = mainworld.orbit;
         planetsToPlace.push(giant);
         gg-=1;
     }else if(mainworld.primary === "Planet"){
         var bw = createBigWorld(mainworld, mainworld.pop - 1, maxTech, allowNonMWPops, permitDieback)
         //bw.satellites = new Array(26);
-        bw.satellites = addSatellite(new Array(26), mainworld);
+        bw.satellites = addSatellite(new Array(26), mainworld, bw.size);
         bw.orbit = mainworld.orbit;
         planetsToPlace.push(bw);
     }else{
@@ -796,7 +796,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         var diff = orbit - star.HZOrbit;
                         var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                         for(var m = 0; m < numAdditionalMoons; m++){
-                            moons = addSatellite(moons, moonMaker(mainworld, planet.size,mainworld.pop-1), maxTech, allowNonMWPops, permitDieback);
+                            moons = addSatellite(moons, moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback),planet.size);
                         }
                         planet.satellites = moons;
                     }
@@ -822,7 +822,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                     if(numAdditionalMoons > 0){
                         var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                         for(var m = 0; m < numAdditionalMoons; m++){
-                            moons = addSatellite(moons, moonMaker(mainworld, planet.size,mainworld.pop-1), maxTech, allowNonMWPops, permitDieback);
+                            moons = addSatellite(moons, moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback),planet.size);
                         }
                         planet.satellites = moons;
                     }
@@ -873,8 +873,9 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
     if(stars.far){ stars.far = arrStars[farIndex]; }
     return stars;
 }
-function addSatellite(moons, moon){
+function addSatellite(moons, moon, primarySize){
     var preferredOrbit = moon.orbitAroundPrimary;
+    moon.primarysize = primarySize;
     if(typeof moons[preferredOrbit] === "undefined"){
         moons[preferredOrbit] = moon;
     }else{
@@ -925,15 +926,15 @@ function createOrbitDetails(orbit){
 function createBigWorld(mw, maxPop, maxTech, allowNonMWPops, permitDieback){
     if(typeof maxTech === "undefined"){console.error("BigWorld");}
     var planet = createPlanet(mw, "BigWorld",-1,maxPop, maxTech, allowNonMWPops, permitDieback);
-    return {worldtype: "BigWorld", uwp:planet.uwp}
+    return {worldtype: "BigWorld", uwp:planet.uwp, size:planet.size}
 }
 function createGasGiant(){
     var roll = d6();
     if(roll <= 3){type = "Small Gas Giant";}
     else{type = "Large Gas Giant";}
-    uwp = "Size " + ext(20+roll);
-    var uwp = "Y"+ext(20+roll)+"X0000-0";
-    return {worldtype:type, uwp:uwp}
+    size =  20+roll;
+    var uwp = "Y"+ext(size)+"X0000-0";
+    return {worldtype:type, uwp:uwp, size:size}
 }
 function createBelt(mw, maxPop, maxTech, allowNonMWPops, permitDieback){
     var uwp = "??";
@@ -1265,19 +1266,19 @@ function createOtherWorld(mw, orbit, hzorbit, maxPop, maxTech, allowNonMWPops, p
             planet = createPlanet(mw, type,-1,maxPop, maxTech, allowNonMWPops, permitDieback);
             if(diff === 0){
                 while(moonRoll - 4 === 0){
-                    moons = addSatellite(moons,createRing());
+                    moons = addSatellite(moons,createRing(),planet.size);
                     moonRoll = d6();
                 }
                 moonCount = Math.max(moonRoll-4,0);
             }else{
                 while(moonRoll - 5 === 0){
-                    moons = addSatellite(moons,createRing());
+                    moons = addSatellite(moons,createRing(),planet.size);
                     moonRoll = d6();
                 }
                 moonCount = Math.max(moonRoll-5,0);
             }
             for(var i = 0; i < moonCount; i++){
-                moons = addSatellite(moons,createInnerSatellite(mw, planet.size,maxPop, maxTech, allowNonMWPops))
+                moons = addSatellite(moons,createInnerSatellite(mw, planet.size,maxPop, maxTech, allowNonMWPops),planet.size)
             }
         }else if(diff > 1){
             // outer worlds
@@ -1297,12 +1298,12 @@ function createOtherWorld(mw, orbit, hzorbit, maxPop, maxTech, allowNonMWPops, p
             }
             planet = createPlanet(mw, type,-1,maxPop, maxTech);
             while(moonRoll - 3 === 0){
-                moons = addSatellite(moons,createRing());
+                moons = addSatellite(moons,createRing(),planet.size);
                 moonRoll = d6();
             }
             moonCount = Math.max(moonRoll-3,0);
             for(var i = 0; i < moonCount; i++){
-                moons = addSatellite(moons,createOuterSatellite(mw, planet.size, maxPop, maxTech, allowNonMWPops))
+                moons = addSatellite(moons,createOuterSatellite(mw, planet.size, maxPop, maxTech, allowNonMWPops),planet.size)
             }
         }
     }
@@ -1310,121 +1311,260 @@ function createOtherWorld(mw, orbit, hzorbit, maxPop, maxTech, allowNonMWPops, p
     return {worldtype:type, uwp:planet.uwp, pop:planet.pop, maxpop:planet.maxpop, satellites:moons}
 }
 function getStar(type, decimal, size, maxOrbits){
-    var star = {};
+    var star = {}
     var minOrbit = 0;
     if(type == -6){ 
         if(d6() == 1){
             star.type =  "O";
-            if(size <= -5){ star.size = "Ia"; star.HZOrbit = 15;}
-            else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 15;}
-            else if(size <= -3){ star.size = "II"; star.HZorbit = 14; }
-            else if(size <= 0){ star.size = "III"; star.HZOrbit = 13;}
-            else if(size <= 3){ star.size = "V"; star.HZOrbit = 11;}
-            else if(size <= 4){ star.size = "IV"; star.HZOrbit = 12;}
+            if(size <= -5){ star.size = "Ia"; star.HZOrbit = 15; minOrbit = 8;}
+            else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 15; minOrbit = 8;}
+            else if(size <= -3){ star.size = "II"; star.HZorbit = 14; minOrbit = 8;}
+            else if(size <= 0){ star.size = "III"; star.HZOrbit = 13; minOrbit = 8;}
+            else if(size <= 3){ 
+                star.size = "V"; star.HZOrbit = 11;
+                if(decimal <= 3){  minOrbit = 8; // radius *= 13.43 
+                }else if(decimal <= 4){  minOrbit = 8;// radius *= 12.13
+                }else if(decimal <= 5){  minOrbit = 8; // radius *= 11.45
+                }else if(decimal <= 6){  minOrbit = 8; // radius *= 10.27
+                }else if(decimal <= 7){ minOrbit = 7; // radius *= 9.42
+                }else if(decimal <= 8){ minOrbit = 7; // radius *= 8.47
+                }else if(decimal > 8){ minOrbit = 7; // radius *= 7.72
+                }
+            }
+            else if(size <= 4){ star.size = "IV"; star.HZOrbit = 12; minOrbit = 8;}
             else if(size <= 5){ star.size = "D"; star.HZOrbit = 1;}
-            else{ star.size = "IV"; star.HZOrbit = 12;}
+            else{ star.size = "IV"; star.HZOrbit = 12; minOrbit = 8;}
+            if(minOrbit === 8){  star.glimit = 10; star.jlimit = 13; star.mlimit = 16; }
         }else{
             star.type = "B";
-            if(size <= -5){ star.size = "Ia"; star.HZOrbit = 13;}
-            else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 13;}
-            else if(size <= -3){ star.size = "II"; star.HZOrbit = 12; }
-            else if(size <= 1){ star.size = "III"; star.HZOrbit = 11; }
-            else if(size <= 3){ star.size = "V"; star.HZOrbit = 9;}
+            if(size <= -5){ star.size = "Ia"; star.HZOrbit = 13; minOrbit = 8;}
+            else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 13; minOrbit = 8;}
+            else if(size <= -3){ star.size = "II"; star.HZOrbit = 12; minOrbit = 7;}
+            else if(size <= 1){ star.size = "III"; star.HZOrbit = 11; minOrbit = 7;}
+            else if(size <= 3){ star.size = "V"; star.HZOrbit = 9;
+                if(decimal <= 0){ minOrbit = 7; // radius *= 7.16 
+                }else if(decimal <= 1){ minOrbit = 7; // radius *= 5.71
+                }else if(decimal <= 2){ minOrbit = 6; // radius *= 4.06
+                }else if(decimal <= 3){ minOrbit = 6; // radius *= 3.61
+                }else if(decimal <= 4){ minOrbit = 6; // radius *= 3.46
+                }else if(decimal <= 5){ minOrbit = 6; // radius *= 3.36
+                }else if(decimal <= 6){ minOrbit = 6; // radius *= 3.27
+                }else if(decimal <= 7){ minOrbit = 6; // radius *= 2.94
+                }else if(decimal <= 8){ minOrbit = 6; // radius *= 2.86
+                }else if(decimal >= 9){ minOrbit = 5; // radius *= 2.49
+                }
+            }
             else if(size <= 4){ star.size = "IV"; star.HZOrbit = 10;}
             else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
             else{ star.size = "IV";star.HZOrbit = 10;}
+            if(minOrbit === 8){  star.glimit = 10; star.jlimit = 13; star.mlimit = 16; }
+            else if(minOrbit === 7){ star.glimit = 9; star.jlimit = 12; star.mlimit = 15; }
+            else if(minOrbit === 6){ star.glimit = 8; star.jlimit = 11; star.mlimit = 14; }
+            else if(minOrbit === 5){ star.glimit = 7; star.jlimit = 10; star.mlimit = 13; }
         }
     }
     else if(type <= -4){ 
             star.type = "A"; 
             if(size <= -5){ 
-                star.size = "Ia"; star.HZOrbit = 12;
-                if(decimal <= 9){ minOrbit = 5;} 
+                star.size = "Ia"; star.HZOrbit = 12; 
+                minOrbit = 5;
+                if(decimal < 5){
+                    star.glimit = 7; star.jlimit = 10; star.mlimit = 13;
+                }else{
+                    star.glimit = 7; star.jlimit = 9; star.mlimit = 14;
+                }
             }
             else if(size <= -4){ 
-                star.size = "Ib"; star.HZOrbit = 11;
-                if(decimal === 0){ minOrbit = 2; }
-                else if(decimal >= 5){ minOrbit = 3; }
+                star.size = "Ib"; star.HZOrbit = 11; 
+                if(decimal <=5 ){ minOrbit = 2; }
+                else if(decimal > 5){ minOrbit = 3; }
+                star.glimit = 5; star.jlimit = 9; star.mlimit = 12;
+                
             }
-            else if(size <= -3){ star.size = "II";star.HZOrbit = 9; minOrbit = 1; }
-            else if(size <= -2){ star.size = "III"; star.HZOrbit = 7; minOrbit = 1; }
-            else if(size <= -1){ star.size = "IV"; star.HZOrbit = 7;}
-            else if(size <= 4){ star.size = "V";star.HZOrbit = 7;}
-            else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-            else{ star.size = "V";star.HZOrbit = 7;}
-    }
+            else if(size <= -3){ star.size = "II";star.HZOrbit = 9; minOrbit = 1; 
+            if(decimal < 5){
+                star.glimit = 4; star.jlimit = 7; star.mlimit = 11;
+            }else{
+                star.glimit = 3; star.jlimit = 7; star.mlimit = 10;
+            }
+            
+        }
+            else if(size <= -2){ star.size = "III"; star.HZOrbit = 7; minOrbit = 1;             
+            if(decimal < 5){
+                star.glimit = 1; star.jlimit = 6; star.mlimit = 9;
+            }else{
+                star.glimit = 1; star.jlimit = 5; star.mlimit = 9;
+            }
+        }
+            else if(size <= -1){ star.size = "IV"; star.HZOrbit = 7; 
+            if(decimal < 5){
+                star.glimit = 1; star.jlimit = 5; star.mlimit =  9;
+            }else{
+                star.glimit = 0; star.jlimit = 4; star.mlimit =  8;
+            }
+            
+        }
+            else if(size <= 4){ star.size = "V";star.HZOrbit = 7; 
+            if(decimal < 5){
+                star.glimit = 0; star.jlimit = 5; star.mlimit = 8;
+            }else{
+                star.glimit = -1; star.jlimit = 4; star.mlimit = 7;
+            }
+            
+        }
+            else if(size <= 5){ star.size = "D";star.HZOrbit = 0; star.glimit = -1; star.jlimit = -1; star.mlimit = -1;}
+            else{ star.size = "V";star.HZOrbit = 7; if(decimal < 5){
+                star.glimit = 0; star.jlimit = 5; star.mlimit = 8;
+            }else{
+                star.glimit = -1; star.jlimit = 4; star.mlimit = 7;
+            }}
+    } // refer to page 31, table 10D gravitic drive limit
     else if(type <= -2){ 
         star.type = "F"; 
         if(size <= -5){ star.size = "II"; star.HZOrbit = 9;
-            if(decimal <=5){ minOrbit = 1;}
+            if(decimal <=5){ minOrbit = 1;}else{ minOrbit = 2;}
+            if(decimal <5){
+                star.glimit = 3; star.jlimit = 7; star.mlimit = 10;
+            }else{
+                star.glimit = 4; star.jlimit = 7; star.mlimit = 11;
+            }
         }
-        else if(size <= -4){ star.size = "III";star.HZOrbit = 6; minOrbit = 1; }
-        else if(size <= -3){ star.size = "IV"; star.HZOrbit = 6;}
-        else if(size <= 3){ star.size = "V"; star.HZOrbit = 5;}
-        else if(size <= 4){ star.size = "VI";star.HZOrbit = 3;}
-        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-        else{ star.size = "VI";star.HZOrbit = 3;}
+        else if(size <= -4){ star.size = "III";star.HZOrbit = 6; minOrbit = 1;   
+                star.glimit = 1; star.jlimit = 5; star.mlimit = 9;
+        }
+        else if(size <= -3){ star.size = "IV"; star.HZOrbit = 6; star.glimit = 0; star.jlimit = 4; star.mlimit = 8;}
+        else if(size <= 3){ star.size = "V"; star.HZOrbit = 5; star.glimit = -1; star.jlimit = 3; star.mlimit = 7;}
+        else if(size <= 4){ star.size = "VI"; star.HZOrbit = 3; star.glimit = -1; star.jlimit = 3; star.mlimit = 7;}
+        else if(size <= 5){ star.size = "D"; star.HZOrbit = 0; star.glimit = -1; star.jlimit = -1; star.mlimit = -1;}
+        else{ star.size = "VI";star.HZOrbit = 3; star.HZOrbit = 3; star.glimit = -1; star.jlimit = 3; star.mlimit = 7;}
     }
     else if(type <= 0){ 
         star.type = "G"; 
         if(size <= -5){ star.size = "II"; star.HZOrbit = 9;
-            if(decimal <= 5){ minOrbit = 2;}
+            if(decimal <= 5){ minOrbit = 2;}else{ minOrbit = 3;}
+            if(decimal < 5){ star.glimit = 4; star.jlimit = 8; star.mlimit = 11;}else{
+                star.glimit = 5; star.jlimit = 8; star.mlimit = 12;
+            }
         }
-        else if(size <= -4){ star.size = "III"; star.HZOrbit = 7; minOrbit = 1;}
-        else if(size <= -3){ star.size = "IV"; star.HZOrbit = 5;}
-        else if(size <= 3){ star.size = "V"; star.HZOrbit = 3;}
-        else if(size <= 4){ star.size = "VI";star.HZOrbit = 2;}
-        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-        else{ star.size = "VI";star.HZOrbit = 3;}
+        else if(size <= -4){ star.size = "III"; star.HZOrbit = 7; minOrbit = 1;
+            if(decimal < 5){ star.glimit = 1; star.jlimit = 6; star.mlimit = 9;}else{
+                star.glimit = 3; star.jlimit = 7; star.mlimit = 10;
+            }
+        }
+        else if(size <= -3){ star.size = "IV"; star.HZOrbit = 5;
+           star.glimit = 0; star.jlimit = 4; star.mlimit = 8;
+        }
+        else if(size <= 3){ star.size = "V"; star.HZOrbit = 3;
+            star.glimit = -1; star.jlimit = 2; star.mlimit = 6;
+        }
+        else if(size <= 4){ star.size = "VI";star.HZOrbit = 2;
+            star.glimit = -1; 
+            if(decimal < 5){ star.jlimit = 2; star.mlimit = 6;}else{
+                star.jlimit = 1; star.mlimit = 5;
+            }
+        }
+        else if(size <= 5){ star.size = "D";star.HZOrbit = 0; star.glimit = -1; star.jlimit = -1; star.mlimit = -1;}
+        else{ star.size = "VI";star.HZOrbit = 3;
+        if(decimal < 5){ star.jlimit = 2; star.mlimit = 6;}else{
+            star.jlimit = 1; star.mlimit = 5;
+        }
+    }
     }
     else if(type <= 2){ 
         star.type = "K"; 
         if(size <= -5){ star.size = "II"; star.HZOrbit = 9; 
-            if(decimal === 0){
+            if(decimal <= 1){
                 minOrbit = 3;
-            }else if(decimal === 5){
+                star.glimit = 6; star.jlimit = 9; star.mlimit = 12;
+            }else if(decimal < 5){
+                minOrbit = 4;
+                star.glimit = 6; star.jlimit = 9; star.mlimit = 12;
+            }else{
                 minOrbit = 5;
+                star.glimit = 7; star.jlimit = 10; star.mlimit = 13;
             }
         }
         else if(size <= -4){ star.size = "III"; star.HZOrbit = 8;
-            if(decimal === 0){
+            if(decimal < 5){
                 minOrbit = 1;
-            }else if(decimal === 5){
+                star.glimit = 3; star.jlimit = 7; star.mlimit = 10;
+            }else{
                 minOrbit = 2;
+                star.glimit = 5; star.jlimit = 9; star.mlimit = 12;
+            }
+
+        }
+        else if(size <= -3){ star.size = "IV"; star.HZOrbit = 5;
+            star.glimit = -1; star.jlimit = 5; star.mlimit = 8;
+        }
+        else if(size <= 3){ star.size = "V"; star.HZOrbit = 2;
+            star.glimit = -1; star.mlimit = 6;
+            if(decimal < 5){
+                star.jlimit = 2; 
+            }else{
+                star.jlimit = 1;
             }
         }
-        else if(size <= -3){ star.size = "IV"; star.HZOrbit = 5;}
-        else if(size <= 3){ star.size = "V"; star.HZOrbit = 2;}
-        else if(size <= 4){ star.size = "VI";star.HZOrbit = 1;}
-        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-        else{ star.size = "VI";star.HZOrbit = 1;}
+        else if(size <= 4){ star.size = "VI";star.HZOrbit = 1;
+            star.glimit = -1; star.jlimit = 0; star.mlimit = 5;
+        }
+        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;
+            star.glimit = -1; star.jlimit = -1; star.mlimit = -1;}
+        else{ star.size = "VI";star.HZOrbit = 1;
+            star.glimit = -1; star.jlimit = 0; star.mlimit = 5;
+        }
     }
     else if(type <= 5){ 
         star.type = "M"; 
         if(size <= -3){ star.size = "II"; star.HZOrbit = 10;
-            if(decimal === 0){
+            if(decimal <5 ){
                 minOrbit = 6;
-            }else if(decimal === 5){
+                star.glimit = 8; star.jlimit = 11; star.mlimit = 14;
+            }else if(decimal < 9){
                 minOrbit = 7;
-            }else if(decimal === 9){
+                star.glimit = 9; star.jlimit = 13; star.mlimit = 16;
+            }else{
                 minOrbit = 8;
+                star.glimit = 10; star.jlimit = 13; star.mlimit = 16;
             }
         }
         else if(size <= -2){ star.size = "III"; star.HZOrbit = 9;
-            if(decimal === 0){
+            if(decimal < 5){
                 minOrbit = 3;
-            }else if(decimal === 5){
+                star.glimit = 6; star.jlimit = 9; star.mlimit = 12;
+            }else if(decimal < 9){
                 minOrbit = 6;
+                star.glimit = 8; star.jlimit = 11; star.mlimit = 14;
             }else if(decimal === 9){
                 minOrbit = 7;
+                star.glimit = 8; star.jlimit = 12; star.mlimit = 15;
             }
          }
-        else if(size <= 3){ star.size = "V"; star.HZOrbit = 0;}
-        else if(size <= 4){ star.size = "VI";star.HZOrbit = 0;}
-        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;}
-        else{ star.size = "VI";star.HZOrbit = 0;}
+        else if(size <= 3){ star.size = "V"; star.HZOrbit = 0;
+            star.glimit = -1;
+            if(decimal < 5){
+                star.jlimit = 1; star.mlimit = 5;
+            }else if(decimal < 9){
+                star.jlimit = 0; star.mlimit = 5;
+            }else{
+                star.jlimit = -1; star.mlimit = 4;
+            }
+        }
+        else if(size <= 4){ star.size = "VI"; star.HZOrbit = 0;
+            star.glimit = -1; star.jlimit = -1; 
+            if(decimal<5){ star.jlimit = 0; star.mlimit = 4;}
+            else if(decimal < 9){star.mlimit = 2;}else{star.mlimit = 1;}
+        }
+        else if(size <= 5){ star.size = "D";star.HZOrbit = 0;
+            star.glimit = -1; star.jlimit = -1; star.mlimit = -1;
+        }
+        else{ star.size = "VI";star.HZOrbit = 0; star.glimit = -1; star.jlimit = -1; 
+            if(decimal<5){ star.jlimit = 0; star.mlimit = 4;}
+            else if(decimal < 9){star.mlimit = 2;}
+            else{star.mlimit = 1;}
+        }
     }
-    else{ star.type = "BD"; star.HZOrbit = 0; }
+    else{ star.type = "BD"; star.HZOrbit = 0; star.glimit = -1; star.jlimit = -1; star.mlimit = -1; }
     if(star.size !== "D"){star.decimal = decimal;}
     if(maxOrbits > 0){
         star.satellites = new Array(maxOrbits);

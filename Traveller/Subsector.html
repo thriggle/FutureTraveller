@@ -2734,6 +2734,30 @@
             }
             function renderSystem(system){
                 var lookups = {
+                    orbitdistance:{
+                        "-1":"<0.2 AU",
+                        "0":"0.2 AU",
+                        "1":"0.4 AU",
+                        "2":"0.7 AU",
+                        "3":"1.0 AU",
+                        "4":"1.6 AU",
+                        "5":"2.8 AU",
+                        "6":"5.2 AU",
+                        "7":"10 AU",
+                        "8":"20 AU",
+                        "9":"40 AU",
+                        "10":"77 AU",
+                        "11":"154 AU",
+                        "12":"308 AU",
+                        "13":"615 AU",
+                        "14":"1230 AU",
+                        "15":"2500 AU",
+                        "16":"4900 AU",
+                        "17":"9800 AU",
+                        "18":"19500 AU",
+                        "19":"39500 AU",
+                        "20":"78700 AU"
+                    },
                     tradecode:{
                         "As":"Asteroid Belt",
                         "De":"Desert",
@@ -2988,6 +3012,7 @@
                         "9":"Considerably strange and deviant from interstellar standards of behavior, ",
                         "10":"Strange culture, extremely deviant from interstellar standards of behavior, "
                     },
+
                     "symbols":{
                         // max of 27
                         "0":"",
@@ -3177,7 +3202,7 @@
             }else{
                 description = system.stars.primary.type + (typeof system.stars.primary.decimal === "undefined" ? "" : system.stars.primary.decimal.toString()) + " " + system.stars.primary.size ;
             }
-          
+            description += ". Safe Jump Distance=Orbit " + system.stars.primary.jlimit.toString() + " (" + lookups["orbitdistance"][system.stars.primary.jlimit.toString()]+") M-Drive Limit=Orbit "+ system.stars.primary.mlimit + " ("+lookups["orbitdistance"][system.stars.primary.mlimit.toString()]+")";
             var primli = list.appendChild(document.createElement("li"));
             primli.appendChild(document.createTextNode(
                 "Primary Star: " + description
@@ -3252,7 +3277,8 @@
                                 }
                                 var text = "";
                                 if(!orbitingStar){
-                                    text = "Orbit " +sat(j)+": " + addCaps(subslot.worldtype) +" ("+desc+")" ;
+                                    console.log(j);
+                                    text = "Orbit " +sat(j)+" ("+satDistance(j,subslot.primarysize).toString()+"): " + addCaps(subslot.worldtype) +" ("+desc+")" ;
                                 }else{
                                     text =  "Orbit "+subslot.decimalOrbit+" ("+subslot.au+" AU): " + addCaps(subslot.worldtype) +" ("+desc+")";
                                 }
@@ -3288,7 +3314,7 @@
                                                 text = "Orbit "+subsub.decimalOrbit+" ("+subsub.au+" AU): " +addCaps(subsub.worldtype) + " ("+desc+")";
                                                 
                                             }else{
-                                                text = "Orbit " + sat(k) + ": " +addCaps(subsub.worldtype) + " ("+desc+")";                                                
+                                                text = "Orbit " + sat(k) + " ("+subsub.primarysize+"): " +addCaps(subsub.worldtype) + " ("+desc+")";                                                
                                             }
                                             var li = subsublist.appendChild(document.createElement("li"))
                                             li.appendChild(document.createTextNode(text));
@@ -3331,8 +3357,47 @@
             }
         }
        function sat(i){
+            
             var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+            console.log("sat:" + i + "; orbit: " + orbits[i] );
             return orbits[i];
+        }
+        function satDistance(i,primarySize){
+            var multipliers = [1,2,3,4,5,6,8,10,20,30,40,50,60,70,80,100,150,200,250,300,400,500,600,700,800,1000];
+            console.log(primarySize);
+            var distance = multipliers[i] * 1000 * primarySize;
+            if(distance < 1495978){
+                var strDistanceUnformatted = distance.toString();
+                var strDistance = "";
+                var cursor = strDistanceUnformatted.length - 3
+                console.log(strDistanceUnformatted);
+                if(strDistanceUnformatted.length > 3){
+                    while(cursor >= 0){
+                        console.log(cursor);
+                        var segment = strDistanceUnformatted.substring(cursor,cursor+3);
+                        console.log(segment);
+                        strDistance = segment + "," + strDistance;
+                        console.log(strDistance);
+                        cursor -= 3;
+                    }
+                    if(cursor < 0 && cursor > -3){
+                        strDistance = strDistanceUnformatted.substring(0,Math.abs(cursor)) + "," + strDistance;
+                    }
+                    strDistance = strDistance.substring(0,strDistance.length-1);
+                }else{
+                    strDistance = strDistanceUnformatted;
+                }
+                /*for(var j = strDistance.length-1; j >= 0; j--){
+                    if(j % 3 === 0 && j !== 0){
+                        strDistance = strDistance.substring(0,j) + "," + strDistance.substring(j);
+                    }
+                }*/
+                strDistance += " km";
+            }else{
+                strDistance = (distance / 149597871).toFixed(2) + " AU";
+            }
+            console.log("sat:" + i + "; multiplier: " + multipliers[i] +"; distance: " + strDistance);
+            return strDistance;// / 149 597 871;
         }        
         function removeChildElements(element){
             while(element.childNodes.length > 0){
