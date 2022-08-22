@@ -3202,7 +3202,7 @@
             }else{
                 description = system.stars.primary.type + (typeof system.stars.primary.decimal === "undefined" ? "" : system.stars.primary.decimal.toString()) + " " + system.stars.primary.size ;
             }
-            description += ". Safe Jump Distance=Orbit " + system.stars.primary.jlimit.toString() + " (" + lookups["orbitdistance"][system.stars.primary.jlimit.toString()]+") M-Drive Limit=Orbit "+ system.stars.primary.mlimit + " ("+lookups["orbitdistance"][system.stars.primary.mlimit.toString()]+")";
+            description += ". " + getLimitString(system.stars.primary);
             var primli = list.appendChild(document.createElement("li"));
             primli.appendChild(document.createTextNode(
                 "Primary Star: " + description
@@ -3214,17 +3214,18 @@
                     var description = "";
                     var orbitingStar = false;
                     var types = slot.worldtype.split(" ");
-                    if(slot.worldtype.indexOf("star") >= 0){
+                    if(slot.worldtype.toLowerCase().indexOf("star") >= 0){
                         orbitingStar = true;
                         if(slot.type === "BD"){
                             description = "Brown Dwarf";
                         }else{
                             if(slot.size == "D"){
-                                description = "D";
+                                description = "White Dwarf";
                             }else{
                                 description = slot.type + (typeof slot.decimal === "undefined" ? "" : slot.decimal.toString()) + " " + slot.size ;
                             }
                         }
+                        description += "; " + getLimitString(slot)
                     }else{
                         orbitingStar = false;
                         description = slot.uwp;
@@ -3259,18 +3260,19 @@
                                 var subslot = slot.satellites[j];
                                 var desc = "";
                                 var subtypes = subslot.worldtype.split(" ");
-                                if(subslot.worldtype.indexOf("star") >= 0){
+                                if(subslot.worldtype.toLowerCase().indexOf("star") >= 0){
                                     subOrbitingStar = true;
                                     if(subslot.type === "BD"){
                                         desc = "Brown Dwarf";
                                     }else{
                                         if(subslot.size == "D"){
-                                            desc = "D";
+                                            desc = "White Dwarf";
                                         }else{
                                             desc = subslot.type + (typeof subslot.decimal === "undefined" ? "" : subslot.decimal.toString()) + " " + subslot.size ;
                                         }
                                         
                                     }
+                                    desc += "; " + getLimitString(subslot)
                                 }else{
                                     subOrbitingStar = false;
                                     desc = subslot.uwp;
@@ -3306,8 +3308,24 @@
                                     subsublist = sublist.appendChild(document.createElement("ul"));
                                     for(var k = 0, klen = subslot.satellites.length; k < klen; k++){
                                         var subsub = subslot.satellites[k];
+                                        var desc = "";
                                         if(typeof subsub !== "undefined" && subsub){
-                                            desc = subsub.uwp;
+                                            if(subsub.worldtype.indexOf("star") >= 0){
+                                                if(subsub.type === "BD"){
+                                                    desc = "Brown Dwarf";
+                                                }else{
+                                                    if(subsub.size == "D"){
+                                                        desc = "White Dwarf";
+                                                    }else{
+                                                        desc = subsub.type + (typeof subsub.decimal === "undefined" ? "" : subsub.decimal.toString()) + " " + subsub.size ;
+                                                    }
+                                                    
+                                                }
+                                                desc += "; " + getLimitString(subsub)
+                                            }else{
+                                                desc = subsub.uwp;
+                                            }
+                                            
                                             var subsubtypes = subsub.worldtype.split(" ");
                                             var text = "";
                                             if(subOrbitingStar){                                               
@@ -3345,6 +3363,9 @@
                 }
             }
             console.log(system);
+            function getLimitString(star){
+                return "100D=Orbit " + star.jlimit.toString() + " (" + lookups["orbitdistance"][star.jlimit.toString()]+") 1000D=Orbit "+ star.mlimit + " ("+lookups["orbitdistance"][star.mlimit.toString()]+")"
+            }
         }
         function dext(txt){
             var tempInt = parseInt(txt,36);
@@ -3356,6 +3377,7 @@
                 return tempInt - 2;
             }
         }
+        
        function sat(i){
             
             var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
