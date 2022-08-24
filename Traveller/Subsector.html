@@ -1097,12 +1097,41 @@
             var lastHighlightedHex, lastSelectedHex;
             attachEventListeners();
             function processHash(){
+                // first time process hash on page load
                 var hash = window.location.hash;
-                if(hash.indexOf("$hash='"))
                 var seed = window.location.hash.substr(1);
-                document.getElementById("txtSeed").value = decodeURI(seed);
-                document.getElementById("chkUseRandom").checked = false;
-                MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
+                if(hash.indexOf("$") > 0){
+                    seed = "";
+                    var hashParamPairs = hash.substr(1).split("&");
+                    console.log(hashParamPairs);
+                    for(var i = 0, len = hashParamPairs.length; i < len; i++){
+                        var pair = hashParamPairs[i].split("=");
+                        console.log(pair);
+                        if(pair[0].toLowerCase() === "$seed"){
+                            seed = pair[1];
+                        }
+                        if(pair[0].toLowerCase() === "$size"){
+                            var newSize = pair[1];
+                            if(typeof newSize !== "undefined" && newSize.length > 0){
+                                console.log("size = "+ newSize);
+                                document.getElementById("slctMapSize").value = addCaps(newSize);
+                                mapSizeChanged();
+                            }
+                        }
+                        if(pair[0].toLowerCase() === "$density"){
+                            var newDensity = pair[1];
+                            if(typeof newDensity !== "undefined" && newDensity.length > 0){
+                                console.log("density = "+ newDensity);
+                                document.getElementById("slctStellarDensity").value = addCaps(newDensity);
+                            }
+                        }
+                    }
+                }
+                if(seed.length > 0){
+                    document.getElementById("txtSeed").value = decodeURI(seed);
+                    document.getElementById("chkUseRandom").checked = false;
+                    MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
+                }
             }
             function attachEventListeners(){
                 var abilityRoll = 0, skillRoll = 0;
@@ -1219,23 +1248,8 @@
                         populateSubsector();
                     }                   
                 });
-                document.getElementById("slctMapSize").addEventListener("change",function(){
-                    var choice = document.getElementById("slctMapSize").value;
-                    switch(choice){
-                        case "Subsector": SUBSECTOR_HEIGHT = 10; SUBSECTOR_WIDTH = 8; break;
-                        case "Quadrant": SUBSECTOR_HEIGHT = 20; SUBSECTOR_WIDTH = 16; break;
-                        case "Sector": SUBSECTOR_HEIGHT = 40; SUBSECTOR_WIDTH = 32; break;
-                    }
-                    //updateHexSize(+(document.getElementById("sizeSlider").value));
-                    canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
-                    canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter + CANVAS_PADDING*2);
-                    drawMap(mapContent);
-                });
-                document.getElementById("slctStyle").addEventListener("change",updateStyle);
-                document.getElementById("sizeSlider").addEventListener("change",function(){
-                    updateHexSize(+(document.getElementById("sizeSlider").value));
-                    drawMap(mapContent);
-                });
+                document.getElementById("slctMapSize").addEventListener("change",mapSizeChanged);
+                
                 document.getElementById("fontFamily").addEventListener("keyup",updateStyle);
                 document.getElementById("hexBorderColor").addEventListener("keyup",function(){
                     var newColor = document.getElementById("hexBorderColor").value;
@@ -1410,22 +1424,68 @@
                 });
                 // event listener when window.location.hash changes
                 window.addEventListener("hashchange", function(){
+                    console.log("hash change");
                     var hash = window.location.hash;
                     if(hash.length > 0){
-                        var seed = hash.substring(1);
-                        var newValue = decodeURI(seed);
-                        if(document.getElementById("txtSeed").value == newValue){
-
-                        }else{
-                            document.getElementById("txtSeed").value = newValue;
-                            var wasChecked = document.getElementById("chkUseRandom").checked;
-                            document.getElementById("chkUseRandom").checked = false;
-                            populateSubsector();
-                            document.getElementById("chkUseRandom").checked = wasChecked;
+                        var seed = hash.substring(1), newSize = "", newDensity = "";
+                        if(hash.indexOf("$") >= 0){
+                            seed = "";
+                            var hashParamPairs = hash.substr(1).split("&");
+                            for(var i = 0, len = hashParamPairs.length; i < len; i++){
+                                var pair = hashParamPairs[i].split("=");
+                                if(pair[0].toLowerCase() === "$seed"){
+                                    seed = pair[1];
+                                }
+                                if(pair[0].toLowerCase() === "$size"){
+                                    newSize = pair[1];
+                                    if(typeof newSize !== "undefined" && newSize.length > 0){
+                                        newSize = addCaps(newSize);
+                                        document.getElementById("slctMapSize").value = newSize;
+                                    }
+                                }
+                                if(pair[0].toLowerCase() === "$density"){
+                                    newDensity = pair[1];
+                                    if(typeof newDensity !== "undefined" && newSize.length > 0){
+                                        newDensity = addCaps(newDensity);
+                                        document.getElementById("slctStellarDensity").value = newDensity;
+                                    }
+                                }
+                            }
+                            var newValue = decodeURI(seed);
+                            if(document.getElementById("txtSeed").value == newValue && document.getElementById("slctStellarDensity").value == newDensity && document.getElementById("slctMapSize").value == newSize){
+                                
+                            }else{
+                                document.getElementById("txtSeed").value = newValue;
+                                var wasChecked = document.getElementById("chkUseRandom").checked;
+                                if(typeof seed === "undefined" || seed.length === 0){
+                                    document.getElementById("chkUseRandom").checked = true;
+                                }else{
+                                    document.getElementById("chkUseRandom").checked = false;
+                                }
+                                populateSubsector();
+                                document.getElementById("chkUseRandom").checked = wasChecked;
+                            }
                         }
                     }
                 });
             }
+            function mapSizeChanged(){
+                    var choice = document.getElementById("slctMapSize").value;
+                    switch(choice){
+                        case "Subsector": SUBSECTOR_HEIGHT = 10; SUBSECTOR_WIDTH = 8; break;
+                        case "Quadrant": SUBSECTOR_HEIGHT = 20; SUBSECTOR_WIDTH = 16; break;
+                        case "Sector": SUBSECTOR_HEIGHT = 40; SUBSECTOR_WIDTH = 32; break;
+                    }
+                    //updateHexSize(+(document.getElementById("sizeSlider").value));
+                    canvas.setAttribute("width",SUBSECTOR_WIDTH*HEX_MATH.xOffset+HEX_MATH.radius+CANVAS_PADDING*2);
+                    canvas.setAttribute("height",SUBSECTOR_HEIGHT*HEX_MATH.yOffset+HEX_MATH.diameter + CANVAS_PADDING*2);
+                    drawMap(mapContent);
+                }
+                document.getElementById("slctStyle").addEventListener("change",updateStyle);
+                document.getElementById("sizeSlider").addEventListener("change",function(){
+                    updateHexSize(+(document.getElementById("sizeSlider").value));
+                    drawMap(mapContent);
+                });
             function populateSubsector(){
                 var useRandomSeed = document.getElementById("chkUseRandom").checked;
                 var seed;
@@ -1442,7 +1502,11 @@
                 } 
                 
                 //console.log("Setting window hash");
-                window.location.hash = encodeURI(seed);
+                var $density = document.getElementById("slctStellarDensity").value
+                console.log("density = " + $density);
+                var $size = document.getElementById("slctMapSize").value
+                console.log("size = " + $size);
+                window.location.hash = "$seed="+encodeURI(seed)+"&$density="+$density+"&$size="+$size;
                 
                 //console.log("Seeding number generators");
                 MathRandom = pseudoRandomNumberGenerator(seed.toString());
