@@ -106,7 +106,7 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer){
         var seed = xmur3(word);
         return xoshiro128ss(seed(), seed(), seed(), seed());
     }
-    var defaultForbiddenWords = ["anus","ass"];
+    var defaultForbiddenWords = ["bitch","anus","ass"];
     if(typeof forbiddenWords === "undefined" || forbiddenWords === null){
         forbiddenWords = defaultForbiddenWords;
     }
