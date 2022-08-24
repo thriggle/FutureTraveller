@@ -2202,7 +2202,7 @@
     },
     "ship":{
         "patterns":[
-            "92:{ship.nopun}",
+            "100:{ship.nopun}",
             "4:{ship.yacht}", "{ship.yacht} {ship.numeral}"
         ],
         "nopun":[
@@ -2224,7 +2224,8 @@
             "4:{ship.adjective|ship.gerund} {ship.person}","{ship.adjective|ship.gerund} {ship.person} {ship.numeral}",
             "5:{ship.bigadjective|ship.bigidea|ship.person}","{ship.bigadjective|ship.bigidea|ship.person} {ship.numeral}",
             "4:{ship.navalname}","{ship.navalname} {ship.numeral}", 
-            "5:{ship.combo}","{ship.combo} {ship.numeral}"
+            "5:{ship.combo}","{ship.combo} {ship.numeral}",
+            "3:{system.realplace}","{system.realplace} {ship.numeral}"
         ],
         "navalname":[
             "Ambush",
@@ -2969,7 +2970,8 @@
             "1:{word|word|human.firstname|human.lastname}'s {system.adjective} {system.noun}|The {system.adjective} {system.noun} of {word|word|human.firstname|human.lastname}|{word|word|human.firstname|human.lastname}'s {system.noun} of {system.feeling|system.material}",
             "2:{system.adjective} {word|word|system.latinized}",
             "1:{system.noun} of {word} the {system.mythologicalfigure}|The {system.celestialbody} of {word} the {system.mythologicalfigure}|{system.settlement|system.noun|system.bodypart|system.landmark|system.feeling} of {word} the {system.mythologicalfigure}",
-            "1:{system.noun} of {system.mythologicalfigure} {word}|{system.mythologicalfigure} {word}'s {system.noun}|{system.celestialbody} of {system.mythologicalfigure} {word}|{system.mythologicalfigure} {word}'s {system.celestialbody}|{system.mythologicalfigure} {word}'s {system.settlement|system.noun|system.bodypart|system.landmark|system.feeling}|{system.settlement|system.noun|system.bodypart|system.landmark|system.feeling} of {system.mythologicalfigure} {word}"
+            "1:{system.noun} of {system.mythologicalfigure} {word}|{system.mythologicalfigure} {word}'s {system.noun}|{system.celestialbody} of {system.mythologicalfigure} {word}|{system.mythologicalfigure} {word}'s {system.celestialbody}|{system.mythologicalfigure} {word}'s {system.settlement|system.noun|system.bodypart|system.landmark|system.feeling}|{system.settlement|system.noun|system.bodypart|system.landmark|system.feeling} of {system.mythologicalfigure} {word}",
+            "1:{aslan}"
         ],
         "systemwithoutinventedwords":[
             // nouns
@@ -3219,6 +3221,7 @@
             "2:vagrant",
             "2:valkyrie",
             "3:vampire",
+            "1:veteran",
             "2:vulture",
             "2:wanderer",
             "2:warlock",
@@ -3845,6 +3848,7 @@
             "terminal",
             "territory",
             "villa",
+            "warren",
             "2:waystation",
             "yard"
         ],
@@ -3904,6 +3908,7 @@
             "fog",
             "fox",
             "free",
+            "frost",
             "frozen",
             "golden",
             "glass",
@@ -3919,6 +3924,7 @@
             "hill",
             "ice",
             "iron",
+            "key",
             "ledge",
             "lake",
             "larch",
@@ -4000,7 +4006,7 @@
             "2:bury",
             "2:castle",
             "1:chasm",
-            "2:cliff",
+            "2:cliff|cliff|cliffe",
             "2:court",
             "2:cove",
             "2:crest",
@@ -4024,6 +4030,7 @@
             "1:floor",
             "1:fog",
             "2:ford",
+            "1:frost",
             "1:garth",
             "2:gate",
             "2:glen",
@@ -4052,6 +4059,7 @@
             "2:house",
             "1:hurst",
             "2:keep",
+            "1:key",
             "2:land",
             "2:lawn",
             "1:lea",
@@ -4124,60 +4132,257 @@
             "1:way",
             "3:well",
             "1:wheel",
-            "2:wood",
+            "1:wick",
+            "2:wood|wood|wold",
             "2:works",
             "1:yard"
         ],
         "realplace":[
+            "alaiedon", // Michigan
+            "albion", // New York
+            "alcova", // Wyoming
+            "almira", // Washington
+            "amalga", // Utah
+            "amargosa", // Nevada
+            "amidon", // North Dakota
             "amity", // Arkansas
+            "ardoch", // North Dakota
+            "artesia", // New Mexico
+            "arvada", // Wyoming
+            "ashaway", // Rhode Island
             "attica", // 
             "aurora", // Colorado
+            "bangor", // Maine
+            "benzonia", // Michigan
+            "bolivar", // New york et al
+            "bowman", // South Carolina
+            "braden", // Tennessee
+            "brigantine", // New Jersey
+            "brocket", // North Dakota
+            "brodnax", // Virginia
+            "broussard", // Louisiana
+            "brundage", // Texas
             "buford", // Georgia
+            "calabash", // North Carolina
+            "canova", // South Dakota
+            "ceresco", // Nebraska
+            "chattaroy", // West Virginia
             "cheyenne", // Wyoming
-            "cordova", // Alaska
+            "colfax", // Michigan, North Dakota
+            "cordova", // Alaska, Nebraska
+            "coventry", // Rhode Island
+            "cresbard", // South Dakota
+            "croydon", // New Hampshire
             "cynthiana", // Kentucky
+            "dauphin", // Pennsylvania
             "devore", // Indiana
+            "demarest", // New Hampshire
+            "dendron", // Virginia
+            "despard", // Wes Virginia
             "dongola", // Illinois
+            "doniphan", // Nebraska
+            "doyle", // Tennessee
+            "drummond", // Montana
+            "dunkirk", // New York
+            "durant", // Mississippi
+            "echelon", // New Jersey
+            "edroy", // Texas
             "ellithorpe", // Connecticut
-            "emporia", // Kansas
+            "elmira", // Michigan
+            "elsinore", // Utah
+            "embden", // Maine 
+            "emporia|emporium", // Kansas
+            "etowah", // Tennessee
+            "eupora", // Mississippi
+            "exeter", // Maine et al
+            "fabius", // New York
             "fairfax", // Virginia
+            "fernley", // Nevada
+            "folsom", // New Mexico
             "fontana", // Kansas
+            "fredonia", // North Dakota
+            "forward", // Pennsylvania
             "fostoria", // Iowa
+            "galion", // Ohio
+            "gallatin", // Tennessee
+            "gardena", // North Dakota
+            "garland", //
+            "ghent", // New York
+            "gilead", // Michigan
+            "glenarden", // Maryland
             "goshen", // Connecticut
+            "gretna", // Louisiana, Nebraska
+            "groton", // Vermont
             "guthrie", // Kentucky
+            "harbine", // Nebraska
+            "haight", // Michigan
+            "helmetta", // New Jersey
+            "helvetia", // West Virginia
+            "hematite", // Michigan
             "herlong", // California
+            "honaker", // Virginia
+            "horicon", // New York, Wisconsin
             "hourglass", // Delaware
+            "hunlock", // Pennsylvania
+            "iatan", // Missouri
+            "idamay", // West Virginia
+            "ingalls", // Oklahoma
+            "interlaken", // New Jersey
+            "irena", // Missouri
+            "irvona", // Pennsylvania
+            "isola", // Mississippi
+            "ivor", // Virginia
+            "jaffrey", // New Hampshire
+            "jessup", // Pennsylvania
             "juneau", // Alaska
+            "juniata", // Pennsylvania
+            "juntura", // Oregon
             "karnak", // Illinois
+            "kenmare", // North Dakota
             "kepuhi", // Hawaii
+            "kilmarnock", // Virginia
+            "kimball", // Tennessee
             "kinard", // Florida
+            "kincaid", // West Virginia
+            "kinzua", // Oregon
+            "knox", // New York
+            "koosharem", // Utah
             "kremmling", // Colorado
+            "lambert", // Mississippi
             "lamont", // Florida
             "lansing", // Michigan
+            "laurel", // Montana
+            "lavina", // Montana
+            "lignite", // North Dakota
+            "ligonier", // Pennsylvania
+            "lipscombe", // Texas
             "lothair", // Georgia
+            "lucama", // North Carlonia
+            "lyndon", // Vermont
+            "manteo", // North Carolina
             "matlock", // Kentucky
             "mattox", // Florida
-            "miramar", // Florida
+            "mendon", // Vermont
+            "meridian", // Oklahoma
+            "metairie", // Louisiana
+            "metaline", // Washington
+            "metamora", // Ohio
             "merced", // California
+            "miramar", // Florida
+            "mogadore", // Ohio
+            "mondovi", // Wisconsin
+            "montour", // New York
+            "nanticoke", // New York, Pennsylvania
+            "napavine", // Washington
+            "nashoba", // Oklahoma
+            "navassa", // North Carolina
+            "naylor", // Missouri
+            "niangua", // Missouri
+            "nibley", // Utah
+            "niskayuna", // New York
+            "novinger", // Missouri
+            "noxen", // Pennsylvania
+            "noxapater", // Mississippi
+            "nutley", // New Jersey
+            "odessa", // Minnesota et al
             "okoboji", // Iowa
+            "olyphant", // Pennsylvania
+            "oradell", // New Jersey
             "orofino", // Idaho
+            "orovada", // Nevada
+            "ossipee", // North Carolina
+            "ostrander", // Minnesota
+            "owasso", // Oklahoma
             "pahala", // Hawaii
+            "palmyra", // Wisconsin
+            "paxtang", // Pennsylvania
+            "peletier", // North Carolina
+            "pelion", // South Carolina
+            "pepperell", // Massachusetts
             "peshtigo", // Wisconsin
+            "petros", // Oklahoma
+            "pickens", // Mississippi
+            "pierre", // South Dakota
             "pocatello", // Idaho
             "primghar", // Iowa
+            "quinlan", // Oklahoma
             "rathdrum", // Idaho
+            "raphine", // Virginia
+            "ravinia", // South Dakota
+            "reliance", // Wyoming
+            "renovo", // Pennsylvania
+            "revere", // Massachusetts
+            "rhinebeck", // New York
+            "ridgely", // Maryland
+            "ronan", // Montana
+            "rosalia", // Washington
+            "ruidoso", // New Mexico
+            "ryder", // North Dakota
+            "salem", // 
+            "saluda", // North Carolina
             "satsuma", // Alabama
             "screven", // Georgia
             "sedona", // Arizona
+            "seward", // Pennsylvania
+            "shenango", // Pennsylvania
             "sitka", // Alaska
+            "slocum", // Pennsylvania
+            "smyrna", // South Carolina
             "sonora", // California
+            "strathcona", // Minnesota
+            "taconite", // Minnesota
+            "tangier", // Oklahoma
+            "teresita", // Oklahoma
+            "Thayne", // Wyoming
+            "tioga", // Pennsylvania
+            "tonopah", // Nevada
+            "trappe", // Maryland
+            "trempealeau", // Wisconsin
+            "trimble", // Ohio
             "turlock", // California
             "tyronza", // Arkansas
-            "urbana", // Illinois
+            "ukiah", // Oregon
+            "ulmer", // South Carolina
+            "umatilla", // Oregon
+            "umbarger", // Texas
+            "urbana", // Illinois, New York
+            "ursine|ursina", // Nevada/Penn
+            "utica", // Mississippi et al
+            "valier", // Montana
+            "vardaman", // Mississippi
+            "venango", // Pennsylvania
+            "venedocia", // Ohio
+            "venturia", // North Dakota
+            "verdigre|verdigris", // Nebraska/Oklahoma
             "vernon", // Delaware
+            "vesta", // Minnesota
+            "virden", // New Mexico
+            "waverly", // Nebraska
+            "weatherly", // Pennsylvania
+            "wetonka", // South Dakota
+            "whately", // Massachusetts
+            "waldorf", // Minnesota
+            "walhalla", // North Dakota, South Carolina
             "wailuku", // Hawaii
-            "whitaker", // Indiana
-            "yuma" // Arizona
+            "whitaker", // Indiana et al
+            "wildorado", // Texas
+            "wykoff", // Minnesota
+            "Xenia", // Ohio
+            "yacolt", // Washington
+            "yarmouth", // Massachusetts
+            "yarnaby", // Oklahoma
+            "yeadon", // Pennsylvania
+            "yemassee", // South Carolina
+            "yoder", //
+            "yoncalla", // Oregon
+            "yuma", // Arizona
+            "zaneis", // Oklahoma
+            "zebulon", // North Carolina
+            "zena", // Oregon et al
+            "zillah", // Washington
+            "zoar", // Ohio
+            "zumbrota", // Minnesota
+            "zumwalkt" // Oregon
 
         ],
         "mythplace":[
@@ -4213,6 +4418,7 @@
         "feeling": [ // not necessarily emotions, fits the patterns "tower of [feeling]" or "Someone's [feeling]"
             "accomplishment",
             "achievement",
+            "apex",
             "arrogance",
             "assault",
             "atonement",
@@ -4257,6 +4463,7 @@
             "happiness",
             "harmony",
             "havoc",
+            "hazard",
             "hope",
             "horror",
             "independence",
@@ -4694,6 +4901,7 @@
             "kitchen",
             "inferno",
             "inn",
+            "jackpot",
             "jewel",
             "labyrinth",
             "4:landing",
@@ -4740,6 +4948,7 @@
             "prism",
             "prison",
             "prophecy",
+            "prospect",
             "puzzle",
             "quest",
             "question|query",
@@ -4770,6 +4979,7 @@
             "shrine",
             "sigil",
             "skeleton",
+            "sledge",
             "spark",
             "spear",
             "spectre|specter",
