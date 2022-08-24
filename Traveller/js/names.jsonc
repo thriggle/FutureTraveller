@@ -2956,8 +2956,8 @@
             "22:{word}'s {system.noun}",
             "4:{system.mythologicalname}",
             "4:{ship.navalname}",
-            "12:{system.systemwithoutinventedwords}",
-            "1:{system.pastoral}",
+            "10:{system.systemwithoutinventedwords}",
+            "5:{system.pastoral}",
             "16:{system.propernounprefix} {word}",
             "2:{system.propernounprefix} {word}'s",
             "9:{system.noun} of {word}",
@@ -3025,14 +3025,14 @@
             //"1:{system.mythologicalfigure} {system.numeraldesignation}|{system.mythologicalfigure} {system.relativeimportance}|{system.relativeimportanceprefix} {system.mythologicalfigure}",
             
             // Mononames
-            "8:{system.noun}|{system.settlement}|{system.feeling}|{system.material}|{system.mythologicalfigure}|{system.landmark}|{system.bodypart}",
-            "3:The {system.noun|system.settlement|system.mythologicalfigure|system.landmark|system.bodypart}", 
-            "11:{system.mythologicalname}",
-            "4:{ship.navalname|system.feeling}",
-            "2:{system.propernounprefix} {system.mythologicalname|ship.navalname|human.lastname|system.feeling}",
-            "1:{human.popularuslastname|system.realplace}",
-            "125:{system.pastoral}", 
-            "2:{system.mythplace}|{system.propernounprefix|system.relativeimportanceprefix} {system.mythplace}|{system.mythplace} {system.relativeimportance}"
+            "12:{system.noun}|{system.settlement}|{system.feeling}|{system.material}|{system.mythologicalfigure}|{system.landmark}|{system.bodypart}",
+            "5:The {system.noun|system.settlement|system.mythologicalfigure|system.landmark|system.bodypart}", 
+            "15:{system.mythologicalname}",
+            "5:{ship.navalname|system.feeling}",
+            "3:{system.propernounprefix} {system.mythologicalname|ship.navalname|human.lastname|system.feeling}",
+            "2:{human.popularuslastname|system.realplace}",
+            "175:{system.pastoral}", 
+            "3:{system.mythplace}|{system.propernounprefix|system.relativeimportanceprefix} {system.mythplace}|{system.mythplace} {system.relativeimportance}"
         ],
         "latinized":[
             "8:{word.1sylword}ia",
