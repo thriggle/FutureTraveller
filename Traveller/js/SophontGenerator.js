@@ -1,5 +1,6 @@
 function generateRandomAlien(species,rand){
     // species.name, species.homeworld.mainworld
+    species.strangeness = 0;
     setEnvironmentNiche();
     setGender();
     setStats();
@@ -85,7 +86,6 @@ function generateRandomAlien(species,rand){
     function setEnvironmentNiche(){ 
         var tc = species.homeworld.mainworld.tradecodes;
         
-
         var EnvironmentDM = d6() - d6();
         species.nativeTerrain = "Clear";
         var homeworld = species.homeworld.mainworld;
@@ -1189,7 +1189,11 @@ function generateRandomAlien(species,rand){
             species.casteProbabilities[species.caste12] = species.casteProbabilities[species.caste12] ? species.casteProbabilities[species.caste12] + 1 : 1;
             species.castedesc = [];
             for(var i = 0, len = species.castes.length; i < len; i++){
-                species.castedesc.push( species.castes[i]+" " + " ("+(+(species.casteProbabilities[species.castes[i]]) / 36 * 100).toFixed(2)+ "%)" )
+                if(species.castes[i] === "(Skilled)"){
+                    species.castedesc = ["N/A"];
+                }else{
+                    species.castedesc.push( species.castes[i]+" " + " ("+(+(species.casteProbabilities[species.castes[i]]) / 36 * 100).toFixed(2)+ "%)" )
+                }
             }
         }
             
@@ -3120,11 +3124,12 @@ function generateRandomAlien(species,rand){
         return ability;
     }
     function setSpecialAbilities(){
-        species.genderabilities = ["--"];
+        species.genderabilities = ["--"];        
         if(species.genders.length > 1){
+            var determinant = d6();
             species.genderabilities = [];
             for(var i = 0, len = species.genders.length; i < len; i++){
-                var determinant = d6();
+                
                 switch(determinant){
                     case  1:
                         var ability = getSpecialAbility();
@@ -3346,13 +3351,14 @@ function generateRandomAlien(species,rand){
         }
         species.casteabilities = ["--"];
         if(species.castes.length > 1){
+            var determinant = d6();
             species.casteabilities = [];
             for(var i = 0, len = species.castes.length; i < len; i++){
                 var genderIndex = species.genders.indexOf(species.castes[i]);
                 if(genderIndex >= 0){
                     species.casteabilities.push(species.genderabilities[genderIndex]);
                 }else{
-                    var determinant = d6();
+                    
                     switch(determinant){
                         case  1:
                             var ability = getSpecialAbility();
@@ -3530,7 +3536,7 @@ function generateRandomAlien(species,rand){
                                             break;
                                     }
                                 }
-                                if(ability === ability2){ ability2 = "--"; }
+                                if(ability == ability2){ ability2 = "--"; }
                             }
   
                             // no effect if disability for a sense species does not have
