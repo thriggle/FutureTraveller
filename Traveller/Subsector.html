@@ -3332,7 +3332,7 @@
                                                 text = "Orbit "+subsub.decimalOrbit+" ("+subsub.au+" AU): " +addCaps(subsub.worldtype) + " ("+desc+")";
                                                 
                                             }else{
-                                                text = "Orbit " + sat(k) + " ("+subsub.primarysize+"): " +addCaps(subsub.worldtype) + " ("+desc+")";                                                
+                                                text = "Orbit " + sat(k) + " ("+satDistance(k,subsub.primarysize).toString()+"): " +addCaps(subsub.worldtype) + " ("+desc+")";                                                
                                             }
                                             var li = subsublist.appendChild(document.createElement("li"))
                                             li.appendChild(document.createTextNode(text));
