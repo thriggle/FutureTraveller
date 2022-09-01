@@ -230,6 +230,22 @@
         <legend>Controls</legend>
         <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
         <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
+        <select name="slctMapSize" id="slctMapSize">
+            <option value="Subsector">Subsector (8x10)</option>
+            <option value="Quadrant">Quadrant (16x20)</option>
+            <option value="Sector">Sector (32x40)</option>
+        </select>   
+        <select name="slctStellarDensity" id="slctStellarDensity">
+            <option value="Extra Galactic">Extra Galactic (1%)</option>
+            <option value="Rift">Rift (3%)</option>
+            <option value="Sparse">Sparse (17%)</option>
+            <option value="Scattered">Scattered (33%)</option>
+            <option value="Standard" selected="selected">Standard (50%)</option>
+            <option value="Dense">Dense (66%)</option>
+            <option value="Cluster">Cluster (83%)</option>
+            <option value="Core">Core (97%)</option>
+            <option value="Clump">Dense in middle</option>
+        </select>
         <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Map"></label>
             <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Map"></label>
             <label for="btnSaveImg"><input type="button" id="btnSaveImg" name="btnSaveImage" value="Export to .png"/></label>
@@ -274,14 +290,6 @@
         <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes" checked="checked"/> Show Travel Codes</label>
         </fieldset>        
         <fieldset class="collapsed">
-            <legend>Systems</legend>
-            <select name="slctMapSize" id="slctMapSize">
-                <option value="Subsector">Subsector (8x10)</option>
-                <option value="Quadrant">Quadrant (16x20)</option>
-                <option value="Sector">Sector (32x40)</option>
-            </select>         
-            
-            <br/><fieldset class="collapsed">
                 <legend>Configuration</legend>
                 <fieldset class="collapsed">
                     <legend>Astrographics</legend>
@@ -289,17 +297,7 @@
                         <select name="slctMainworldRules" id="slctMainworldRules">
                             <option value="T5">T5</option>
                         </select></label><br/>
-                    <label for="slctStellarDensity">Stellar Density: <select name="slctStellarDensity" id="slctStellarDensity">
-                        <option value="Extra Galactic">Extra Galactic (1%)</option>
-                        <option value="Rift">Rift (3%)</option>
-                        <option value="Sparse">Sparse (17%)</option>
-                        <option value="Scattered">Scattered (33%)</option>
-                        <option value="Standard" selected="selected">Standard (50%)</option>
-                        <option value="Dense">Dense (66%)</option>
-                        <option value="Cluster">Cluster (83%)</option>
-                        <option value="Core">Core (97%)</option>
-                        <option value="Clump">Dense in middle</option>
-                    </select></label><br/>
+                    
                     <label for="slctGGFrequency">Gas Giant Occurrence: <select name="slctGGFrequency" id="slctGGFrequency">
                         <option selected=selected value=8>8- on 2D (T5) 72%</option>
                         <option value=9>9- on 2D (CE) 83%</option>
@@ -338,11 +336,24 @@
                     <label for="chkPermitDieback" title="Dieback worlds have 0 population but TL>0"><input checked="checked" type="checkbox" name="chkPermitDieback" id="chkPermitDieback" /> Permit Dieback Worlds</label>
                     <br/>
                     <label for="chkPopulateNonMainworlds" title="Check to allow population on worlds other than the system's mainworld"><input checked="checked" type="checkbox" name="chkPopulateNonMainworlds" id="chkPopulateNonMainworlds" /> Allow Non-Mainworld Pops</label>
+                    <br/><fieldset>
+                        <legend>Native Life</legend>
+                        <label for="chkGenerateNatives"><input type="checkbox" id="chkGenerateNatives" title="chkGenerateNatives" checked="checked"> Generate Native Sophonts </label><br/>
+                        <label for="slctNativeLikelihood">Likelihood <select id="slctNativeLikelihood">
+                            <option value="really">All Candidate Worlds</option>
+                            <option value="everywhere">Pervasive</option>
+                            <option value="common" selected="selected">Common</option>
+                            <option value="reasonable">Reasonable</option>
+                            <option value="rare">Rare</option>
+                        </select></label>
+                        <br/><span style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Candidate homeworlds have Atmo 2+ and Pop 7+.
+                            <br/>Unless "All Candidate Worlds" selected, natives less likely in exotic atmo.</span>
+                    </fieldset>
                 </fieldset>
                 <fieldset class="collapsed travelcodepickers">
                     <legend>Travel Zones</legend>
-                    <input type="button" value="Remove travel codes" id="btnClearTravelCodes" />
-                    <fieldset>
+                    <input type="button" value="Remove travel codes" id="btnClearTravelCodes" /><br/>
+                    <fieldset class="collapsed">
                         <legend>Automatic Assignment</legend>
                         <input type="button" disabled=true value="Apply travel zones" id="btnApplyTravelCodes" />
                         <input type="button" disabled=true value="Thriggle Defaults" id="btnResetTravelCodes">
@@ -488,46 +499,33 @@
                     </fieldset>
                    
                 </fieldset>
+                
+        </fieldset>
+        
+        <fieldset class="collapsed">
+            <legend>Export/Import</legend>            
+            <fieldset class="collapsed">
+                <legend>T5 Tab Delimited Format</legend>
+                <label for="sectordata"><textarea placeholder="sectordata" title="sectordata" name="sectordata" id="sectordata" cols="150" rows="10"></textarea></label>
+                <br/>
+                <input type="button" value="Export to .tsv" id="btnExportCsv"/>
+                <input type="button" value="Export to .txt" id="btnExportTxt"/>
+                <input type="button" value="Export to .png Poster from TravellerMap.com" id="btnTravellerMapPoster" />
+            </fieldset>
+            <fieldset class="collapsed">
+                <legend>JSON</legend>
+                <label for="data"><textarea title="data" placeholder="data" name="data" id="data" cols="30" rows="10"></textarea></label>
+                <br/>
+                <input type="button" value="Export to .json" id="btnExportJSON"/> 
+                <input type="button" value="Apply above JSON" id="btnApplyData"><br/>
+                <label for="btnImportJSON">Load .json from file: </label><input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/>
             </fieldset>
             
-        </fieldset>
-        <fieldset class="collapsed">
-            <legend>Native Life</legend>
-            <label for="chkGenerateNatives"><input type="checkbox" id="chkGenerateNatives" title="chkGenerateNatives" checked="checked"> Generate Native Sophonts </label><br/>
-            <label for="slctNativeLikelihood">Likelihood <select id="slctNativeLikelihood">
-                <option value="really">All Candidate Worlds</option>
-                <option value="everywhere">Pervasive</option>
-                <option value="common" selected="selected">Common</option>
-                <option value="reasonable">Reasonable</option>
-                <option value="rare">Rare</option>
-            </select></label>
-            <br/><span style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Candidate homeworlds have Atmo 2+ and Pop 7+.
-                <br/>Unless "All Candidate Worlds" selected, natives less likely in exotic atmo.</span>
         </fieldset>
     </fieldset>
     <br/>
     <canvas id="canvas"></canvas>
-    <br/>
-    <fieldset class="collapsed">
-        <legend>Data</legend>
-        <fieldset class="collapsed">
-            <legend>T5 Tab Delimited Format</legend>
-            <label for="sectordata"><textarea placeholder="sectordata" title="sectordata" name="sectordata" id="sectordata" cols="150" rows="10"></textarea></label>
-            <br/>
-            <input type="button" value="Export to .tsv" id="btnExportCsv"/>
-            <input type="button" value="Export to .txt" id="btnExportTxt"/>
-            <input type="button" value="Export to .png Poster from TravellerMap.com" id="btnTravellerMapPoster" />
-        </fieldset>
-        <fieldset class="collapsed">
-            <legend>JSON</legend>
-            <label for="data"><textarea title="data" placeholder="data" name="data" id="data" cols="30" rows="10"></textarea></label>
-            <br/>
-            <input type="button" value="Export to .json" id="btnExportJSON"/> 
-            <input type="button" value="Apply above JSON" id="btnApplyData"><br/>
-            <label for="btnImportJSON">Load .json from file: </label><input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json"/>
-        </fieldset>
-        
-    </fieldset>
+    
     <div id="SystemDetailsContainer" style="display:none;">
         <div id="SystemDetails">
             <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span><span id="dialog_close">X</span></h1>
@@ -1551,6 +1549,10 @@
                             var name = wordMaker.getRandomName("system");
                             while(Object.keys(namesSoFar).indexOf(name) >= 0){
                                 name = wordMaker.getRandomName("system");
+                            }
+                            while(name.indexOf("ths") >= 0){ 
+                                name = name.replace("ths","th");
+
                             }
                             var tcoord = XYCoordToTCoord(x,y);
                             //console.log("Adding " + name + " to " + tcoord);
