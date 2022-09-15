@@ -557,19 +557,25 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     var roughpop = popdigit * Math.pow(10,pop);
     var mainworld = {cultural:cultural, isMainworld:true, roughpop:roughpop, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
     stars = placeWorlds(stars, mainworld, gg, planetoidBelts, d6(2), +maxTechLevel, allowNonMWPops, permitDieback)
-    var totalpop = getTotalPop(stars.primary);
+    var totalpops = getTotalPop(stars.primary);
+    var totalpop = 0;
+    for(var i = 0, len = totalpops.length; i < len; i++){
+        totalpop += totalpops[i] * Math.pow(10,i);
+    }
     return {name:name, economics:economics, pbg:ext(popdigit)+ext(planetoidBelts)+ext(gg), totalpop:totalpop, popdigit:popdigit, allegiance:"Im", uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
 }
-function getTotalPop(star){
-    var total = 0;
+function getTotalPop(star, total){
+    if(typeof total == "undefined"){
+        total = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    }
     for(var i = 0, len = star.satellites.length; i < len; i++){
         if(typeof star.satellites[i] !== "undefined"){
             var sat = star.satellites[i];
             if(sat.pop){
-                total += sat.pop;
+                total[sat.pop] += sat.popdigit ? sat.popdigit : 4;
             }
             if(sat.satellites){
-                total += getTotalPop(sat);
+                total = getTotalPop(sat, total);
             }
         }
     }

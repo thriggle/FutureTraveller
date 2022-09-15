@@ -1571,6 +1571,7 @@
                                     currValue = details.importance.extension;
                                 }else if(i === 9){
                                     currValue = details.totalpop;
+                                    if(currValue > 0){ currValue = Math.round(Math.log10(currValue)); }
                                     var currMin = mins[i], currMax = maxes[i];
                                     if(currValue < currMin){ mins[i] = currValue;}
                                     if(currValue > currMax){ maxes[i] = currValue;}
@@ -2201,7 +2202,11 @@
                             case 6: heatMapValue = hex.system.mainworld.law; break;
                             case 7: heatMapValue = hex.system.mainworld.tech; break;
                             case 8: heatMapValue = hex.system.importance.extension; break;
-                            case 9: heatMapValue = hex.system.totalpop; break;
+                            case 9: 
+                                var currValue = hex.system.totalpop;
+                                if(currValue > 0){ currValue = Math.round(Math.log10(currValue)); }
+                                heatMapValue = currValue; 
+                                break;
                             case 10: heatMapValue = hex.system.economics.RU; break;
                             case 11: 
                                 if(hex.system.natives){ bgColor = "rgb(255,0,0)";}
