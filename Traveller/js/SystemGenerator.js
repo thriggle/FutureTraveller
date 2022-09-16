@@ -729,6 +729,50 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                     }
                 }
             }
+            if(planet.worldtype.indexOf("Giant") > 0){
+                // add gas giant moons
+                var numExistingMoons = 0;
+                if(typeof planet.satellites === "undefined"){
+                    planet.satellites = new Array(26);
+                }else{
+                    numExistingMoons = planet.satellites.filter(function(val,i,arr){return typeof val !== "undefined"}).length;
+                }
+                var moons = planet.satellites;
+                var numAdditionalMoons = d6() - 1 - numExistingMoons;
+                if(numAdditionalMoons > 0){
+                    var diff = orbit - star.HZOrbit;
+                    var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
+                    for(var m = 0; m < numAdditionalMoons; m++){
+                        moons = addSatellite(moons, moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback),planet.size);
+                    }
+                    planet.satellites = moons;
+                }               
+            }else if(planet.worldtype === "BigWorld"){
+                // add bigworld moons
+                var numExistingMoons = 0;
+                if(typeof planet.satellites === "undefined"){
+                    planet.satellites = new Array(26);
+                }else{
+                    numExistingMoons = planet.satellites.filter(function(val,i,arr){return typeof val !== "undefined"}).length;
+                }
+                var moons = planet.satellites;
+                var diff = orbit - star.HZOrbit;
+                var numAdditionalMoons = 0;
+                if(diff < -1){
+                    numAdditionalMoons = d6() - 5 - numExistingMoons;
+                }else if(diff <= 1){
+                    numAdditionalMoons = d6() - 4 - numExistingMoons;
+                }else{
+                    numAdditionalMoons = d6() - 3 - numExistingMoons;
+                }
+                if(numAdditionalMoons > 0){
+                    var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
+                    for(var m = 0; m < numAdditionalMoons; m++){
+                        moons = addSatellite(moons, moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback),planet.size);
+                    }
+                    planet.satellites = moons;
+                }
+            }
         }else{
             while(star.satellites.length === 0){ // if the current star has no available orbits, rotate
                 s++; 
@@ -979,7 +1023,7 @@ function createInnerSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permi
         type = "Hospitable";
     }
     var planet = createPlanet(mw, type, maxSize, maxPop, maxTech, allowNonMWPops, permitDieback);
-    var distanceRoll = d6();
+    var distanceRoll = d6(2);
     var orbit = "??";
     if(distanceRoll <= 7){
         worldtype = "Close "+type+" Satellite";

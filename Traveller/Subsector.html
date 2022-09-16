@@ -3350,7 +3350,7 @@
                                 }
                                 var text = "";
                                 if(!orbitingStar){
-                                    text = "Orbit " +sat(j)+" ("+satDistance(j,subslot.primarysize).toString()+"): " + addCaps(subslot.worldtype) +" ("+desc+")" ;
+                                    text = "Orbit " +sat(j)+" ("+satDistance(j,subslot.primarysize,slot.worldtype.indexOf("Giant") > 0).toString()+"): " + addCaps(subslot.worldtype) +" ("+desc+")" ;
                                 }else{
                                     text =  "Orbit "+subslot.decimalOrbit+" ("+subslot.au+" AU): " + addCaps(subslot.worldtype) +" ("+desc+")";
                                 }
@@ -3402,7 +3402,7 @@
                                                 text = "Orbit "+subsub.decimalOrbit+" ("+subsub.au+" AU): " +addCaps(subsub.worldtype) + " ("+desc+")";
                                                 
                                             }else{
-                                                text = "Orbit " + sat(k) + " ("+satDistance(k,subsub.primarysize).toString()+"): " +addCaps(subsub.worldtype) + " ("+desc+")";                                                
+                                                text = "Orbit " + sat(k) + " ("+satDistance(k,subsub.primarysize,subslot.worldtype.indexOf("Giant") > 0).toString()+"): " +addCaps(subsub.worldtype) + " ("+desc+")";                                                
                                             }
                                             var li = subsublist.appendChild(document.createElement("li"))
                                             li.appendChild(document.createTextNode(text));
@@ -3452,9 +3452,26 @@
             var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
             return orbits[i];
         }
-        function satDistance(i,primarySize){
+        function satDistance(i,primarySize,isGasGiant){
+            if(typeof isGasGiant == "undefined"){isGasGiant = false;}
             var multipliers = [1,2,3,4,5,6,8,10,20,30,40,50,60,70,80,100,150,200,250,300,400,500,600,700,800,1000];
-
+            if(isGasGiant){
+                var sizeCalc = primarySize;
+                switch(sizeCalc){
+                    case 21: primarySize = 30; break;
+                    case 22: primarySize = 40; break;
+                    case 23: primarySize = 50; break;
+                    case 24: primarySize = 60; break;
+                    case 25: primarySize = 70; break;
+                    case 26: primarySize = 80; break;
+                    case 27: primarySize = 90; break;
+                    case 28: primarySize = 125; break;
+                    case 29: primarySize = 180; break;
+                    case 30: primarySize = 220; break;
+                    case 31: primarySize = 250; break;
+                    default: break;
+                }
+            }
             var distance = multipliers[i] * 1000 * primarySize;
             if(distance < 1495978){
                 var strDistanceUnformatted = distance.toString();
