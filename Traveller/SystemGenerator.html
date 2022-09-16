@@ -163,30 +163,42 @@
         }
         function satDistance(i,primarySize){
             var multipliers = [1,2,3,4,5,6,8,10,20,30,40,50,60,70,80,100,150,200,250,300,400,500,600,700,800,1000];
+
             var distance = multipliers[i] * 1000 * primarySize;
             if(distance < 1495978){
                 var strDistanceUnformatted = distance.toString();
                 var strDistance = "";
-                var cursor = strDistanceUnformatted.length - 3
+                var cursor = strDistanceUnformatted.length-1;
+
                 if(strDistanceUnformatted.length > 3){
+                    var counter = 0;
                     while(cursor >= 0){
-                        var segment = strDistanceUnformatted.substring(cursor,cursor+3);
-                        strDistance = segment + "," + strDistance;
-                        cursor -= 3;
+                        var digit = strDistanceUnformatted[cursor];
+                        cursor -=1;
+                        
+                        if(counter%3==0 && counter > 0){
+                            strDistance = digit + "," + strDistance;
+                        }else{
+                            strDistance = digit + strDistance;
+                        }
+                        counter +=1;
                     }
-                    if(cursor < 0 && cursor > -3){
-                        strDistance = strDistanceUnformatted.substring(0,Math.abs(cursor)) + "," + strDistance;
-                    }
-                    strDistance = strDistance.substring(0,strDistance.length-1);
+
                 }else{
                     strDistance = strDistanceUnformatted;
                 }
+                /*for(var j = strDistance.length-1; j >= 0; j--){
+                    if(j % 3 === 0 && j !== 0){
+                        strDistance = strDistance.substring(0,j) + "," + strDistance.substring(j);
+                    }
+                }*/
                 strDistance += " km";
             }else{
                 strDistance = (distance / 149597871).toFixed(2) + " AU";
             }
             return strDistance;// / 149 597 871;
         }        
+            
         
         NameGenerator("js/names.jsonc",function(generator){
             document.getElementById("btnGenerateSystem").addEventListener("click",function(){
