@@ -297,11 +297,11 @@
                         <select name="slctMainworldRules" id="slctMainworldRules">
                             <option value="T5">T5</option>
                         </select></label><br/>
-                    
-                    <label for="slctGGFrequency">Gas Giant Occurrence: <select name="slctGGFrequency" id="slctGGFrequency">
-                        <option selected=selected value=8>8- on 2D (T5) 72%</option>
-                        <option value=9>9- on 2D (CE) 83%</option>
-                    </select></label>
+                        <label for="slctGGFrequency">Gas Giant Occurrence: <select name="slctGGFrequency" id="slctGGFrequency">
+                            <option selected=selected value=8>8- on 2D (T5) 72%</option>
+                            <option value=9>9- on 2D (CE) 83%</option>
+                        </select></label><br/>
+                        <label for="chkApplyHillSphereLimits"><input type="checkbox" checked="checked" id="chkApplyHillSphereLimits" name="chkApplyHillSphereLimits">Limit satellite orbits to Hill sphere</label><br/>
                 </fieldset>
                 <fieldset class="collapsed">
                     <legend>Demographics</legend>
@@ -1557,7 +1557,7 @@
                             var tcoord = XYCoordToTCoord(x,y);
                             //console.log("Adding " + name + " to " + tcoord);
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
-                            var details = generateSystemDetails(addCaps(name), ggFrequency,document.getElementById("chkPermitDieback").checked,maxTechLevel,0,document.getElementById("slctMainworldRules").value,document.getElementById("chkPopulateNonMainworlds").checked);
+                            var details = generateSystemDetails(addCaps(name), ggFrequency,document.getElementById("chkPermitDieback").checked,maxTechLevel,0,document.getElementById("slctMainworldRules").value,document.getElementById("chkPopulateNonMainworlds").checked,document.getElementById("chkApplyHillSphereLimits").checked);
                             //console.log(details);
                             for(var i = 0, len = mins.length; i < len; i++){
                                 var currValue;
