@@ -1150,8 +1150,8 @@ function createInnerSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permi
     if(distanceRoll <= 7){
         worldtype = "Close "+type+" Satellite";
         var roll = d6() - d6();
-        if(roll === -5 ){ orbit =1 ; /*"Bee";*/ }
-        else if(roll <= -4 ){ orbit =2 ; /*"Cee";*/ }
+        if(roll === -5 && planet.size < 2){ orbit =1 ; /*"Bee";*/ }
+        else if(roll <= -4 && planet.size < 2){ orbit =2 ; /*"Cee";*/ }
         else if(roll <= -3){ orbit =3 ; /*"Dee";*/ }
         else if(roll === -2){ orbit =4 ; /*"Ee";*/ }
         else if(roll === -1){ orbit =5 ; /*"Eff";*/ }
@@ -1203,8 +1203,8 @@ function createOuterSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permi
     if(distanceRoll <= 7){
         worldtype = "Close "+type+" Satellite";
         var roll = d6() - d6();
-        if(roll === -5 ){ orbit =1 ; /*"Bee";*/ }
-        else if(roll <= -4 ){ orbit =2 ; /*"Cee";*/ }
+        if(roll === -5 && planet.size < 2){ orbit =1 ; /*"Bee";*/ }
+        else if(roll <= -4 && planet.size < 2){ orbit =2 ; /*"Cee";*/ }
         else if(roll <= -3){ orbit =3 ; /*"Dee";*/ }
         else if(roll === -2){ orbit =4 ; /*"Ee";*/ }
         else if(roll === -1){ orbit =5 ; /*"Eff";*/ }
