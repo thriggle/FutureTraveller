@@ -947,28 +947,27 @@ function getHillSphereLimit(orbit){
     switch(orbit){
         case -0.5:
         case -0.4:
-        case -0.3:
+        case -0.3: limit = 8; break;
         case -0.2:
         case -0.1:
         case 0: 
-        case 0.1:
+        case 0.1: limit = 9; break;
         case 0.2:
         case 0.3:
-        case 0.4:
+        case 0.4: limig = 10; break;
         case 0.5:
-            limit = 9; break; // orbit 0 - J
         case 0.6:
-        case 0.7:
+        case 0.7: limit = 11; break;
         case 0.8:
         case 0.9:
-        case 1: 
+        case 1: limit = 12; break;
         case 1.1:
-        case 1.2:
+        case 1.2: limit = 13; break;
         case 1.3:
         case 1.4:
         case 1.5: 
-            limit = 12; break; // orbit 1 - m
         case 1.6:
+            limit = 14; break; 
         case 1.7:
         case 1.8:
         case 1.9:
@@ -984,40 +983,40 @@ function getHillSphereLimit(orbit){
         case 2.9:
         case 3: 
         case 3.1:
-        case 3.2:
+        case 3.2: limit = 16; break;
         case 3.3:
         case 3.4:
-        case 3.5: limit = 16; break; // orbit 3 - q
+        case 3.5: 
         case 3.6:
-        case 3.7:
+        case 3.7: limit = 17; break;
         case 3.8:
         case 3.9:
         case 4: 
-        case 4.1:
+        case 4.1: limit = 18; break;
         case 4.2:
         case 4.3:
         case 4.4:
-        case 4.5: limit = 18; break; // orbit 4 - s
-        case 4.6:
+        case 4.5: 
+        case 4.6: limit = 19; break;
         case 4.7:
         case 4.8:
         case 4.9:
-        case 5: 
+        case 5: limit = 20; break;
         case 5.1:
-        case 5.2:
+        case 5.2: limit = 21; break;
         case 5.3:
         case 5.4:
-        case 5.5: limit = 20; break; // orbit 5 - u
+        case 5.5: limit = 22; break; 
         case 5.6:
-        case 5.7:
+        case 5.7: limit = 23; break;
         case 5.8:
         case 5.9:
-        case 6: 
+        case 6: limit = 24; break;
         case 6.1:
         case 6.2:
         case 6.3:
         case 6.4:
-        case 6.5: limit = 24; break; // orbit 6 - y
+        case 6.5: limit = 25; break; 
         default: limit = 25; break;
     }
     return limit;
