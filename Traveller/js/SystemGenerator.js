@@ -954,7 +954,7 @@ function getHillSphereLimit(orbit){
         case 0.1: limit = 9; break;
         case 0.2:
         case 0.3:
-        case 0.4: limig = 10; break;
+        case 0.4: limit = 10; break;
         case 0.5:
         case 0.6:
         case 0.7: limit = 11; break;
