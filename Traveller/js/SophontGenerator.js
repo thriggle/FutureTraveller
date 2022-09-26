@@ -3314,6 +3314,16 @@ function generateRandomAlien(species,rand){
                                         }
                                         break;
                                 }
+                                if(
+                                    (species.vision === "Blind" || ability === "Blind") &&
+                                    (species.hearing === "Deaf" || ability === "Deaf") &&
+                                    (species.smell === "Anosmic" || ability === "Anosmic") &&
+                                    (species.aware === "Unaware" || ability === "Unaware") &&
+                                    (species.percep === "Oblivious" || ability === "Oblivious")
+                                ){
+                                    ability2 = "MemTouch";
+                                    reroll = false;
+                                }
                             }
                             if(ability === ability2){ ability2 = "--"; }
                         }
@@ -3507,6 +3517,7 @@ function generateRandomAlien(species,rand){
                                         case 1: 
                                             if(ability === "Vision" || (species.vision !== "Blind" && ability !== "Blind")){
                                                 ability2 = "MemVision";
+                                                reroll = false;
                                             }
                                             break;
                                         case 2:
@@ -3534,6 +3545,16 @@ function generateRandomAlien(species,rand){
                                                 reroll = false;
                                             }
                                             break;
+                                    }
+                                    if(
+                                        (species.vision === "Blind" || ability === "Blind") &&
+                                        (species.hearing === "Deaf" || ability === "Deaf") &&
+                                        (species.smell === "Anosmic" || ability === "Anosmic") &&
+                                        (species.aware === "Unaware" || ability === "Unaware") &&
+                                        (species.percep === "Oblivious" || ability === "Oblivious")
+                                    ){
+                                        ability2 = "MemTouch";
+                                        reroll = false;
                                     }
                                 }
                                 if(ability == ability2){ ability2 = "--"; }
