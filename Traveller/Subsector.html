@@ -1546,15 +1546,9 @@
                             }
                         }
                         if(d6(d) <= target){
-                            var name = wordMaker.getRandomName("system");
-                            while(Object.keys(namesSoFar).indexOf(name) >= 0){
-                                name = wordMaker.getRandomName("system");
-                            }
-                            while(name.indexOf("ths") >= 0){ 
-                                name = name.replace("ths","th");
-
-                            }
+                            
                             var tcoord = XYCoordToTCoord(x,y);
+                            var name = tcoord;
                             //console.log("Adding " + name + " to " + tcoord);
                             namesSoFar[name] = {hexlocation:tcoord,x:x,y:y};
                             var details = generateSystemDetails(addCaps(name), ggFrequency,document.getElementById("chkPermitDieback").checked,maxTechLevel,0,document.getElementById("slctMainworldRules").value,document.getElementById("chkPopulateNonMainworlds").checked,document.getElementById("chkApplyHillSphereLimits").checked);
@@ -1606,7 +1600,20 @@
                         }
                     }
                 }
-                
+                for(var i = 0, len = systemArray.length; i < len; i++){
+                    var name = wordMaker.getRandomName("system");
+                    while(Object.keys(namesSoFar).indexOf(name) >= 0){
+                        console.log(name +" was already taken...")
+                        name = wordMaker.getRandomName("system");
+                    }
+                    while(name.indexOf("ths") >= 0){ 
+                        name = name.replace("ths","th");
+                    }
+                    name = addCaps(name);
+                    var system = systemArray[i];
+                    system.name = name;
+                    systems[system.tcoord].name = name;
+                }
                 analyzeMap(systemArray);
                 document.getElementById("data").value = JSON.stringify(systems);
                 var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);

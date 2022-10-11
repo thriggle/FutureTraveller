@@ -70,7 +70,7 @@
             "s{ept.fortisplosive}w",
             //"5:s{ept.fortisplosive}{ept.approximantnoty}", 
             "sph",
-            "2:x"
+            "1:x"
         ],
         "noninitialonset": [
             "85:{ept.onset}",
@@ -92,26 +92,27 @@
             "4:{ept.twovoicelessstops}",
             "1:{ept.fortisplosive}{ept.voicelessfricative}|x",
             "1:{ept.lateralapproximant}{ept.twovoicelessstops}|{ept.lateralapproximant}{ept.plosive}s|{ept.lateralapproximant}{ept.plosive}z",
-            "3:{ept.organicnasalplosiveplusstop}|{ept.organicnasalplosive}{ept.voicelessfricative}",
+            //"3:{ept.organicnasalplosiveplusstop}|{ept.organicnasalplosive}{ept.voicelessfricative}",
             "1:x",
             "1:xt|xt|xt|kst|ckst"
         ],
         "finalcoda": [
-            "134:{ept.nasal}|{ept.plosive}|{ept.finalaffricate}|{ept.finalvoicedfricative}|{ept.finalvoicelessfricative}|{ept.lateralapproximant}",
-            "1:{ept.nasal}s|{ept.plosive}s|{ept.lateralapproximant}s",
-            "3:{ept.lateralapproximant}{ept.plosive}|{ept.lateralapproximant}{ept.finalaffricate}|{ept.lateralapproximant}{ept.voicedfricative|ept.voicelessfricative}|{ept.lateralapproximant}{ept.nasalnotng}",
-            "1:{ept.lateralapproximant}{ept.plosive}s|{ept.lateralapproximant}{ept.nasalnotng}s",
+            "100:{ept.nasal}|{ept.finalplosive}",
+            "34:{ept.finalaffricate}|{ept.finalvoicedfricative}|{ept.finalvoicelessfricative}|{ept.lateralapproximant}",
+            "1:{ept.nasal}s|{ept.finalplosive}s|{ept.lateralapproximant}s",
+            "3:{ept.lateralapproximant}{ept.finalplosive}|{ept.lateralapproximant}{ept.finalaffricate}|{ept.lateralapproximant}{ept.voicedfricative|ept.voicelessfricative}|{ept.lateralapproximant}{ept.nasalnotng}",
+            "1:{ept.lateralapproximant}{ept.finalplosive}s|{ept.lateralapproximant}{ept.nasalnotng}s",
             "4:{ept.organicnasalplosive}|{ept.finalorganicnasalaffricate}",
             "1:{ept.organicnasalplosive}s",
             "3:{ept.nasal}{ept.finalvoicelessfricative}|{ept.nasal}{ept.voicedfricativewithoutv}",
-            "3:{ept.voicelessfricativewithoutth}{ept.fortisplosive}",
-            "1:{ept.voicelessfricativewithoutth}{ept.fortisplosive}s",
-            //"1:fth","1:fths",
+            "3:{ept.voicelessfricativewithoutth}{ept.finalfortisplosive}",
+            "1:{ept.voicelessfricativewithoutth}{ept.finalfortisplosive}s",
+            // "1:fth","1:fths",
             "4:{ept.twovoicelessstops}",
             "1:{ept.twovoicelessstops}s",
-            "1:{ept.fortisplosive}{ept.voicelessfricative}|x",
+            "1:{ept.finalfortisplosive}{ept.voicelessfricative}|x",
             "1:{ept.lateralapproximant}{ept.twovoicelessstops}|lfth|fth|fths",
-            //"1:{ept.lateralapproximant}{ept.twovoicelessstops}s",
+            // "1:{ept.lateralapproximant}{ept.twovoicelessstops}s",
             "3:{ept.organicnasalplosiveplusstop}|{ept.organicnasalplosive}{ept.finalvoicelessfricative}",
             "1:{ept.organicnasalplosiveplusstop}s|{ept.organicnasalplosiveplusstop}z",
             "1:x",
@@ -170,6 +171,19 @@
             "6:t",
             "2:k",
             "1:k|c"
+        ],
+        "finalplosive": [
+            "10:{ept.finalfortisplosive}",
+            "7:{ept.lenisplosive}"
+        ],
+        "finalfortisplosive": [
+            "20:p",
+            "60:t",
+            "20:k",
+            "10:k|ck",
+            "2:pp",
+            "6:tt",
+            "3:cc|kk"
         ],
         "lenisplosive": [
             "2:b",
@@ -284,8 +298,10 @@
             "j"
         ],
         "finalaffricate": [
-            "ch|ch|tch",
-            "dge|dge|ge|ge|j|jj"
+            "6:ch|ch|tch",
+            "3:dge|ge",
+            "2:j",
+            "1:jj"
         ],
         "fsound": [
             "18:f",
@@ -3519,7 +3535,7 @@
             "Zosimos"
         ],
         "mythologicalname":[
-            "{historicalname}",
+            "{system.historicalname}",
             "Abramelin",
             "Acheron",
             "Achilles",
