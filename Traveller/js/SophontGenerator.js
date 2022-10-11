@@ -1690,12 +1690,12 @@ function generateRandomAlien(species,rand){
         roll = d6() - d6();
         if(roll <= 0){
             species.aware = "Unaware";
-            species.awaredesc = "Cannot perceive auras or electricity/magnetic fields.";
+            species.awaredesc = "Cannot perceive electricity/magnetic fields.";
         }else{
             species.awarenessconstant = getSenseConstant();
             species.awarenessacuity = getAwarenessAcuity();
             species.aware = "A-"+species.awarenessconstant+"-"+species.awarenessacuity;
-            species.awaredesc = "Sensitive to auras, electricity, and magnetic fields.";
+            species.awaredesc = "Sensitive to electricity and magnetic fields.";
         }
     
         roll = d6() - d6();
@@ -3612,7 +3612,7 @@ function generateRandomAlien(species,rand){
             case "Vision": 
                 if(species.vision === "Blind"){
                     var k = parseInt(getSenseConstant(),10)+2;
-                    ab = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands(); 
+                    ab = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands().visionbands; 
                 }else{
                     var constant = parseInt(species.visionconstant,10)+4;
                     ab = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
@@ -3668,7 +3668,7 @@ function generateRandomAlien(species,rand){
             case "Vision": 
                 if(species.vision === "Blind"){
                     var k = parseInt(getSenseConstant(),10);
-                    ab = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands(); 
+                    ab = "V-"+(k < 10 ? "0" + k : k)+"-"+getVisionBands().visionbands; 
                 }else{
                     var constant = parseInt(species.visionconstant,10)+2;
                     ab = "V-"+(constant < 10 ? "0"+constant : constant)+"-"+species.visionbands; 
