@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technology Availability by TL</title>
+</head>
+<style>
+    @font-face {
+        font-family:Bahnschrift;
+        src:url(/Traveller/fonts/BAHNSCHRIFT.TTF);
+    }
+   body{ font-family: Bahnschrift; background-color: #000000; color:rgb(244, 244, 244);}
+   h1{ font-size:1.5em; font-weight:normal;}
+   fieldset{vertical-align:text-top;}
+   fieldset.populated{display:inline-block;}
+   fieldset.empty{display:none;}
+</style>
+<body>
+    
+    <h1>Technology Availability by Tech Level</h1>
+    <label for="numTL">Tech Level: <input type="number" min="0" max="33" value="7" id="numTL"></label>&nbsp; <span id="tl-label"></span><hr>
+    <fieldset>
+        <legend>Interstellar Drives</legend>
+        <fieldset>
+            <legend>Jump</legend>
+            <div id="jump"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Hop</legend>
+            <div id="hop"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Skip</legend>
+            <div id="skip"></div>
+        </fieldset>
+    </fieldset>
+    <fieldset>
+        <legend>In-System Drives</legend>
+        <fieldset>
+            <legend>M-Drive</legend>
+            <div id="mdrive"></div>
+        </fieldset>
+        <fieldset>
+            <legend>NAFAL</legend>
+            <div id="nafal"></div>
+        </fieldset>
+        <fieldset>
+            <legend>G-Drive</legend>
+            <div id="gdrive"></div>
+        </fieldset>
+        <fieldset>
+            <legend>HEPlaR</legend>
+            <div id="hep"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Rocket</legend>
+            <div id="rocket"></div>
+        </fieldset>
+    </fieldset>
+    <fieldset>
+        <legend>Power Plants</legend>
+        <fieldset>
+            <legend>Fission</legend>
+            <div id="fission"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Fusion</legend>
+            <div id="pplant"></div>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Collector</legend>
+            <div id="col"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Anti-Matter</legend>
+            <div id="am"></div>
+        </fieldset>
+        
+    </fieldset>
+    <script>
+        var input = document.getElementById("numTL");
+        var jumpContainer = document.getElementById("jump"),
+            hopContainer = document.getElementById("hop"),
+            skipContainer = document.getElementById("skip"),
+            rocketContainer = document.getElementById("rocket"), 
+            nafalContainer = document.getElementById("nafal"), 
+            mContainer = document.getElementById("mdrive"),
+            hepContainer = document.getElementById("hep"),
+            gContainer = document.getElementById("gdrive"),
+            pContainer = document.getElementById("pplant"),
+            amContainer = document.getElementById("am"),
+            colContainer = document.getElementById("col"),
+            fContainer = document.getElementById("fission");
+        var stages = [
+            {desc:"Ultimate", mod:4},
+            {desc:"Advanced", mod:3},
+            {desc:"Modified", mod:2},
+            {desc:"Improved/Generic", mod:1},
+            {desc:"Standard/Basic", mod:0},
+            {desc:"Early", mod:-1},
+            {desc:"Prototype", mod:-2},
+            {desc:"Experimental", mod:-3}
+        ];
+        var tldescs = [
+            "TL0 - Neolithic",
+            "TL1 - Bronze/Iron Age",
+            "TL2 - Age of Sail",
+            "TL3 - Industrial Revolution",
+            "TL4 - Mechanized Age",
+            "TL5 - Broadcast Age",
+            "TL6 - Atomic Age",
+            "TL7 - Space Age",
+            "TL8 - Information Age",
+            "TL9 - Gravitics Age",
+            "TL10 - Basic Fusion Age",
+            "TL11 - FusionPlus Age",
+            "TL12 - Positronics Age",
+            "TL13 - Cloning Age",
+            "TL14 - Geneering Age",
+            "TL15 - Anagathics Age",
+            "TL16 - Artificial Persons Age",
+            "TL17 - Personality Transfer Age",
+            "TL18 - Exotics Age",
+            "TL19 - Antimatter Age",
+            "TL20 - Skip Drive Age",
+            "TL21 - Stasis Age",
+            "TL22 - Planet-scrubber Age",
+            "TL23 - Psychohistory Age",
+            "TL24 - Rosette Age",
+            "TL25 - Psionic Engineering Age",
+            "TL26 - Star Energy Age",
+            "TL27 - Ringworlds Age",
+            "TL28 - Reality Engineering Age",
+            "TL29 - Dyson Sphere Age",
+            "TL30 - Remote Technology Age",
+            "TL31 - Pocket Universes Age",
+            "TL32 - Whatever You Want Age",
+            "TL33 - The Technological Singularity"
+        ];
+        input.addEventListener("change",function(e){evaluateTL(Number(e.target.value)); });
+        evaluateTL(Number(input.value));
+        function evaluateTL(tl){
+            document.getElementById("tl-label").innerHTML = tldescs[tl];
+            cpbl(jumpContainer,"Jump",tlJump,tl);
+            cpbl(mContainer,"M-Drive",tlM, tl);
+            cpbl(gContainer,"G-Drive",tlG, tl);
+            cpbl(pContainer,"Power Plant", tlPower, tl);
+            cpbl(fContainer,"Fission",tlFission,tl);
+            cpbl(amContainer,"Anti-Matter",tlAM,tl);
+            cpbl(hopContainer,"Hop",tlHop,tl);
+            cpbl(skipContainer,"Skip",tlSkip,tl);
+            cpbl(rocketContainer,"Rocket",tlRocket,tl);
+            cpbl(nafalContainer,"NAFAL",tlNAFAL,tl);
+            cpbl(hepContainer,"HEPlaR",tlHep,tl);
+            cpbl(colContainer,"Collector",tlCol,tl);
+            var fieldsets = document.querySelectorAll("fieldset > div");
+            for(var i = 0, len = fieldsets.length; i < len; i++){
+                var div = fieldsets[i]; //set.querySelector("div");
+                var set = div.parentNode;
+                if(div){
+                    if(div.childNodes.length > 0){
+                        set.className = "populated";
+                    }else{
+                        set.className = "empty";
+                    }
+                }
+            }
+        }
+        function cpbl(el, dsc, evl, tl){
+            while(el.childNodes.length > 0){
+                el.removeChild(el.childNodes[0]);
+            }
+            var lp = 0;
+            for(var i = 0, len = stages.length; i < len; i++){
+                var exclude = false;
+                var mod = stages[i].mod;
+                var p = evl(tl - mod);
+                //console.log(stages[i].desc + " TL" + tl+" " + dsc + "="+p);
+                if(p != lp || mod >= 0){
+                    lp = p;
+                    if(p > 0){
+                        var desc = stages[i].desc;
+                        var text = desc + " " + dsc +"-"+p;
+                        
+                        if(p === evl(tl - 2) && p === evl(tl)){
+                            if(mod === 0 || mod === 1){
+                                exclude = true;
+                            }else if(mod === 2){
+                                text = "<strong>" + text + "</strong>";
+                                exclude = false;
+                            }
+                        }else if(p === evl(tl - 1) && p === evl(tl)){
+                            if(mod === 0){
+                                exclude = true;
+                            }else if(mod === 1){
+                                text = "<strong>" + text + "</strong>";
+                                exclude = false;
+                            }
+                        }else if(mod === 0){ 
+                            text = "<strong>" + text + "</strong>";
+                        }
+                        
+                        if(!exclude){
+                            console.log(text);
+                            el.insertAdjacentHTML("afterbegin",text+"<br/>");
+                        }
+                    }
+                }
+            }
+        }
+        function tlPower(tl){
+            var max = 0;
+            if(tl >= 8 && tl < 16){
+                max = tl - 7;
+            }else if(tl >= 16){
+                max = 9;
+            }
+            return max;
+        }
+        function tlAM(tl){
+            var max = 0;
+            if(tl >= 19 && tl < 27){
+                max = tl - 18;
+            }else if(tl >= 27){
+                max = 9;
+            }
+            return max;
+        }
+        function tlCol(tl){
+            var max = 0;
+            if(tl >= 14 && tl < 22){
+                max = tl - 13;
+            }else if(tl >= 22){
+                max = 9;
+            }
+            return max;
+        }
+        function tlFission(tl){
+            var max = 0;
+            if(tl >= 7 && tl < 15 ){
+                max = tl - 6;
+            }else if(tl >= 15){
+                max = 9;
+            }
+            return max;
+        }
+        function tlM(tl){
+            var max = 0;
+            if(tl === 9){ max = 1;}
+            else if(tl === 10){ max = 3;}
+            else if(tl === 11){ max = 5;}
+            else if(tl === 12){ max = 7;}
+            else if(tl >= 13){ max = 9;}
+            return max;
+        }
+        function tlHep(tl){
+            var max = 0;
+            if(tl === 8){ max = 1;}
+            else if(tl === 9){ max = 3;}
+            else if(tl === 10){ max = 5;}
+            else if(tl === 11){ max = 7;}
+            else if(tl >= 12){ max = 9;}
+            return max;
+        }
+        function tlG(tl){
+            var max = 0;
+            if(tl === 8){ max = 1;}
+            else if(tl === 9){ max = 4;}
+            else if(tl === 10){ max = 7;}
+            else if(tl >= 11){ max = 9;}
+            return max;
+        }
+        function tlNAFAL(tl){
+            var max = 0;
+            if(tl === 9){ max = 1;}
+            else if(tl === 10){ max = 4;}
+            else if(tl === 11){ max = 7;}
+            else if(tl >= 12){ max = 9;}
+            return max;
+        }
+        function tlRocket(tl){
+            var max = 0;
+            if(tl === 7){ max = 1;}
+            else if(tl === 8){ max = 4;}
+            else if(tl === 9){ max = 7;}
+            else if(tl >= 10){ max = 9;}
+            return max;
+        }
+        function tlJump(tl){
+            var max = 0;
+            if(tl >= 9 && tl <= 10){ max = 1;}
+            else{ max = Math.max(0,Math.min(9, tl - 9)); }
+            return max; 
+        }
+        function tlHop(tl){
+            var max = 0;
+            if(tl >= 17 && tl <= 18){ max = 1;}
+            else{ max = Math.max(0,Math.min(9, tl - 17));}
+            return max;
+        }
+        function tlSkip(tl){
+            var max = 0;
+            if(tl >= 20 && tl <= 21){ max = 1;}
+            else{ max = Math.max(0,Math.min(9, tl - 20));}
+            return max;
+        }
+    </script>
+</body>
+</html>
