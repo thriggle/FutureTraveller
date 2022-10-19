@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stat Roll</title>
+</head>
+<body>
+    <style>
+        .die{ display:inline-block; padding:2px; border:0.1rem solid black; text-align:center; width:1rem; height:1rem;}
+        .attr{border:1px solid black; border-radius: 0.2rem; width:1.5rem; display:inline-block; height:1rem; text-align:center; vertical-align: middle;}
+        [draggable="true"]{cursor:pointer; padding:2px;}
+        [draggable="true"]:hover{background-color: #dfdfdf;}
+        .main{display:table; width:39rem;}
+        .row{display:table-row;}
+        .cell{display:table-cell; width:50%;}
+        .attributes{border:1px solid black; border-radius:5px;}
+    </style>
+    <input type="button" value="reroll"> <br>
+    <div class="main">
+        <div class="row">
+            <div class="cell">
+                <fieldset>
+                    <legend>Characteristics 1 and 2 = <span data-add="s1,s2"></span> points</legend>
+                    D1= <input type="range" min=1 max=6 data-input="d1" value=3> = <span data-output="d1"></span><br>
+                    <input type="range" min=0 max=9 value=5 data-input="s1" /> C1= <span data-output="s1"></span> + <span data-output="d1"></span> = <span id="c1" data-add="s1,d1" draggable="true"></span><br/>
+                    <input type="range" min=0 max=9 value=5 data-input="s2" /> C2= <span data-output="s2"></span> - <span data-output="d1"></span> = <span id="c2" data-subtract="s2,d1" draggable="true"></span><br/>
+                </fieldset>
+                <fieldset>
+                    <legend>Characteristics 3 and 4 = <span data-add="s3,s4"></span> points</legend>
+                    D2= <input type="range" min=1 max=6 data-input="d2" value=3> = <span data-output="d2"></span><br>
+                    <input type="range" min=0 max=9 value=5 data-input="s3" /> C3= <span data-output="s3"></span> + <span data-output="d2"></span> = <span id="c1" data-add="s3,d2" draggable="true"></span><br/>
+                    <input type="range" min=0 max=9 value=5 data-input="s4" /> C4= <span data-output="s4"></span> - <span data-output="d2"></span> = <span id="c2" data-subtract="s4,d2" draggable="true"></span><br/>
+                </fieldset>
+                <fieldset>
+                    <legend>Characteristics 5 and 6 = <span data-add="s5,s6"></span> points</legend>
+                    D3= <input type="range" min=1 max=6 data-input="d3" value=3> = <span data-output="d3"></span><br>
+                    <input type="range" min=0 max=9 value=5 data-input="s5" /> C3= <span data-output="s5"></span> + <span data-output="d3"></span> = <span id="c1" data-add="s5,d3" draggable="true"></span><br/>
+                    <input type="range" min=0 max=9 value=5 data-input="s6" /> C4= <span data-output="s6"></span> - <span data-output="d3"></span> = <span id="c2" data-subtract="s6,d3" draggable="true"></span><br/>
+                </fieldset>
+            </div>
+            <div class="cell attributes">
+                <div>Str <span id="Char1" class="attr" draggable="true"></span></div>
+                <div>Dex <span id="Char2" class="attr" draggable="true"></span></div>
+                <div>End <span id="Char3" class="attr" draggable="true"></span></div>
+                <div>Int <span id="Char4" class="attr" draggable="true"></span></div>
+                <div>Edu <span id="Char5" class="attr" draggable="true"></span></div>
+                <div>Soc <span id="Char6" class="attr" draggable="true"></span></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var btnRoll = document.querySelector("input[type=\"button\"][value=\"reroll\"]");
+        btnRoll.addEventListener("click",reroll);
+        var sliders = document.querySelectorAll("[data-input]");
+        for(var i = 0, len = sliders.length; i < len; i++){
+            sliders[i].addEventListener("input",updateSliderValues);
+        }
+        var outputs = document.querySelectorAll("[data-add],[data-subtract],span.attr");
+        for(var i = 0, len = outputs.length; i < len; i++){
+            outputs[i].addEventListener("dragstart",function(ev){
+                ev.dataTransfer.setData("text/plain",ev.target.innerText);
+                ev.dataTransfer.setData("source",ev.target.id);
+                ev.dataTransfer.dropEffect = "move";
+            });
+        }
+        var targets = document.querySelectorAll("span.attr");
+        for(var i = 0, len = targets.length; i < len; i++){
+            var target = targets[i];
+            (function(target){
+                targets[i].parentElement.ondrop = function(ev){
+                    ev.preventDefault();
+                    var data = ev.dataTransfer.getData("text/plain");
+                    var old = target.innerText;
+                    target.innerHTML = data;
+                    var src = ev.dataTransfer.getData("source");
+                    if(src){
+                        document.getElementById(src).innerHTML = old;
+                    }
+                }
+
+            })(target);
+            targets[i].parentElement.ondragover = function(ev){ev.preventDefault(); ev.dataTransfer.dropEffect = "move";};
+        }
+        reroll();
+        updateSliderValues();
+        function reroll(){
+            var rolls = document.querySelectorAll("[data-input*=\"d\"]");
+            for(var i = 0, len = rolls.length; i < len; i++){
+                rolls[i].value = (Math.random()*6+1)>>>0;
+                updateLabels(rolls[i]);
+            }
+            recalculate();
+        }
+        function updateSliderValues(){
+            for(var i = 0, len = sliders.length; i < len; i++){
+                var slider = sliders[i];
+                updateLabels(slider);
+            }
+            recalculate();
+        }
+        function updateLabels(input){
+            var labels = document.querySelectorAll("[data-output=\""+input.getAttribute("data-input")+"\"]");
+            for(var j = 0, jlen = labels.length; j < jlen; j++){
+                labels[j].innerHTML = input.value;
+            }
+        }
+        function recalculate(){
+            var adds = document.querySelectorAll("[data-add]");
+            for(var i = 0, len = adds.length; i < len; i++){
+                var add = adds[i];
+                var props = add.getAttribute("data-add").split(",");
+                var sum = Number(document.querySelector("[data-input=\""+props[0] + "\"]").value) + Number(document.querySelector("[data-input=\""+props[1] + "\"]").value);
+                add.innerHTML = sum;
+            }
+            var subtracts = document.querySelectorAll("[data-subtract]");
+            for(var i = 0, len = subtracts.length; i < len; i++){
+                var subtract = subtracts[i];
+                var props = subtract.getAttribute("data-subtract").split(",");
+                var diff = Number(document.querySelector("[data-input=\""+props[0] + "\"]").value) - Number(document.querySelector("[data-input=\""+props[1] + "\"]").value);
+                subtract.innerHTML = diff;
+            }
+            var targets = document.querySelectorAll("span.attr");
+            for(var i = 0, len = targets.length; i < len; i++){
+                targets[i].innerHTML = "";
+            }
+        }
+    </script>
+</body>
+</html>
