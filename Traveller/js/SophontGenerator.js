@@ -3766,34 +3766,36 @@ function generateRandomAlien(species,rand){
             case 7: species.size = nD * 84; break;
             case 8: species.size = nD * 96; break;
         }
-        var bfp = d6(2) + 2;
+        var bfp = 8 + d6() - d6();
         var planetSize = species.homeworld.mainworld.size;
         if(planetSize <= 1){ bfp +=1;}
         if(planetSize <= 4){ bfp +=1; }
         if(planetSize <= 6){ bfp +=1;}
-        if(planetSize >= 9){ bfp -=1;}
-        if(planetSize >= 11){ bfp -=1;}
         if(species.sizeclass === "Oversize"){ bfp -= 1;}
-        if(species.locomotion === "Swim" || species.locomotion === "Diver"){ bfp += 10;}
-        if(species.locomotion === "Triphib" || species.locomotion === "Flyphib"){ bfp += 20;}
-        if(species.locomotion === "Flyer"){
-            if(species.bodystructure.indexOf("W") >= 0){
-             bfp += (posFlux() * 15);
-            }else{
-                bfp -= 1;
-            }
+        if(species.locomotion === "Amphib"){ bfp += Math.floor(posFlux()/2);}
+        if(species.locomotion === "Swim" || species.locomotion === "Diver"){ bfp += posFlux();}
+        if(species.locomotion === "Triphib" || species.locomotion === "Flyphib" || (species.locomotion === "Flyer" && species.bodystructure.indexOf("W") >= 0)){ 
+            bfp += Math.max(1,Math.floor(d6()/2))+1;
+        }else{
+            if(planetSize >= 9){ bfp -=1;}
+            if(planetSize >= 11){ bfp -=1;}
         }
-        species.bfp = bfp;
-        if(bfp <= 5){ species.bfpdesc = "Compact"; }
+        if(species.locomotion === "Flyer" && species.bodystructure.indexOf("W") < 0){
+            bfp -= 1;
+        }
+        bfp = Math.max(1,bfp);
+        if(bfp <= 2){ species.bfpdesc = "Globular";}
+        else if(bfp <= 5){ species.bfpdesc = "Compact"; }
         else if(bfp <= 7){ species.bfpdesc = "Thick"; }
         else if(bfp <= 9){ species.bfpdesc = "Typical"; }
         else if(bfp <= 11){ species.bfpdesc = "Slender"; }
         else if(bfp <= 20){ species.bfpdesc = "Elongated"; }
         else{ species.bfpdesc = "Extremely Thin"; }
+        species.bfp = bfp;
         species.height = getHeight(species.size, species.bfp);
     }
     function getHeight(size, bfp){
-        if(bfp > 15){ return ">3 m";}
+        if(bfp > 15){ return ">3 m";}else if(bfp < 1){ bfp = 1;}
         var sizes = [36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 180,
         240, 300, 360, 420, 480, 540, 600, 660, 720, 780, 840, 900, 960,1020, 1080, 1140, 1200, 1800];
         var heightsByBFP = [
