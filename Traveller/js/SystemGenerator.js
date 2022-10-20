@@ -567,7 +567,15 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     for(var i = 0, len = totalpops.length; i < len; i++){
         totalpop += totalpops[i] * Math.pow(10,i);
     }
-    return {name:name, economics:economics, pbg:ext(popdigit)+ext(planetoidBelts)+ext(gg), totalpop:totalpop, popdigit:popdigit, allegiance:"Im", uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
+    // nobility
+    var nobility = ["B"];
+    if(mainworld.tradecodes.indexOf("Pa") >= 0 || mainworld.tradecodes.indexOf("Pr") >= 0){ nobility.push("c"); }
+    if(mainworld.tradecodes.indexOf("Ag") >= 0 || mainworld.tradecodes.indexOf("Ri") >= 0){ nobility.push("C"); }
+    if(mainworld.tradecodes.indexOf("Pi") >= 0){ nobility.push("D");}
+    if(mainworld.tradecodes.indexOf("Ph") >= 0){ nobility.push("e");}
+    if(mainworld.tradecodes.indexOf("In") >= 0 || mainworld.tradecodes.indexOf("Hi") >= 0){ nobility.push("E"); }
+    if(isImportant){ nobility.push("f");}
+    return {name:name, nobility:nobility, economics:economics, pbg:ext(popdigit)+ext(planetoidBelts)+ext(gg), totalpop:totalpop, popdigit:popdigit, allegiance:"Im", uwp:uwp, bases:bases,stars:stars,gg:gg,planetoidBelts:planetoidBelts,  importance:{weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc}, mainworld:mainworld,tradecodes:tradecodes};
 }
 function getTotalPop(star, total){
     if(typeof total == "undefined"){

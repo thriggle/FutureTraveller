@@ -248,7 +248,7 @@
         </select>
         <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems" value="Populate Map"></label>
             <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems" value="Clear Map"></label>
-            <label for="btnSaveImg"><input type="button" id="btnSaveImg" name="btnSaveImage" value="Export to .png"/></label>
+            <label for="btnSaveImg"><input type="button" id="btnSaveImg" name="btnSaveImage" value="Save .png"/></label>
             <br/>
         <fieldset class="collapsed">
             <legend>Appearance</legend>                
@@ -336,7 +336,12 @@
                     <label for="chkPermitDieback" title="Dieback worlds have 0 population but TL>0"><input checked="checked" type="checkbox" name="chkPermitDieback" id="chkPermitDieback" /> Permit Dieback Worlds</label>
                     <br/>
                     <label for="chkPopulateNonMainworlds" title="Check to allow population on worlds other than the system's mainworld"><input checked="checked" type="checkbox" name="chkPopulateNonMainworlds" id="chkPopulateNonMainworlds" /> Allow Non-Mainworld Pops</label>
-                    <br/><fieldset>
+                    <br/><fieldset class="collapsed">
+                        <legend>Capitals</legend>
+                        <label for="chkDesignateSubsectorCapitals">Designate Subsector Capital(s) <input checked="checked" type="checkbox" id="chkDesignateSubsectorCapitals"></label><br/>
+                        <label for="chkDesignateSectorCapital">Designate Sector Capital <input checked="checked" type="checkbox" id="chkDesignateSectorCapital"></label>
+                    </fieldset>
+                    <br/><fieldset class="collapsed">
                         <legend>Native Life</legend>
                         <label for="chkGenerateNatives"><input type="checkbox" id="chkGenerateNatives" title="chkGenerateNatives" checked="checked"> Generate Native Sophonts </label><br/>
                         <label for="slctNativeLikelihood">Likelihood <select id="slctNativeLikelihood">
@@ -514,7 +519,7 @@
             </fieldset>
             <fieldset class="collapsed">
                 <legend>JSON</legend>
-                <label for="data"><textarea title="data" placeholder="data" name="data" id="data" cols="30" rows="10"></textarea></label>
+                <label for="data"><textarea title="data" placeholder="data" name="data" id="data" cols="45" rows="5"></textarea></label>
                 <br/>
                 <input type="button" value="Export to .json" id="btnExportJSON"/> 
                 <input type="button" value="Apply above JSON" id="btnApplyData"><br/>
@@ -531,7 +536,7 @@
             <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span><span id="dialog_close">X</span></h1>
             <h2><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span></h2>
             <h3 style="font-weight:normal; font-size:medium;" data-mainworld="tradecodes" data-lookup="tradecode" data-join=", " ></h3>
-            <h3 style="font-weight: normal; font-family:'Consolas','Inconsolas','Courier New', Courier, monospace; font-size:small;"><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} (<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>) [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>]</h3>
+            <h3 style="font-weight: normal; font-family:'Consolas','Inconsolas','Courier New', Courier, monospace; font-size:small;"><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes" data-mainworld="tradecodes" data-join=" "></span> {<span data-importance="extension" title="Importance Extension" data-showsign="true">Importance</span>} (<span title="Economic Extension: Resources, Labor, Infrastructure, +Efficiency" data-economics="extension">Economics</span>) [<span title="Cultural Extension: Heterogeneity, Acceptance, Strangness, Symbols" data-culture="extension">Culture</span>] <span title="Nobility" data-system="nobility" data-join=""></span></h3>
             <h3 style="color:darkred"><span data-system="travelcodenotes"></span></h3>
             <fieldset>
                 <legend>Importance and Economy</legend>
@@ -542,6 +547,7 @@
                     <span class="subtitle">Gas Giants:</span> <span class="subnormal" data-system="gg" data-ifblank="None" >None</span> 
                     <span class="subtitle">Planetoid Belts:</span> <span class="subnormal" data-system="planetoidBelts" data-ifblank="None" >None</span> 
                 </h4>
+                <h4><span class="subtitle">Nobility:</span> <span class="subnormal" data-system="nobility" data-lookup="nobility" data-join=", " ></span></h4>
             </fieldset>
             
             <fieldset>
@@ -1057,6 +1063,7 @@
                 HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)",
                 CANVAS_BACKGROUND_COLOR = "rgb(50,50,50)",
                 CAPITAL_TEXT_COLOR = "rgb(255,100,100)",
+                SECTORCAPITAL_TEXT_COLOR = "rgb(255,20,20)",
                 CAPITAL_BACKGROUND_COLOR = "black",
                 TEXT_COLOR = "white",
                 CANVAS_PADDING = 20,
@@ -1516,6 +1523,8 @@
                 var density = document.getElementById("slctStellarDensity").value;
                 var permitDieback = document.getElementById("chkPermitDieback").checked;
                 var maxTechLevel = document.getElementById("slctMaxTechLevel").value;
+                var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                 var d = 1, target = 3, systems = {};
                 switch(density){
                     case "Extra Galactic": d = 3, target = 3; break;
@@ -1593,7 +1602,8 @@
                                 pbg: details.pbg,
                                 allegiance: details.allegiance,
                                 isRed:false,
-                                isAmber:false
+                                isAmber:false,
+                                nobility:details.nobility
                             };
                             systems[tcoord] = system;
                             systemArray.push(system);
@@ -1614,7 +1624,7 @@
                     system.name = name;
                     systems[system.tcoord].name = name;
                 }
-                analyzeMap(systemArray);
+                analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
                 document.getElementById("data").value = JSON.stringify(systems);
                 var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
                 applyTravelCodes(mapContent);
@@ -1666,7 +1676,7 @@
                 console.log(lifecount +" natives generated.");
             }
             function getSectorData(map){
-                var sectordata = "Hex\tName\tUWP\tBases\tRemarks\tZone\tPBG\tAllegiance\tStars\t{Ix}\t(Ex)\t[Cx]";
+                var sectordata = "Hex\tName\tUWP\tBases\tRemarks\tZone\tPBG\tAllegiance\tStars\t{Ix}\t(Ex)\t[Cx]\tN";
                 for(var i = 0, len = map.length; i < len; i++){
                     if(typeof map[i].system !== "undefined"){
                         var system = map[i].system;
@@ -1682,7 +1692,8 @@
                         + getStarsAbbrev(system.stars) + "\t"
                         + "{"+(system.importance.extension>0?"+":"")+system.importance.extension+"}\t"
                         + "("+system.economics.extension+")\t"
-                        + "["+system.mainworld.cultural.extension+"]";
+                        + "["+system.mainworld.cultural.extension+"]\t"
+                        + system.nobility.join("");
                     }
                 }
                 return sectordata;
@@ -1735,8 +1746,22 @@
                 }
                 return text;
             }
-            function analyzeMap(systemArray){
+            function analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital){
                 var capital, maxImportance = -4, tradeCodeCount = 0;
+                var subsectorMaxImportance = 
+                [
+                    -4, -4, -4, -4,
+                    -4, -4, -4, -4,
+                    -4, -4, -4, -4,
+                    -4, -4, -4, -4
+                ];
+                var subsectorCapitals = 
+                [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null
+                ];
                 var uwpSums = [0,0,0,0,0,0,0], 
                 uwpMins = [null,null,null,null,null,null,null], 
                 uwpMaxes = [null,null,null,null,null,null,null];
@@ -1764,6 +1789,65 @@
                         if(system.isAmber){importance -= 1; }
                         if(mainworld.starport === "A"){ importance += 1; }
                         var xy = TCoordToXYCoord(system.tcoord);
+
+                        if(designateSubsectorCapitals){
+                            // to do
+                            var subsectorIndex = -1;
+                            if(xy.y <= 9){
+                                if(xy.x <= 7){
+                                    subsectorIndex = 0;
+                                }else if(xy.x > 7 && xy.x <= 15){
+                                    subsectorIndex = 1;
+                                }else if(xy.x > 15 <= 23){
+                                    subsectorIndex = 2;
+                                }else if(xy.x > 23 <= 31){
+                                    subsectorIndex = 3;
+                                }
+                            }else if(xy.y > 9 && xy.y <= 19){
+                                if(xy.x <= 7){
+                                    subsectorIndex = 4;
+                                }else if(xy.x > 7 && xy.x <= 15){
+                                    subsectorIndex = 5;
+                                }else if(xy.x > 15 <= 23){
+                                    subsectorIndex = 6;
+                                }else if(xy.x > 23 <= 31){
+                                    subsectorIndex = 7;
+                                }
+                            }else if(xy.y > 19 && xy.y <= 29){
+                                if(xy.x <= 7){
+                                    subsectorIndex = 8;
+                                }else if(xy.x > 7 && xy.x <= 15){
+                                    subsectorIndex = 9;
+                                }else if(xy.x > 15 <= 23){
+                                    subsectorIndex = 10;
+                                }else if(xy.x > 23 <= 31){
+                                    subsectorIndex = 11;
+                                }
+                            }else if(xy.y > 29 && xy.y <= 39){
+                                if(xy.x <= 7){
+                                    subsectorIndex = 12;
+                                }else if(xy.x > 7 && xy.x <= 15){
+                                    subsectorIndex = 13;
+                                }else if(xy.x > 15 <= 23){
+                                    subsectorIndex = 14;
+                                }else if(xy.x > 23 <= 31){
+                                    subsectorIndex = 15;
+                                }
+                            }
+                                
+                            system.subsectorIndex = subsectorIndex;
+                            if(importance > subsectorMaxImportance[subsectorIndex]){
+                                subsectorCapitals[subsectorIndex] = system;
+                                subsectorMaxImportance[subsectorIndex] = importance;
+                                tradeCodeCount = system.mainworld.tradecodes.length | 0;
+                            }else if(importance === subsectorMaxImportance[subsectorIndex]){
+                                if(system.mainworld.tradecodes && system.mainworld.tradecodes.length > tradeCodeCount){
+                                    subsectorCapitals[subsectorIndex] = system;
+                                    subsectorMaxImportance[subsectorIndex] = importance;
+                                }
+                            }
+                        }
+
                         var desiredXFromBorder = SUBSECTOR_WIDTH/8;
                         var desiredYFromBorder = SUBSECTOR_HEIGHT/8;
                         var withinDesiredXRange = (xy.x > desiredXFromBorder && xy.x < SUBSECTOR_WIDTH - desiredXFromBorder);
@@ -1780,7 +1864,7 @@
                         }
                         if(withinDesiredXRange && withinDesiredYRange){
                             importance += 1;
-                        }
+                        }                        
                         if(importance > maxImportance){
                             capital = system;
                             maxImportance = importance;
@@ -1800,12 +1884,38 @@
                         // figure out the colony owner here!
                     }              
                 }
-                if(capital){
-                    capital.isCapital = true;
-                    capital.mainworld.tradecodes.push("Cp");
-                    capital.mainworld.tradecodes.sort();
+                
+                if(designateSubsectorCapitals){
+                    for(var i = 0, len = subsectorCapitals.length; i < len; i++){
+                        if(subsectorCapitals[i]){
+                            subsectorCapitals[i].isCapital = true;
+                            subsectorCapitals[i].mainworld.tradecodes.push("Cp");
+                            subsectorCapitals[i].mainworld.tradecodes.sort();
+                            var indexOfLesserDuke = subsectorCapitals[i].nobility.indexOf("f");
+                            if(indexOfLesserDuke){
+                                subsectorCapitals[i].nobility.splice(indexOfLesserDuke,indexOfLesserDuke+1)
+                            }
+                            subsectorCapitals[i].nobility.push("F"); 
+                        }
+                    }
+                    
                 }
-               
+                if(capital && designateSectorCapital){
+                    capital.isCapital = true;
+                    capital.mainworld.tradecodes.push("Cs");
+                    var subsectorCapitalCodeIndex = capital.mainworld.tradecodes.indexOf("Cp");
+                    if(subsectorCapitalCodeIndex >= 0){
+                        capital.mainworld.tradecodes.splice(subsectorCapitalCodeIndex,1);
+                    }
+                    capital.mainworld.tradecodes.sort();
+                    var indexOfLesserDuke = capital.nobility.indexOf("f");
+                    if(indexOfLesserDuke){
+                        capital.nobility.splice(indexOfLesserDuke,indexOfLesserDuke+1)
+                    }
+                    if(capital.nobility.indexOf("F") < 0){
+                        capital.nobility.push("F");                    
+                    }
+                }
             }
             
             function generateHexes(x,y, systems){
@@ -2435,7 +2545,11 @@
                     // write text
                     ctx.textAlign = "center";
                     if(hex.system.isCapital){
-                        ctx.fillStyle = CAPITAL_TEXT_COLOR;                    
+                        if(hex.system.mainworld.tradecodes.indexOf("Cs") >= 0){
+                            ctx.fillStyle = SECTORCAPITAL_TEXT_COLOR;
+                        }else{
+                            ctx.fillStyle = CAPITAL_TEXT_COLOR;                    
+                        }
                         ctx.font = "bold "+ oldFontStyle;
                         ctx.strokeStyle = CAPITAL_BACKGROUND_COLOR;
                         ctx.lineWidth = fontSize/8;
@@ -2869,13 +2983,15 @@
                         "Tr":"Tropic",
                         "Tu":"Tundra",
                         "Tz":"Twilight Zone",
-                        "Cp":"Capital",
                         "Cy":"Colony",
                         "Lt":"Low Tech",
                         "Ht":"High Tech",
                         "Fo":"Forbidden",
                         "Mr":"Military Rule",
-                        "Re":"Reserve"
+                        "Re":"Reserve",
+                        "Cs":"Sector Capital",
+                        "Cp":"Subsector Capital",
+                        "Cx":"Capital"
                     },
                     "port":{
                         "A":"A - Excellent",
@@ -3121,6 +3237,17 @@
                         "25":"Extremely abstract symbols",
                         "26":"Extremely abstract symbols",
                         "27":"Extremely abstract symbols",
+                    },
+                    "nobility":{
+                        "B":"Knight",
+                        "c":"Baronet",
+                        "C":"Baron",
+                        "D":"Marquis",
+                        "e":"Viscount",
+                        "E":"Count",
+                        "f":"Duke",
+                        "F":"Duke",
+                        "G":"Archduke"
                     }
                 };
                 if(system.natives){
@@ -3177,7 +3304,7 @@
                             }
                         }
                     }
-                    if(el.getAttribute("data-join")){
+                    if(typeof el.getAttribute("data-join") !== "undefined"){
                         if(!val.join){
                             val = Object.values(val);
                         }
