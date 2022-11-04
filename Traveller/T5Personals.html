@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveller T5 Personal Interactions</title>
+</head>
+<body>
+    <style>
+        #PurposeDescription, #StrategyDescription, #TacticDescription{ font-weight:normal; font-size:medium;}
+        .lawdesc{ font-size:small; padding-left: 1rem; padding-right:1rem;}
+        h2{ margin-bottom:0px;}
+        input[type="number"]{ width:2rem;}
+    </style>
+    <h1>Traveller T5 Personal Interactions Tool</h1>
+    <h2>
+        1. <label for="slctPurpose">Purpose <select name="slctPurpose" id="slctPurpose">
+            <option value="Carouse">Carouse 1D</option>
+            <option value="Query">Query 2D</option>
+            <option value="Persuade">Persuade 3D</option>
+            <option value="Command">Command 4D</option>
+        </select></label> <span id="PurposeDescription"></span>
+    </h2>
+    <h2>
+        2. <label for="slctStrategy">Strategy <select name="slctStrategy" id="slctStrategy">
+        <option value="Casual">Casual</option>
+        <option value="Enjoyment">Enjoyment</option>
+        <option value="Discussion">Discussion</option>
+        <option value="Active Listen">Active Listen</option>
+        <option value="Appeal To">Appeal To</option>
+        <option value="Force of Will">Force of Will</option>
+        <option value="Charming">Charming</option>
+        <option value="Angry">Angry</option>
+    </select></label> <span id="StrategyDescription"></span></h2>
+    <h2>
+        3. 
+    <label for="slctTactic">Tactic <select name="slctTactic" id="slctTactic">
+        <option value="Interests">Interests</option>
+        <option value="Enemies">Enemies</option>
+        <option value="Logic">Logic</option>
+        <option value="Authority">Authority</option>
+        <option value="Morality">Morality</option>
+        <option value="Culture">Culture</option>
+        <option value="Emotion">Emotion</option>
+        <option value="Indebted">Indebted</option>
+        <option value="Payment">Payment</option>
+        <option value="Begging">Begging</option>
+        <option value="Politeness">Politeness</option>
+        <option value="Flattery">Flattery</option>
+        <option value="Referral">Referral</option>
+        <option value="Familiarity">Familiarity</option>
+        <option value="Insult">Insult</option>
+        <option value="Pain">Pain</option>
+    </select></label> <span id="TacticDescription"></span></h2>
+    <fieldset>
+        <legend><h2>4. Applicable Laws</h2></legend>
+        <label for="chkSimilarity"> <input type="checkbox" name="chkSimilarity" id="chkSimilarity">Similarity</label><span class="lawdesc">Similar people cooperate.</span><span data-bonus="similarity"></span><br/>
+        <label for="chkSuperiority"> <input type="checkbox" name="chkSuperiority" id="chkSuperiority">Superiority</label><span class="lawdesc">Superiors command.</span><span data-bonus="superiority"></span><br/>
+        <label for="chkInferiority"> <input type="checkbox" name="chkInferiority" id="chkInferiority">Inferiority</label><span class="lawdesc">Inferiors use politeness, flattery, and begging. Cannot use Similarity or Superiority after use.</span><span data-bonus="inferiority"></span><br/>
+        <label for="chkComfort"> <input type="checkbox" name="chkComfort" id="chkComfort">Comfort</label><span class="lawdesc">Comfort helps coooperation</span><span data-bonus="comfort"></span><br/>
+        <label for="chkViolence"> <input type="checkbox" name="chkViolence" id="chkViolence">Violence</label><span class="lawdesc">Threats of force compel obedience</span><span data-bonus="violence"></span><br/>
+        Highest Bonus: +<span id="LawBonus">0</span>
+    </fieldset>
+    <fieldset>
+        <legend><h2>5. Mods</h2></legend>
+        <table>
+            <tr>
+                <td style="vertical-align:text-top;">
+                    <label for="inMod1">Mod1: <input type="number" value="0" id="Mod1"></label><br/>
+                    <label for="inMod2">Mod2: <input type="number" value="0" id="Mod2"></label><br/>
+                    <label for="inMod3">Mod3: <input type="number" value="0" id="Mod3">*</label><br/>
+                    <span style="vertical-align:text-top; font-size:small; padding:1rem;">*A 3rd mod can only be used for a deliberate/careful Query or Persuade</span>
+
+                </td>
+                <td style="vertical-align:text-top; font-size:small; padding:1rem;">
+                    <ul>
+                        <li>Reusing a Strategy imposes a -1 Mod.</li>
+                        <li>Reusing a tactic imposes a -1 Mod.</li>
+                        <li>Using a voice-only communicator imposes -4 mod. With video reduces to -2.</li>
+                        <li>You can try a Purpose only once with an Urgent mod of +2.</li>
+                        <li>Carousing creates Comaraderie +1 bonus per successful carouse (up to +6).</li>
+                        <li>Fighter skill can be used as a positive mod when threatening viulence.</li>
+                        <li>Brazen provides a +3 mod in Query and Persuade. </li>
+                        <li>Bluffing can add Flux (once).</li>
+                    </ul>    
+                </td>
+            </tr>
+
+        </table>
+    </fieldset>
+    <h1>Task: <span id="NumDice"></span>D &lt;= <span id="TargetNumber"></span></h1>
+    <script>
+        onPurposeChange();
+        document.getElementById("slctPurpose").addEventListener("change",onPurposeChange);
+        document.getElementById("slctStrategy").addEventListener("change",calculateTargetNumber);
+        document.getElementById("slctTactic").addEventListener("change",calculateTargetNumber);
+        document.getElementById("slctPurpose").addEventListener("change",calculateTargetNumber);
+        document.getElementById("slctTactic").addEventListener("change",calculateTargetNumber);
+        document.getElementById("chkSimilarity").addEventListener("change",calculateTargetNumber);
+        document.getElementById("chkSuperiority").addEventListener("change",calculateTargetNumber);
+        document.getElementById("chkInferiority").addEventListener("change",calculateTargetNumber);
+        document.getElementById("chkComfort").addEventListener("change",calculateTargetNumber);
+        document.getElementById("chkViolence").addEventListener("change",calculateTargetNumber);
+        document.getElementById("Mod1").addEventListener("change",calculateTargetNumber);
+        document.getElementById("Mod2").addEventListener("change",calculateTargetNumber);
+        document.getElementById("Mod3").addEventListener("change",calculateTargetNumber);
+        function onPurposeChange(){
+            var purpose = document.getElementById("slctPurpose").value;
+            switch(purpose){
+                case "Carouse": 
+                setAvailableStrategies(["Casual","Enjoyment","Discussion","Active Listen","Appeal To"]);
+                break;
+                case "Query":
+                setAvailableStrategies(["Enjoyment","Discussion","Active Listen","Appeal To","Force of Will"]);
+                break;
+                case "Persuade": 
+                setAvailableStrategies(["Discussion","Active Listen","Appeal To","Force of Will","Charming"]);
+                break;
+                case "Command": 
+                setAvailableStrategies(["Active Listen","Appeal To","Force of Will","Charming","Angry"]);
+                break;
+            }
+            calculateTargetNumber();
+        }
+        function calculateTargetNumber(){
+            var purpose = document.getElementById("slctPurpose").value,
+                tactic = document.getElementById("slctTactic").value,
+                isSimilar = document.getElementById("chkSimilarity").checked, 
+                isSuperior = document.getElementById("chkSuperiority").checked, 
+                isInferior = document.getElementById("chkInferiority").checked, 
+                isComfortable = document.getElementById("chkComfort").checked, 
+                isViolent = document.getElementById("chkViolence").checked;
+            var numDice = 0, targetNumber = 0, purposeDesc = "", strategyDesc = "", tacticDesc = "";
+            switch(purpose){
+                case "Carouse": numDice = 1; purposeDesc = "Let's have a good time!";                
+                break;
+                case "Query": numDice = 2; purposeDesc = "Tell me about X.";                 
+                break;
+                case "Persuade": numDice = 3; purposeDesc = "I request you do X."; 
+                break;
+                case "Command": numDice = 4; purposeDesc = "I require you to do X."; 
+                break;
+            }
+            document.getElementById("PurposeDescription").innerHTML = purposeDesc;
+            var  strategy = document.getElementById("slctStrategy").value;
+            switch(strategy){
+                case "Casual": targetNumber = 2-numDice; strategyDesc = "Unstructured encounter unconcerned with ultimate goals."; break;
+                case "Enjoyment": targetNumber = 3-numDice; strategyDesc = "Based on recreation and the pleasure of interaction."; break;
+                case "Discussion": targetNumber = 4-numDice; strategyDesc = "Focused on conversation about some topic of mutual interest."; break;
+                case "Active Listen":targetNumber = 5-numDice; strategyDesc = "Listening and encouraging participation."; break;
+                case "Appeal To":targetNumber = 6-numDice; strategyDesc = "Focusing on a tactic."; break;
+                case "Force of Will":targetNumber = 7-numDice; strategyDesc = "Strongly presenting information based on a tactic."; break;
+                case "Charming":targetNumber = 8-numDice; strategyDesc = "Presenting positive social cues in the conversation."; break;
+                case "Angry":targetNumber = 9-numDice; strategyDesc = "Dominating the conversation with negative social cues."; break;
+            }
+            strategyDesc += " Base Number: " + targetNumber;
+            document.getElementById("StrategyDescription").innerHTML = strategyDesc;
+            var tacticBonus = 0, tacticMultiplies = false, invalidTactic = false;;
+            switch(tactic){
+                case "Interests": tacticDesc = "We share the same interests."; 
+                if(purpose === "Carouse" && strategy === "Casual"){ tacticBonus = 3;}
+                else if(purpose === "Query" && strategy === "Enjoyment"){ tacticBonus = 2;}
+                else if(purpose === "Persuade" && strategy === "Discussion"){ tacticBonus = 1;}
+                break;
+                case "Enemies": tacticDesc = "We share the same adversaries."; 
+                if(purpose==="Carouse" && strategy === "Casual"){ tacticBonus = 2;}
+                else if(purpose === "Query" && strategy === "Enjoyment"){ tacticBonus = 1;}
+                else if(purpose === "Persuade" && strategy === "Charming"){ tacticBonus = 3; tacticMultiplies = true;}
+                else if(purpose === "Command" && (strategy === "Charming" || strategy === "Angry")){tacticBonus = 3; tacticMultiplies = true;}
+                break;
+                case "Logic": tacticDesc = "Logic requires you do X."; 
+                if(strategy === "Discussion" || strategy === "Appeal To" || strategy === "Force of Will" || strategy === "Angry"){ tacticBonus = 2; tacticMultiplies = true;}
+                break;
+                case "Authority":tacticDesc = "My authority requires you do X."; 
+                if(strategy === "Casual"){ invalidTactic = true; }
+                else if(strategy === "Discussion" || strategy === "Force of Will"  || strategy === "Charming" || strategy === "Angry"){ tacticBonus = 2; tacticMultiplies = true;}
+                break;
+                case "Morality":tacticDesc = "Morality requires you do X."; 
+                if(strategy === "Discussion" || strategy === "Appeal To" || strategy === "Force of Will"  || strategy === "Charming" || strategy === "Angry"){ tacticBonus = 2; tacticMultiplies = true;}
+                break;
+                case "Culture":tacticDesc = "Culture requires you do X."; 
+                if(strategy === "Discussion" || strategy === "Appeal To" || strategy === "Force of Will"  || strategy === "Charming" || strategy === "Angry"){ tacticBonus = 2; tacticMultiplies = true;}
+                break;
+                case "Emotion":tacticDesc = "Emotion and sympathy requires you do X."; 
+                if(strategy === "Discussion" || strategy === "Appeal To" || strategy === "Force of Will"  || strategy === "Charming" || strategy === "Angry"){ tacticBonus = 2; tacticMultiplies = true;}
+                break;
+                case "Debt":tacticDesc = "You owe me."; 
+                if(strategy === "Charming" || strategy === "Angry"){ tacticBonus = 2; tacticMultiplies = true;}
+                break;
+                case "Payment":tacticDesc = "I will give you money."; 
+                if(strategy === "Casual"){ invalidTactic = true; }
+                else if(strategy === "Appeal To"){ tacticBonus = 2; tacticMultiplies = true; }
+                break;
+                case "Begging":tacticDesc = "Charity requires that you do X."; 
+                if(strategy === "Casual" || strategy === "Enjoyment" || strategy === "Force of Will"){ invalidTactic = true; }
+                else if(strategy === "Appeal To" || strategy === "Charming"){ tacticBonus = 2; tacticMultiplies = true; }
+                break;
+                case "Politeness":tacticDesc = "I include appropriate courtesy."; 
+                if(strategy === "Appeal To"){ tacticBonus = 2; tacticMultiplies = true; }
+                break;
+                case "Flattery":tacticDesc = "I tell you positive compliments."; 
+                if(strategy === "Casual" || strategy === "Enjoyment"  || strategy === "Appeal To" || strategy === "Charming"){ tacticBonus = 2; tacticMultiplies = true; }
+                break;
+                case "Referral":tacticDesc = "I am vouched for by another."; 
+                if(strategy === "Casual" || strategy === "Enjoyment" || strategy === "Discussion" || strategy === "Charming"){ tacticBonus = 2; tacticMultiplies = true;}
+                break;
+                case "Familiarity":tacticDesc = "I am known to you."; 
+                if(strategy === "Casual" || strategy === "Enjoyment" || strategy === "Discussion"){ tacticBonus = 2; tacticMultiplies = true;}
+                break;
+                case "Insult":tacticDesc = "I reinforce my appeal with dominating negative words."; 
+                if(strategy === "Casual" || strategy === "Enjoyment" || strategy === "Discussion"){ invalidTactic = true; }
+                else if(strategy === "Force of Will" || strategy === "Angry"){ tacticBonus = 2; tacticMultiplies = true;}
+                break;
+                case "Pain":tacticDesc = "I will hurt you if you do not comply."; 
+                if(strategy === "Casual"){ tacticBonus = -8; }
+                else if(strategy === "Enjoyment" || strategy === "Discussion" || strategy === "Active Listen"){tacticBonus = -6; }
+                else if(strategy === "Charming"){ tacticBonus = -4; }
+                else if(strategy === "Appeal To"){ tacticBonus = 4;}
+                else if(strategy === "Force of Will" || strategy === "Angry"){ tacticBonus = 6;}
+                break;
+            }
+            if(tacticMultiplies){
+                tacticDesc += " x"+ tacticBonus;
+                targetNumber *= tacticBonus;
+            }else{
+                tacticDesc += " " + (tacticBonus < 0 ? "" : "+") + tacticBonus;
+                targetNumber += tacticBonus;
+            }
+            if(invalidTactic){
+                document.getElementById("TacticDescription").innerHTML = "<span style=\"color:red; font-weight:bold;\">Invalid tactic for selected strategy</span>";
+            }else{
+                document.getElementById("TacticDescription").innerHTML = tacticDesc;
+            }
+            var similarityBonus = 0, superiorityBonus = 0, inferiorityBonus = 0, comfortBonus = 0, violenceBonus = 0, maxBonus = 0;
+
+            if(purpose === "Carouse" || purpose === "Query" || purpose === "Persuade"){ similarityBonus = 1;}
+            document.querySelector("[data-bonus=\"similarity\"]").innerHTML = "+"+similarityBonus;
+            if(isSimilar){ maxBonus = Math.max(maxBonus, similarityBonus);}
+            
+            if(purpose === "Query"){ superiorityBonus = 1;}
+            else if(purpose === "Persuade"){ superiorityBonus = 2;}
+            else if(purpose === "Command"){ superiorityBonus = 3;}
+            document.querySelector("[data-bonus=\"superiority\"]").innerHTML = "+"+superiorityBonus;
+            if(isSuperior){ maxBonus = Math.max(maxBonus, superiorityBonus);}
+            
+            if(purpose === "Query"){ inferiorityBonus = 1;}
+            else if(tactic === "Begging" || tactic === "Flattery" || tactic === "Politeness"){ 
+                if(purpose === "Persuade"){
+                    inferiorityBonus = 2;
+                }
+            }
+            document.querySelector("[data-bonus=\"inferiority\"]").innerHTML = "+"+inferiorityBonus;
+            if(isInferior){ maxBonus = Math.max(maxBonus, inferiorityBonus); }
+
+            if(purpose === "Carouse"){ comfortBonus = 2;}
+            else if(purpose === "Query" || purpose === "Persuade"){ comfortBonus = 1;}
+            document.querySelector("[data-bonus=\"comfort\"]").innerHTML = "+"+comfortBonus;
+            if(isComfortable){maxBonus = Math.max(maxBonus, comfortBonus);}
+            
+            if(purpose === "Query"){ violenceBonus = 1;}
+            else if(purpose === "Persuade"){ violenceBonus = 2;}
+            else if(purpose === "Command"){ violenceBonus = 3;}
+            document.querySelector("[data-bonus=\"violence\"]").innerHTML = "+"+violenceBonus;
+            if(isViolent){ maxBonus = Math.max(maxBonus, violenceBonus);}
+
+            document.getElementById("LawBonus").innerHTML = maxBonus;
+            targetNumber += maxBonus;
+            targetNumber += Number(document.getElementById("Mod1").value);
+            targetNumber += Number(document.getElementById("Mod2").value);
+            targetNumber += Number(document.getElementById("Mod3").value);
+            document.getElementById("NumDice").innerHTML = numDice;
+            document.getElementById("TargetNumber").innerHTML = targetNumber;
+
+        }
+        function setAvailableStrategies(strategies){
+            var slctStrategy = document.getElementById("slctStrategy");
+            var currentStrategy = slctStrategy.value;
+            while(slctStrategy.childNodes.length > 0){
+                slctStrategy.removeChild(slctStrategy.childNodes[0]);
+            }
+            for(var i = 0, len = strategies.length; i < len; i++){
+                var strategy = strategies[i];
+                if(currentStrategy === strategy){
+                    slctStrategy.insertAdjacentHTML("beforeend","<option selected=\"selected\" value=\""+strategy+"\">"+strategy+"</option>");
+                }else{
+                    
+                    slctStrategy.insertAdjacentHTML("beforeend","<option value=\""+strategy+"\">"+strategy+"</option>");
+                }
+            }
+            
+        }
+    </script>
+</body>
+</html>
