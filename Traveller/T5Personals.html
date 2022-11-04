@@ -8,7 +8,7 @@
 </head>
 <body>
     <style>
-        #PurposeDescription, #StrategyDescription, #TacticDescription{ font-weight:normal; font-size:medium;}
+        #PurposeDescription, #StrategyDescription, #TacticDescription{ font-size:medium; font-weight:normal; display:inline;}
         .lawdesc{ font-size:small; padding-left: 1rem; padding-right:1rem;}
         h2{ margin-bottom:0px;}
         input[type="number"]{ width:2rem;}
@@ -58,8 +58,8 @@
         <label for="chkSimilarity"> <input type="checkbox" name="chkSimilarity" id="chkSimilarity">Similarity</label><span class="lawdesc">Similar people cooperate.</span><span data-bonus="similarity"></span><br/>
         <label for="chkSuperiority"> <input type="checkbox" name="chkSuperiority" id="chkSuperiority">Superiority</label><span class="lawdesc">Superiors command.</span><span data-bonus="superiority"></span><br/>
         <label for="chkInferiority"> <input type="checkbox" name="chkInferiority" id="chkInferiority">Inferiority</label><span class="lawdesc">Inferiors use politeness, flattery, and begging. Cannot use Similarity or Superiority after use.</span><span data-bonus="inferiority"></span><br/>
-        <label for="chkComfort"> <input type="checkbox" name="chkComfort" id="chkComfort">Comfort</label><span class="lawdesc">Comfort helps coooperation</span><span data-bonus="comfort"></span><br/>
-        <label for="chkViolence"> <input type="checkbox" name="chkViolence" id="chkViolence">Violence</label><span class="lawdesc">Threats of force compel obedience</span><span data-bonus="violence"></span><br/>
+        <label for="chkComfort"> <input type="checkbox" name="chkComfort" id="chkComfort">Comfort</label><span class="lawdesc">Comfort helps coooperation.</span><span data-bonus="comfort"></span><br/>
+        <label for="chkViolence"> <input type="checkbox" name="chkViolence" id="chkViolence">Violence</label><span class="lawdesc">Threats of force compel obedience.</span><span data-bonus="violence"></span><br/>
         Highest Bonus: +<span id="LawBonus">0</span>
     </fieldset>
     <fieldset>
@@ -154,7 +154,7 @@
                 case "Charming":targetNumber = 8-numDice; strategyDesc = "Presenting positive social cues in the conversation."; break;
                 case "Angry":targetNumber = 9-numDice; strategyDesc = "Dominating the conversation with negative social cues."; break;
             }
-            strategyDesc += " Base Number: " + targetNumber;
+            strategyDesc += "<br/>Base Number: " + targetNumber;
             document.getElementById("StrategyDescription").innerHTML = strategyDesc;
             var tacticBonus = 0, tacticMultiplies = false, invalidTactic = false;;
             switch(tactic){
