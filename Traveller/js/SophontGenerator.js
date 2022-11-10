@@ -3996,17 +3996,21 @@ function generateRandomAlien(species,rand){
             }else if(hw.size >= 10){
                 text += " a high-gravity";
             }
-            if(species.homeworld.tradecodes.indexOf("Tz") >= 0){
-                text += " tidally-locked";
-            }
-            if(species.homeworld.tradecodes.indexOf("De") >= 0){
-                text += " desert world";
-            }else if(species.homeworld.tradecodes.indexOf("Ga") >= 0){
-                text += " garden world";
-            }else if(species.homeworld.tradecodes.indexOf("Wa") >= 0){
-                text += " water world";
-            }else if(species.homeworld.tradecodes.indexOf("Oc") >= 0){
-                text += " oceanic world";
+            if(species.homeworld.mainworld.tradecodes){
+                if(species.homeworld.mainworld.tradecodes.indexOf("Tz") >= 0){
+                    text += " tidally-locked";
+                }
+                if(species.homeworld.mainworld.tradecodes.indexOf("De") >= 0){
+                    text += " desert world";
+                }else if(species.homeworld.mainworld.tradecodes.indexOf("Ga") >= 0){
+                    text += " garden world";
+                }else if(species.homeworld.mainworld.tradecodes.indexOf("Wa") >= 0){
+                    text += " water world";
+                }else if(species.homeworld.mainworld.tradecodes.indexOf("Oc") >= 0){
+                    text += " oceanic world";
+                }else{
+                    text += " world";
+                }
             }else{
                 text += " world";
             }
@@ -4031,7 +4035,7 @@ function generateRandomAlien(species,rand){
             }
             var atmoDesc = atmolookup[species.homeworld.mainworld.atmo.toString()];
             text += atmoDesc + " atmosphere."
-            if(species.homeworld.tradecodes.indexOf("Sa") >= 0 || species.homeworld.tradecodes.indexOf("Lk") >= 0){ text = text.replace("world","moon");}
+            if(species.homeworld.mainworld.tradecodes.indexOf("Sa") >= 0 || species.homeworld.mainworld.tradecodes.indexOf("Lk") >= 0){ text = text.replace("world","moon");}
             return text;
         }
         if(key === "language" || key === "naturalweapon" || key === "nativeTerrain" || key === "locomotion" || key === "sizeclass" || key === "symmetry" || key === "taildesc" || key === "skin" || key == "skeleton"){
