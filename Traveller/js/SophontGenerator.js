@@ -15,6 +15,7 @@ function generateRandomAlien(species,rand){
     setSizeAndWeight();
     setUniqueTraits();
     setGenderCasteScents();
+    setSummary();
     function binSearch(arr, target, comparator){
         var l = 0, h = arr.length - 1, m, comparison;
         while(l <= h){
@@ -1247,6 +1248,7 @@ function generateRandomAlien(species,rand){
             species.lifestageupper.push(species.lifestages[i] > 0 ? sum-1 : sum);
         }
         species.lifeexpectancy = sum;
+        species.generation = species.lifestages[0] + species.lifestages[1] + species.lifestages[2];
     }
     function setGeneticProfile(){
         species.geneticprofile = "S" + species.c2[0] + species.c3[0] + species.c4[0] + species.c5[0] + (species.c6 === "Cas" ? "K" : species.c6[0]);
@@ -2927,29 +2929,30 @@ function generateRandomAlien(species,rand){
                 case -6:
                 case -5:
                 case -4:
-                    species.manipulatordesc = "Tentacles";
+                    species.manipulatordesc = "Tentacle";
                     break;
                 case -3:
                 case -2:
-                    species.manipulatordesc = "Grippers";
+                    species.manipulatordesc = "Gripper";
                     break;
                 case -1:
                 case 0:
-                    species.manipulatordesc = "Hands";
+                    species.manipulatordesc = "Hand";
                     break;
                 case 1:
                 case 2:
-                    species.manipulatordesc = "Paws";
+                    species.manipulatordesc = "Paw";
                     break;
                 case 3:
                 case 4:
-                    species.manipulatordesc = "Graspers";
+                    species.manipulatordesc = "Grasper";
                     break;
                 case 5:
                 case 6:
-                    species.manipulatordesc = "Sockets";
+                    species.manipulatordesc = "Socket";
                     break;
             }
+            if(species.manipulators > 1){ species.manipulatordesc += "s"; }
             species.allmanipulators = species.manipulators + " " + species.manipulatordesc;
             if(species.tail === "P"){
                 // add proboscis descriptor to manipulator desc
@@ -3878,21 +3881,21 @@ function generateRandomAlien(species,rand){
             [
                 {key:"Molt", name:"Superficial Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a Life Stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering with changed markings and color."},
                 [
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c3+"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c2 +"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c3 +"."},
-                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+" and "+ species.c3 +"."}
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c3+"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c2 +"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c3 +"."},
+                    {key:"Molt", name:"Incremental Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+" and "+ species.c3 +"."}
                 ],
                 [
-                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c4+"."},
-                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c4 +"."},
-                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+" and "+ species.c4 +"."},
-                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c3+" and "+ species.c4 +"."}
+                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c4+"."},
+                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c1+" and "+ species.c4 +"."},
+                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c2+" and "+ species.c4 +"."},
+                    {key:"Molt", name:"Incremental Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and an increase in its "+species.c3+" and "+ species.c4 +"."}
                 ],
-                {key:"Molt", name:"Random Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and a chance for increased or decreased physical and mental attributes."},
-                {key:"Molt", name:"Random Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a lifes stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and a chance for increased or decreased physical attributes."}
+                {key:"Molt", name:"Random Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and a chance for increased or decreased physical and mental attributes."},
+                {key:"Molt", name:"Random Physical Molt", description:"The sophont sheds its outer covering in an abrupt process at the end of a life stage. When Molt is complete (usually a matter of a day or two) the subject emerges with a fresh outer covering and a chance for increased or decreased physical attributes."}
             ],
             [
                 {key:"Metamorph", name:"Simple Metamorphosis", description:"The sophont undergoes a metamorphosis at life stage " +(posFlux()+3)+ ". It has dramatically different first and ultimate forms."},
@@ -3980,8 +3983,352 @@ function generateRandomAlien(species,rand){
             }
     }
     }
+    function summarize(key){
+        var val;
+        if(key === "homeworld"){
+            var hw = species.homeworld.mainworld, text = "";
+            if(hw.size <= 4){
+                text += " a low-gravity";
+            }else if(hw.size <= 6){
+                text += " a somewhat low gravity";
+            }else if(hw.size <= 9){
+                text += " a";
+            }else if(hw.size >= 10){
+                text += " a high-gravity";
+            }
+            if(species.homeworld.tradecodes.indexOf("Tz") >= 0){
+                text += " tidally-locked";
+            }
+            if(species.homeworld.tradecodes.indexOf("De") >= 0){
+                text += " desert world";
+            }else if(species.homeworld.tradecodes.indexOf("Ga") >= 0){
+                text += " garden world";
+            }else if(species.homeworld.tradecodes.indexOf("Wa") >= 0){
+                text += " water world";
+            }else if(species.homeworld.tradecodes.indexOf("Oc") >= 0){
+                text += " oceanic world";
+            }else{
+                text += " world";
+            }
+            text += " with ";
+            var atmolookup ={
+                "0":"no",
+                "1":"a trace",
+                "2":"a very thin, tainted",
+                "3":"a very thin",
+                "4":"a thin, tainted",
+                "5":"a thin",
+                "6":"a standard",
+                "7":"a tainted",
+                "8":"a dense",
+                "9":"a dense, tainted",
+                "10":"an exotic",
+                "11":"a corrosive",
+                "12":"an insidious",
+                "13":"a dense, high",
+                "14":"an ellipsoid",
+                "15":"a thin, low"
+            }
+            var atmoDesc = atmolookup[species.homeworld.mainworld.atmo.toString()];
+            text += atmoDesc + " atmosphere."
+            if(species.homeworld.tradecodes.indexOf("Sa") >= 0 || species.homeworld.tradecodes.indexOf("Lk") >= 0){ text = text.replace("world","moon");}
+            return text;
+        }
+        if(key === "language" || key === "naturalweapon" || key === "nativeTerrain" || key === "locomotion" || key === "sizeclass" || key === "symmetry" || key === "taildesc" || key === "skin" || key == "skeleton"){
+            val = {
+                language:{
+                    "Multi-Modal Language (species cannot vocalize at a frequency it can hear)":"multi-modal language"
+                },
+                naturalweapon:{
+                    "Sting":"stingers"
+                },
+                nativeTerrain:{
+                    Mountain:"mountainous",
+                    "Baked Lands":"perpetually sun-baked",
+                    "Frozen Lands":"perpetually dark",
+                    "Twilight Zone":"twilight",
+                    "Wetland Woods":"wooded wetland",
+                    "Wetlands":"wetland"
+                },
+                locomotion:{
+                    Walker:"walkers",
+                    Flyer:"flyers",
+                    Swim:"surface swimmers",
+                    Aquatic:"aquatic sophonts",
+                    Diver:"deep sea sophonts",
+                    Amphib:"amphibians",
+                    Flyphib:"flying swimmers",
+                    Triphib:"triphibians"},
+                sizeclass:{
+                    "Titan":"titanic", 
+                    "Oversize":"oversized"
+                },
+                skin:{
+                    "Hairy Pelt":"hairy pelts",
+                    "Feathery Pelt":"feathery pelts",
+                    "Furry Pelt":"furry pelts",
+                    "Fine Scales":"fine scales",
+                    "Skin":"skin",
+                    "Leather":"leathery skin"
+                },
+                skeleton:{
+                    "Cartilage Interior":"a cartilage interior",
+                    "Bony Interior":"bony skeletons",
+                    "Segmented Shell":"segmented shells",
+                    "Exoskeleton":"exoskeletons"
+                },
+                symmetry:{
+                    "Radial (1)":"asymmetrical",
+                    "Radial (2)":"bilateral",
+                    "Radial (3)":"trilateral",
+                    "Radial (4)":"quadriradial",
+                    "Radial (5)":"pentaradial",
+                    "Radial (6)":"hexaradial"
+                },
+                taildesc:{
+                    "Proboscis/Extended Snout":"an extended snout or proboscis",
+                    "Prehensile Tail":"a prehensile tail"
+                }
+            }[key][species[key]];
+        }else{
+            val = species[key].toLowerCase();
+        }        
+        if(val){return val;}
+        return species[key].trim().toLowerCase();
+    }
+    function setSummary(){
+        var summary = "The " + species.name + " are ";
+
+        if(species.sizeclass != "Standard "){
+            summary += summarize("sizeclass")+", ";
+        }
+        if(species.bfpdesc != "Typical"){
+            summary += summarize("bfpdesc")+" ";
+        }
+        summary += summarize("symmetry") + " " + summarize("locomotion") +", measuring " + species.height + " in " + (species.stance === "Horizontal" ? "length":"height") + " and massing around " + species.size + "kg." ;
+        if(species.manipulators > 0){
+            if(species.nonstandardmanipulators > 0){
+                if(species.tail === "P" || species.tail === "M"){
+                    var otherAppendage = species.allmanipulators.match(/(?<=\()(.*?)(?=\))/g)[0];
+                    summary += " In addition to " + summarize("taildesc") + " that can act as a "+ otherAppendage.toLowerCase() +", they";
+                }else{ 
+                    summary += " They";
+                }
+            }else{
+                summary += " They";
+            }
+            if(species.manipulators === 1 && species.manipulatordesc.indexOf("Mouth") >= 0){
+                summary += " lack fine manipulators, but can use their mouths for fine manipulation when circumstances demand"
+            }else{
+                summary += " have " + species.manipulators +" manipulative appendage"+(species.manipulators > 1 ? "s" : "")+" best described as "+(species.manipulators > 1 ? "" : "a ")+ summarize("manipulatordesc");
+            }
+            
+        }else{
+            if(species.nonstandardmanipulators > 0){
+                if(species.tail === "P" || species.tail === "M"){
+                    summary += " Instead of typical manipulative appendages, they have " + summarize("taildesc");
+                }else{
+                    summary += " They lack fine manipulators";
+                }
+            }
+        }
+        summary += ". ";
+       
+        
+        var appendages = getAppendages();
+        if(species.locomotion == "Walker" || species.locomotion === "Amphib" || species.locomotion === "Triphib"){
+            if(appendages.flippers > 0 && (appendages.legs > 0 || appendages.legsWithManipulators > 0)){
+                summary += "They stand on " + appendages.flippers + " flippers and ";
+                if(appendages.legsWithManipulators > 0 && appendages.legs > 0){
+                    summary += (appendages.legsWithManipulators + appendages.legs) + " legs, " + appendages.legsWithManipulators + " of which double as manipulators.";
+                }else{
+                    if(appendages.legsWithManipulators > 0){
+                        summary += appendages.legsWithManipulators + " legs that double as manipulators."
+                    }else if(appendages.legs > 0 ){
+                        summary += appendages.legs + " legs.";
+                    }
+                }
+                if(appendages.wings > 0){
+                    if(species.locomotion !== "Triphib"){
+                        summary += " They also possess " + appendages.wings + " wings which are used for swimming."; 
+                    }else{
+                        summary += " They also possess " + appendages.wings+" wings.";
+                    }
+                }
+            }else if(appendages.flippers){
+                summary += "They stand on " + appendages.flippers + " flippers";
+                if(appendages.wings){
+                    summary += " and have " + appendages.wings + " wings."
+                }else{
+                    summary += ".";
+                }
+            }else if(appendages.legs){
+                summary += "They stand on ";
+                if(appendages.legsWithManipulators > 0 && appendages.legs > 0){
+                    summary += (appendages.legsWithManipulators + appendages.legs) + " legs (" + appendages.legsWithManipulators + " of which double as manipulators)";
+                }else{
+                    if(appendages.legsWithManipulators > 0){
+                        summary += appendages.legsWithManipulators + " legs (which double as manipulators)"
+                    }else if(appendages.legs > 0 ){
+                        summary += appendages.legs + " legs";
+                    }
+                }
+                if(appendages.wings){
+                    summary += " and have " + appendages.wings + " wings."
+                }else{
+                    summary += ".";
+                }
+            }else if(appendages.legsWithManipulators){
+                summary += "These appendages double as legs."
+                if(appendages.wings){
+                    summary += " They also have " + appendages.wings + " wings."
+                }
+            }
+            
+        }else{
+            if(appendages.arms > 0 && (appendages.flippers + appendages.legs + appendages.legsWithManipulators + appendages.wings) > 0){
+                summary += "In addition to their "+appendages.arms+" arms, they have ";
+            }else{
+                if(appendages.flippers > 0 || appendages.wings > 0 || appendages.legs > 0 || appendages.legsWithManipulators > 0){
+                    summary += " They have "
+                }
+            }
+            if((appendages.flippers > 0 || appendages.wings > 0) && (appendages.legs > 0 || appendages.legsWithManipulators > 0)){
+                if(appendages.wings > 0){
+                    summary += appendages.wings + " wings and ";
+                }
+                if(appendages.flippers > 0){
+                    summary += appendages.flippers + " flippers and ";
+                }
+                if(appendages.legsWithManipulators > 0 && appendages.legs > 0){
+                    summary += (appendages.legsWithManipulators + appendages.legs) + " legs, " + appendages.legsWithManipulators + " of which double as manipulators.";
+                }else{
+                    if(appendages.legsWithManipulators > 0){
+                        summary += appendages.legsWithManipulators + " legs that double as manipulators."
+                    }else if(appendages.legs > 0 ){
+                        summary += appendages.legs + " legs.";
+                    }
+                }
+            }else if(appendages.flippers > 0){
+                summary += appendages.flippers + " flippers";
+                if(appendages.wings){
+                    summary += " and have " + appendages.wings + " wings."
+                }else{
+                    summary += ".";
+                }
+            }else if(appendages.legs > 0){
+                summary += appendages.legs + " legs.";
+            }else if(appendages.wings > 0){
+                summary += appendages.wings + " wings.";
+            }
+        }
+        if(species.naturalweapon !== "None"){
+            summary += " " +species.name + " are naturally equipped with " + summarize("naturalweapon") + " they can use as weapons. ";
+        }
+        if(species.locomotion === "Flyer" || species.locomotion === "Flyphib" || species.locomotion === "Triphib"){
+            if(appendages.wings === 0){
+                summary += " Notably, on their homeworld they can fly without the aid of wings.";
+            }
+        }
+        summary += " Their bodies are covered by "+summarize("skin") + ", contain " + summarize("fluids") + ", and are supported by " + summarize("skeleton") + ".";
+        if(species.torso === "TB+S"){
+            summary += " Their brain is centered within their torsos.";
+            if(appendages.legs + appendages.wings + appendages.legsWithManipulators + appendages.arms + appendages.flippers + appendages.tails > 0){
+                summary += " Their primary sensory organs are dispersed throughout their limbs."
+            } 
+        }else if(species.torso == "TS"){
+            summary += " Although each has a recognizable head (with a brain and mouth) their primary sensory organs are actually centered on their torsos."
+        }else if(species.torso == "T+S"){
+            summary += " Although each has a recognizable head (with a brain and mouth) their primary sensory organs are actually dispersed throughout their limbs."
+        }else if(species.head === "N"){
+            summary += " The species does not have a recognizable head;";
+            if(species.torso === "TBS"){
+                summary += " their brains and primary sensory organs are instead centered on their torsos."
+            }
+        }
+        if(appendages.antennae > 0){
+            summary += " Their senses are supplemented by " + appendages.antennae + " antenna"+ (appendages.antennae > 1 ? "e":"")+"."
+        }
+        species.physsummary = summary;
+        
+        var isBlind = species.vision === "Blind", isDeaf = species.hearing === "Deaf", isAnosmic = species.smell === "Anosmic";
+        
+        summary = "";
+        var isAware = species.aware !== "Unaware", isPercept = species.percep !== "Oblivious";
+        if(isBlind || isDeaf || isAnosmic){
+            summary += " Unlike humans, the " + species.name + " ";
+            if(isBlind && isDeaf && isAnosmic){
+                summary += " are blind, deaf, and have no sense of smell or taste";
+            }else if(isBlind && isDeaf){
+                summary += " are blind and deaf";
+            }else if(isBlind && isAnosmic){
+                summary += " are blind and have no sense of smell or taste";
+            }else if(isAnosmic && isDeaf){
+                summary += " are deaf and have no sense of smell or taste";
+            }else if(isBlind){
+                summary += " are blind";
+            }else if(isDeaf){
+                summary += " are deaf";
+            }else if(isAnosmic){
+                summary += " have no sense of smell or taste"
+            }
+            if(isAware || isPercept){
+                summary += ". However, they possess senses that humans lack.";
+            }else{
+                summary += "."
+            }
+        }
+        if(isAware){
+            summary += " They have the ability to perceive magnetic and electric fields, including distortions in those fields caused by massive or metallic objects (Awareness). "
+        }
+        if(isPercept){
+            if(isAware){
+                summary += " They can also ";
+            }else{
+                summary += " They can ";
+            }
+            summary += " perceive the projected life force of living creatures (Perception)."
+        }
+        summary += " They communicate using a " + summarize("language") +".";
+
+        species.sensesummary = summary;
+        summary = " The " + species.name + " evolved from " + summarize("niche") + " " + summarize("class")+"s, adapted to " + species.climate.match(/(.*?)(?=\.)/g)[0].toLowerCase() + ", " + summarize("nativeTerrain") + " terrain on " + summarize("homeworld");
+        species.habitatsummary = summary;
+    }
+    function getAppendages(){
+        var appendages = {wings:0,flippers:0,legs:0,legsWithManipulators:0,arms:0,antennae:0,tails:0};
+        switch(species.frontlimbs[0]){
+            case "A": appendages.arms += species.frontlimbs1; break;
+            case "L": appendages.legsWithManipulators += species.frontlimbs1; break;
+            case "F": appendages.flippers += species.frontlimbs1; break;
+            case "W": appendages.wings += species.frontlimbs1; break;
+        }
+        switch(species.frontlimbs[1]){
+            case "A": appendages.arms += species.frontlimbs2; break;
+            case "L": appendages.legsWithManipulators += species.frontlimbs2; break;
+            case "F": appendages.flippers += species.frontlimbs2; break;
+            case "W": appendages.wings += species.frontlimbs2; break;
+        }
+        switch(species.rearlimbs[0]){
+            case "M":
+            case "L": appendages.legs += species.rearlimbs1; break;
+            case "F": appendages.flippers += species.rearlimbs1; break;
+            case "W": appendages.wings += species.rearlimbs1; break;
+        }
+        switch(species.rearlimbs[1]){
+            case "M":
+            case "L": appendages.legs += species.rearlimbs2; break;
+            case "F": appendages.flippers += species.rearlimbs2; break;
+            case "W": appendages.wings += species.rearlimbs2; break;
+        }
+        switch(species.tail){
+            case "A": appendages.antennae += species.taillimbs; break;
+        }
+        return appendages;
+    }
     return species;
 }
+
 function getCasteSkill(){
     var d6 = function d6(num){
         if(!num){ num = 1;}
@@ -4146,4 +4493,5 @@ function getRandomSpecialAbility(){
     if(ability === "--"){ ability = "(No Special Ability)";}
     return ability;
 }
+
 
