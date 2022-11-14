@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckplan</title>
+</head>
+<body>
+    <style>canvas{border:1px solid black; vertical-align: text-top;}</style>
+    <div id="controls">
+        Perspective: <input type="range" min=0.1 max=2 step=0.02 value=0.5 id="slider_flatten">
+        Gap: <input type="range" id="slider_gap" min=0 max=2 value=0.38 step=0.02>
+    </div>
+    <canvas id="canvas_topdown" width="400" height="1200"></canvas>
+    <canvas id="canvas_isometric" width="800" height="1200"></canvas>
+    <script>
+        var cellsToFill = [], selectedLayer = -1, mouseovercell = null, isDragging = false, isPainting = false;
+        var gridSize = 20; var gridWidth = 20*gridSize, gridHeight = 20*gridSize;
+        var layer2Dgap = 5;
+        var combinedGridHeight = gridHeight + layer2Dgap;
+        var canvas2d = document.getElementById("canvas_topdown"),
+            canvasIso = document.getElementById("canvas_isometric");
+        const ctx2d = canvas2d.getContext("2d");
+        const ctxIso = canvasIso.getContext("2d");
+        var innerStroke = "rgba(0,0,0,0.8)";
+        var flimsyStroke = "rgba(0,0,0,0.1)";
+        var solidStroke = "rgba(0,0,0,1)";
+        var outerFill = "rgba(0,0,0,0.1)";
+        var dragCorner = {x:0,y:0,x2:0,y2:0}, dragCell = {x:0,y:0};
+        var grids = []; 
+        grids.push(createGrid(20,20));
+        grids.push(createGrid(20,20));
+        grids.push(createGrid(20,20));
+        var layerCount = 3;
+        canvas2d.addEventListener("mousemove",function(ev){
+            var canvasRect = canvas2d.getBoundingClientRect();
+            var x = ev.clientX - canvasRect.left;
+            var y = ev.clientY - canvasRect.y;
+            var xMin = (x - x % gridSize) / gridSize;
+            var layer = (y - y % (combinedGridHeight)) / (combinedGridHeight);
+            var adjustedY = (y - layer * combinedGridHeight);
+            var yMin = (adjustedY - adjustedY % gridSize) / gridSize;
+            if(mouseovercell){
+                mouseovercell.hover = false;
+            }
+            if(grids.length > layer && grids[0].length > xMin && grids[0][0].length > yMin){
+                var cell = grids[layer][xMin][yMin];
+                if(cell){
+                    cell.hover = true;
+                    mouseovercell = cell;
+                    selectedLayer = layer;
+                }else{
+                    mouseovercell.hover = false;
+                    selectedLayer = -1;
+                }
+            }else{
+                selectedLayer = -1;
+            }
+            if(isDragging){
+                dragCorner.x2 = x, dragCorner.y2 = y;
+                cellsToFill = [];
+                if(grids.length > layer && grids[0].length > xMin && grids[0][0].length > yMin){
+                    var cell = grids[layer][xMin][yMin];
+                    if(cell){
+                        cellsToFill.push(cell);
+                        var xCursor = Math.max(dragCell.x,xMin), xTarget = Math.min(dragCell.x, xMin);
+                        var yCursor = Math.max(dragCell.y,yMin), yTarget = Math.min(dragCell.y, yMin);
+                        while(xCursor >= xTarget){
+                            cell = grids[layer][xCursor][yCursor];
+                            cellsToFill.push(cell);
+                            while(yCursor >= yTarget){
+                                ycell = grids[layer][xCursor][yCursor];
+                                cellsToFill.push(ycell);
+                                yCursor--;
+                            }
+                            xCursor--;
+                            yCursor = Math.max(dragCell.y, yMin), yTarget = Math.min(dragCell.y, yMin);
+                        }
+                        drawGrids();
+                    }
+                }
+            }else{
+                drawGrids();
+            }
+        });
+        canvas2d.addEventListener("mousedown",function(ev){
+            isDragging = true;
+            var canvasRect = canvas2d.getBoundingClientRect();
+            var x = ev.clientX - canvasRect.left;
+            var y = ev.clientY - canvasRect.y;
+            dragCorner.x = x, dragCorner.y = y;
+            dragCorner.x2 = x, dragCorner.y2 = y;
+            var xMin = (x - x % gridSize) / gridSize;
+            var layer = (y - y % (combinedGridHeight)) / (combinedGridHeight);
+            var adjustedY = (y - layer * combinedGridHeight);
+            var yMin = (adjustedY - adjustedY % gridSize) / gridSize;
+            if(grids.length > layer && grids[0].length > xMin && grids[0][0].length > yMin){
+                var cell = grids[layer][xMin][yMin];
+                if(cell){
+                    isPainting = cell.filled ? false :true;
+                    dragCell.x = xMin;
+                    dragCell.y = yMin;
+                }
+            }
+        });
+        canvas2d.addEventListener("mouseup",function(ev){
+            var canvasRect = canvas2d.getBoundingClientRect();
+            var x = ev.clientX - canvasRect.left;
+            var y = ev.clientY - canvasRect.y;
+            dragCorner.x = x, dragCorner.y = y;
+            dragCorner.x2 = x, dragCorner.y2 = y;
+            var xMin = (x - x % gridSize) / gridSize;
+            var layer = (y - y % (combinedGridHeight)) / (combinedGridHeight);
+            var adjustedY = (y - layer * combinedGridHeight);
+            var yMin = (adjustedY - adjustedY % gridSize) / gridSize;
+            for(var i = 0, len = cellsToFill.length; i < len; i++){
+                var cell = grids[layer][cellsToFill[i].x][cellsToFill[i].y];
+                if(cell){
+                    if(isDragging && isPainting){
+                        cell.filled = true;
+                    }else if(isDragging){
+                        cell.filled = false;
+                    }
+                }
+            }
+            cellsToFill = [];
+            if(grids.length > layer && grids[0].length > xMin && grids[0][0].length > yMin){
+                var cell = grids[layer][xMin][yMin];
+                if(cell){
+                    if(isDragging && isPainting){
+                        cell.filled = true;
+                    }else if(isDragging){
+                        cell.filled = false;
+                    }else{
+                        cell.filled = !(cell.filled);
+                    }
+                    drawGrids();
+                }
+            }
+            isDragging = false;
+        });
+        document.getElementById("slider_flatten").addEventListener("input",drawGrids);
+        document.getElementById("slider_gap").addEventListener("input",drawGrids);
+        drawGrids();
+        function createGrid(width,height){
+            var grid = [];
+            for(var i = 0; i < width; i++){
+                var col = [];
+                for(var j = 0; j < height; j++){
+                    col.push({x:i,y:j,filled:false,fill:"rgba(0,100,100,0.1)"});
+                }
+                grid.push(col);
+            }
+            return grid;
+        }
+        function drawGrids(){
+            clearGrids();
+            var layerCount = grids.length;
+            var perspective = Number(document.getElementById("slider_flatten").value);
+            var gap = Number(document.getElementById("slider_gap").value);
+            for(var i = layerCount-1; i >= 0; i--){
+                drawGrid(grids[i], false, 0, (i*combinedGridHeight), null, i===selectedLayer);
+                drawGrid(grids[i], true, 0, i*gridHeight*gap, perspective, i=== selectedLayer);
+            }
+        }
+        function clearGrids(){
+            ctxIso.setTransform(1,0,0,1,0,0);
+            ctxIso.clearRect(0,0,canvasIso.width, canvasIso.height);
+            ctx2d.clearRect(0,0,canvas2d.width, canvas2d.height);
+            ctxIso.setTransform(1,0,0,1,0,0);
+            for(var i = gridSize; i < canvasIso.width; i += gridSize*2){
+                ctxIso.beginPath();
+                ctxIso.moveTo(i,0);
+                ctxIso.lineTo(i,canvasIso.height);
+                ctxIso.strokeStyle = flimsyStroke;
+                ctxIso.lineWidth = 0.75;
+                ctxIso.stroke();
+            }
+        }
+        function drawGrid(gridmap, isometric, xOffset, yOffset, flattenLevel, isSelected){
+            var width = gridmap.length*gridSize;
+            var ctx;
+            if(isometric){
+                ctx = ctxIso;
+                ctx.setTransform(1,0,0,1,xOffset,yOffset);
+                ctx.transform(1, flattenLevel, -1, flattenLevel, width + xOffset, 0 );
+            }else{
+                ctx = ctx2d;
+                ctx.setTransform(1, 0, 0, 1, xOffset, yOffset);
+            }
+            for(var i = 0, len = gridmap.length; i < len; i++){
+                for(var j = 0; j < gridmap[i].length; j++){
+                    var cell = gridmap[i][j];
+                    if(cell.filled){
+                        ctx.lineWidth = isSelected ? 2 : 1
+                        ctx.strokeStyle = innerStroke;
+                        if(isSelected){
+                            ctx.fillStyle = cell.fill;
+                            ctx.strokeRect(i*gridSize,j*gridSize,gridSize,gridSize);
+                            ctx.fillRect(i*gridSize,j*gridSize,gridSize,gridSize);
+                        }else{
+                            ctx.fillStyle = outerFill;
+                            ctx.fillRect(i*gridSize,j*gridSize, gridSize, gridSize);
+                        }
+                    }else{
+                        if(isSelected){
+                            ctx.strokeStyle = flimsyStroke;
+                            ctx.lineWidth = 0.5;
+                            ctx.strokeRect(i*gridSize,j*gridSize,gridSize,gridSize);
+                        }
+                    }
+                    if(cell.hover){
+                        ctx.fillStyle = outerFill;
+                        ctx.fillRect(i*gridSize,j*gridSize,gridSize,gridSize);
+                    }
+                }
+            }
+            ctx.strokeStyle = solidStroke;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0,0,width,width);
+
+            if(cellsToFill.length > 1){
+                ctx.fillStyle = isPainting ? "rgba(0,70,100,0.5)" : "rgba(100,0,0,0.5)";
+                var xys = {};
+                for(var i = 0, len = cellsToFill.length; i < len; i++){
+                    var x = cellsToFill[i].x, y = cellsToFill[i].y;
+                    var xy = x+":"+y;
+                    if(!xys[xy]){
+                        xys[xy] = true;
+                        ctx.fillRect(x*gridSize, y*gridSize, gridSize, gridSize);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
