@@ -3786,7 +3786,7 @@ function generateRandomAlien(species,rand){
         if(species.locomotion === "Flyer" && species.bodystructure.indexOf("W") < 0){
             bfp -= 1;
         }
-        bfp = Math.max(1,bfp);
+        bfp = Math.min(Math.max(1,bfp),15);        
         if(bfp <= 2){ species.bfpdesc = "Globular";}
         else if(bfp <= 5){ species.bfpdesc = "Compact"; }
         else if(bfp <= 7){ species.bfpdesc = "Thick"; }
@@ -3798,7 +3798,7 @@ function generateRandomAlien(species,rand){
         species.height = getHeight(species.size, species.bfp);
     }
     function getHeight(size, bfp){
-        if(bfp > 15){ return ">3 m";}else if(bfp < 1){ bfp = 1;}
+        if(bfp > 15){ return ">3m";}else if(bfp < 1){ bfp = 1;}
         var sizes = [36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 180,
         240, 300, 360, 420, 480, 540, 600, 660, 720, 780, 840, 900, 960,1020, 1080, 1140, 1200, 1800];
         var heightsByBFP = [
@@ -4037,6 +4037,84 @@ function generateRandomAlien(species,rand){
             text += atmoDesc + " atmosphere."
             if(species.homeworld.mainworld.tradecodes.indexOf("Sa") >= 0 || species.homeworld.mainworld.tradecodes.indexOf("Lk") >= 0){ text = text.replace("world","moon");}
             return text;
+        }else if(key === "height"){
+            var text = "";
+            switch(species["height"]){
+                case "0.3m":
+                case "0.4m":
+                case "0.5m":
+                case "0.6m": text = "less than half as tall as a human"; break;
+                case "0.7m":
+                case "0.8m":
+                case "0.9m":  text = "significantly shorter than a human"; break;
+                case "1m":
+                case "1.1m":
+                case "1.2m":  text = "shorter than a human"; break;
+                case "1.3m":
+                case "1.4m":
+                case "1.5m":  text = "somewhat shorter than a human"; break;
+                case "1.6m":
+                case "1.7m":
+                case "1.8m": text = "about as tall a human"; break;
+                case "1.9m":
+                case "2m":
+                case "2.1m": text = "somewhat taller than a human"; break;
+                case "2.2m":
+                case "2.3m":
+                case "2.4m":  text = "taller than a human"; break;
+                case "2.5m":
+                case "2.6m":
+                case "2.7m": text = "significantly taller than a human"; break;
+                case "2.8m":
+                case "2.9m":
+                case "3m": text = "much taller than a human"; break;
+                case "3.1m":
+                case "3.2m":
+                case "3.3m": text = "taller than a human"; break;
+                case "3.4m":
+                case "3.5m":
+                case "3.6m":  text = "about twice as tall as a human"; break;
+                case "3.7m":
+                case "3.8m":
+                case "3.9m": text = "more than twice as tall as a human"; break;
+                case "4m":   
+                case "4.1m":
+                case "4.2m":
+                case "4.3m":
+                case "4.4m":
+                case "4.5m": text = "about two and half times as tall as a human"; break;
+                case "4.6m":
+                case "4.7m": text = "more than two and half times as tall as a human"; break;
+                case "4.8m":
+                case "4.9m":
+                case "5m":
+                case "5.1m":
+                case "5.2m":
+                case "5.3m":
+                case "5.4m": text = "about thrice as tall as a human"; break;
+                case "5.5m": text = "more than three times as tall as a human"; break;
+                case "5.6m": 
+                case "5.7m":
+                case "5.8m":
+                case "5.9m":
+                case "6m":
+                case "6.1m":
+                case "6.2m":
+                case "6.3m": text = "about three and a half times as tall as a human"; break;
+                case "6.4m": 
+                case "6.5m":
+                case "6.6m":
+                case "6.7m":
+                case "6.8m":
+                case "6.9m":
+                case "7m":
+                case "7.1m":
+                case "7.2m": text = "about four times as tall as a human"; break;
+                case "7.3m":
+                case "7.4m": text = "more than four times as tall as a human"; break;
+            }
+            if(species.stance === "Horizontal"){ text = text.replace("tall","long");}
+            return text;
         }
         if(key === "language" || key === "naturalweapon" || key === "nativeTerrain" || key === "locomotion" || key === "sizeclass" || key === "symmetry" || key === "taildesc" || key === "skin" || key == "skeleton"){
             val = {
@@ -4109,7 +4187,8 @@ function generateRandomAlien(species,rand){
         if(species.bfpdesc != "Typical"){
             summary += summarize("bfpdesc")+" ";
         }
-        summary += summarize("symmetry") + " " + summarize("locomotion") +", measuring " + species.height + " in " + (species.stance === "Horizontal" ? "length":"height") + " and massing around " + species.size + "kg." ;
+        console.log(species.height);
+        summary += summarize("symmetry") + " " + summarize("locomotion") +", "+(species.stance === "Horizontal" ? "measuring " : "standing ")+summarize("height")+" (" + species.height + ") " + (species.height > "1.5m" && species.height != "1m" && species.size < 72 ? "but massing only " : "and massing around ")+species.size + "kg "+(species.size === 72 ? ", about the same mass as a human." : ("— about "+Math.round((species.size / 72)*10)/10+" times "+(species.size > 72 ? "heavier than":"the mass of")+" an average human.")) ;
         if(species.manipulators > 0){
             if(species.nonstandardmanipulators > 0){
                 if(species.tail === "P" || species.tail === "M"){
@@ -4162,7 +4241,12 @@ function generateRandomAlien(species,rand){
             }else if(appendages.flippers){
                 summary += "They stand on " + appendages.flippers + " flippers";
                 if(appendages.wings){
-                    summary += " and have " + appendages.wings + " wings."
+                    summary += " and have " + appendages.wings + " wings";
+                    if(species.locomotion !== "Triphib"){
+                        summary += " which are used for swimming."; 
+                    }else{
+                        summary += ".";
+                    }
                 }else{
                     summary += ".";
                 }
@@ -4197,6 +4281,7 @@ function generateRandomAlien(species,rand){
                     summary += " They have "
                 }
             }
+            
             if((appendages.flippers > 0 || appendages.wings > 0) && (appendages.legs > 0 || appendages.legsWithManipulators > 0)){
                 if(appendages.wings > 0){
                     summary += appendages.wings + " wings and ";
@@ -4205,6 +4290,7 @@ function generateRandomAlien(species,rand){
                     summary += appendages.flippers + " flippers and ";
                 }
                 if(appendages.legsWithManipulators > 0 && appendages.legs > 0){
+                    
                     summary += (appendages.legsWithManipulators + appendages.legs) + " legs, " + appendages.legsWithManipulators + " of which double as manipulators.";
                 }else{
                     if(appendages.legsWithManipulators > 0){
@@ -4221,7 +4307,11 @@ function generateRandomAlien(species,rand){
                     summary += ".";
                 }
             }else if(appendages.legs > 0){
+                if(appendages.legsWithManipulators > 0 && appendages.legs > 0){
+                    summary += (appendages.legsWithManipulators + appendages.legs) + " legs, " + appendages.legsWithManipulators + " of which double as manipulators.";
+                }else{
                 summary += appendages.legs + " legs.";
+                }
             }else if(appendages.wings > 0){
                 summary += appendages.wings + " wings.";
             }
@@ -4234,7 +4324,24 @@ function generateRandomAlien(species,rand){
                 summary += " Notably, on their homeworld they can fly without the aid of wings.";
             }
         }
-        summary += " Their bodies are covered by "+summarize("skin") + ", contain " + summarize("fluids") + ", and are supported by " + summarize("skeleton") + ".";
+        if(species.skin !== "Skin" && species.fluids !== "Blood" && species.skeleton !== "Bony Interior"){
+            summary += " Their bodies are covered by "+summarize("skin") + ", contain " + summarize("fluids") + ", and are supported by " + summarize("skeleton") + ".";
+        }else if(species.skin !== "Skin" && species.fluids !== "Blood"){
+            summary += " Their bodies are covered by "+summarize("skin") + " and contain " + summarize("fluids") + " instead of blood.";
+            
+        }else if(species.skin !== "Skin" && species.skeleton !== "Bony Interior"){
+            summary += " Their bodies are covered by "+summarize("skin") + " and are supported by " + summarize("skeleton") + " instead of bones.";
+            
+        }else if(species.fluids !== "Blood" && species.skeleton !== "Bony Interior"){
+            summary += " Their bodies contain " + summarize("fluids") + " instead of blood, and are supported by " + summarize("skeleton") + " instead of bones.";
+
+        }else if(species.skin !== "Skin"){
+            summary += " Their bodies are covered by "+summarize("skin")+".";
+        }else if(species.fluids !== "Blood"){
+            summary += " Their bodies contain " + summarize("fluids") + " instead of blood.";
+        }else if(species.skeleton !== "Bony Interior"){
+            summary += " Their bodies are supported by " + summarize("skeleton") + " instead of bones.";
+        }
         if(species.torso === "TB+S"){
             summary += " Their brain is centered within their torsos.";
             if(appendages.legs + appendages.wings + appendages.legsWithManipulators + appendages.arms + appendages.flippers + appendages.tails > 0){
@@ -4243,13 +4350,16 @@ function generateRandomAlien(species,rand){
         }else if(species.torso == "TS"){
             summary += " Although each has a recognizable head (with a brain and mouth) their primary sensory organs are actually centered on their torsos."
         }else if(species.torso == "T+S"){
-            summary += " Although each has a recognizable head (with a brain and mouth) their primary sensory organs are actually dispersed throughout their limbs."
-        }else if(species.head === "N"){
-            summary += " The species does not have a recognizable head;";
-            if(species.torso === "TBS"){
-                summary += " their brains and primary sensory organs are instead centered on their torsos."
+            summary += " Although each has a recognizable head (with a brain and mouth), their primary sensory organs are actually dispersed throughout their limbs."
+        }else if(species.torso == "TB"){
+            summary += " Their brains are located in their torsos rather than in their heads."
+        }else if(species.torso === "TBS"){
+            if(species.head === "N"){
+                summary += " The species does not have a recognizable head; their brains and primary sensory organs are instead centered on their torsos.";
             }
+            summary += " Although each has a recognizable head with a mouth, their brains and primary sensory organs are centered on their torsos."
         }
+        
         if(appendages.antennae > 0){
             summary += " Their senses are supplemented by " + appendages.antennae + " antenna"+ (appendages.antennae > 1 ? "e":"")+"."
         }
