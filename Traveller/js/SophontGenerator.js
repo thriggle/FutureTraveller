@@ -4342,22 +4342,34 @@ function generateRandomAlien(species,rand){
         }else if(species.skeleton !== "Bony Interior"){
             summary += " Their bodies are supported by " + summarize("skeleton") + " instead of bones.";
         }
+        var numAppendages = appendages.legs + appendages.wings + appendages.legsWithManipulators + appendages.arms + appendages.flippers + appendages.tails + appendages.antennae;
         if(species.torso === "TB+S"){
-            summary += " Their brain is centered within their torsos.";
-            if(appendages.legs + appendages.wings + appendages.legsWithManipulators + appendages.arms + appendages.flippers + appendages.tails > 0){
+            if(species.head === "N"){
+                summary += " The species does not have a recognizable head; their";
+            }else{
+                summary += " Their";
+            }
+            summary += " brain is centered within their torsos.";
+            if(numAppendages > 0){
                 summary += " Their primary sensory organs are dispersed throughout their limbs."
             } 
         }else if(species.torso == "TS"){
             summary += " Although each has a recognizable head (with a brain and mouth) their primary sensory organs are actually centered on their torsos."
         }else if(species.torso == "T+S"){
-            summary += " Although each has a recognizable head (with a brain and mouth), their primary sensory organs are actually dispersed throughout their limbs."
+            if(species.head === "N"){
+                summary += " The species does not have a recognizable head.";
+                if(numAppendages > 0){ summary += " Their primary sensory organs are dispersed throughout their limbs.";}
+            }else if(numAppendages > 0){
+                summary += " Although each has a recognizable head (with a brain and mouth), their primary sensory organs are actually dispersed throughout their limbs.";
+            }
         }else if(species.torso == "TB"){
             summary += " Their brains are located in their torsos rather than in their heads."
         }else if(species.torso === "TBS"){
             if(species.head === "N"){
                 summary += " The species does not have a recognizable head; their brains and primary sensory organs are instead centered on their torsos.";
+            }else{
+                summary += " Although each has a recognizable head with a mouth, their brains and primary sensory organs are centered on their torsos.";
             }
-            summary += " Although each has a recognizable head with a mouth, their brains and primary sensory organs are centered on their torsos."
         }
         
         if(appendages.antennae > 0){
