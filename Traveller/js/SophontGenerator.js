@@ -596,7 +596,7 @@ function generateRandomAlien(species,rand){
             species.genders = [];
             for(var i = 0; i < 6; i++){
                 //var gender = addCaps(generator.getRandomName("word.1or2sylword"), species.genders);
-                var gender = "Gender " + (i+1);
+                var gender = "Gender " + (i+10).toString(17).toUpperCase();
                 species.genders.push(gender);
             }
             species.gender2 = species.genders[0];
@@ -643,9 +643,12 @@ function generateRandomAlien(species,rand){
         species.genderc5s = ["--"];
         species.genderc6s = ["--"];
         species.genderdesc = [ species.genders[0]+" " + " ("+(+(species.genderProbabilities[species.genders[0]]) / 36 * 100).toFixed(2)+ "%)" ];
+        species.genderlist = [ {name:species.genders[0], desc:species.genders[0]+" " + " ("+(+(species.genderProbabilities[species.genders[0]]) / 36 * 100).toFixed(2)+ "%)", probability:(+(species.genderProbabilities[species.genders[0]]) / 36 * 100)}];
         for(var i = 1, len = species.genders.length; i < len; i++){
             species.genderc6s.push("--");
-            species.genderdesc.push( species.genders[i]+" " + " ("+(+(species.genderProbabilities[species.genders[i]]) / 36 * 100).toFixed(2)+ "%)" )
+            var desc = species.genders[i]+" " + " ("+(+(species.genderProbabilities[species.genders[i]]) / 36 * 100).toFixed(2)+ "%)";
+            species.genderdesc.push( desc );
+            species.genderlist.push( {name:species.genders[i], desc: species.genders[i]+" " + " ("+(+(species.genderProbabilities[species.genders[i]]) / 36 * 100).toFixed(2)+ "%)", probability:(species.genderProbabilities[species.genders[i]]) / 36 * 100 });
             roll = d6() - d6();
             switch(roll){
                 case -5: species.genderc1s.push("-5"); break;
@@ -722,6 +725,13 @@ function generateRandomAlien(species,rand){
             }
         }
         if(species.genders.length > 1){
+            species.genderlist.sort(function(a,b){
+                if(a.probability > b.probability){
+                    return -1;
+                }else{
+                    return 1;
+                }
+            });
             roll = d6() - d6();
             if(roll <= -5){
                 species.genderassignment = "Assigned by family";
@@ -1077,6 +1087,7 @@ function generateRandomAlien(species,rand){
                     var genderIndex = species.genders.indexOf(species.castes[i]);
                     if(genderIndex >= 0){
                         hasCastedGender = true;
+                        species.hasCastedGender = true;
                         species.castec1s.push(species.genderc1s[genderIndex]);
                         species.castec2s.push(species.genderc2s[genderIndex]);
                         species.castec3s.push(species.genderc3s[genderIndex]);
@@ -1200,7 +1211,7 @@ function generateRandomAlien(species,rand){
             
         if(species.genders.length > 1 && species.castes.length > 1){
             roll = d6();
-            if(hasCastedGender){ if(roll > 3){roll = 3;}else{roll = 2;}}
+            //if(hasCastedGender){ if(roll > 3){roll = 3;}else{roll = 2;}}
             switch(roll){
                 case 1: 
                 case 2: species.castegenderrelation = "Dependent"; break;
@@ -4415,11 +4426,95 @@ function generateRandomAlien(species,rand){
             }
             summary += " perceive the projected life force of living creatures (Perception)."
         }
-        summary += " They communicate using a " + summarize("language") +".";
+        var lan = summarize("language");
+        summary += " They communicate using a" + ( lan[0] == "a" ? "n " : " ") + lan +".";
 
         species.sensesummary = summary;
         summary = " The " + species.name + " evolved from " + summarize("niche") + " " + summarize("class")+"s, adapted to " + species.climate.match(/(.*?)(?=\.)/g)[0].toLowerCase() + ", " + summarize("nativeTerrain") + " terrain on " + summarize("homeworld");
         species.habitatsummary = summary;
+
+        summary = "";
+        summary += addCaps(species.name) + " reach maturity at age " + species.generation.toString() + ", hit their physical peak around age " + species.lifestagelower[5].toString() + ", and live to be " + species.lifeexpectancy.toString() + " years old on average.";
+        species.lifesummary = summary;
+
+        summary = "They have " + species.genders.length + " gender" + (species.genders.length != 1 ? "s":"")+" ";
+        if(species.genders.length == 1){ summary += "("+species.genders[0].toLowerCase() +")"; }else{
+            summary += "— "
+            for(var i = 0, len = species.genderlist.length; i < len; i++){
+            
+                if(i == len-1){
+                    summary += "and " + species.genderlist[i].desc;
+                }else{
+                    summary += species.genderlist[i].desc + (i==len-2?" ":", ");
+                }
+            }
+        }
+        if(species.genders.count == 1){ summary+=".";}
+        else{
+            switch(species.genderassignment){
+                case "Assigned by family":
+                    summary += " — which is initially chosen by their parents, but which might shift at every life stage";
+                    break;
+                case "Assigned by individual (neuter until chosen)":
+                    summary += " — but are neuter until a gender is chosen by an individual. Their gender might shift randomly at age " + species.lifestagelower[6];
+                    break;
+                case "Neuter until life stage 2": 
+                    summary += " — but are neuter until age " + species.lifestagelower[2];
+                    if(species.gendershift === "transforms again at life stage 6"){
+                        summary += " and might shift genders at age " + species.lifestagelower[6];
+                    }
+                    break;
+                case "Initially assigned at life stage 2":
+                    summary += " — but are neuter until age " + species.lifestagelower[2] + ", after which their gender might shift at every life stage";
+                case "Assigned at birth":
+                    break;
+            }
+            summary += ".";
+        }
+        
+        species.gendersummary = summary;
+        
+        if(species.c6 === "Cas"){
+            species.castesummary = " The " + species.name + " are biologically stratified in a" + ( species.castestructure[0] == "E" ? "n " : " " ) + species.castestructure.toLowerCase() + " caste structure of "
+             + species.castes.length.toString() + " distinct castes, " + species.casteassignment.toLowerCase().replace("life stage 2","age " + species.lifestagelower[2].toString()) + ".";
+             if(species.casteshift === "shifts at life stage 6"){
+                species.castesummary += " Their castes may change randomly at age " + species.lifestagelower[6] + ".";
+             }else if(species.casteshift === "progresses along caste table at every life stage"){
+                species.castesummary += " Their castes may shift at every life stage.";
+             }
+             if(species.castegenderrelation !== "Independent"){
+                if(species.castegenderrelation === "Dependent"){
+                    species.castesummary += " Each ranked caste is always a specific gender.";
+                }else{
+                    if(species.hasCastedGender){
+                        species.castesummary += " Some castes are always a specific gender, and breeding "+species.genders[0].toLowerCase()+"s are considered a separate caste.";
+                    }else{
+                        species.castesummary += " Breeders ("+species.genders[0].toLowerCase()+"s) are considered a separate caste.";
+                    }
+                }
+             }else{
+                if(species.hasCastedGender){
+                    species.castesummary += " Caste is independent of gender, but some castes are always a specific gender.";
+                }
+             }
+        }else{
+            species.castesummary = "";
+        }
+        
+    }
+    function addCaps(text) {
+        var capitalizedString = "";
+        var lastCharacter = null, currCharacter = " ";
+        for (var i = 0, len = text.length; i < len; i++) {
+            lastCharacter = currCharacter;
+            currCharacter = text[i];
+            if (lastCharacter === " " || lastCharacter === "-") {
+                capitalizedString += currCharacter.toUpperCase();
+            } else {
+                capitalizedString += currCharacter;
+            }
+        }
+        return capitalizedString;
     }
     function getAppendages(){
         var appendages = {wings:0,flippers:0,legs:0,legsWithManipulators:0,arms:0,antennae:0,tails:0};
