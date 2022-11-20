@@ -344,7 +344,8 @@
 
         .summarytext {
             max-width: 50rem;
-            margin-top: 0;
+            margin-top: .4rem;
+            margin-bottom: .4rem;
         }
     </style>
     <fieldset>
@@ -900,22 +901,15 @@
                         </fieldset>
                     </fieldset>
                     <fieldset>
-                        <legend>Life and Abilities</legend>
-                        <p data-detail="lifesummary" class="summarytext" data-source="species"></p>
-                        <p data-detail="gendersummary" class="summarytext" data-source="species"></p>
-                        <p data-detail="castesummary" class="summarytext" data-source="species"></p>
-                    <fieldset class="collapsed">
                         <legend>Life and Society</legend>
+                        <p data-detail="lifesummary" class="summarytext" data-source="species"></p>
+                    <fieldset class="collapsed">
+                        <legend>Life Stages</legend>
                         
                         <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy"
                                 data-source="species"></span> years 
                                 <strong>Generation Length:</strong> <span data-detail="generation" data-source="species"> </span> years</div>
                         
-                        <div><strong>Caste:</strong> <span data-detail="castestructure" data-source="species">No</span>
-                            caste structure <span data-detail="casteassignment"
-                                data-source="species"></span> (<span data-detail="casteshift"
-                                data-source="species"></span>) <strong>Caste-Gender Relation:</strong> <span data-detail="castegenderrelation"
-                                data-source="species"></span></div>
                         <table class="table">
                             <tr>
                                 <th>#</th>
@@ -1026,15 +1020,22 @@
                             </tr>
                         </table>
                     </fieldset>
+                    <p data-detail="gendersummary" class="summarytext" data-source="species"></p>
+                        <p data-detail="castesummary" class="summarytext" data-source="species"></p>
                 </fieldset>
                     <fieldset>
                         <legend>Genetics and Abilities</legend>
                         <div><strong>Genetic Profile:</strong> <span data-detail="geneticprofile"
                                 data-source="species"></span> <strong>DNA:</strong> <span data-detail="dna"
-                                data-source="species"></span> <strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span>
-                                    <span data-detail="genderassignment"
-                                        data-source="species"></span> (<span data-detail="gendershift"
-                                        data-source="species"></span>)</div>
+                                data-source="species"></span> <strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span>,
+                            <span data-detail="genderassignment"
+                                data-source="species"></span> (<span data-detail="gendershift"
+                                data-source="species"></span>)</div>
+                            <div><strong>Caste:</strong> <span data-detail="castestructure" data-source="species">No</span>
+                                caste structure,<span data-detail="casteassignment"
+                                    data-source="species"></span> (<span data-detail="casteshift"
+                                    data-source="species"></span>) <strong>Caste-Gender Relation:</strong> <span data-detail="castegenderrelation"
+                                    data-source="species"></span></div>
                         <table class="table">
                             <tr>
                                 <th colspan="2"></th>
