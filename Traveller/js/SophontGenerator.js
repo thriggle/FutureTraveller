@@ -3958,7 +3958,7 @@ function generateRandomAlien(species,rand){
                 // normal things from terra 
                 {key:"Bioluminescent", name:"Bioluminescent", description:"The sophont emits bioluminescent signals." + (species.vision === "Blind" ? " Although incapable of recognizing the signals itself, they may have originally served to attract prey or confuse predators." : "")},
                 {key:"Web", name:"Web Spinner", description:"The sophont is able to produce a natural silken thread from its body."},
-                {key:(species.hearing==="Deaf"?"Symbiont":"Echolocation"), description:(species.hearing==="Deaf"?"The sophont relies upon a symbiont to sense vibrations in its surroundings.":"The sophont can visually map its surrounding using sonic vibrations.")}
+                {key:(species.hearing==="Deaf"?"Symbiont":"Echolocation"), name:(species.hearing==="Deaf"?"Echolocation Symbiont":"Echolocation"), description:(species.hearing==="Deaf"?"The sophont relies upon a symbiont to sense vibrations in its surroundings.":"The sophont can visually map its surrounding using sonic vibrations.")}
             ],
             {key:"Non-Respiratory", name:"Non-Respiratory", description:"The sophont does not require fresh air to function."},
             [
