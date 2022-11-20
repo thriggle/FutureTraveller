@@ -176,6 +176,9 @@
             canvas.addEventListener("mousedown",handleMouseDown);
             canvas.addEventListener("mousemove",handleMouseMove);
             canvas.addEventListener("mouseup",handleMouseUp);
+canvas.addEventListener("touchown",handleMouseDown);
+            canvas.addEventListener("touchmove",handleMouseMove);
+            canvas.addEventListener("touchup",handleMouseUp);
             canvas.addEventListener("mouseout",handleMouseUp);
             canvas.addEventListener("wheel",handleResize);
         }
@@ -228,12 +231,14 @@
             drawHexes();
         }
         function handleMouseDown(e){
+e.preventDefault();
             dragStart = true;
             startX = parseInt(e.clientX);
             startY = parseInt(e.clientY);
             
         }
         function handleMouseMove(e){
+e.preventDefault();
             canX = parseInt(e.clientX);
             canY = parseInt(e.clientY);
             if(dragStart && (canX !== startX || canY !== startY)){
@@ -353,6 +358,7 @@
             return{x:xZone,y:yZone};
         }
         function handleMouseUp(e){
+e.preventDefault();
             dragStart = false;
             if(isDragging){
                 isDragging = false;
