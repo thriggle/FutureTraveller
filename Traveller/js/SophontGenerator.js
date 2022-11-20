@@ -4001,7 +4001,7 @@ function generateRandomAlien(species,rand){
             if(hw.size <= 4){
                 text += " a low-gravity";
             }else if(hw.size <= 6){
-                text += " a somewhat low gravity";
+                text += " a somewhat low-gravity";
             }else if(hw.size <= 9){
                 text += " a";
             }else if(hw.size >= 10){
@@ -4199,7 +4199,7 @@ function generateRandomAlien(species,rand){
             summary += summarize("bfpdesc")+" ";
         }
         console.log(species.height);
-        summary += summarize("symmetry") + " " + summarize("locomotion") +", "+(species.stance === "Horizontal" ? "measuring " : "standing ")+summarize("height")+" (" + species.height + ") " + (species.height > "1.5m" && species.height != "1m" && species.size < 72 ? "but massing only " : "and massing around ")+species.size + "kg "+(species.size === 72 ? ", about the same mass as a human." : ("— about "+Math.round((species.size / 72)*10)/10+" times "+(species.size > 72 ? "heavier than":"the mass of")+" an average human.")) ;
+        summary += summarize("symmetry") + " " + summarize("locomotion") +", "+(species.stance === "Horizontal" ? "measuring " : "standing ")+summarize("height")+" (" + species.height + ") " + (species.height > "1.5m" && species.height != "1m" && species.size < 72 ? "but massing only " : "and massing around ")+species.size + "kg"+(species.size === 72 ? ", about the same mass as a human." : (" — about "+Math.round((species.size / 72)*10)/10+" times "+(species.size > 72 ? "heavier than":"the mass of")+" an average human.")) ;
         if(species.manipulators > 0){
             if(species.nonstandardmanipulators > 0){
                 if(species.tail === "P" || species.tail === "M"){
@@ -4239,7 +4239,7 @@ function generateRandomAlien(species,rand){
                     if(appendages.legsWithManipulators > 0){
                         summary += appendages.legsWithManipulators + " legs that double as manipulators."
                     }else if(appendages.legs > 0 ){
-                        summary += appendages.legs + " legs.";
+                        summary += appendages.legs + " leg"+(appendages.legs !== 1 ? "s" : "")+".";
                     }
                 }
                 if(appendages.wings > 0){
@@ -4269,7 +4269,7 @@ function generateRandomAlien(species,rand){
                     if(appendages.legsWithManipulators > 0){
                         summary += appendages.legsWithManipulators + " legs (which double as manipulators)"
                     }else if(appendages.legs > 0 ){
-                        summary += appendages.legs + " legs";
+                        summary += appendages.legs + " leg"+(appendages.legs !== 1 ? "s" : "");
                     }
                 }
                 if(appendages.wings){
@@ -4358,9 +4358,9 @@ function generateRandomAlien(species,rand){
             if(species.head === "N"){
                 summary += " The species does not have a recognizable head; their";
             }else{
-                summary += " Their";
+                summary += " Although each has a recognizable head with a mouth, their";
             }
-            summary += " brain is centered within their torsos.";
+            summary += " brains are centered within their torsos.";
             if(numAppendages > 0){
                 summary += " Their primary sensory organs are dispersed throughout their limbs."
             } 
@@ -4453,7 +4453,7 @@ function generateRandomAlien(species,rand){
         else{
             switch(species.genderassignment){
                 case "Assigned by family":
-                    summary += " — which is initially chosen by their parents, but which might shift at every life stage";
+                    summary += " — initially chosen by their parents, but which might shift at every life stage";
                     break;
                 case "Assigned by individual (neuter until chosen)":
                     summary += " — but are neuter until a gender is chosen by an individual. Their gender might shift randomly at age " + species.lifestagelower[6];

@@ -548,108 +548,105 @@
                     data-detail="niche" data-source="species"></span>)</div>
             <div><strong>Breathes:</strong> <span data-detail="breathes" data-source="species"></span></div>
         </fieldset>
-        <p data-detail="lifesummary" class="summarytext" data-source="species"></p>
+        <p data-detail="lifesummary" class="summarytext" data-source="species"></p>    
+        <fieldset class="collapsed">
+            <legend>Life Stages</legend>
+
+            <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy" data-source="species"></span> years
+                <strong>Generation Length:</strong> <span data-detail="generation" data-source="species"> </span> years
+            </div>
+            <table class="table">
+                <tr>
+                    <th>#</th>
+                    <th>Life Stage</th>
+                    <th>Duration</th>
+                    <th>Ages</th>
+                    <th>Notes</th>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>Infant</td>
+                    <td><span data-detail="lifestages" data-index="0" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="0" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="0" data-source="species"></span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Child</td>
+                    <td><span data-detail="lifestages" data-index="1" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="1" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="1" data-source="species"></span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Teen</td>
+                    <td><span data-detail="lifestages" data-index="2" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="2" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="2" data-source="species"></span></td>
+                    <td>Gender/Caste maturity.</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Young Adult</td>
+                    <td><span data-detail="lifestages" data-index="3" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="3" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="3" data-source="species"></span></td>
+                    <td>Career resolution begins.</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Adult</td>
+                    <td><span data-detail="lifestages" data-index="4" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="4" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="4" data-source="species"></span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Peak</td>
+                    <td><span data-detail="lifestages" data-index="5" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="5" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="5" data-source="species"></span></td>
+                    <td>Physical aging begins.</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Mid-Life</td>
+                    <td><span data-detail="lifestages" data-index="6" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="6" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="6" data-source="species"></span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Senior</td>
+                    <td><span data-detail="lifestages" data-index="7" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="7" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="7" data-source="species"></span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Elder</td>
+                    <td><span data-detail="lifestages" data-index="8" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="8" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="8" data-source="species"></span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>Retirement</td>
+                    <td><span data-detail="lifestages" data-index="9" data-source="species"></span> years</td>
+                    <td><span data-detail="lifestagelower" data-index="9" data-source="species"></span>-<span
+                            data-detail="lifestageupper" data-index="9" data-source="species"></span></td>
+                    <td>Mental aging begins.</td>
+                </tr>
+            </table>
+        </fieldset>
         <p data-detail="gendersummary" class="summarytext" data-source="species"></p>
         <p data-detail="castesummary" class="summarytext" data-source="species"></p>
-    
-    <fieldset class="collapsed">
-        <legend>Life Stages</legend>
-
-        <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy" data-source="species"></span> years
-            <strong>Generation Length:</strong> <span data-detail="generation" data-source="species"> </span> years
-        </div>
-        <table class="table">
-            <tr>
-                <th>#</th>
-                <th>Life Stage</th>
-                <th>Duration</th>
-                <th>Ages</th>
-                <th>Notes</th>
-            </tr>
-            <tr>
-                <td>0</td>
-                <td>Infant</td>
-                <td><span data-detail="lifestages" data-index="0" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="0" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="0" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>Child</td>
-                <td><span data-detail="lifestages" data-index="1" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="1" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="1" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Teen</td>
-                <td><span data-detail="lifestages" data-index="2" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="2" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="2" data-source="species"></span></td>
-                <td>Gender/Caste maturity.</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Young Adult</td>
-                <td><span data-detail="lifestages" data-index="3" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="3" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="3" data-source="species"></span></td>
-                <td>Career resolution begins.</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>Adult</td>
-                <td><span data-detail="lifestages" data-index="4" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="4" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="4" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>Peak</td>
-                <td><span data-detail="lifestages" data-index="5" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="5" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="5" data-source="species"></span></td>
-                <td>Physical aging begins.</td>
-            </tr>
-            <tr>
-                <td>6</td>
-                <td>Mid-Life</td>
-                <td><span data-detail="lifestages" data-index="6" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="6" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="6" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>7</td>
-                <td>Senior</td>
-                <td><span data-detail="lifestages" data-index="7" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="7" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="7" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>8</td>
-                <td>Elder</td>
-                <td><span data-detail="lifestages" data-index="8" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="8" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="8" data-source="species"></span></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>9</td>
-                <td>Retirement</td>
-                <td><span data-detail="lifestages" data-index="9" data-source="species"></span> years</td>
-                <td><span data-detail="lifestagelower" data-index="9" data-source="species"></span>-<span
-                        data-detail="lifestageupper" data-index="9" data-source="species"></span></td>
-                <td>Mental aging begins.</td>
-            </tr>
-        </table>
-    </fieldset>
-    <br/>
-
 <fieldset >
     <legend>Genetics and Abilities</legend>
     <div><strong>Genetic Profile:</strong> <span data-detail="geneticprofile" data-source="species"></span>
