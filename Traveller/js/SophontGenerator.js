@@ -4475,28 +4475,30 @@ function generateRandomAlien(species,rand){
         species.gendersummary = summary;
         
         if(species.c6 === "Cas"){
-            species.castesummary = " The " + species.name + " are biologically stratified in a" + ( species.castestructure[0] == "E" ? "n " : " " ) + species.castestructure.toLowerCase() + " caste structure of "
-             + species.castes.length.toString() + " distinct castes, " + species.casteassignment.toLowerCase().replace("life stage 2","age " + species.lifestagelower[2].toString()) + ".";
+            species.castesummary = " The " + species.name + " are stratified in a" + ( species.castestructure[0] == "E" ? "n " : " " ) + species.castestructure.toLowerCase() + " caste structure"
+            +(species.castestructure === "Skilled" ? ", " : (" of " + species.castes.length.toString() + " distinct castes, ")) + species.casteassignment.toLowerCase().replace("life stage 2","age " + species.lifestagelower[2].toString()) + ".";
              if(species.casteshift === "shifts at life stage 6"){
                 species.castesummary += " Their castes may change randomly at age " + species.lifestagelower[6] + ".";
              }else if(species.casteshift === "progresses along caste table at every life stage"){
                 species.castesummary += " Their castes may shift at every life stage.";
              }
-             if(species.castegenderrelation !== "Independent"){
-                if(species.castegenderrelation === "Dependent"){
-                    species.castesummary += " Each ranked caste is always a specific gender.";
-                }else{
-                    if(species.hasCastedGender){
-                        species.castesummary += " Some castes are always a specific gender, and breeding "+species.genders[0].toLowerCase()+"s are considered a separate caste.";
+             if(species.genders.length > 1){
+                if(species.castegenderrelation !== "Independent"){
+                    if(species.castegenderrelation === "Dependent"){
+                        species.castesummary += " Each ranked caste is always a specific gender.";
                     }else{
-                        species.castesummary += " Breeders ("+species.genders[0].toLowerCase()+"s) are considered a separate caste.";
+                        if(species.hasCastedGender){
+                            species.castesummary += " Some castes are always a specific gender, and breeding "+species.genders[0].toLowerCase()+"s are considered a separate caste.";
+                        }else{
+                            species.castesummary += " Breeders ("+species.genders[0].toLowerCase()+"s) are considered a separate caste.";
+                        }
+                    }
+                }else{
+                    if(species.hasCastedGender ){
+                        species.castesummary += " Caste is independent of gender, but some castes are always a specific gender.";
                     }
                 }
-             }else{
-                if(species.hasCastedGender){
-                    species.castesummary += " Caste is independent of gender, but some castes are always a specific gender.";
-                }
-             }
+            }
         }else{
             species.castesummary = "";
         }
