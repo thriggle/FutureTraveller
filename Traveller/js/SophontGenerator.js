@@ -4482,7 +4482,7 @@ function generateRandomAlien(species,rand){
              }else if(species.casteshift === "progresses along caste table at every life stage"){
                 species.castesummary += " Their castes may shift at every life stage.";
              }
-             if(species.genders.length > 1){
+             if(!species.castestructure === "Skilled" && species.genders.length > 1){
                 if(species.castegenderrelation !== "Independent"){
                     if(species.castegenderrelation === "Dependent"){
                         species.castesummary += " Each ranked caste is always a specific gender.";
