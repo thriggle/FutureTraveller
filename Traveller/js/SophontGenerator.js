@@ -3129,7 +3129,7 @@ function generateRandomAlien(species,rand){
                     ["Craftsman","Photonics"],
                     ["Electronics","Polymers"],
                     ["Fluidics","Programmer"],
-                    ["Gravitics","Crafstman"],
+                    ["Gravitics","Craftsman"],
                     ["Magnetics","Athlete"]
                 ]
             ];
@@ -4614,7 +4614,7 @@ function getCasteSkill(){
             ["Craftsman","Photonics"],
             ["Electronics","Polymers"],
             ["Fluidics","Programmer"],
-            ["Gravitics","Crafstman"],
+            ["Gravitics","Craftsman"],
             ["Magnetics","Athlete"]
         ]
     ];
@@ -4694,7 +4694,7 @@ function getRandomSpecialAbility(){
                 ["Craftsman","Photonics"],
                 ["Electronics","Polymers"],
                 ["Fluidics","Programmer"],
-                ["Gravitics","Crafstman"],
+                ["Gravitics","Craftsman"],
                 ["Magnetics","Athlete"]
             ]
         ];
