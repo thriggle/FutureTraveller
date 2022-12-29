@@ -17,7 +17,11 @@
             "{ept.initialsyl}{ept.finalsyllable}"
         ],
         "3sylword":[
-            "{ept.initialsyl}{ept.syllable}{ept.finalsyllable}"
+            "{ept.initialsyl}{ept.syllable}{ept.finalsyllable}",
+            "{ept.initialsylcoda}{ept.innersylvc}{ept.finalsyllable}",
+            "{ept.initialsylnocoda}{ept.innersylcvc}{ept.finalsyllable}",
+            "{ept.initialsylnocoda}{ept.innersylcv}{ept.finalsyllable}",
+            "{ept.initialsylcoda}{ept.nucleus}{ept.finalsyllable}"
         ],
         "1or2sylword": [
             "{ept.initialsyl}{ept.finalsyllable}",
@@ -36,18 +40,28 @@
             "2:{ept.initialnucleus}{ept.finalcoda}",
             "{ept.onset}{ept.nucleus}"
         ],
-        "initialsyl": [
-            "2:{ept.onset}{ept.nucleus}{ept.coda}",
-            "2:{ept.initialnucleus}{ept.coda}",
+        "initialsylcoda":[
+            "{ept.onset}{ept.nucleus}{ept.coda}",
+            "{ept.initialnucleus}{ept.coda}"
+        ],
+        "initialsylnocoda":[
             "{ept.onset}{ept.nucleus}"
         ],
+        "initialsyl": [
+            "4:{ept.initialsylcoda}",
+            "{ept.initialsylnocoda}"
+        ],
+        "innersylcv":["{ept.noninitialonset}{ept.nucleus}"],
+        "innersylcvc":["{ept.noninitialonset}{ept.nucleus}{ept.coda}"],
+        "innersylvc":["{ept.nucleus}{ept.coda}"],
         "syllable": [
-            "{ept.noninitialonset}{ept.nucleus}{ept.coda}",
-            "2:{ept.nucleus}{ept.coda}",
-            "{ept.noninitialonset}{ept.nucleus}"
+            "4:{ept.innersylcv}",
+            "10:{ept.nucleus}",
+            "1:{ept.innersylcvc}",
+            "1:{ept.innersylvc}"
         ],
         "finalsyllable": [
-            "2:{ept.nucleus}{ept.finalcoda}",
+            "3:{ept.nucleus}{ept.finalcoda}",
             "{ept.noninitialonset}{ept.nucleus}{ept.finalcoda}",
             "{ept.noninitialonset}{ept.nucleus}"
         ],
@@ -402,7 +416,16 @@
             "16:{human.femalefirstname}",
             "{human.popularuslastname}"
         ],
+        "ftravellername":[
+            "Margaret"
+        ],
+        "mtravellername":[
+            "Cleon",
+            "Dulinor",
+            "Norris"
+        ],
         "malefirstname":[
+            "3:mtravellername",
             "Aaron","Abe","Abel","Abraham","Abram","Abriel","Ace","Achilles","Adam","Adan","Addison","Ade","Aden","Adnan","Adonis","Adrian","Adriel","Ahmad","Ahmed","Aidan","Aiden","Ainsley","Ajay","Al","Alain","Alan","Alaric","Alastair","Albany","Albert","Alberto","Albie","Alden","Aldo","Aldric","Aldrin","Alec","Alejandro","Alen","Alesandro","Alex","Alexander","Alexis","Alfie","Alfonse","Alfonso","Alfred","Alfredo","Ali","Alistair","Allan","Allen","Alonzo","Aloysius","Alphonso","Alton","Alvin","Amari","Amir","Amit","Amos","Anand","Anderson","Andre","Andreas","Andres","Andrew","Andy","Angel","Angelo","Angus","Ansel","Anson","Anthony","Anton","Antonio","Antony","Aran","Archer","Archie","Ari","Aristotle","Arjun","Arlo","Arman","Armando","Arnold","Arran","Arrie","Art","Arthur","Arturo","Arun","Arwin","Asa","Asad","Ash","Ashby","Asher","Ashley","Ashton","Ashwin","Aspen","Aston","Aswin","Athan","Atticus","Aubrey","Auden","Audwin","August","Augustus","Austen","Austin","Aven","Avery","Axel","Ayaan","Ayden",
             "Bailey","Barack","Barclay","Barnaby","Barney","Barrett","Barron","Barry","Bart","Bartholomew","Basil","Bastian","Baxter","Bay","Baylor","Bear","Beau","Beckett","Bellamy","Ben","Benedict","Benjamin","Benji","Benjy","Bennett","Bennie","Benny","Benson","Bentley","Bently","Bernard","Bernardo","Bernie","Bert","Bertram","Bev","Bevan","Bill","Billy","Bjorn","Bladen","Blain","Blaine","Blair","Blaise","Blake","Blaze","Blue","Bob","Bobby","Bodie","Bogdan","Boris","Boston","Bowen","Brad","Braden","Bradford","Bradley","Bradwin","Brady","Braeden","Bram","Branden","Brandon","Brantley","Braxton","Bray","Brayan","Brayden","Braydon","Braylon","Breck","Brendan","Brenden","Brendon","Brennan","Brennon","Brent","Brentley","Brenton","Bret","Brett","Brevin","Brevyn","Brian","Brice","Bridie","Brie","Brighton","Brinley","Brock","Brod","Brodie","Brody","Brogan","Bronson","Brooke","Brooks","Bruce","Bruno","Bryan","Bryant","Bryce","Bryden","Brydon","Bryn","Bryon","Bryson","Buck","Buddy","Burt","Burton","Buster","Butch","Byron",
             "Cadby","Cade","Caden","Cael","Caelan","Cai","Caiden","Cain","Caius","Cal","Cale","Caleb","Calhoun","Callan","Callen","Callum","Calvin","Cam","Camden","Cameron","Campbell","Carey","Carl","Carlisle","Carlos","Carlton","Carsen","Carson","Carsten","Carter","Cary","Casey","Cash","Cason","Casper","Cassius","Castiel","Castor","Cathal","Cato","Cavan","Cayden","Caydon","Cayson","Cedric","Cesar","Chad","Chance","Chandler","Channing","Charles","Charley","Charlie","Charlton","Chas","Chase","Chaz","Che","Chesney","Chevy","Chip","Chris","Christian","Christopher","Chryssipus","Chuck","Cian","Ciaran","Cillian","Clancy","Clarence","Clark","Claude","Clay","Clayton","Clement","Cletus","Cliff","Clifford","Clifton","Clint","Clinton","Clive","Clyde","Cody","Cohen","Colby","Cole","Colin","Collin","Colm","Colt","Colton","Conan","Conner","Connor","Conor","Conrad","Constantine","Cooper","Corbin","Corey","Cormac","Cornelius","Cory","Craig","Cristian","Cristobal","Crosby","Cruz","Cullen","Curt","Curtis","Cuthbert","Cyril",
@@ -431,6 +454,7 @@
             "Zac","Zach","Zachariah","Zachary","Zachery","Zack","Zackary","Zackery","Zaiden","Zain","Zaine","Zak","Zane","Zayden","Zayn","Zayne","Zeb","Zebulon","Zed","Zeke","Zeno","Zeph","Ziggy","Zion","Zoltan","Zyle"
         ],
         "femalefirstname":[
+            "1:ftravellername",
             "Abbey","Abbi","Abbie","Abby","Abi","Abigail","Abrianna","Abrielle","Aby","Acacia","Ada","Adalia","Adalyn","Addie","Addilyn","Addison","Adelaide","Adele","Adelene","Adelia","Adelina","Adeline","Adelynn","Adreanna","Adriana","Adrianna","Adrianne","Adrienne","Agatha","Aggie","Agnes","Aida","Aileen","Ailsa","Aine","Ainsleigh","Aisha","Aisling","Aislinn","Aislynn","Alaina","Alana","Alanis","Alanna","Alannah","Alaska","Alayah","Alayna","Alba","Albany","Alberta","Aleah","Alecia","Aleisha","Alejandra","Alena","Alessandra","Alessia","Alex","Alexa","Alexandra","Alexandria","Alexia","Alexis","Alexus","Ali","Alia","Alice","Alicia","Alina","Alisha","Alison","Alissa","Alivia","Aliyah","Aliza","Alize","Alka","Allie","Allison","Ally","Allyson","Alma","Alondra","Alya","Alycia","Alyson","Alyssa","Alyssia","Amalia","Amanda","Amani","Amara","Amari","Amaris","Amaryllis","Amaya","Amber","Amberly","Amelia","Amelie","America","Amethyst","Amie","Amina","Amirah","Amity","Amy","Amya","Ana","Anabel","Anabelle","Anahi","Anais","Anastasia","Andie","Andromeda","Angel","Angela","Angelia","Angelina","Angeline","Angelique","Angie","Anika","Anisa","Anissa","Anita","Aniya","Aniyah","Anjali","Ann","Anna","Annabel","Annabella","Annabelle","Annabeth","Annalisa","Annalise","Annamaria","Anne","Anneke","Annette","Annie","Annika","Annmarie","Anthea","Antoinette","Antonia","Anuja","Anusha","Anushka","Anya","Aoibhe","Aoibheann","Aoife","Aphrodite","Apple","April","Aqua","Arabella","Arabelle","Arden","Aria","Ariadne","Ariana","Arianna","Arianne","Ariel","Arielle","Arisha","Arleen","Arlene","Arlette","Artemis","Arwen","Arya","Asha","Ashanti","Ashlee","Ashleigh","Ashley","Ashlie","Ashlyn","Ashlynn","Ashton","Asia","Asma","Aspen","Athalia","Athena","Atlanta","Aubreanna","Aubree","Aubrey","Audra","Audrey","Audriana","Audrina","Augustina","Aurelia","Aurora","Autumn","Ava","Avaline","Avalon","Avery","Avia","Avril","Aya","Ayana","Ayesha","Ayisha","Ayla","Azalea","Azaria","Azariah",
             "Bailey","Barbara","Barbie","Bay","Baylee","Bea","Beatrice","Beatrix","Becca","Beccy","Becky","Belinda","Bella","Bellatrix","Belle","Benita","Bernadette","Bernice","Beryl","Bess","Beth","Bethanie","Bethany","Betsy","Bettina","Betty","Bev","Beverly","Beyonce","Bianca","Billie","Blair","Blaire","Blake","Blakely","Blanche","Blaze","Blessing","Bliss","Bloom","Blossom","Blythe","Bobbi","Bobbie","Bobby","Bonita","Bonnie","Bonquesha","Braelyn","Brandi","Brandy","Brea","Breanna","Bree","Breeze","Brenda","Brenna","Bria","Briana","Brianna","Brianne","Briar","Bridget","Bridgette","Bridie","Briella","Brielle","Brigid","Briley","Brinley","Briony","Brisa","Bristol","Britney","Britt","Brittany","Brittney","Brodie","Brogan","Bronagh","Bronte","Bronwen","Bronwyn","Brook","Brooke","Brooklyn","Brooklynn","Bryanna","Brylee","Bryn","Brynlee","Brynn","Bryony","Bunty",
             "Cadence","Cailin","Caitlan","Caitlin","Caitlyn","Caleigh","Cali","Calista","Callie","Calliope","Callista","Calypso","Cambria","Cameron","Cami","Camila","Camilla","Camille","Campbell","Camry","Camryn","Candace","Candice","Candis","Candy","Caoimhe","Caprice","Cara","Carenza","Carina","Caris","Carissa","Carla","Carlene","Carley","Carlie","Carly","Carlynn","Carmel","Carmela","Carol","Carolina","Caroline","Carolyn","Carrie","Carys","Casey","Cassandra","Cassia","Cassidy","Cassie","Cassiopeia","Catalina","Cate","Caterina","Cathalina","Cathleen","Cathy","Catlin","Catrina","Catriona","Cayla","Ceanna","Cece","Cecelia","Cecilia","Cecily","Celeste","Celestia","Celestine","Celia","Celina","Celine","Celise","Ceri","Cerise","Cerys","Chanel","Chanelle","Chantal","Charis","Charissa","Charity","Charla","Charlene","Charlette","Charley","Charlie","Charlize","Charlotte","Charmaine","Chastity","Chelsea","Chelsey","Chenai","Chenille","Cher","Cheri","Cherie","Cherry","Cheryl","Cheyanne","Cheyenne","Chiara","Chloe","Chole","Chris","Chrissy","Christa","Christabel","Christal","Christen","Christi","Christiana","Christiane","Christie","Christina","Christine","Christy","Chrysanthemum","Chrystal","Ciara","Cici","Ciel","Cierra","Cindy","Clair","Claire","Clara","Clarabelle","Clare","Clarice","Claris","Clarissa","Clarisse","Clarity","Clary","Claudette","Claudia","Claudine","Clea","Clemence","Clementine","Cleo","Cleopatra","Clodagh","Cloe","Clotilde","Clover","Colette","Colleen","Connie","Constance","Cora","Coral","Coralie","Coraline","Cordelia","Cori","Corina","Corinne","Cornelia","Corra","Cosette","Courtney","Cressida","Cristal","Cristina","Crystal","Cynthia",
@@ -2219,7 +2243,41 @@
     "ship":{
         "patterns":[
             "100:{ship.nopun}",
-            "4:{ship.yacht}", "{ship.yacht} {ship.numeral}"
+            "2:{ship.yacht}", "{ship.yacht} {ship.numeral}"
+        ],
+        "noble":[
+            "{ship.mnoble}","{ship.fnoble}"
+        ],
+        "mnoble":[
+            "Sir",
+            "Lord",
+            "Baronet",
+            "Baron",
+            "Marquis",
+            "Margrave",
+            "Viscount",
+            "Count",
+            "Duke",
+            "Archduke",
+            "Emperor",
+            "Prince",
+            "King"
+        ],
+        "fnoble":[
+            "Lady",
+            "Dame",
+            "Baronetess",
+            "Baroness",
+            "Marchioness|Marquesa",
+            "Margravine",
+            "Viscountess",
+            "Countess|Contessa",
+            "Duchess",
+            "Archduchess",
+            "Empress",
+            "Princess",
+            "Queen",
+            "Dowager"
         ],
         "nopun":[
             "3:{word}","{word} {ship.numeral}",
@@ -2242,7 +2300,9 @@
             "5:{ship.bigadjective|ship.bigidea|ship.person}","{ship.bigadjective|ship.bigidea|ship.person} {ship.numeral}",
             "4:{ship.navalname}","{ship.navalname} {ship.numeral}", 
             "8:{ship.combo}","{ship.combo} {ship.numeral}",
-            "3:{system.realplace}","{system.realplace} {ship.numeral}"
+            "3:{system.realplace}","{system.realplace} {ship.numeral}",
+            "4:{ship.mnoble} {human.malefirstname}|{ship.mnoble} {human.malefirstname}|{ship.mnoble} {human.malefirstname} {system.numeral}",
+            "4:{ship.fnoble} {human.femalefirstname}|{ship.fnoble} {human.femalefirstname}|{ship.fnoble} {human.femalefirstname} {system.numeral}"
         ],
         "navalname":[
             "Ambush",
@@ -2285,26 +2345,44 @@
             "Falchion",
             "Falcon",
             "Glaive",
+            "Golet",
+            "Guavana",
             "Guisarme",
+            "Guitarro",
             "Halberd",
+            "Hammerhead",
+            "Hardhead",
             "Hawk",
+            "Hawkbill",
             "Heart of Gold",
             "Hercules",
             "Hood",
             "Hornet",
             "Hunt",
             "Icarus",
+            "Icefish",
             "Incredulous",
             "Independence",
+            "Jallao",
             "Javelin",
             "Jupiter",
             "Katana",
+            "Kete",
             "Korolev",
+            "Kraken",
+            "Lagarto",
+            "Lamprey",
             "Lancer",
+            "Lizardfish",
+            "Loggerhead",
             "Loki",
             "Longshot",
             "Longsword",
+            "Macabi",
             "Mangonel",
+            "Mapiro",
+            "Menhaden",
+            "Mero",
             "Monitor",
             "Moonshadow",
             "Morningstar",
@@ -2315,16 +2393,26 @@
             "Osiris",
             "Pandora",
             "Pendragon",
+            "Peto",
             "Phoenix",
+            "Pogy",
             "Pollaxe",
+            "Pompon",
             "Protector",
             "Proteus",
+            "Puffer",
             "Puncher",
             "Pursuer",
             "Raider",
             "Ranger",
             "Rapier",
+            "Rasher",
+            "Raton",
+            "Ray",
+            "Redfin",
             "Relief",
+            "Robalo",
+            "Rock",
             "Sabre",
             "Scimitar",
             "Shuriken",
