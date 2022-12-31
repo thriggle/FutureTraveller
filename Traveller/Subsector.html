@@ -375,9 +375,11 @@
             margin-bottom: .4rem;
         }
         #shipList{ font-family: Bahnschrift;}
-        #shipList h2{ margin-bottom:0px; font-size:medium;}
+        #shipList h2{ margin-bottom:0px; font-size:medium; cursor:pointer; user-select: none;}
         #shipList ol{ margin-top:0px;}
         #shipList li{ font-style:italic;}
+        #shipList h2.collapsed { text-decoration: underline;}
+        #shipList h2.collapsed + ol{display:none;}
     </style>
     <nav class="menu">
         <ul>
@@ -4032,12 +4034,20 @@
                 for(var i = 0, len = shipList.length; i < len; i++){
                     var ship = shipList[i];
                     if(ship.port !== lastSystem){
-                        listContainer.appendChild(document.createElement("h2")).appendChild(document.createTextNode(ship.hex + " " + ship.port));
+                        var systemLabel = listContainer.appendChild(document.createElement("h2"));
+                        systemLabel.appendChild(document.createTextNode(ship.hex + " " + ship.port));
+                        systemLabel.addEventListener("click",function(el){
+                            if(el.target.className !== "collapsed"){
+                                el.target.className = "collapsed";
+                            }else{el.target.classList.remove("collapsed");}
+                        });
                         systemNode = listContainer.appendChild(document.createElement("ol"));
                         lastSystem = ship.port;
                     }
                     systemNode.appendChild(document.createElement("li")).appendChild(document.createTextNode(ship.name));
+                
                 }
+                
                 console.log(shipList);
             }
             function removeChildElements(element) {
