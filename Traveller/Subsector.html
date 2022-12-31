@@ -374,6 +374,9 @@
             margin-top: .4rem;
             margin-bottom: .4rem;
         }
+        #shipList{ font-family: Bahnschrift;}
+        #shipList h2{ margin-bottom:0px; font-size:medium;}
+        #shipList li{ font-style:italic;}
     </style>
     <nav class="menu">
         <ul>
@@ -1355,13 +1358,21 @@
         </div>
     </div>
     <div data-nav="analysis">Analysis</div>
-    <div data-nav="tools"><fieldset>
-        <legend>Random System</legend>
-        <input type="button" id="btnPickRandomSystem" value="Pick Random System">
-        <div id="randSystemDetails">
+    <div data-nav="tools">
+        <fieldset>
+            <legend>Random System</legend>
+            <input type="button" id="btnPickRandomSystem" value="Pick Random System">
+            <div id="randSystemDetails">
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Ship Traffic</legend>
+            <input type="button" id="btnGenerateTraffic" value="Roll up ship names">
+            <div id="shipList">
 
-        </div>
-    </fieldset></div>
+            </div>
+        </fieldset>
+    </div>
     <script src="js/NameGenerator.js"></script>
     <script>
         var menus = document.querySelectorAll("nav.menu ul li a");
@@ -1572,6 +1583,8 @@
                         detailBlock.style.left = "0px";
                     }
                 });
+                var btnGenerateTraffic = document.getElementById("btnGenerateTraffic");
+                btnGenerateTraffic.addEventListener("click",generateShipTraffic);
                 var collapserHandles = document.querySelectorAll("fieldset legend");
                 for (var i = 0, len = collapserHandles.length; i < len; i++) {
                     var handle = collapserHandles[i];
@@ -1963,9 +1976,9 @@
                         console.log(name + " was already taken...")
                         name = wordMaker.getRandomName("system");
                     }
-                    while (name.indexOf("ths") >= 0) {
-                        name = name.replace("ths", "th");
-                    }
+                    //while (name.indexOf("ths") >= 0) {
+                    //    name = name.replace("ths", "th");
+                    //}
                     name = addCaps(name);
                     var system = systemArray[i];
                     system.name = name;
@@ -3987,6 +4000,44 @@
                     strDistance = (distance / 149597871).toFixed(2) + " AU";
                 }
                 return strDistance;// / 149 597 871;
+            }
+            function generateShipTraffic(){
+                var shipList = [];
+                var shipNames = {};
+                for(var i = 0, len = mapContent.length; i < len; i++){
+                    if(mapContent[i].system){
+                        var system = mapContent[i].system;
+                        var numShips = Number(system.importance.weeklytraffic);
+                        for(var n = 0; n < numShips; n++){
+                            var shipName = addCaps(wordMaker.getRandomName("ship"));
+                            while (Object.keys(shipNames).indexOf(shipName) >= 0) {
+                                shipName = addCaps(wordMaker.getRandomName("ship"));
+                            }
+                            shipNames[shipName] = true;
+                            shipList.push({name:shipName,port:system.name,hex:system.tcoord});
+                        }
+                    }
+                }
+                shipList.sort(function(a,b){
+                    if(a.port < b.port){return -1;}
+                    else if(b.port < a.port){ return 1;}
+                    else if(a.name < b.name){ return -1;}
+                    else if(b.name < a.name){ return 1;}
+                    else{ return 0; }
+                });
+                var listContainer = document.getElementById("shipList");
+                clearElement(listContainer);
+                var lastSystem = null, systemNode = null;
+                for(var i = 0, len = shipList.length; i < len; i++){
+                    var ship = shipList[i];
+                    if(ship.port !== lastSystem){
+                        listContainer.appendChild(document.createElement("h2")).appendChild(document.createTextNode(ship.hex + " " + ship.port));
+                        systemNode = listContainer.appendChild(document.createElement("ol"));
+                        lastSystem = ship.port;
+                    }
+                    systemNode.appendChild(document.createElement("li")).appendChild(document.createTextNode(ship.name));
+                }
+                console.log(shipList);
             }
             function removeChildElements(element) {
                 while (element.childNodes.length > 0) {
