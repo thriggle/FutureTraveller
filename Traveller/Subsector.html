@@ -376,6 +376,7 @@
         }
         #shipList{ font-family: Bahnschrift;}
         #shipList h2{ margin-bottom:0px; font-size:medium; cursor:pointer; user-select: none;}
+        #shipList h2:hover { color:red;}
         #shipList ol{ margin-top:0px;}
         #shipList li{ font-style:italic;}
         #shipList h2.collapsed { text-decoration: underline;}
@@ -384,8 +385,9 @@
     <nav class="menu">
         <ul>
             <li><a target="map" class="selected">Map</a></li>
-            
             <li><a target="tools">Tools</a></li>
+            <li><a target="analysis">Analysis</a></li>
+            
         </ul>
     </nav>
     <div data-nav="map">
@@ -519,7 +521,7 @@
                             <legend>Capitals</legend>
                             <label for="chkDesignateSubsectorCapitals">Designate Subsector Capital(s) <input checked="checked"
                                     type="checkbox" id="chkDesignateSubsectorCapitals"></label><br />
-                            <label for="chkDesignateSectorCapital">Designate Sector Capital <input checked="checked"
+                            <label for="chkDesignateSectorCapital">Designate Sector Capital <input
                                     type="checkbox" id="chkDesignateSectorCapital"></label>
                         </fieldset>
                         <br />
@@ -1360,7 +1362,14 @@
             </div>
         </div>
     </div>
-    <div data-nav="analysis">Analysis</div>
+    <div data-nav="analysis">
+    <fieldset>
+        <legend>Technology</legend>
+        <b>Average Community Tech Level:</b> <span data-sector="averagecommunitytech"></span> (<span style="font:small">Average TL of Important worlds</span>)<br>
+        <b>Maximum Community Tech Level:</b> <span data-sector="maximumcommunitytech"></span> (<span style="font:small">Highest TL of Important Industrial worlds</span>)<br>
+        <b>Average Inclusive Tech Level:</b> <span data-sector="averagetech"></span> (<span style="font:small">Average of all worlds</span>)<br>
+        <b>Maximum Inclusive Tech Level:</b> <span data-sector="maximumtech"></span> (<span style="font:small">Highest TL of all worlds</span>)<br>        
+    </fieldset></div>
     <div data-nav="tools">
         <fieldset>
             <legend>Random System</legend>
@@ -1371,6 +1380,7 @@
         <fieldset>
             <legend>Ship Traffic</legend>
             <input type="button" id="btnGenerateTraffic" value="Roll up ship names">
+            <input type="button" id="btnExpandCollapseTraffic" value="Expand All Systems" style="display:none;" data-action="expand">
             <div id="shipList">
 
             </div>
@@ -1385,7 +1395,6 @@
         }
         function onNavigate(e){
             var target = e.target.getAttribute("target");
-            console.log(target);
             if(target){
                 var current = document.querySelector("nav.menu ul li a.selected");
                 current.classList.remove(current.className);
@@ -1448,10 +1457,8 @@
                 if (hash.indexOf("$") > 0) {
                     seed = "";
                     var hashParamPairs = hash.substr(1).split("&");
-                    console.log(hashParamPairs);
                     for (var i = 0, len = hashParamPairs.length; i < len; i++) {
                         var pair = hashParamPairs[i].split("=");
-                        console.log(pair);
                         if (pair[0].toLowerCase() === "$seed") {
                             seed = pair[1];
                         }
@@ -1588,6 +1595,7 @@
                 });
                 var btnGenerateTraffic = document.getElementById("btnGenerateTraffic");
                 btnGenerateTraffic.addEventListener("click",generateShipTraffic);
+                document.getElementById("btnExpandCollapseTraffic").addEventListener("click",expandCollapseTraffic);
                 var collapserHandles = document.querySelectorAll("fieldset legend");
                 for (var i = 0, len = collapserHandles.length; i < len; i++) {
                     var handle = collapserHandles[i];
@@ -1871,9 +1879,9 @@
 
                 //console.log("Setting window hash");
                 var $density = document.getElementById("slctStellarDensity").value
-                console.log("density = " + $density);
+                //console.log("density = " + $density);
                 var $size = document.getElementById("slctMapSize").value
-                console.log("size = " + $size);
+                //console.log("size = " + $size);
                 window.location.hash = "$seed=" + encodeURI(seed) + "&$density=" + $density + "&$size=" + $size;
 
                 //console.log("Seeding number generators");
@@ -2131,6 +2139,11 @@
                 var ixSum = 0, ixMin = 5, ixMax = -3;
                 var labels = ["size", "atmo", "hydro", "pop", "gov", "law", "tech"];
                 var tracker = { "size": {}, "atmo": {}, "hydro": {}, "pop": {}, "gov": {}, "law": {}, "tech": {} };
+                var maximumtech = 0;
+                var maximumcommunitytech = 0;
+                var averagetech = 0, sumTech = 0;
+                var averagecommunitytech = 0;
+                var numImportantWorlds = 0, sumImportantTech = 0;
                 for (var i = 0, len = systemArray.length; i < len; i++) {
                     var system = systemArray[i];
                     var mainworld = system.mainworld;
@@ -2146,7 +2159,15 @@
                         if (uwpMins[j] === null || value < uwpMins[j]) { uwpMins[j] = value; }
                         if (uwpMaxes[j] === null || value > uwpMaxes[j]) { uwpMaxes[j] = value; }
                     }
+                    
                     if (system.importance.isImportant) {
+                        sumImportantTech += mainworld.tech;
+                        numImportantWorlds += 1;
+                        if(mainworld.tradecodes.indexOf("In") >= 0){
+                            if(mainworld.tech > maximumcommunitytech){
+                                maximumcommunitytech = mainworld.tech;
+                            }
+                        }
                         var importance = system.importance.extension;
                         if (system.isRed) { importance -= 3; }
                         if (system.isAmber) { importance -= 1; }
@@ -2241,12 +2262,27 @@
                     }
                     // throw in the Mongoose tech codes for good measure
                     var tech = mainworld.tech;
+                    sumTech += tech;
+                    if(tech > maximumtech){
+                        maximumtech = tech;
+                    }
                     if (tech >= 12) { system.mainworld.tradecodes.push("Ht"); }
                     else if (tech <= 5) { system.mainworld.tradecodes.push("Lt"); }
                     if (mainworld.tradecodes.indexOf("Cy") > 0) {
                         // figure out the colony owner here!
                     }
                 }
+                averagetech = sumTech / systemArray.length;
+                if(numImportantWorlds === 0){ 
+                    averagecommunitytech = "N/A"; 
+                }else{
+                    averagecommunitytech = (sumImportantTech / numImportantWorlds).toFixed(2);
+                }
+                if(maximumcommunitytech === 0){ maximumcommunitytech = "N/A";}
+                document.querySelector("[data-sector='maximumtech']").innerHTML = maximumtech;
+                document.querySelector("[data-sector='averagetech']").innerHTML = averagetech.toFixed(2);
+                document.querySelector("[data-sector='averagecommunitytech']").innerHTML = averagecommunitytech;
+                document.querySelector("[data-sector='maximumcommunitytech']").innerHTML = maximumcommunitytech;
 
                 if (designateSubsectorCapitals) {
                     for (var i = 0, len = subsectorCapitals.length; i < len; i++) {
@@ -4017,10 +4053,11 @@
                                 shipName = addCaps(wordMaker.getRandomName("ship"));
                             }
                             shipNames[shipName] = true;
-                            shipList.push({name:shipName,port:system.name,hex:system.tcoord});
+                            shipList.push({name:shipName,port:system.name+" ("+numShips+")",hex:system.tcoord});
                         }
                     }
                 }
+                //console.log(shipList.concat());
                 shipList.sort(function(a,b){
                     if(a.port < b.port){return -1;}
                     else if(b.port < a.port){ return 1;}
@@ -4028,6 +4065,7 @@
                     else if(b.name < a.name){ return 1;}
                     else{ return 0; }
                 });
+                console.log(shipList);
                 var listContainer = document.getElementById("shipList");
                 clearElement(listContainer);
                 var lastSystem = null, systemNode = null;
@@ -4035,6 +4073,7 @@
                     var ship = shipList[i];
                     if(ship.port !== lastSystem){
                         var systemLabel = listContainer.appendChild(document.createElement("h2"));
+                        systemLabel.className = "collapsed";
                         systemLabel.appendChild(document.createTextNode(ship.hex + " " + ship.port));
                         systemLabel.addEventListener("click",function(el){
                             if(el.target.className !== "collapsed"){
@@ -4045,10 +4084,24 @@
                         lastSystem = ship.port;
                     }
                     systemNode.appendChild(document.createElement("li")).appendChild(document.createTextNode(ship.name));
-                
                 }
-                
-                console.log(shipList);
+                document.getElementById("btnExpandCollapseTraffic").style.display = "inline-block";
+            }
+            function expandCollapseTraffic(e){
+                var nodes = document.querySelectorAll("#shipList h2");
+                if(e.target.getAttribute("data-action")==="collapse"){
+                    e.target.setAttribute("data-action","expand");
+                    for(var i = 0, len = nodes.length; i < len; i++){
+                        nodes[i].classList.add("collapsed");
+                    }
+                    e.target.setAttribute("value","Expand All Systems");
+                }else{   
+                    e.target.setAttribute("data-action","collapse");
+                    for(var i = 0, len = nodes.length; i < len; i++){
+                        nodes[i].classList.remove("collapsed");
+                    }
+                    e.target.setAttribute("value","Collapse All Systems");
+                }
             }
             function removeChildElements(element) {
                 while (element.childNodes.length > 0) {
