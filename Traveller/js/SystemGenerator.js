@@ -34,6 +34,12 @@ function ext(num){
         }
     }
 }
+function revExt(str){
+    var num = parseInt(str,36);
+    if( str.toUpperCase() >= "I"){ num += 1; }
+    if( str.toUpperCase() >= "O"){ num += 1;}
+    return num;
+}
 function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel, diebackPenalty, ruleset, allowNonMWPops, applyHillSphereLimit){
     //console.log(name);
     if(typeof ruleset === "undefined"){ ruleset = "T5";}
@@ -710,6 +716,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
             }
         }
         var planet = planetsToPlace[0];
+        var size = revExt(planet.uwp[1]), atmo = revExt(planet.uwp[2]), hydro = planet.uwp[3], pop = planet.uwp[4];
         var star = arrStars[s];
         if(typeof planet.orbit !== "undefined"){ // if planet already has a preferred orbit...
             if(typeof star.satellites[planet.orbit] === "undefined"){
@@ -719,26 +726,96 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                 planet.au = orbitDetails.au;
                 planetsToPlace.splice(0,1);
                 availableOrbits -= 1;
+                if(planet.worldtype.indexOf("Giant") === -1){
+
+                    var difference = star.HZOrbit - planet.orbit;
+                    if(difference === 1){
+                        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                            planet.tradecodes.push("Tr");
+                        }else{
+                            planet.tradecodes.push("Ho");
+                        }
+                    }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
+                        planet.tradecodes.push("Fa");
+                    }else if(difference === -1){
+                        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                            planet.tradecodes.push("Tu"); 
+                        }else{
+                            planet.tradecodes.push("Co"); 
+                        }
+                    }else if(difference <= -2){
+                        if(size >= 2 && size <= 9 && hydro > 0){
+                            planet.tradecodes.push("Fr"); 
+                        }
+                    }
+                    if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
+                }
             }else{
                 var amp = 0, placedSuccessfully = false;
                 while(!placedSuccessfully && amp < star.satellites.length){
                     amp++;
                     if(planet.orbit-amp >= 0 && typeof star.satellites[planet.orbit-amp] === "undefined"){
                         star.satellites[planet.orbit-amp] = planet; 
-                        var orbitDetails = createOrbitDetails(planet.orbit-amp);
+                        planet.orbit = planet.orbit-amp;
+                        var orbitDetails = createOrbitDetails(planet.orbit);
                         planet.decimalOrbit = orbitDetails.decimalOrbit;
                         planet.au = orbitDetails.au;
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
+                        var difference = star.HZOrbit - planet.orbit;
+                        if(difference === 1){
+                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                                planet.tradecodes.push("Tr");
+                            }else{
+                                planet.tradecodes.push("Ho");
+                            }
+                        }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
+                            planet.tradecodes.push("Fa");
+                        }else if(difference === -1){
+                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                                planet.tradecodes.push("Tu"); 
+                            }else{
+                                planet.tradecodes.push("Co"); 
+                            }
+                        }else if(difference <= -2){
+                            if(size >= 2 && size <= 9 && hydro > 0){
+                                planet.tradecodes.push("Fr"); 
+                            }
+                        }
+                        if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
+
                     }else if(star.satellites.length > planet.orbit+amp && typeof star.satellites[planet.orbit+amp] === "undefined"){
                         star.satellites[planet.orbit+amp] = planet;
-                        var orbitDetails = createOrbitDetails(planet.orbit+amp);
+                        planet.orbit = planet.orbit+amp
+                        var orbitDetails = createOrbitDetails(planet.orbit);
+                        
                         planet.decimalOrbit = orbitDetails.decimalOrbit;
                         planet.au = orbitDetails.au;
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
+                        var difference = star.HZOrbit - planet.orbit;
+                        if(difference === 1){
+                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                                planet.tradecodes.push("Tr");
+                            }else{
+                                planet.tradecodes.push("Ho");
+                            }
+                        }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
+                            planet.tradecodes.push("Fa");
+                        }else if(difference === -1){
+                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                                planet.tradecodes.push("Tu"); 
+                            }else{
+                                planet.tradecodes.push("Co"); 
+                            }
+                        }else if(difference <= -2){
+                            if(size >= 2 && size <= 9 && hydro > 0){
+                                planet.tradecodes.push("Fr"); 
+                            }
+                        }
+                        if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
                     }
                 }
             }
@@ -757,7 +834,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                     var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                     for(var m = 0; m < numAdditionalMoons; m++){
                         var moon = moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback);
-                        moons = addSatellite(moons, moon,planet.size, applyHillSphereLimit, planet.orbit);
+                        moons = addSatellite(moons, moon, planet.size, applyHillSphereLimit, planet.orbit, star.HZOrbit);
                     }
                     planet.satellites = moons;
                 }               
@@ -784,7 +861,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                     for(var m = 0; m < numAdditionalMoons; m++){
                         var moon = moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback);
                         
-                        moons = addSatellite(moons, moon,planet.size,applyHillSphereLimit, planet.orbit);
+                        moons = addSatellite(moons, moon,planet.size,applyHillSphereLimit, planet.orbit, star.HZOrbit);
                     }
                     planet.satellites = moons;
                 }
@@ -863,7 +940,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                         for(var m = 0; m < numAdditionalMoons; m++){
                             var moon = moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback);
-                            moons = addSatellite(moons, moon,planet.size,applyHillSphereLimit, orbit);
+                            moons = addSatellite(moons, moon,planet.size,applyHillSphereLimit, orbit, star.HZOrbit);
                         }
                         planet.satellites = moons;
                     }
@@ -896,10 +973,34 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                 }
                 star.satellites[orbit] = planet; //{worldtype:planet.worldtype, uwp:planet.uwp, details:planet};
                 var orbitDetails = createOrbitDetails(orbit);
+                planet.orbit = orbit;
                 planet.decimalOrbit = orbitDetails.decimalOrbit;
                 planet.au = orbitDetails.au;
                 planetsToPlace.splice(0,1);
                 availableOrbits -= 1;
+                if(planet.worldtype.indexOf("Giant") === -1){
+                var difference = star.HZOrbit - planet.orbit;
+                if(difference === 1){
+                    if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                        planet.tradecodes.push("Tr");
+                    }else{
+                        planet.tradecodes.push("Ho");
+                    }
+                }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
+                    planet.tradecodes.push("Fa");
+                }else if(difference === -1){
+                    if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                        planet.tradecodes.push("Tu"); 
+                    }else{
+                        planet.tradecodes.push("Co"); 
+                    }
+                }else if(difference <= -2){
+                    if(size >= 2 && size <= 9 && hydro > 0){
+                        planet.tradecodes.push("Fr"); 
+                    }
+                }
+                if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
+            }
             }else{
                 var amp = 0, placedSuccessfully = false;
                 while(!placedSuccessfully && amp < star.satellites.length){
@@ -910,22 +1011,73 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         }
                         star.satellites[orbit-amp] = planet; //{worldtype:planet.worldtype,uwp:planet.uwp, details:planet};
                         var orbitDetails = createOrbitDetails(orbit-amp);
+                        planet.orbit = orbit-amp;
                         planet.decimalOrbit = orbitDetails.decimalOrbit;
                         planet.au = orbitDetails.au;
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
+                        planet.orbit = orbit - amp;
+                        if(planet.worldtype.indexOf("Giant") === -1){
+                        var difference = star.HZOrbit - planet.orbit;
+                        if(difference === 1){
+                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                                planet.tradecodes.push("Tr");
+                            }else{
+                                planet.tradecodes.push("Ho");
+                            }
+                        }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
+                            planet.tradecodes.push("Fa");
+                        }else if(difference === -1){
+                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                                planet.tradecodes.push("Tu"); 
+                            }else{
+                                planet.tradecodes.push("Co"); 
+                            }
+                        }else if(difference <= -2){
+                            if(size >= 2 && size <= 9 && hydro > 0){
+                                planet.tradecodes.push("Fr"); 
+                            }
+                        }
+                        if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
+                    }
                     }else if(star.satellites.length > orbit+amp && typeof star.satellites[orbit+amp] === "undefined"){
                         if(planet.worldtype === "Other World"){
                             planet = createOtherWorld(mainworld, orbit+amp, star.HZOrbit, mainworld.pop-1, maxTech, allowNonMWPops, permitDieback, applyHillSphereLimit);
                         }
                         star.satellites[orbit+amp] = planet; //{worldtype:planet.worldtype,uwp:planet.uwp, details:planet};
+                        planet.orbit = orbit + amp;
                         var orbitDetails = createOrbitDetails(orbit+amp);
                         planet.decimalOrbit = orbitDetails.decimalOrbit;
                         planet.au = orbitDetails.au;
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
+                        planet.orbit = orbit + amp;
+                        if(planet.worldtype.indexOf("Giant") === -1){
+
+                            var difference = star.HZOrbit - planet.orbit;
+                            if(difference === 1){
+                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                                planet.tradecodes.push("Tr");
+                            }else{
+                                planet.tradecodes.push("Ho");
+                            }
+                        }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
+                            planet.tradecodes.push("Fa");
+                        }else if(difference === -1){
+                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+                                planet.tradecodes.push("Tu"); 
+                            }else{
+                                planet.tradecodes.push("Co"); 
+                            }
+                        }else if(difference <= -2){
+                            if(size >= 2 && size <= 9 && hydro > 0){
+                                planet.tradecodes.push("Fr"); 
+                            }
+                        }
+                        if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
+                    }
                     }
                 }
             }
@@ -1029,7 +1181,29 @@ function getHillSphereLimit(orbit){
     }
     return limit;
 }
-function addSatellite(moons, moon, primarySize, applyHillSphereLimit, orbit){
+function addSatellite(moons, moon, primarySize, applyHillSphereLimit, orbit, HZOrbit){
+    var difference = HZOrbit - orbit;
+    var size = revExt(moon.uwp[1]), atmo = revExt(moon.uwp[2]), hydro = moon.uwp[3], pop = moon.uwp[4];
+    if(difference === 1){
+        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+            moon.tradecodes.push("Tr"); 
+        }else{
+            moon.tradecodes.push("Ho"); 
+        }
+    }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
+        moon.tradecodes.push("Fa");
+    }else if(difference === -1){
+        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+            moon.tradecodes.push("Tu"); 
+        }else{
+            moon.tradecodes.push("Co"); 
+        }
+    }else if(difference <= -2){
+        if(size >= 2 && size <= 9 && hydro > 0){
+            moon.tradecodes.push("Fr"); 
+        }
+    }
+    if(orbit <= 1){ moon.tradecodes.push("Tz"); }
     var preferredOrbit = moon.orbitAroundPrimary;
     var originalPreferredOrbit = preferredOrbit;
     var newOrbit = preferredOrbit;
@@ -1063,8 +1237,23 @@ function addSatellite(moons, moon, primarySize, applyHillSphereLimit, orbit){
 
     if(placedSuccessfully){
         var newMoonType = moon.worldtype;
-        if(newOrbit < 13){ newMoonType = newMoonType.replace("Far","Close"); }
-        else{ newMoonType = newMoonType.replace("Close","Far");}
+        if(newOrbit < 13){ 
+            newMoonType = newMoonType.replace("Far","Close");
+            var satCodeIndex = moons[newOrbit].tradecodes.indexOf("Sa");
+            if(satCodeIndex >= 0){
+                moons[newOrbit].tradecodes.splice(satCodeIndex,1);
+                moons[newOrbit].tradecodes.push("Lk");
+            }
+        }
+        else{ 
+            newMoonType = newMoonType.replace("Close","Far");
+            var satCodeIndex = moons[newOrbit].tradecodes.indexOf("Lk");
+            if(satCodeIndex >= 0){
+                moons[newOrbit].tradecodes.splice(satCodeIndex,1);
+                moons[newOrbit].tradecodes.push("Sa");
+            }
+        }
+        
         moons[newOrbit].worldtype = newMoonType;      
 
     }else{
@@ -1106,7 +1295,7 @@ function createOrbitDetails(orbit){
 function createBigWorld(mw, maxPop, maxTech, allowNonMWPops, permitDieback){
     if(typeof maxTech === "undefined"){console.error("BigWorld");}
     var planet = createPlanet(mw, "BigWorld",-1,maxPop, maxTech, allowNonMWPops, permitDieback);
-    return {worldtype: "BigWorld", uwp:planet.uwp, size:planet.size}
+    return {worldtype: "BigWorld", uwp:planet.uwp, size:planet.size, tradecodes:planet.tradecodes}
 }
 function createGasGiant(){
     var roll = d6();
@@ -1119,7 +1308,7 @@ function createGasGiant(){
 function createBelt(mw, maxPop, maxTech, allowNonMWPops, permitDieback){
     var uwp = "??";
     var planet = createPlanet(mw, "Planetoid",0,maxPop, maxTech, allowNonMWPops, permitDieback);
-    return {worldtype:"Planetoid Belt", uwp:planet.uwp, maxpop:uwp.maxpop, pop:planet.pop}
+    return {worldtype:"Planetoid Belt", uwp:planet.uwp, maxpop:uwp.maxpop, pop:planet.pop, tradecodes:planet.tradecodes}
 }
 function createRing(){
     var uwp = "Y000000-0"; // TODO Rings?
@@ -1132,7 +1321,7 @@ function createRing(){
     }else if(distanceRoll <= 6){
         orbit = 2;
     }
-    return {worldtype:"Ring System", uwp:uwp,orbitAroundPrimary:orbit}
+    return {worldtype:"Ring System", uwp:uwp,orbitAroundPrimary:orbit, tradecodes:[]}
 }
 function createInnerSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permitDieback){
     var worldtype = "";
@@ -1157,6 +1346,7 @@ function createInnerSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permi
     var orbit = "??";
     if(distanceRoll <= 7){
         worldtype = "Close "+type+" Satellite";
+        planet.tradecodes.push("Lk");
         var roll = d6() - d6();
         if(roll === -5 && planet.size < 2){ orbit =1 ; /*"Bee";*/ }
         else if(roll <= -4 && planet.size < 2){ orbit =2 ; /*"Cee";*/ }
@@ -1171,7 +1361,7 @@ function createInnerSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permi
         else if(roll === 5){ orbit =11 ; /*"Ell";*/ }
     }else{
         worldtype = "Far "+type+" Satellite";
-        
+        planet.tradecodes.push("Sa");
         var roll = d6() - d6();
         if(roll === -5){ orbit = 14; /*"Oh";*/ }
         else if(roll === -4){ orbit = 15; /*"Pee";*/ }
@@ -1185,7 +1375,7 @@ function createInnerSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permi
         else if(roll === 4){ orbit = 23; /*"Ex";*/ }
         else if(roll === 5){ orbit = 24; /*"Wye";*/ }    
     }
-    return{worldtype:worldtype, uwp:planet.uwp, maxpop:planet.maxpop, orbitAroundPrimary:orbit, pop:planet.pop}
+    return{worldtype:worldtype, uwp:planet.uwp, maxpop:planet.maxpop, orbitAroundPrimary:orbit, pop:planet.pop, tradecodes:planet.tradecodes}
 }
 function createOuterSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permitDieback){
     var worldtype = "";
@@ -1209,6 +1399,7 @@ function createOuterSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permi
     var distanceRoll = d6(2);
     var orbit = "??";
     if(distanceRoll <= 7){
+        planet.tradecodes.push("Lk");
         worldtype = "Close "+type+" Satellite";
         var roll = d6() - d6();
         if(roll === -5 && planet.size < 2){ orbit =1 ; /*"Bee";*/ }
@@ -1223,6 +1414,7 @@ function createOuterSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permi
         else if(roll === 4){ orbit =10 ; /*"Kay";*/ }
         else if(roll === 5){ orbit =11 ; /*"Ell";*/ }
     }else{
+        planet.tradecodes.push("Sa");
         worldtype = "Far "+type+" Satellite";
         var roll = d6() - d6();
         if(roll === -5){ orbit = 14; /*"Oh";*/ }
@@ -1237,7 +1429,7 @@ function createOuterSatellite(mw, maxSize,maxPop, maxTech, allowNonMWPops, permi
         else if(roll === 4){ orbit = 23; /*"Ex";*/ }
         else if(roll === 5){ orbit = 24; /*"Wye";*/ }    
     }
-    return{worldtype:worldtype, uwp:planet.uwp, maxpop:planet.maxpop, orbitAroundPrimary:orbit, pop:planet.pop}
+    return{worldtype:worldtype, uwp:planet.uwp, maxpop:planet.maxpop, orbitAroundPrimary:orbit, pop:planet.pop, tradecodes:planet.tradecodes}
 }
 function createPlanet(mw, type,maxSize,maxPop,maxTech, allowNonMWPops, permitDieback){
     var size = 0;
@@ -1418,7 +1610,56 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech, allowNonMWPops, permitDie
         }
     }
     var uwp = port + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
-    return {worldtype:type, size:size, pop:pop, maxpop:pop2, uwp:uwp};
+    var tradecodes = getNonMWTradeCodes(mw, size, atmo, hydro, pop, gov, law, tech);
+    return {worldtype:type, size:size, pop:pop, maxpop:pop2, uwp:uwp, tradecodes:tradecodes};
+}
+function getNonMWTradeCodes(mw, size, atmo, hydro, pop, gov, law, tech){
+    var codes = [];
+    // planetary
+    if(size === 0 && atmo === 0 && hydro === 0){codes.push("As");}
+    else if(atmo >=2 && atmo <= 9 && hydro === 0){ codes.push("De");}
+    else if(atmo >= 10 && atmo <= 12 && hydro >= 1){ codes.push("Fl");}
+    else if(size >= 6 && size <= 8 && (atmo === 5 || atmo === 6 || atmo === 8) && hydro >= 5 && hydro <= 7){ codes.push("Ga"); }
+    else if(atmo <= 1 && hydro >= 1){ codes.push("Ic");}
+    else if(size >= 10 && atmo >= 3 && (atmo <= 9 || atmo >= 13) && hydro >= 10){ codes.push("Oc"); }
+    else if(size <= 9 && atmo >= 3 && (atmo <= 9 || atmo >= 13) && hydro >= 10){ codes.push("Wa"); }
+    if(size >= 3 && (atmo === 2 || atmo === 4 || atmo === 7 || (atmo >= 9 && atmo <=12)) && hydro <= 2){ codes.push("He"); }
+    // population
+    if(pop === 0 && gov === 0 && law === 0){ codes.push("Ba"); if(tech > 0){ codes.push("Di"); }}
+    else if(pop <= 3){ codes.push("Lo");}
+    else if(pop <= 6){ codes.push("Ni");}
+    else if(pop === 8){ codes.push("Ph");}
+    else if(pop >= 9){ codes.push("Hi");}
+    // economic
+    if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8){
+        if(pop == 4 || pop === 8){ codes.push("Pa");}
+        else if(pop >= 5 && pop <= 7){ codes.push("Ag");}
+    }
+    else if(atmo <= 3 && hydro <= 3 && pop >= 6){
+        codes.push("Na");
+    }
+    if((atmo <= 2 || atmo === 4 || atmo === 7 || atmo === 9) && (pop === 7 || pop === 8)){
+        codes.push("Pi");
+    }else if((atmo <= 2 || atmo === 4 || atmo === 7 || (atmo >= 9 && atmo <= 12)) && pop >= 9){
+        codes.push("In");
+    }
+    if(atmo >= 2 && atmo <= 5 && hydro <= 3){
+        codes.push("Po");
+    }else if(atmo === 6 || atmo === 8){
+        if(pop === 5 || pop === 9){ codes.push("Pr");}
+        else if(pop >= 6 && pop <= 8){ codes.push("Ri");}
+    }
+    // secondary 
+    if(pop >= 2 && pop <= 6 && mw.tradecodes.indexOf("In") >= 0){ codes.push("Mi");}
+    if((atmo === 2 || atmo === 3 || atmo === 10 || atmo === 11) && hydro >= 1 && hydro <= 5 && pop >= 3 && pop <= 6 && gov === 6 && law >= 6 && law <= 9){
+        codes.push("Pe");
+    }
+    else if(pop <= 4 && gov === 6 && (law === 0 || law === 4 || law === 5)){
+        codes.push("Re");
+    }else if(gov === 6){
+        codes.push("Mr");
+    }
+    return codes;
 }
 function createOtherWorld(mw, orbit, hzorbit, maxPop, maxTech, allowNonMWPops, permitDieback, applyHillSphereLimit){
     var uwp = "??Y000000-0", planet = {};
@@ -1489,7 +1730,7 @@ function createOtherWorld(mw, orbit, hzorbit, maxPop, maxTech, allowNonMWPops, p
         }
     }
     
-    return {worldtype:type, uwp:planet.uwp, orbit:planet.orbit, pop:planet.pop, maxpop:planet.maxpop, satellites:moons}
+    return {worldtype:type, uwp:planet.uwp, orbit:planet.orbit, pop:planet.pop, maxpop:planet.maxpop, satellites:moons, tradecodes:planet.tradecodes}
 }
 function getStar(type, decimal, size, maxOrbits){
     var star = {}

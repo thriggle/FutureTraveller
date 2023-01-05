@@ -3836,6 +3836,9 @@
                             description = slot.uwp;
                             if (typeof description === "undefined") { console.log("undefined uwp."); console.log(slot); }
                         }
+                        if(slot.tradecodes && slot.tradecodes.length > 0){
+                            description += " [" + slot.tradecodes.join(",") + "]";
+                        }
                         var li = list.appendChild(document.createElement("li"));
                         for (var s = 0; s < types.length; s++) {
                             li.classList.add(types[s]);
@@ -3881,6 +3884,9 @@
                                     } else {
                                         subOrbitingStar = false;
                                         desc = subslot.uwp;
+                                    }
+                                    if(subslot.tradecodes && subslot.tradecodes.length > 0){
+                                        desc += " [" + subslot.tradecodes.join(",") + "]";
                                     }
                                     var text = "";
                                     if (!orbitingStar) {
@@ -3929,7 +3935,9 @@
                                                 } else {
                                                     desc = subsub.uwp;
                                                 }
-
+                                                if(subsub.tradecodes && subsub.tradecodes.length > 0){
+                                                    desc += " [" + subsub.tradecodes.join(",") + "]";
+                                                }
                                                 var subsubtypes = subsub.worldtype.split(" ");
                                                 var text = "";
                                                 if (subOrbitingStar) {
