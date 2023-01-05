@@ -484,8 +484,6 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             tradecodes.push("Px");
         }else if(pop <= 4 && (law == 0 || law == 4 || law == 5)){
             tradecodes.push("Re");
-        }else{
-            tradecodes.push("Mr");
         }
        
     }
@@ -729,26 +727,8 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                 if(planet.worldtype.indexOf("Giant") === -1){
 
                     var difference = star.HZOrbit - planet.orbit;
-                    if(difference === 1){
-                        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                            planet.tradecodes.push("Tr");
-                        }else{
-                            planet.tradecodes.push("Ho");
-                        }
-                    }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
-                        planet.tradecodes.push("Fa");
-                    }else if(difference === -1){
-                        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                            planet.tradecodes.push("Tu"); 
-                        }else{
-                            planet.tradecodes.push("Co"); 
-                        }
-                    }else if(difference <= -2){
-                        if(size >= 2 && size <= 9 && hydro > 0){
-                            planet.tradecodes.push("Fr"); 
-                        }
-                    }
-                    if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
+                    planet.tradecodes = addClimateCodes(planet, difference, size, atmo, hydro, pop, planet.orbit);
+                    
                 }
             }else{
                 var amp = 0, placedSuccessfully = false;
@@ -763,28 +743,10 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
-                        var difference = star.HZOrbit - planet.orbit;
-                        if(difference === 1){
-                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                                planet.tradecodes.push("Tr");
-                            }else{
-                                planet.tradecodes.push("Ho");
-                            }
-                        }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
-                            planet.tradecodes.push("Fa");
-                        }else if(difference === -1){
-                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                                planet.tradecodes.push("Tu"); 
-                            }else{
-                                planet.tradecodes.push("Co"); 
-                            }
-                        }else if(difference <= -2){
-                            if(size >= 2 && size <= 9 && hydro > 0){
-                                planet.tradecodes.push("Fr"); 
-                            }
+                        if(planet.worldtype.indexOf("Giant") === -1){
+                            var difference = star.HZOrbit - planet.orbit;
+                            planet.tradecodes = addClimateCodes(planet, difference, size, atmo, hydro, pop, planet.orbit);
                         }
-                        if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
-
                     }else if(star.satellites.length > planet.orbit+amp && typeof star.satellites[planet.orbit+amp] === "undefined"){
                         star.satellites[planet.orbit+amp] = planet;
                         planet.orbit = planet.orbit+amp
@@ -795,27 +757,10 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         planetsToPlace.splice(0,1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
-                        var difference = star.HZOrbit - planet.orbit;
-                        if(difference === 1){
-                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                                planet.tradecodes.push("Tr");
-                            }else{
-                                planet.tradecodes.push("Ho");
-                            }
-                        }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
-                            planet.tradecodes.push("Fa");
-                        }else if(difference === -1){
-                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                                planet.tradecodes.push("Tu"); 
-                            }else{
-                                planet.tradecodes.push("Co"); 
-                            }
-                        }else if(difference <= -2){
-                            if(size >= 2 && size <= 9 && hydro > 0){
-                                planet.tradecodes.push("Fr"); 
-                            }
+                        if(planet.worldtype.indexOf("Giant") === -1){
+                            var difference = star.HZOrbit - planet.orbit;
+                            planet.tradecodes = addClimateCodes(planet, difference, size, atmo, hydro, pop, planet.orbit);
                         }
-                        if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
                     }
                 }
             }
@@ -831,6 +776,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                 var numAdditionalMoons = d6() - 1 - numExistingMoons;
                 if(numAdditionalMoons > 0){
                     var diff = orbit - star.HZOrbit;
+                    if(isNaN(diff)){ console.log(779);}
                     var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                     for(var m = 0; m < numAdditionalMoons; m++){
                         var moon = moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback);
@@ -860,7 +806,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                     var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                     for(var m = 0; m < numAdditionalMoons; m++){
                         var moon = moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback);
-                        
+                        if(isNaN(star.HZOrbit)){ console.log(809);}
                         moons = addSatellite(moons, moon,planet.size,applyHillSphereLimit, planet.orbit, star.HZOrbit);
                     }
                     planet.satellites = moons;
@@ -937,6 +883,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                     var numAdditionalMoons = d6() - 1 - numExistingMoons;
                     if(numAdditionalMoons > 0){
                         var diff = orbit - star.HZOrbit;
+                        if(isNaN(diff)){console.log(886);}
                         var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                         for(var m = 0; m < numAdditionalMoons; m++){
                             var moon = moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback);
@@ -966,7 +913,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                     if(numAdditionalMoons > 0){
                         var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                         for(var m = 0; m < numAdditionalMoons; m++){
-                            moons = addSatellite(moons, moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback),planet.size,applyHillSphereLimit, planet.orbit);
+                            moons = addSatellite(moons, moonMaker(mainworld, planet.size,mainworld.pop-1, maxTech, allowNonMWPops, permitDieback),planet.size,applyHillSphereLimit, planet.orbit, star.HZOrbit);
                         }
                         planet.satellites = moons;
                     }
@@ -979,28 +926,10 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                 planetsToPlace.splice(0,1);
                 availableOrbits -= 1;
                 if(planet.worldtype.indexOf("Giant") === -1){
-                var difference = star.HZOrbit - planet.orbit;
-                if(difference === 1){
-                    if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                        planet.tradecodes.push("Tr");
-                    }else{
-                        planet.tradecodes.push("Ho");
-                    }
-                }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
-                    planet.tradecodes.push("Fa");
-                }else if(difference === -1){
-                    if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                        planet.tradecodes.push("Tu"); 
-                    }else{
-                        planet.tradecodes.push("Co"); 
-                    }
-                }else if(difference <= -2){
-                    if(size >= 2 && size <= 9 && hydro > 0){
-                        planet.tradecodes.push("Fr"); 
-                    }
+                    var difference = star.HZOrbit - planet.orbit;
+                    if(isNaN(difference)){ console.log(928);}
+                    planet.tradecodes = addClimateCodes(planet, difference, size, atmo, hydro, pop, planet.orbit);
                 }
-                if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
-            }
             }else{
                 var amp = 0, placedSuccessfully = false;
                 while(!placedSuccessfully && amp < star.satellites.length){
@@ -1019,28 +948,10 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         placedSuccessfully = true;
                         planet.orbit = orbit - amp;
                         if(planet.worldtype.indexOf("Giant") === -1){
-                        var difference = star.HZOrbit - planet.orbit;
-                        if(difference === 1){
-                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                                planet.tradecodes.push("Tr");
-                            }else{
-                                planet.tradecodes.push("Ho");
-                            }
-                        }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
-                            planet.tradecodes.push("Fa");
-                        }else if(difference === -1){
-                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                                planet.tradecodes.push("Tu"); 
-                            }else{
-                                planet.tradecodes.push("Co"); 
-                            }
-                        }else if(difference <= -2){
-                            if(size >= 2 && size <= 9 && hydro > 0){
-                                planet.tradecodes.push("Fr"); 
-                            }
+                            var difference = star.HZOrbit - planet.orbit;
+                            if(isNaN(difference)){ console.log(948);}
+                            planet.tradecodes = addClimateCodes(planet, difference, size, atmo, hydro, pop, planet.orbit);
                         }
-                        if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
-                    }
                     }else if(star.satellites.length > orbit+amp && typeof star.satellites[orbit+amp] === "undefined"){
                         if(planet.worldtype === "Other World"){
                             planet = createOtherWorld(mainworld, orbit+amp, star.HZOrbit, mainworld.pop-1, maxTech, allowNonMWPops, permitDieback, applyHillSphereLimit);
@@ -1055,29 +966,10 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         placedSuccessfully = true;
                         planet.orbit = orbit + amp;
                         if(planet.worldtype.indexOf("Giant") === -1){
-
                             var difference = star.HZOrbit - planet.orbit;
-                            if(difference === 1){
-                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                                planet.tradecodes.push("Tr");
-                            }else{
-                                planet.tradecodes.push("Ho");
-                            }
-                        }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
-                            planet.tradecodes.push("Fa");
-                        }else if(difference === -1){
-                            if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-                                planet.tradecodes.push("Tu"); 
-                            }else{
-                                planet.tradecodes.push("Co"); 
-                            }
-                        }else if(difference <= -2){
-                            if(size >= 2 && size <= 9 && hydro > 0){
-                                planet.tradecodes.push("Fr"); 
-                            }
+                            if(isNaN(difference)){ console.log(966);}
+                            planet.tradecodes = addClimateCodes(planet, difference, size, atmo, hydro, pop, planet.orbit);
                         }
-                        if(planet.orbit <= 1){ planet.tradecodes.push("Tz"); }
-                    }
                     }
                 }
             }
@@ -1091,6 +983,55 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
     if(stars.near){ stars.near = arrStars[nearIndex]; }
     if(stars.far){ stars.far = arrStars[farIndex]; }
     return stars;
+}
+function addClimateCodes(planet, difference, size, atmo, hydro, pop, orbit){
+    var tradecodes = planet.tradecodes;
+    if(difference > 1){
+        if(tradecodes.indexOf("Ho") === -1){
+            tradecodes.push("Ho");
+        }
+    }else if(difference === 1){
+        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+            if(tradecodes.indexOf("Tr") === -1){
+                tradecodes.push("Tr");
+            }
+        }else{
+            if(tradecodes.indexOf("Ho") === -1){
+                tradecodes.push("Ho");
+            }
+        }
+    }else if(!planet.isMainworld && difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
+        if(tradecodes.indexOf("Fa") === -1){
+            tradecodes.push("Fa");
+        }
+    }else if(difference === -1){
+        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+            if(tradecodes.indexOf("Tu") === -1){
+                tradecodes.push("Tu");
+            }
+        }else{
+            if(tradecodes.indexOf("Co") === -1){
+                tradecodes.push("Co");
+            }
+        }
+    }else if(difference <= -2){
+        if(size >= 2 && size <= 9 && hydro > 0){
+            if(tradecodes.indexOf("Fr") === -1){
+                tradecodes.push("Fr");
+            }
+        }
+    }else if(difference !== 0 && !planet.isMainworld){
+        console.log("Invalid distance from HZ");
+        console.log(difference);
+        console.log(planet);
+    }
+    if(orbit <= 1){ 
+        if(tradecodes.indexOf("Tz") === -1){
+            tradecodes.push("Tz");
+        } 
+    }
+    tradecodes.sort();
+    return tradecodes;
 }
 function applyHillSphereLimitToMainworld(mw){
     var limit = getHillSphereLimit(mw.orbit);
@@ -1184,26 +1125,8 @@ function getHillSphereLimit(orbit){
 function addSatellite(moons, moon, primarySize, applyHillSphereLimit, orbit, HZOrbit){
     var difference = HZOrbit - orbit;
     var size = revExt(moon.uwp[1]), atmo = revExt(moon.uwp[2]), hydro = moon.uwp[3], pop = moon.uwp[4];
-    if(difference === 1){
-        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-            moon.tradecodes.push("Tr"); 
-        }else{
-            moon.tradecodes.push("Ho"); 
-        }
-    }else if(difference === 0 && atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && pop >= 2 && pop <= 6){
-        moon.tradecodes.push("Fa");
-    }else if(difference === -1){
-        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-            moon.tradecodes.push("Tu"); 
-        }else{
-            moon.tradecodes.push("Co"); 
-        }
-    }else if(difference <= -2){
-        if(size >= 2 && size <= 9 && hydro > 0){
-            moon.tradecodes.push("Fr"); 
-        }
-    }
-    if(orbit <= 1){ moon.tradecodes.push("Tz"); }
+    moon.tradecodes = addClimateCodes(moon, difference, size, atmo, hydro, pop, 99);
+    
     var preferredOrbit = moon.orbitAroundPrimary;
     var originalPreferredOrbit = preferredOrbit;
     var newOrbit = preferredOrbit;
@@ -1688,19 +1611,19 @@ function createOtherWorld(mw, orbit, hzorbit, maxPop, maxTech, allowNonMWPops, p
             planet = createPlanet(mw, type,-1,maxPop, maxTech, allowNonMWPops, permitDieback);
             if(diff === 0){
                 while(moonRoll - 4 === 0){
-                    moons = addSatellite(moons,createRing(),planet.size, applyHillSphereLimit, orbit);
+                    moons = addSatellite(moons,createRing(),planet.size, applyHillSphereLimit, orbit, hzorbit);
                     moonRoll = d6();
                 }
                 moonCount = Math.max(moonRoll-4,0);
             }else{
                 while(moonRoll - 5 === 0){
-                    moons = addSatellite(moons,createRing(),planet.size, applyHillSphereLimit, orbit);
+                    moons = addSatellite(moons,createRing(),planet.size, applyHillSphereLimit, orbit, hzorbit);
                     moonRoll = d6();
                 }
                 moonCount = Math.max(moonRoll-5,0);
             }
             for(var i = 0; i < moonCount; i++){
-                moons = addSatellite(moons,createInnerSatellite(mw, planet.size,maxPop, maxTech, allowNonMWPops, permitDieback),planet.size, applyHillSphereLimit, orbit)
+                moons = addSatellite(moons,createInnerSatellite(mw, planet.size,maxPop, maxTech, allowNonMWPops, permitDieback),planet.size, applyHillSphereLimit, orbit, hzorbit)
             }
         }else if(diff > 1){
             // outer worlds
@@ -1720,12 +1643,12 @@ function createOtherWorld(mw, orbit, hzorbit, maxPop, maxTech, allowNonMWPops, p
             }
             planet = createPlanet(mw, type,-1,maxPop, maxTech);
             while(moonRoll - 3 === 0){
-                moons = addSatellite(moons,createRing(),planet.size, applyHillSphereLimit, orbit);
+                moons = addSatellite(moons,createRing(),planet.size, applyHillSphereLimit, orbit, hzorbit);
                 moonRoll = d6();
             }
             moonCount = Math.max(moonRoll-3,0);
             for(var i = 0; i < moonCount; i++){
-                moons = addSatellite(moons,createOuterSatellite(mw, planet.size, maxPop, maxTech, allowNonMWPops),planet.size,applyHillSphereLimit,orbit)
+                moons = addSatellite(moons,createOuterSatellite(mw, planet.size, maxPop, maxTech, allowNonMWPops),planet.size,applyHillSphereLimit,orbit, hzorbit)
             }
         }
     }
@@ -1740,7 +1663,7 @@ function getStar(type, decimal, size, maxOrbits){
             star.type =  "O";
             if(size <= -5){ star.size = "Ia"; star.HZOrbit = 15; minOrbit = 8;}
             else if(size <= -4){ star.size = "Ib"; star.HZOrbit = 15; minOrbit = 8;}
-            else if(size <= -3){ star.size = "II"; star.HZorbit = 14; minOrbit = 8;}
+            else if(size <= -3){ star.size = "II"; star.HZOrbit = 14; minOrbit = 8;}
             else if(size <= 0){ star.size = "III"; star.HZOrbit = 13; minOrbit = 8;}
             else if(size <= 3){ 
                 star.size = "V"; star.HZOrbit = 11;
