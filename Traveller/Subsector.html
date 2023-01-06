@@ -2740,7 +2740,7 @@
                 if (x < 10) { col = "0" + col; }
                 y = +(y) + 1 + SUBSECTOR_Y_OFFSET;
                 var row = (y).toString();
-                if (y) { row = "0" + row; }
+                if (y < 10) { row = "0" + row; }
                 return col + row;
             }
             function getHexCorner(center, size, i){
