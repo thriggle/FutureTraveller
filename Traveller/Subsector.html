@@ -396,9 +396,27 @@
                 <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
                 <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
                 <select name="slctMapSize" id="slctMapSize">
-                    <option value="Subsector">Subsector (8x10)</option>
-                    <option value="Quadrant">Quadrant (16x20)</option>
-                    <option value="Sector">Sector (32x40)</option>
+                    <option value="Sector" data-subsectorxoffset="0" data-subsectoryoffset="0" >Sector (32x40)</option>
+                    <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="0" >Alpha Quadrant (16x20)</option>
+                    <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="0">Beta Quadrant</option>
+                    <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="20">Gamma Quadrant</option>
+                    <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="20">Delta Quadrant</option>
+                    <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="0" selected="selected">Subsector A (8x10)</option>
+                    <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="0">Subsector B</option>
+                    <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="0">Subsector C</option>
+                    <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="0">Subsector D</option>
+                    <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="10">Subsector E</option>
+                    <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="10">Subsector F</option>
+                    <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="10">Subsector G</option>
+                    <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="10">Subsector H</option>
+                    <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="20">Subsector I</option>
+                    <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="20">Subsector J</option>
+                    <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="20">Subsector K</option>
+                    <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="20">Subsector L</option>
+                    <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="30">Subsector M</option>
+                    <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="30">Subsector N</option>
+                    <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="30">Subsector O</option>
+                    <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="30">Subsector P</option>
                 </select>
                 <select name="slctStellarDensity" id="slctStellarDensity">
                     <option value="Extra Galactic">Extra Galactic (1%)</option>
@@ -422,7 +440,7 @@
                     <label for="sizeSlider">Scale: <span id="sizeIndicator"></span></label><input type="range" min="4" max="50"
                         id="sizeSlider" />
                     <label for="slctStyle">Theme: </label><select name="slctStyle" id="slctStyle" data-text="white"
-                        data-canvasbg="black" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
+                        data-canvasbg="black" data-ctext="transparent" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
                         <option value="light">light</option>
                         <option value="dark">dark</option>
                         <option value="transparent">transparent</option>
@@ -431,7 +449,8 @@
                     <br />
                     <fieldset id="customSettings" class="collapsed">
                         <legend>Advanced</legend>
-                        <label for="textColor">Text Color: <input type="text" name="textColor" id="textColor" /></label><br />
+                        <label for="textColor">Primary Text Color: <input type="text" name="textColor" id="textColor" /></label><br />
+                        <label for="coordTextColor">Coordinate Text Color: <input type="text" name="coordTextColor" id="coordTextColor" /></label><br />
                         <label for="hexBorderColor">Border Color: <input type="text" name="hexBorderColor"
                                 id="hexBorderColor" /></label><br />
                         <label for="hexBackgroundColor">Hex Fill: <input type="text" id="hexBackgroundColor"
@@ -1415,26 +1434,30 @@
                 SECTORCAPITAL_TEXT_COLOR = "rgb(255,20,20)",
                 CAPITAL_BACKGROUND_COLOR = "black",
                 TEXT_COLOR = "white",
+                COORD_TEXT_COLOR = "transparent",
                 CANVAS_PADDING = 20,
                 SUBSECTOR_WIDTH = 8,
                 SUBSECTOR_HEIGHT = 10,
+                SUBSECTOR_X_OFFSET = 8,
+                SUBSECTOR_Y_OFFSET = 0,
                 FONT = "sans-serif";
             var HEX_MATH = {
                 radius: HEX_SIZE,
                 xOffset: HEX_SIZE * 3,
-                yOffset: HEX_SIZE * 4,
+                yOffset: Math.sqrt(3) * HEX_SIZE*2,
+                halfYOffset: Math.sqrt(3) * HEX_SIZE,
                 diameter: HEX_SIZE * 2
             }
             // 0-7 UWP, 8 importance, 9 total pop, 10 RU
             var mins = [-1, -1, -1, -1, -1, -1, -1, -1, -3, -1, -1],
                 maxes = [0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
                 labels = ["starport", "size", "atmo", "hydro", "pop", "gov", "law", "tech"];
-            var systems = {};
+            var _systems = {};
             var routes = [];
 
             var canvas = document.getElementById("canvas");
             canvas.setAttribute("width", SUBSECTOR_WIDTH * HEX_MATH.xOffset + HEX_MATH.radius + CANVAS_PADDING * 2);
-            canvas.setAttribute("height", SUBSECTOR_HEIGHT * HEX_MATH.yOffset + HEX_MATH.diameter + CANVAS_PADDING * 2);
+            canvas.setAttribute("height", SUBSECTOR_HEIGHT * HEX_MATH.yOffset + HEX_MATH.halfYOffset + CANVAS_PADDING * 2);
             var ctx = canvas.getContext('2d');
 
             var mapContent = [];
@@ -1485,6 +1508,12 @@
                     MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
                 }
             }
+            function roundCoords(clientX,clientY){
+                var xZone = ((clientX + HEX_MATH.radius) / HEX_MATH.xOffset) >> 0;
+                var yZone = ((clientY) / HEX_MATH.yOffset) >> 0;
+                var obj = {x:xZone,y:yZone};
+                return obj;
+            }
             function attachEventListeners() {
                 var abilityRoll = 0, skillRoll = 0;
                 document.getElementById("btnGetSpecialAbility").addEventListener("click", function () {
@@ -1500,36 +1529,69 @@
                 canvas.addEventListener("mousemove", function (e) {
                     var hexIdentified = false;
                     var x = e.clientX - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().left;
-                    var y = e.clientY - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().top;
-                    if (lastHighlightedHex) {
+                    var y = e.clientY - HEX_MATH.halfYOffset - CANVAS_PADDING - canvas.getBoundingClientRect().top;
+                    var redrawRequested = false;
+                    if (lastHighlightedHex && lastHighlightedHex.highlighted) {
                         if (coordsInHexagon(x, y, lastHighlightedHex)) {
                             hexIdentified = true;
+                            lastHighlightedHex.highlighted = true;
+                            if(lastHighlightedHex.system){
+                                mapContent[lastHighlightedHex.system.index].highlighted = true;
+                                mapContent[lastHighlightedHex.system.index]
+                            }
+                            
                         } else {
                             lastHighlightedHex.highlighted = false;
+                            redrawRequested = true;
                         }
                     }
                     if (!hexIdentified) {
-                        for (var i = 0, len = mapContent.length; i < len; i++) {
-                            var hex = mapContent[i];
-                            if (!hexIdentified) {
+                        var canvasRect = canvas.getBoundingClientRect();
+                        var exampleCoords = roundCoords(x,y);
+                        var testCoords = [
+                            {x:exampleCoords.x-1, y:exampleCoords.y-1}, { x:exampleCoords.x, y:exampleCoords.y-1}, {x:exampleCoords.x+1, y:exampleCoords.y-1},
+                            {x:exampleCoords.x-1, y:exampleCoords.y}, { x:exampleCoords.x, y:exampleCoords.y}, {x:exampleCoords.x+1, y:exampleCoords.y},
+                            {x:exampleCoords.x-1, y:exampleCoords.y+1}, { x:exampleCoords.x, y:exampleCoords.y+1}, {x:exampleCoords.x+1, y:exampleCoords.y+1}
+                        ];
+                        for(var i = 0; i < testCoords.length; i++){
+                            var testIndex = testCoords[i].x + (testCoords[i].y * SUBSECTOR_WIDTH);
+                            if(testIndex >= 0 && testIndex < mapContent.length){
+                                var hex = mapContent[testIndex];
                                 if (coordsInHexagon(x, y, hex)) {
-                                    hex.highlighted = true;
                                     hexIdentified = true;
                                     if (lastHighlightedHex) {
                                         lastHighlightedHex.highlighted = false;
                                     }
                                     lastHighlightedHex = hex;
+                                    hex.highlighted = true;
                                     drawMap(mapContent);
                                     break;
                                 }
                             }
                         }
-
+                        // for (var i = 0, len = mapContent.length; i < len; i++) {
+                        //     var hex = mapContent[i];
+                        //     if (!hexIdentified) {
+                        //         if (coordsInHexagon(x, y, hex)) {
+                        //             hex.highlighted = true;
+                        //             hexIdentified = true;
+                        //             if (lastHighlightedHex) {
+                        //                 lastHighlightedHex.highlighted = false;
+                        //             }
+                        //             lastHighlightedHex = hex;
+                        //             drawMap(mapContent);
+                        //             break;
+                        //         }
+                        //     }
+                        // }
+                        if(redrawRequested){
+                            drawMap(mapContent);
+                        }
                     }
                 });
                 canvas.addEventListener("click", function (e) {
                     var x = e.clientX - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().left;
-                    var y = e.clientY - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().top;
+                    var y = e.clientY - HEX_MATH.halfYOffset - CANVAS_PADDING - canvas.getBoundingClientRect().top;
                     for (var i = 0, len = mapContent.length; i < len; i++) {
                         var hex = mapContent[i];
                         if (coordsInHexagon(x, y, hex)) {
@@ -1624,7 +1686,7 @@
                         populateSubsector();
                     }
                 });
-                document.getElementById("slctMapSize").addEventListener("change", mapSizeChanged);
+                document.getElementById("slctMapSize").addEventListener("input", mapSizeChanged);
 
                 document.getElementById("fontFamily").addEventListener("keyup", updateStyle);
                 document.getElementById("hexBorderColor").addEventListener("keyup", function () {
@@ -1635,7 +1697,14 @@
                 });
                 document.getElementById("textColor").addEventListener("keyup", function () {
                     var newColor = document.getElementById("textColor").value;
+                    document.getElementById("slctStyle").setAttribute("data-text", newColor);
                     updateTextColor(newColor);
+                    drawMap(mapContent);
+                });
+                document.getElementById("coordTextColor").addEventListener("keyup", function () {
+                    var newColor = document.getElementById("coordTextColor").value;
+                    document.getElementById("slctStyle").setAttribute("data-ctext", newColor);
+                    updateCoordTextColor(newColor);
                     drawMap(mapContent);
                 });
                 document.getElementById("hexBackgroundColor").addEventListener("keyup", function () {
@@ -1854,7 +1923,7 @@
                 }
                 //updateHexSize(+(document.getElementById("sizeSlider").value));
                 canvas.setAttribute("width", SUBSECTOR_WIDTH * HEX_MATH.xOffset + HEX_MATH.radius + CANVAS_PADDING * 2);
-                canvas.setAttribute("height", SUBSECTOR_HEIGHT * HEX_MATH.yOffset + HEX_MATH.diameter + CANVAS_PADDING * 2);
+                canvas.setAttribute("height", SUBSECTOR_HEIGHT * HEX_MATH.yOffset + HEX_MATH.halfYOffset + CANVAS_PADDING * 2);
                 drawMap(mapContent);
             }
             document.getElementById("slctStyle").addEventListener("change", updateStyle);
@@ -1880,7 +1949,11 @@
                 //console.log("Setting window hash");
                 var $density = document.getElementById("slctStellarDensity").value
                 //console.log("density = " + $density);
-                var $size = document.getElementById("slctMapSize").value
+                var sizeSelector = document.getElementById("slctMapSize");
+                var $size = sizeSelector.value
+                var sizeOption = sizeSelector.querySelectorAll("option")[sizeSelector.selectedIndex];
+                SUBSECTOR_X_OFFSET = +(sizeOption.getAttribute("data-subsectorxoffset"));
+                SUBSECTOR_Y_OFFSET = +(sizeOption.getAttribute("data-subsectoryoffset"));
                 //console.log("size = " + $size);
                 window.location.hash = "$seed=" + encodeURI(seed) + "&$density=" + $density + "&$size=" + $size;
 
@@ -2326,10 +2399,17 @@
                     _systems = systems;
                 }
                 mapContent = [];
+                var counter = 0;
                 for (var iy = 0; iy < y; iy++) {
                     for (var ix = 0; ix < x; ix++) {
                         var hexLabel = XYCoordToTCoord(ix, iy);
                         var system = _systems[hexLabel];
+                        if(system){
+                            system.index = counter;
+                            system.x = ix;
+                            system.y = iy;
+                        }
+                        counter += 1;
                         addHex(ix, iy, system);
                     }
                 }
@@ -2343,13 +2423,14 @@
                 });
             }
             function coordsInHexagon(x, y, hex) {
-
-                var numVertices = hex.vertx.length;
                 var isInside = false;
-                for (var i = 0, j = numVertices - 1; i < numVertices; j = i++) {
-                    if (((hex.verty[i] > y) != (hex.verty[j] > y)) &&
+                if(hex.vertx){
+                    var numVertices = hex.vertx.length;
+                    for (var i = 0, j = numVertices - 1; i < numVertices; j = i++) {
+                        if (((hex.verty[i] > y) != (hex.verty[j] > y)) &&
                         (x < (hex.vertx[j] - hex.vertx[i]) * (y - hex.verty[i]) / (hex.verty[j] - hex.verty[i]) + hex.vertx[i])) {
-                        isInside = !isInside;
+                            isInside = !isInside;
+                        }
                     }
                 }
                 return isInside;
@@ -2373,7 +2454,7 @@
                 }
                 ctx.save();
                 ctx.globalCompositeOperation = 'source-over';
-                ctx.translate(HEX_MATH.diameter + CANVAS_PADDING, HEX_MATH.diameter + CANVAS_PADDING);
+                ctx.translate(HEX_MATH.diameter + CANVAS_PADDING, HEX_MATH.halfYOffset + CANVAS_PADDING);
                 for (var i = 0, len = mapContent.length; i < len; i++) {
                     mapContent[i] = drawHex(mapContent[i], options);
                 }
@@ -2650,15 +2731,25 @@
                     var row = tcoord.substring(2, 4);
                     if (row[0] == "0") { row = row[1]; }
                     if (col[0] == "0") { col = col[1]; }
-                    return { x: +(col) - 1, y: +(row) - 1 }
-                }
+                    return { x: +(col) - 1 - SUBSECTOR_X_OFFSET, y: +(row) - 1 - SUBSECTOR_Y_OFFSET}
+                }else{return tcoord;}
             }
             function XYCoordToTCoord(x, y) {
-                var col = (+(x) + 1).toString();
-                if (+(x) + 1 < 10) { col = "0" + col; }
-                var row = (+(y) + 1).toString();
-                if (+(y) + 1 < 10) { row = "0" + row; }
+                x = (+(x) + 1 + SUBSECTOR_X_OFFSET)
+                var col = (x).toString();
+                if (x < 10) { col = "0" + col; }
+                y = +(y) + 1 + SUBSECTOR_Y_OFFSET;
+                var row = (y).toString();
+                if (y) { row = "0" + row; }
                 return col + row;
+            }
+            function getHexCorner(center, size, i){
+                var angle_deg = 60 * i;
+                var angle_rad = Math.PI / 180 * angle_deg;
+                return {
+                    x: center.x + size * Math.cos(angle_rad),
+                    y: center.y + size * Math.sin(angle_rad)
+                }
             }
             function drawHex(hex, options) {
                 var drawMode = -1;
@@ -2666,16 +2757,33 @@
                 var containsSystem = typeof hex.system !== "undefined" && hex.system !== null;
                 var coords = {
                     x: hex.x * HEX_MATH.xOffset,
-                    y: hex.x % 2 == 0 ? hex.y * HEX_MATH.yOffset : hex.y * HEX_MATH.yOffset + HEX_MATH.diameter
+                    y: hex.x % 2 == 0 ? hex.y * HEX_MATH.yOffset : hex.y * HEX_MATH.yOffset + HEX_MATH.halfYOffset
                 };
                 var x1 = coords.x - HEX_MATH.radius, // top/bottom left vertex
                     x2 = coords.x + HEX_MATH.radius; // top/bottom right vertex
                 var x0 = x1 - HEX_MATH.radius, // center left vertex
                     x3 = x2 + HEX_MATH.radius, // center right vertex
                     x4 = x1 + (x2 - x1) / 2; // middle of the bottom edge
-                var y0 = coords.y - HEX_MATH.diameter,
+                var y0 = coords.y - HEX_MATH.halfYOffset,
                     y1 = coords.y,
-                    y2 = y1 + HEX_MATH.diameter;
+                    y2 = y1 + HEX_MATH.halfYOffset;
+
+                // var point1 = getHexCorner(coords,HEX_MATH.diameter, 0); // center right vertex
+                // var x3 = point1.x; 
+                // var y1 = coords.y;
+                // var point2 = getHexCorner(coords,HEX_MATH.diameter, 1); // bottom right vertex
+                // var x2 = point2.x; 
+                // var y2 = point2.y;
+                // var point3 = getHexCorner(coords,HEX_MATH.diameter, 2); // bottom left vertex
+                // var x1 = point3.x;
+                // var y2 = point3.y;
+                // var point4 = getHexCorner(coords, HEX_MATH.diameter, 3); // center left vertex
+                // var x0 = point4.x; // center left vertex
+                // var point5 = getHexCorner(coords, HEX_MATH.diameter, 4); // top left vertex
+                // var y0 = point5.y;
+                // var x4 = x1 + (x2 - x1) / 2
+
+
                 ctx.strokeStyle = HEX_BORDER_COLOR;
                 var oldLineWidth = ctx.lineWidth;
 
@@ -2848,10 +2956,15 @@
                     var oldFont = ctx.font;
                     ctx.font = "" + (fontSize * 1.2) + "pt " + FONT;
                     ctx.fillStyle = TEXT_COLOR;
-                    ctx.fillText(hex.system.uwp[0], x4, y0 + (y1 - y0) / 2);
+                    ctx.fillText(hex.system.uwp[0], x4, y0 + (y1 - y0) / 2 + size*0.2);
                     ctx.font = oldFont;
 
-
+                    // write coordinates 
+                    ctx.font = "" + (fontSize * 0.8) + "pt " + FONT;
+                    ctx.fillStyle = (hex.selected || hex.highlighted) ? TEXT_COLOR : COORD_TEXT_COLOR;
+                    
+                    ctx.fillText(hex.system.tcoord, x4, y0 + (fontSize * 0.9) + size*0.1);
+                    ctx.font = oldFont;
 
                 }
                 else {
@@ -2900,16 +3013,16 @@
 
                     var coords = {
                         x: hex.x * HEX_MATH.xOffset,
-                        y: hex.x % 2 == 0 ? hex.y * HEX_MATH.yOffset : hex.y * HEX_MATH.yOffset + HEX_MATH.diameter
+                        y: hex.x % 2 == 0 ? hex.y * HEX_MATH.yOffset : hex.y * HEX_MATH.yOffset + HEX_MATH.halfYOffset
                     };
                     var x1 = coords.x - HEX_MATH.radius, // top/bottom left vertex
                         x2 = coords.x + HEX_MATH.radius; // top/bottom right vertex
                     var x0 = x1 - HEX_MATH.radius, // center left vertex
                         x3 = x2 + HEX_MATH.radius, // center right vertex
                         x4 = x1 + (x2 - x1) / 2; // middle of the bottom edge
-                    var y0 = coords.y - HEX_MATH.diameter,
+                    var y0 = coords.y - HEX_MATH.halfYOffset,
                         y1 = coords.y,
-                        y2 = y1 + HEX_MATH.diameter;
+                        y2 = y1 + HEX_MATH.halfYOffset;
                     var maxWidth = x3 - x0 - (x1 - x0) / 2 - (x3 - x2) / 2 - fontSize * 2;
                     var name = hex.system.name;
                     var oldFontStyle = ctx.font;
@@ -3016,10 +3129,11 @@
                         var scale = fontSize / 2;
                         ctx.beginPath();
                         ctx.fillStyle = TEXT_COLOR;
-                        ctx.moveTo(hexX - scale * 8, hexY + scale * 4);
-                        ctx.lineTo(hexX - scale * 6, hexY + scale * 4);
-                        ctx.lineTo(hexX - scale * 7, hexY + scale * 2);
-                        ctx.lineTo(hexX - scale * 8, hexY + scale * 4);
+                        var yMod = -1.9;
+                        ctx.moveTo(hexX - scale * 8, hexY + scale * (yMod + 4));
+                        ctx.lineTo(hexX - scale * 6, hexY + scale * (yMod + 4));
+                        ctx.lineTo(hexX - scale * 7, hexY + scale * (yMod + 2));
+                        ctx.lineTo(hexX - scale * 8, hexY + scale * (yMod + 4));
                         ctx.closePath();
                         ctx.fill();
                         break;
@@ -3035,10 +3149,11 @@
                         var scale = fontSize / 2;
                         ctx.beginPath();
                         ctx.fillStyle = TEXT_COLOR;
-                        ctx.moveTo(hexX - scale * 8, hexY + scale * 4);
-                        ctx.lineTo(hexX - scale * 6, hexY + scale * 4);
-                        ctx.lineTo(hexX - scale * 7, hexY + scale * 2);
-                        ctx.lineTo(hexX - scale * 8, hexY + scale * 4);
+                        var yMod = -1.9;
+                        ctx.moveTo(hexX - scale * 8, hexY + scale * (yMod + 4));
+                        ctx.lineTo(hexX - scale * 6, hexY + scale * (yMod + 4));
+                        ctx.lineTo(hexX - scale * 7, hexY + scale * (yMod + 2));
+                        ctx.lineTo(hexX - scale * 8, hexY + scale * (yMod + 4));
                         ctx.closePath();
                         var oldLineWidth = ctx.lineWidth;
                         ctx.lineWidth = 1;
@@ -3111,6 +3226,7 @@
                     document.getElementById("hexBackgroundColor").value = select.getAttribute("data-hexbg");
                     document.getElementById("canvasBackgroundColor").value = select.getAttribute("data-canvasbg");
                     document.getElementById("textColor").value = select.getAttribute("data-text");
+                    document.getElementById("coordTextColor").value = select.getAttribute("data-ctext");
                     HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
 
                 } else if (val === "light") {
@@ -3118,12 +3234,14 @@
                     document.getElementById("hexBackgroundColor").value = "transparent";
                     document.getElementById("canvasBackgroundColor").value = "white";
                     document.getElementById("textColor").value = "black";
+                    document.getElementById("coordTextColor").value = "rgba(0,0,0,0.8)";
                     HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
                 } else if (val === "dark") {
                     document.getElementById("hexBorderColor").value = "white";
                     document.getElementById("hexBackgroundColor").value = "transparent";
                     document.getElementById("canvasBackgroundColor").value = "black";
                     document.getElementById("textColor").value = "white";
+                    document.getElementById("coordTextColor").value = "rgba(255,255,255,0.8)";
                     HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
                 } else if (val === "transparent") {
                     document.getElementById("hexBorderColor").value = "black";
@@ -3131,11 +3249,13 @@
                     document.getElementById("canvasBackgroundColor").value = "transparent";
                     HEX_HIGHLIGHT_BACKGROUND_COLOR = "rgba(255,255,255,0.5)";
                     document.getElementById("textColor").value = "black";
+                    document.getElementById("coordTextColor").value = "rgba(0,0,0,0.8)";
                 }
                 updateHexBorderColor(document.getElementById("hexBorderColor").value);
                 updateHexBackgroundColor(document.getElementById("hexBackgroundColor").value);
                 updateCanvasBackgroundColor(document.getElementById("canvasBackgroundColor").value);
                 updateTextColor(document.getElementById("textColor").value);
+                updateCoordTextColor(document.getElementById("coordTextColor").value);
                 updateFont(document.getElementById("fontFamily").value);
                 drawMap(mapContent);
             }
@@ -3147,10 +3267,11 @@
                 HEX_SIZE = newSize;
                 HEX_MATH.radius = HEX_SIZE;
                 HEX_MATH.xOffset = HEX_SIZE * 3;
-                HEX_MATH.yOffset = HEX_SIZE * 4;
+                HEX_MATH.yOffset = Math.sqrt(3) * HEX_SIZE*2;
+                HEX_MATH.halfYOffset = Math.sqrt(3) * HEX_SIZE;
                 HEX_MATH.diameter = HEX_SIZE * 2;
                 canvas.setAttribute("width", SUBSECTOR_WIDTH * HEX_MATH.xOffset + HEX_MATH.radius + CANVAS_PADDING * 2);
-                canvas.setAttribute("height", SUBSECTOR_HEIGHT * HEX_MATH.yOffset + HEX_MATH.diameter + CANVAS_PADDING * 2);
+                canvas.setAttribute("height", SUBSECTOR_HEIGHT * HEX_MATH.yOffset + HEX_MATH.halfYOffset + CANVAS_PADDING * 2);
                 fontSize = (newSize * 1 / 3);
                 ctx.font = "" + fontSize + "pt " + FONT;
                 document.getElementById("sizeIndicator").innerHTML = newSize;
@@ -3166,6 +3287,9 @@
             }
             function updateTextColor(newColor) {
                 TEXT_COLOR = newColor;
+            }
+            function updateCoordTextColor(newColor){
+                COORD_TEXT_COLOR = newColor;
             }
             function addCaps(text) {
                 var capitalizedString = "";
@@ -3305,7 +3429,7 @@
                     var hex = TCoordToXYCoord(key);
                     var coords = {
                         x: hex.x * HEX_MATH.xOffset,
-                        y: hex.x % 2 == 0 ? hex.y * HEX_MATH.yOffset : hex.y * HEX_MATH.yOffset + HEX_MATH.diameter
+                        y: hex.x % 2 == 0 ? hex.y * HEX_MATH.yOffset : hex.y * HEX_MATH.yOffset + HEX_MATH.halfYOffset
                     };
                     ctx.moveTo(coords.x, coords.y);
                     ctx.beginPath();
@@ -3313,7 +3437,7 @@
                     var destHex = TCoordToXYCoord(destKey);
                     var dest = {
                         x: destHex.x * HEX_MATH.xOffset,
-                        y: destHex.x % 2 == 0 ? destHex.y * HEX_MATH.yOffset : destHex.y * HEX_MATH.yOffset + HEX_MATH.diameter
+                        y: destHex.x % 2 == 0 ? destHex.y * HEX_MATH.yOffset : destHex.y * HEX_MATH.yOffset + HEX_MATH.halfYOffset
                     };
                     ctx.lineTo(dest.x, dest.y);
                     ctx.stroke();
