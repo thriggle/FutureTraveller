@@ -432,7 +432,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             climate = "Frozen.";
         //}
     }
-    if(MWOrbit <= 1){ tradecodes.push("Tz"); climate="Something."; }
+    if(MWOrbit <= 1){ tradecodes.push("Tz"); }
     
     // trade codes
     if(size === 0 && atmo === 0 && hydro === 0){ tradecodes.push("As"); }
