@@ -3656,7 +3656,7 @@ function generateRandomAlien(species,rand){
                     ab = "P-"+(k < 10 ? "0" + k : k)+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
                 }else{
                     var constant = parseInt(species.percepconstant,10)+4;
-                    ab = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
+                    ab = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.poice+species.poicetone;
                 }
                 break;
             case "Smell": 
@@ -3712,7 +3712,7 @@ function generateRandomAlien(species,rand){
                     ab = "P-"+(k < 10 ? "0" + k : k)+"-"+getPerceptionPoice()+getPerceptionPoiceTone(); 
                 }else{
                     var constant = parseInt(species.percepconstant,10)+2;
-                    ab = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.perceptionvoice+species.perceptionvoicetone;
+                    ab = "P-"+(constant < 10 ? "0"+constant : constant)+"-"+species.poice+species.poicetone;
                 }
                 break;
             case "Smell": 
