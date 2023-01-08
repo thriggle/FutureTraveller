@@ -4024,11 +4024,10 @@
                 } else {
                     description = system.stars.primary.type + (typeof system.stars.primary.decimal === "undefined" ? "" : system.stars.primary.decimal.toString()) + " " + system.stars.primary.size;
                 }
-                description += ". " + getLimitString(system.stars.primary);
+                description += ". ";// + getLimitString(system.stars.primary);
                 var primli = list.appendChild(document.createElement("li"));
-                primli.appendChild(document.createTextNode(
-                    "Primary Star: " + description
-                ));
+                primli.appendChild(document.createTextNode( "Primary Star: " + description ));
+                addLineToElement(primli, getLimitString(system.stars.primary));
                 primli.classList.add("star");
                 for (var i = 0, len = system.stars.primary.satellites.length; i < len; i++) {
                     var slot = system.stars.primary.satellites[i];
@@ -4061,8 +4060,10 @@
                             li.classList.add(types[s]);
                         }
                         li.appendChild(document.createTextNode(
-                            "Orbit " + slot.decimalOrbit + " (" + slot.au + " AU): " + addCaps(slot.worldtype) + " (" + description + ")"
+                            "Orbit " + slot.decimalOrbit + " (" + slot.au + " AU)"
                         ));
+                        addLineToElement(li,addCaps(slot.worldtype) + " " + description);
+                        //addLineToElement(li,description);
                         if (!orbitingStar && slot.worldtype !== "Occupied" && slot.worldtype !== "Solar Surface" && slot.uwp) {
                             var pop = dext(slot.uwp[4]);
                             if (pop > 0) {
@@ -4100,19 +4101,24 @@
                                         desc += "; " + getLimitString(subslot)
                                     } else {
                                         subOrbitingStar = false;
-                                        desc = subslot.uwp;
-                                    }
-                                    if(subslot.tradecodes && subslot.tradecodes.length > 0){
-                                        desc += " [" + subslot.tradecodes.join(",") + "]";
+                                        if(subslot.worldtype.indexOf("Ring System") >= 0){
+                                            desc = "";
+                                        }else{
+                                            desc = subslot.uwp;
+                                            if(subslot.tradecodes && subslot.tradecodes.length > 0){
+                                                desc += " [" + subslot.tradecodes.join(",") + "]";
+                                            }
+                                        }
                                     }
                                     var text = "";
                                     if (!orbitingStar) {
-                                        text = "Orbit " + sat(j) + " (" + satDistance(j, subslot.primarysize, slot.worldtype.indexOf("Giant") > 0).toString() + "): " + addCaps(subslot.worldtype) + " (" + desc + ")";
+                                        text = "Orbit " + sat(j) + " (" + satDistance(j, subslot.primarysize, slot.worldtype.indexOf("Giant") > 0).toString() + ")";
                                     } else {
-                                        text = "Orbit " + subslot.decimalOrbit + " (" + subslot.au + " AU): " + addCaps(subslot.worldtype) + " (" + desc + ")";
+                                        text = "Orbit " + subslot.decimalOrbit + " (" + subslot.au + " AU)";
                                     }
                                     var li = sublist.appendChild(document.createElement("li"));
                                     li.appendChild(document.createTextNode(text));
+                                    addLineToElement(li,addCaps(subslot.worldtype) + " " + desc);
                                     for (var s = 0; s < subtypes.length; s++) {
                                         li.classList.add(subtypes[s]);
                                     }
@@ -4150,21 +4156,26 @@
                                                     }
                                                     desc += "; " + getLimitString(subsub)
                                                 } else {
-                                                    desc = subsub.uwp;
+                                                    if(subsub.worldtype.indexOf("Ring System") >= 0){
+                                                        desc = "";
+                                                    }else{
+                                                        desc = subsub.uwp;
+                                                        if(subsub.tradecodes && subsub.tradecodes.length > 0){
+                                                            desc += " [" + subsub.tradecodes.join(",") + "]";
+                                                        }
+                                                    }                                                    
                                                 }
-                                                if(subsub.tradecodes && subsub.tradecodes.length > 0){
-                                                    desc += " [" + subsub.tradecodes.join(",") + "]";
-                                                }
+                                                
                                                 var subsubtypes = subsub.worldtype.split(" ");
                                                 var text = "";
                                                 if (subOrbitingStar) {
-                                                    text = "Orbit " + subsub.decimalOrbit + " (" + subsub.au + " AU): " + addCaps(subsub.worldtype) + " (" + desc + ")";
-
+                                                    text = "Orbit " + subsub.decimalOrbit + " (" + subsub.au + " AU)";
                                                 } else {
-                                                    text = "Orbit " + sat(k) + " (" + satDistance(k, subsub.primarysize, subslot.worldtype.indexOf("Giant") > 0).toString() + "): " + addCaps(subsub.worldtype) + " (" + desc + ")";
+                                                    text = "Orbit " + sat(k) + " (" + satDistance(k, subsub.primarysize, subslot.worldtype.indexOf("Giant") >= 0).toString() + ")";
                                                 }
                                                 var li = subsublist.appendChild(document.createElement("li"))
                                                 li.appendChild(document.createTextNode(text));
+                                                addLineToElement(li,addCaps(subsub.worldtype) + " " + desc);
                                                 for (var s = 0; s < subsubtypes.length; s++) {
                                                     li.classList.add(subsubtypes[s]);
                                                 }
@@ -4195,6 +4206,10 @@
                 function getLimitString(star) {
                     return "100D=Orbit " + star.jlimit.toString() + " (" + lookups["orbitdistance"][star.jlimit.toString()] + ") 1000D=Orbit " + star.mlimit + " (" + lookups["orbitdistance"][star.mlimit.toString()] + ")"
                 }
+            }
+            function addLineToElement(el,text){
+                el.appendChild(document.createElement("br"));
+                el.appendChild(document.createTextNode(text));
             }
             function dext(txt) {
                 var tempInt = parseInt(txt, 36);
