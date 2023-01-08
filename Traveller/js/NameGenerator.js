@@ -181,10 +181,11 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer){
                 currentText += piece;
                 references.push(piece);
             } else if (segment.references) {
-                piece = this.getRandomName(segment.references[(segment.references.length * MathRandom()) >>> 0]);;
+                var ref = segment.references[(segment.references.length * MathRandom()) >>> 0];
+                piece = this.getRandomName(ref);;
                 if(checkNot >= 0){
                     while(piece == references[checkNot]){
-                        piece = this.getRandomName(segment.reference);
+                        piece = this.getRandomName(ref);
                     }
                 }
                 currentText += piece;
