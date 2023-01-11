@@ -991,6 +991,7 @@
     }
     var fromDirectLink = false;
     if (window.location.hash) {
+        console.log(window.location.hash);
         processHash();
         fromDirectLink = true;
         var manual = !(document.getElementById("chkRandomHomeworld").checked);
@@ -1027,16 +1028,19 @@
         }
     });
     function processHash() {
-        var hash = window.location.hash.substr(1);
+        var hash = window.location.hash;
         if (hash.indexOf("$") >= 0) {
             seed = "";
             var hashParamPairs = hash.substr(1).split("&");
             for (var i = 0, len = hashParamPairs.length; i < len; i++) {
                 var pair = hashParamPairs[i].split("=");
                 var key = pair[0].toLowerCase();
+                console.log(key);
                 if (key === "$seed") {
                     seed = pair[1];
                     document.getElementById("txtSeed").value = decodeURI(seed);
+                    document.getElementById("chkUseRandom").checked = false;
+                    console.log("unchecked random");
                 }else if(key === "$world"){
                     document.getElementById("chkRandomHomeworld").checked = false;
                     document.getElementById("inWorldName").value = decodeURI(pair[1]);
@@ -1065,11 +1069,12 @@
                 }
             }
         }else{
-            seed = hash;
+            seed = hash.substr(1);
             document.getElementById("txtSeed").value = decodeURI(seed);
+            document.getElementById("chkUseRandom").checked = false;
         }
         if(seed.length > 0){
-            document.getElementById("chkUseRandom").checked = false;
+            document.getElementById("txtSeed").value = decodeURI(seed);
             MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
         }
     }
@@ -1090,29 +1095,28 @@
                     var hashParamPairs = hash.substr(1).split("&");
                     for (var i = 0, len = hashParamPairs.length; i < len; i++) {
                         var pair = hashParamPairs[i].split("=");
-                        if (pair[0].toLowerCase() === "$seed") {
+                        var key = pair[0].toLowerCase();
+                        if (key === "$seed") {
                             seed = pair[1];
                             newValue = decodeURI(seed);
-                        }
-                        if(pair[0].toLowerCase() === "$uwp"){
+                        }else if(key === "$uwp"){
                             document.getElementById("chkRandomHomeworld").checked = false;
                             document.getElementById("inUWP").value = pair[1];
-                        }
-                        if(pair[0].toLowerCase() === "$startype"){
+                        }else if(key === "$startype"){
                             document.getElementById("chkRandomHomeworld").checked = false;
                             document.getElementById("inStarType").value = pair[1];
-                        }
-                        if(pair[0].toLowerCase() === "$stardecimal"){
+                        }else if(key === "$stardecimal"){
                             document.getElementById("chkRandomHomeworld").checked = false;
                             document.getElementById("inStarDecimal").value = pair[1];
-                        }
-                        if(pair[0].toLowerCase() === "$starsize"){
+                        }else if(key === "$starsize"){
                             document.getElementById("chkRandomHomeworld").checked = false;
                             document.getElementById("inStarSize").value = pair[1];
-                        }
-                        if(pair[0].toLowerCase() === "$tradecodes"){
+                        }else if(key === "$tradecodes"){
                             document.getElementById("chkRandomHomeworld").checked = false;
                             document.getElementById("inTradeCodes").value = pair[1];
+                        }else if(key === "$world"){
+                            document.getElementById("chkRandomHomeworld").checked = false;
+                            document.getElementById("inWorldName").value = pair[1];
                         }
                     }
                 }else{
