@@ -283,7 +283,9 @@
             margin: 0px;
             display: none;
         }
-
+        #maplist li{
+            padding-bottom:0.5rem;
+        }
         #dialog_close {
             float: right;
             font-weight: normal;
@@ -498,9 +500,10 @@
                                 <option selected=selected value=8>8- on 2D (T5) 72%</option>
                                 <option value=9>9- on 2D (CE) 83%</option>
                             </select></label><br />
-                        <label for="chkApplyHillSphereLimits"><input type="checkbox" checked="checked"
-                                id="chkApplyHillSphereLimits" name="chkApplyHillSphereLimits">Limit satellite orbits to Hill
-                            sphere</label><br />
+                            <label for="chkApplyHillSphereLimits"><input type="checkbox" checked="checked"
+                                id="chkApplyHillSphereLimits" name="chkApplyHillSphereLimits">Limit satellite orbits to Hill sphere</label><br />
+                            <label for="chkAllowInnerWhiteDwarfs"><input type="checkbox" checked="checked"
+                                id="chkAllowInnerWhiteDwarfs" name="chkAllowInnerWhiteDwarfs">Allow white dwarfs in inner orbits</label><br />
                     </fieldset>
                     <fieldset class="collapsed">
                         <legend>Demographics</legend>
@@ -2003,6 +2006,11 @@
                 //  0-7 = UWP, 8 = Importance, 9 = Total Pop, 10 = RUs
                 mins = [-1, -1, -1, -1, -1, -1, -1, -1, -3, -1, -1], maxes = [0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0];
                 var systemArray = [];
+                var permitDieback = document.getElementById("chkPermitDieback").checked,
+                mainworldRules =  document.getElementById("slctMainworldRules").value,
+                applyHillSphereLimits = document.getElementById("chkApplyHillSphereLimits").checked,
+                allowInnerWhiteDwarfs = document.getElementById("chkAllowInnerWhiteDwarfs").checked,
+                populateNonMainworlds = document.getElementById("chkPopulateNonMainworlds").checked;
                 for (var x = 0; x < SUBSECTOR_WIDTH; x++) {
                     for (var y = 0; y < SUBSECTOR_HEIGHT; y++) {
                         if (density === "Clump") {
@@ -2022,7 +2030,15 @@
                             var name = tcoord;
                             //console.log("Adding " + name + " to " + tcoord);
                             namesSoFar[name] = { hexlocation: tcoord, x: x, y: y };
-                            var details = generateSystemDetails(addCaps(name), ggFrequency, document.getElementById("chkPermitDieback").checked, maxTechLevel, 0, document.getElementById("slctMainworldRules").value, document.getElementById("chkPopulateNonMainworlds").checked, document.getElementById("chkApplyHillSphereLimits").checked);
+                            var details = 
+                            generateSystemDetails(tcoord, 
+                            ggFrequency, 
+                            permitDieback, 
+                            maxTechLevel, 0, 
+                            mainworldRules, 
+                            populateNonMainworlds, 
+                            applyHillSphereLimits, 
+                            allowInnerWhiteDwarfs);
                             //console.log(details);
                             for (var i = 0, len = mins.length; i < len; i++) {
                                 var currValue;
@@ -4059,9 +4075,9 @@
                             li.classList.add(types[s]);
                         }
                         li.appendChild(document.createTextNode(
-                            "Orbit " + slot.decimalOrbit + " (" + slot.au + " AU)"
+                            "Orbit " + slot.decimalOrbit + " (" + slot.au + " AU) "+addCaps(slot.worldtype)
                         ));
-                        addLineToElement(li,addCaps(slot.worldtype) + " " + description);
+                        addLineToElement(li,description);
                         //addLineToElement(li,description);
                         if (!orbitingStar && slot.worldtype !== "Occupied" && slot.worldtype !== "Solar Surface" && slot.uwp) {
                             var pop = dext(slot.uwp[4]);
@@ -4115,9 +4131,10 @@
                                     } else {
                                         text = "Orbit " + subslot.decimalOrbit + " (" + subslot.au + " AU)";
                                     }
+                                    text += " " + addCaps(subslot.worldtype);
                                     var li = sublist.appendChild(document.createElement("li"));
                                     li.appendChild(document.createTextNode(text));
-                                    addLineToElement(li,addCaps(subslot.worldtype) + " " + desc);
+                                    addLineToElement(li,desc);
                                     for (var s = 0; s < subtypes.length; s++) {
                                         li.classList.add(subtypes[s]);
                                     }
@@ -4172,9 +4189,10 @@
                                                 } else {
                                                     text = "Orbit " + sat(k) + " (" + satDistance(k, subsub.primarysize, subslot.worldtype.indexOf("Giant") >= 0).toString() + ")";
                                                 }
+                                                text += " " + subsub.worldtype;
                                                 var li = subsublist.appendChild(document.createElement("li"))
                                                 li.appendChild(document.createTextNode(text));
-                                                addLineToElement(li,addCaps(subsub.worldtype) + " " + desc);
+                                                addLineToElement(li,addCaps(desc));
                                                 for (var s = 0; s < subsubtypes.length; s++) {
                                                     li.classList.add(subsubtypes[s]);
                                                 }

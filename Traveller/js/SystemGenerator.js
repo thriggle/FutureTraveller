@@ -40,12 +40,29 @@ function revExt(str){
     if( str.toUpperCase() >= "O"){ num += 1;}
     return num;
 }
-function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel, diebackPenalty, ruleset, allowNonMWPops, applyHillSphereLimit){
+function isValidStellarNumbers(type,decimal,size,allowwhitedwarf){
+    if(!allowwhitedwarf && size === 5){
+        return false;
+    }
+    var isOk = true;
+    if((((type === 1 || type === 2) && (decimal >=5 && decimal <= 9)) || 
+    (type === 3 || type === 4))
+    && (size === 3)){
+        isOk = false;
+    }else if(
+        ((type === -3 || type === -2) && decimal <= 4) && (size === 4 || size >= 6)
+    ){
+        isOk = false;
+    }
+    return isOk;
+}
+function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel, diebackPenalty, ruleset, allowNonMWPops, applyHillSphereLimit, allowInnerWhiteDwarfs){
     //console.log(name);
     if(typeof ruleset === "undefined"){ ruleset = "T5";}
     if(typeof diebackPenalty === "undefined"){ diebackPenalty = 2;}
     if(typeof allowNonMWPops === "undefined"){allowNonMWPops = true;}
     if(typeof applyHillSphereLimit === "undefined"){ applyHillSphereLimit = true;}
+    if(typeof allowInnerWhiteDwarfs === "undefined"){ allowInnerWhiteDwarfs = true;}
     
     var planetoidBelts = Math.max(d6()-3,0);
     var gg = d6(2) <= gasGiantFrequency ? Math.max(((d6(2)/2) >> 0) - 2,1) : 0;
@@ -56,22 +73,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     var primaryType = d6()-d6(),
     primaryDecimal = d09(),
     primarySize = d6()-d6();  
-    function isValidStellarNumbers(type,decimal,size,allowwhitedwarf){
-        if(!allowwhitedwarf && size === 5){
-            return false;
-        }
-        var isOk = true;
-        if((((type === 1 || type === 2) && (decimal >=5 && decimal <= 9)) || 
-        (type === 3 || type === 4))
-        && (size === 3)){
-            isOk = false;
-        }else if(
-            ((type === -3 || type === -2) && decimal <= 4) && (size === 4 || size >= 6)
-        ){
-            isOk = false;
-        }
-        return isOk;
-    }
+    
     var hasPrimaryCompanion = d6()-d6()>=3;
     var hasCloseStar = d6()-d6()>=3;
     var hasCloseCompanion = hasCloseStar ? d6()-d6()>=3 : false;
@@ -79,7 +81,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     var hasNearCompanion = hasNearStar ? d6()-d6()>=3 : false;
     var hasFarStar = d6()-d6()>=3;
     var hasFarCompanion = hasFarStar ? d6()-d6()>=3 : false;
-    while( !isValidStellarNumbers(primaryType,primaryDecimal,primarySize, !(hasPrimaryCompanion||hasCloseStar||hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
+    while( !isValidStellarNumbers(primaryType,primaryDecimal,primarySize, allowInnerWhiteDwarfs || !(hasPrimaryCompanion||hasCloseStar||hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
         primaryType = d6()-d6();
         primaryDecimal = d09();
         primarySize = d6()-d6();
@@ -90,7 +92,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             primaryType = d6()-d6();
             primaryDecimal = d09();
             primarySize = d6()-d6();
-            isOk = isValidStellarNumbers(primaryType,primaryDecimal,primarySize, !(hasPrimaryCompanion||hasCloseStar||hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))
+            isOk = isValidStellarNumbers(primaryType,primaryDecimal,primarySize, allowInnerWhiteDwarfs ||  !(hasPrimaryCompanion||hasCloseStar||hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))
         }
     }
     stars.primary = getStar(primaryType,primaryDecimal,primarySize,20);
@@ -108,7 +110,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         newSize = primarySize+d6()+2;
         newDecimal = d09();
         newType = primaryType+d6()-1;
-        while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasCloseStar||hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
+        while(!isValidStellarNumbers(newType, newDecimal, newSize, allowInnerWhiteDwarfs ||  !(hasCloseStar||hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
             newSize = primarySize+d6()+2;
             newDecimal = d09();
             newType = primaryType+d6()-1;
@@ -130,7 +132,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         newSize = primarySize+d6()+2;
         newDecimal = d09();
         newType = primaryType+d6()-1;
-        while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
+        while(!isValidStellarNumbers(newType, newDecimal, newSize, allowInnerWhiteDwarfs ||  !(hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
             newSize = primarySize+d6()+2;
             newDecimal = d09();
             newType = primaryType+d6()-1;
@@ -142,7 +144,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             newSize = primarySize+d6()+2;
             newDecimal = d09();
             newType = primaryType+d6()-1;
-            while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
+            while(!isValidStellarNumbers(newType, newDecimal, newSize, allowInnerWhiteDwarfs ||  !(hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
                 newSize = primarySize+d6()+2;
                 newDecimal = d09();
                 newType = primaryType+d6()-1;
@@ -181,7 +183,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         newSize = primarySize+d6()+2;
         newDecimal = d09();
         newType = primaryType+d6()-1;
-        while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasNearCompanion||hasFarStar||hasFarCompanion))){
+        while(!isValidStellarNumbers(newType, newDecimal, newSize, allowInnerWhiteDwarfs ||  !(hasNearCompanion||hasFarStar||hasFarCompanion))){
             newSize = primarySize+d6()+2;
             newDecimal = d09();
             newType = primaryType+d6()-1;
@@ -194,7 +196,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             newSize = primarySize+d6()+2;
             newDecimal = d09();
             newType = primaryType+d6()-1;
-            while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasFarStar||hasFarCompanion))){
+            while(!isValidStellarNumbers(newType, newDecimal, newSize, allowInnerWhiteDwarfs ||  !(hasFarStar||hasFarCompanion))){
                 newSize = primarySize+d6()+2;
                 newDecimal = d09();
                 newType = primaryType+d6()-1;
@@ -233,7 +235,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         newSize = primarySize+d6()+2;
         newDecimal = d09();
         newType = primaryType+d6()-1;
-        while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasFarCompanion))){
+        while(!isValidStellarNumbers(newType, newDecimal, newSize, allowInnerWhiteDwarfs ||  !(hasFarCompanion))){
             newSize = primarySize+d6()+2;
             newDecimal = d09();
             newType = primaryType+d6()-1;
