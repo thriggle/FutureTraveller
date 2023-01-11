@@ -1562,11 +1562,10 @@
                         }
                     }
                     if (!hexIdentified) {
-                        var canvasRect = canvas.getBoundingClientRect();
                         var exampleCoords = roundCoords(x,y);
                         var testCoords = [
-                            {x:exampleCoords.x-1, y:exampleCoords.y-1}, { x:exampleCoords.x, y:exampleCoords.y-1}, {x:exampleCoords.x+1, y:exampleCoords.y-1},
-                            {x:exampleCoords.x-1, y:exampleCoords.y}, { x:exampleCoords.x, y:exampleCoords.y}, {x:exampleCoords.x+1, y:exampleCoords.y},
+                        { x:exampleCoords.x, y:exampleCoords.y}, {x:exampleCoords.x-1, y:exampleCoords.y-1}, { x:exampleCoords.x, y:exampleCoords.y-1}, {x:exampleCoords.x+1, y:exampleCoords.y-1},
+                            {x:exampleCoords.x-1, y:exampleCoords.y},  {x:exampleCoords.x+1, y:exampleCoords.y},
                             {x:exampleCoords.x-1, y:exampleCoords.y+1}, { x:exampleCoords.x, y:exampleCoords.y+1}, {x:exampleCoords.x+1, y:exampleCoords.y+1}
                         ];
                         for(var i = 0; i < testCoords.length; i++){
@@ -2261,7 +2260,7 @@
             function getStarAbbrev(star) {
                 var abbrev = "";
                 if (star.size === "D") {
-                    abbrev = "D";
+                    abbrev =  "D";
                 } else if (star.type === "BD") {
                     abbrev = "BD";
                 } else {
@@ -4020,7 +4019,7 @@
                 clearElement(list);
                 var description;
                 if (system.stars.primary.size == "D") {
-                    description = "D";
+                    description = "White Dwarf";
                 } else {
                     description = system.stars.primary.type + (typeof system.stars.primary.decimal === "undefined" ? "" : system.stars.primary.decimal.toString()) + " " + system.stars.primary.size;
                 }

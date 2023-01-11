@@ -54,8 +54,45 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     var tradecodes = [];
     var stars = {primary:{},primary_companion:false,close:false,near:false, near_companion:false,close_companion:false,far:false, far_companion:false};
     var primaryType = d6()-d6(),
-        primaryDecimal = d09(),
+    primaryDecimal = d09(),
+    primarySize = d6()-d6();  
+    function isValidStellarNumbers(type,decimal,size,allowwhitedwarf){
+        if(!allowwhitedwarf && size === 5){
+            return false;
+        }
+        var isOk = true;
+        if((((type === 1 || type === 2) && (decimal >=5 && decimal <= 9)) || 
+        (type === 3 || type === 4))
+        && (size === 3)){
+            isOk = false;
+        }else if(
+            ((type === -3 || type === -2) && decimal <= 4) && (size === 4 || size >= 6)
+        ){
+            isOk = false;
+        }
+        return isOk;
+    }
+    var hasPrimaryCompanion = d6()-d6()>=3;
+    var hasCloseStar = d6()-d6()>=3;
+    var hasCloseCompanion = hasCloseStar ? d6()-d6()>=3 : false;
+    var hasNearStar = d6()-d6()>=3;
+    var hasNearCompanion = hasNearStar ? d6()-d6()>=3 : false;
+    var hasFarStar = d6()-d6()>=3;
+    var hasFarCompanion = hasFarStar ? d6()-d6()>=3 : false;
+    while( !isValidStellarNumbers(primaryType,primaryDecimal,primarySize, !(hasPrimaryCompanion||hasCloseStar||hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
+        primaryType = d6()-d6();
+        primaryDecimal = d09();
         primarySize = d6()-d6();
+    }
+    if( primarySize === 5){
+        var isOk = false;
+        while(!isOk){
+            primaryType = d6()-d6();
+            primaryDecimal = d09();
+            primarySize = d6()-d6();
+            isOk = isValidStellarNumbers(primaryType,primaryDecimal,primarySize, !(hasPrimaryCompanion||hasCloseStar||hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))
+        }
+    }
     stars.primary = getStar(primaryType,primaryDecimal,primarySize,20);
     stars.primary.worldtype = "primary star";
     //stars.primary.numOrbits = 20;
@@ -65,8 +102,18 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(primarySurface > -1){ 
         secondaryOrbitDeduction += primarySurface;
     }
-    if(d6()-d6()>=3){ 
-        stars.primary_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2,0);
+    
+    var newSize, newType, newDecimal;
+    if(hasPrimaryCompanion){ 
+        newSize = primarySize+d6()+2;
+        newDecimal = d09();
+        newType = primaryType+d6()-1;
+        while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasCloseStar||hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
+            newSize = primarySize+d6()+2;
+            newDecimal = d09();
+            newType = primaryType+d6()-1;
+        }        
+        stars.primary_companion = getStar(newType, newDecimal, newSize,0);
         var starOrbit = 0;
         //stars.primary_companion.numOrbits = 0;
         if(primarySurface > -1){
@@ -78,13 +125,29 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         stars.primary_companion.decimalOrbit = starOrbitDetails.decimalOrbit;
         stars.primary_companion.au = starOrbitDetails.au;  
     }
-    if(d6()-d6()>=3){ 
+    if(hasCloseStar){ 
         var closeOrbit = d6()-1
-        stars.close = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2, closeOrbit > secondaryOrbitDeduction+1 ? closeOrbit - secondaryOrbitDeduction : 0);
+        newSize = primarySize+d6()+2;
+        newDecimal = d09();
+        newType = primaryType+d6()-1;
+        while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasCloseCompanion||hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
+            newSize = primarySize+d6()+2;
+            newDecimal = d09();
+            newType = primaryType+d6()-1;
+        }       
+        stars.close = getStar(newType,newDecimal,newSize, closeOrbit > secondaryOrbitDeduction+1 ? closeOrbit - secondaryOrbitDeduction : 0);
         stars.close.orbit = closeOrbit;   
          
-        if(d6()-d6()>=3){ 
-            stars.close_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2, 0);
+        if(hasCloseCompanion){ 
+            newSize = primarySize+d6()+2;
+            newDecimal = d09();
+            newType = primaryType+d6()-1;
+            while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasNearStar||hasNearCompanion||hasFarStar||hasFarCompanion))){
+                newSize = primarySize+d6()+2;
+                newDecimal = d09();
+                newType = primaryType+d6()-1;
+            }    
+            stars.close_companion = getStar(newType, newDecimal,newSize, 0);
             let inner = getInnermostOrbit(stars.close);
             if(inner > -1){
                 stars.close_companion.worldtype = "close companion star";
@@ -113,14 +176,30 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             stars.primary.satellites[stars.close.orbit+amp] = stars.close;
         }
     }
-    if(d6()-d6()>=3){ 
+    if(hasNearStar){ 
         var nearOrbit = 5 + d6();
-        stars.near = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2, nearOrbit-secondaryOrbitDeduction);
+        newSize = primarySize+d6()+2;
+        newDecimal = d09();
+        newType = primaryType+d6()-1;
+        while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasNearCompanion||hasFarStar||hasFarCompanion))){
+            newSize = primarySize+d6()+2;
+            newDecimal = d09();
+            newType = primaryType+d6()-1;
+        }    
+        stars.near = getStar(newType,newDecimal,newSize, nearOrbit-secondaryOrbitDeduction);
         stars.near.orbit = nearOrbit;
         //stars.near.numOrbits = stars.near.orbit - 2;
         //stars.near.satellites = new Array(stars.near.numOrbits);
-        if(d6()-d6()>=3){ 
-            stars.near_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2,0);
+        if(hasNearCompanion){ 
+            newSize = primarySize+d6()+2;
+            newDecimal = d09();
+            newType = primaryType+d6()-1;
+            while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasFarStar||hasFarCompanion))){
+                newSize = primarySize+d6()+2;
+                newDecimal = d09();
+                newType = primaryType+d6()-1;
+            }    
+            stars.near_companion = getStar(newType, newDecimal,newSize,0);
             //stars.near_companion.numOrbits = 0;
             let inner = getInnermostOrbit(stars.near);
             if(inner > -1){
@@ -149,14 +228,30 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             stars.primary.satellites[stars.near.orbit+amp] = stars.near;
         }
     }
-    if(d6()-d6()>=3){ 
+    if(hasFarStar){ 
         var farOrbit = 11 + d6();
-        stars.far = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2, farOrbit-secondaryOrbitDeduction);
+        newSize = primarySize+d6()+2;
+        newDecimal = d09();
+        newType = primaryType+d6()-1;
+        while(!isValidStellarNumbers(newType, newDecimal, newSize, !(hasFarCompanion))){
+            newSize = primarySize+d6()+2;
+            newDecimal = d09();
+            newType = primaryType+d6()-1;
+        }  
+        stars.far = getStar(newType, newDecimal,newSize, farOrbit-secondaryOrbitDeduction);
         stars.far.orbit = farOrbit;
         //stars.far.numOrbits = stars.far.orbit - 2;
         //stars.far.satellites = new Array(stars.far.numOrbits);
-        if(d6()-d6()>=3){ 
-            stars.far_companion = getStar(primaryType+d6()-1,d09(),primarySize+d6()+2,0);
+        if(hasFarCompanion){ 
+            newSize = primarySize+d6()+2;
+            newDecimal = d09();
+            newType = primaryType+d6()-1;
+            while(!isValidStellarNumbers(newType, newDecimal, newSize, true)){
+                newSize = primarySize+d6()+2;
+                newDecimal = d09();
+                newType = primaryType+d6()-1;
+            }  
+            stars.far_companion = getStar(newType, newDecimal, newSize,0);
             //stars.far_companion.numOrbits = 0;
             let inner = getInnermostOrbit(stars.far);
             if(inner > -1){
@@ -1943,10 +2038,10 @@ function getStar(type, decimal, size, maxOrbits){
     ];
     for(var i = 0; i < minOrbit; i++){
         if(minOrbit - 1 === i){
-            star.satellites[i] = {worldtype:"Solar Surface",uwp:(star.size === "D" ? "D" : star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + " " + star.size), decimalOrbit:i.toFixed(1), au:decimalOrbits[i]};
+            star.satellites[i] = {worldtype:"Solar Surface",uwp:(star.size === "D" ? ("D") : star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + " " + star.size), decimalOrbit:i.toFixed(1), au:decimalOrbits[i]};
             star.numOrbits -= 1;
         }else{
-            star.satellites[i] = {worldtype:"Occupied",uwp:(star.size === "D" ? "D" : star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + " " + star.size), decimalOrbit:i.toFixed(1), au:decimalOrbits[i]};
+            star.satellites[i] = {worldtype:"Occupied",uwp:(star.size === "D" ?  ("D")  : star.type + (typeof star.decimal === "undefined" ? "" : star.decimal.toString()) + " " + star.size), decimalOrbit:i.toFixed(1), au:decimalOrbits[i]};
             star.numOrbits -= 1;
         }
     }
