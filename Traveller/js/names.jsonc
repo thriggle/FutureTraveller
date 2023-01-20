@@ -3965,6 +3965,7 @@
             "3:{human.popularuslastname|system.realplace|system.historicalname}",
             "1:{ship.butterfly}",
             "175:{system.pastoral}", 
+            "1:{system.technology}{system.pastoral2}",
             "3:{system.mythplace}|{system.propernounprefix|system.relativeimportanceprefix} {system.mythplace}|{system.mythplace} {system.relativeimportance}"
         ],
         "latinized":[
@@ -4950,7 +4951,7 @@
             "cryogenic",
             "crystaliron",
             "data",
-            "electric",
+            "electro|electric",
             "electronic|electron",
             "exotic",
             "fission",
@@ -4958,7 +4959,7 @@
             "gravity|gravitic",
             "jump",
             "laser",
-            "magnetic",
+            "magnet|magnetic",
             "matrix",
             "memory",
             "meson",
@@ -4981,7 +4982,7 @@
             "scanner",
             "synthetic",
             "titanium",
-            "transmit|tranmission|transmitter|transceiver",
+            "tranmission|transmitter|transceiver",
             "transit",
             "transport|transportation",
             "wafer",
@@ -5126,8 +5127,7 @@
             "wind",
             "winter",
             "wood",
-            "{system.pastoral1}|yellow",
-            "{system.pastoral1}|{system.technology}"
+            "{system.pastoral1}|yellow"
         ],
         "pastoral2":[
             "2:acre",
