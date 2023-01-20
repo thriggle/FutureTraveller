@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Cargo</title>
+</head>
+
+<body>
+    <style>
+        .CargoContainer{
+            display:inline-block;
+            max-width:40%;
+            min-width:400px;
+            vertical-align: text-top;
+        }
+        #DestinationDetails{display:none;}
+    </style>
+    <div>
+        <h1>Cargo Identifier</h1>
+        <fieldset>
+            <legend>Source World</legend>
+            Tech Level: <input type="number" style="width:3em" id="numTL" name="numTL" value="12" /> &nbsp; 
+            Enter Trade Codes <input type="text" id="txtTradeCodes" name="txtTradeCodes" />&nbsp;<input type="button"
+            id="btnRandomTradeCodes" value="Random Trade Codes" /><br />
+        </fieldset>
+        <fieldset>
+            <legend>Cargo Details</legend>
+            <input type="button" value="Generate Cargo" id="btnGenerateCargo"><br/>
+            <div class="CargoContainer">
+                <h2 id="CargoCode"></h2>
+                <div id="CargoDescription"></div>
+            </div>
+            <fieldset id="DestinationDetails" class="CargoContainer">
+                <legend>Destination</legend>
+                Tech Level: <input type="number" style="width:3em" id="destTL" name="destTL" value="12" /> &nbsp; 
+            Enter Trade Codes <input type="text" id="txtDestTradeCodes" name="txtDestTradeCodes" /> &nbsp; <input id="btnCalculatePrice" type="button" value="Estimate Price" /><br/>
+            <h2 id="CargoPrice"></h2>
+            </fieldset>
+        </fieldset>
+        
+    </div>
+    <script>
+    (function(){
+        var cost=0, tl, tradeCodes, cargo; 
+        var MathRandom = pseudoRandomNumberGenerator((Math.random()*1000000).toString());
+        document.getElementById("btnRandomTradeCodes").addEventListener("click",function(){
+            document.getElementById("txtTradeCodes").value = getRandomTradeCodes();
+        })
+        document.getElementById("btnGenerateCargo").addEventListener("click",function(){
+            tradeCodes = document.getElementById("txtTradeCodes").value.split(" ");
+            tl = Number(document.getElementById("numTL").value)
+            cargo = getCargo();
+            document.getElementById("CargoCode").innerHTML = cargo.code;
+            document.getElementById("CargoDescription").innerHTML = cargo.description;
+            document.getElementById("DestinationDetails").style.display = "inline-block"
+        });
+        document.getElementById("btnCalculatePrice").addEventListener("click",calculatePrice);
+
+        function calculatePrice(){
+            var price = 5000;
+            var destCodesValue = document.getElementById("txtDestTradeCodes").value;
+            var destCodes = destCodesValue.length > 0 ? destCodesValue.split(" ") : [];
+            destLen = destCodes.length;
+            for(var i = 0, len = tradeCodes.length; i < len ; i++){
+                var code = tradeCodes[i];
+                var bonusCodes = [];
+                switch(code){
+                    case "Ag": bonusCodes = ["Ag","As","De","Hi","In","Ri","Va"]; break;
+                    case "As": bonusCodes = ["As","In","Ri","Va"]; break;
+                    case "Ba": bonusCodes = ["In"]; break;
+                    case "De": bonusCodes = ["De"]; break;
+                    case "Fl": bonusCodes = ["Fl","In"]; break;
+                    case "Hi": bonusCodes = ["Hi"]; break;
+                    case "In": bonusCodes = ["Ag","As","De","Fl","Hi","In","Ri","Va"]; break;
+                    case "Na": bonusCodes = ["As","De","Va"]; break;
+                    case "Ri": bonusCodes = ["Ag","De","Hi","In","Ri"]; break;
+                    case "Va": bonusCodes = ["As","In","Va"]; break;
+                }
+                for(var j = 0; j < destLen; j++){
+                    if(bonusCodes.indexOf(destCodes[j]) >= 0){
+                        price += 1000;
+                    }
+                }
+                if(code === "Po"){
+                    var penaltyCodes =["Ag","Hi","In","Ri"]; 
+                    for(var j = 0; j < destLen; j++){
+                        if(penaltyCodes.indexOf(destCodes[j]) >= 0){
+                            price -= 1000;
+                        }
+                    }
+                }
+            }
+            
+            var tlEffect = (tl-Number(document.getElementById("destTL").value))*.1*price;
+            price += tlEffect;
+
+            if(cargo.description.indexOf("[+") >= 0){
+                var re = /(?<=\[\+).*(?=\])/g
+                var imbalanceCodes = cargo.description.match(re);
+                for(var i = 0, len = imbalanceCodes.length; i < len; i++){
+                    iCode = imbalanceCodes[i];
+                    if(destCodes.indexOf(iCode) >= 0){
+                        price += 1000;
+                    }
+                }
+            }
+
+            document.getElementById("CargoPrice").innerHTML = "Cr " + price;
+        }
+        function getCargo(){
+            var cargocode = tl.toString() + " - " + tradeCodes.join(" ");
+            if(tradeCodes.length == 0 || tradeCodes[0].length === 0){
+                cargocode += "(No Trade Codes)"
+            }
+            cost = 3000;
+            var relevantCodes =[];
+            var details = [""];
+            for(var i = 0, len = tradeCodes.length; i < len; i++){
+                var code = tradeCodes[i];
+                switch(code){
+                    case "Ag": 
+                    case "As": 
+                    case "Po": 
+                    case "In": relevantCodes.push(code);
+                    case "Hi": cost -= 1000; break;
+                    case "Fl": 
+                    case "Ri": 
+                    case "Va": 
+                    case "De": relevantCodes.push(code);
+                    case "Lo": 
+                    case "Ni":
+                        case "Ba": cost += 1000; break;
+                        case "Fa":
+                            case "Ic": 
+                            case "Na": 
+                    case "Cp": 
+                    case "Cs": 
+                    case "Cx": 
+                    case "Ga": relevantCodes.pop(code);
+                    default: break;
+                }
+            }
+            if(tradeCodes.indexOf("As") >= 0){ details.push("Strange"); }
+            if(tradeCodes.indexOf("Ba") >= 0){ details.push("Gathered"); }
+            if(tradeCodes.indexOf("De") >= 0){ details.push("Mineral"); }
+            if(tradeCodes.indexOf("Di") >= 0){ details.push("Artifact"); }
+            if(tradeCodes.indexOf("Fl") >= 0){ details.push("Unusual"); }
+            if(tradeCodes.indexOf("Fl") >= 0){ details.push("Unusual"); }
+            if(tradeCodes.indexOf("Ga") >= 0){ details.push("Premium"); }
+            if(tradeCodes.indexOf("He") >= 0){ details.push("Strange"); }
+            if(tradeCodes.indexOf("Hi") >= 0 && tradeCodes.indexOf("In") === -1){ details.push("Strange"); }
+            if(tradeCodes.indexOf("Ic") >= 0){ details.push("Cryo"); }
+            //if(tradeCodes.indexOf("Lo") >= 0){ details.push("Unlabeled"); }
+            if(tradeCodes.indexOf("Ni") >= 0){ details.push("Unprocessed"); }
+            // if(tradeCodes.indexOf("Oc") >= 0){ details.push("Obscure"); }
+            if(tradeCodes.indexOf("Po") >= 0){ details.push("Obscure"); }
+            if(tradeCodes.indexOf("Ri") >= 0){ details.push("Quality"); }
+            if(tradeCodes.indexOf("Va") >= 0 && tradeCodes.indexOf("As") === -1){ details.push("Exotic"); }
+            if(tradeCodes.indexOf("Wa") >= 0){ details.push("Infused"); }
+            
+            if(relevantCodes.length === 0){ relevantCodes = ["Na"]; }
+            
+            var tableCode = relevantCodes[(MathRandom()*relevantCodes.length) >>> 0]
+            var prefix = details.length > 0 ? details[(MathRandom()*details.length) >>> 0] + " " : "";
+            
+            cost += tl*100;
+            cargocode += " - Cr " + cost;
+
+            var description = prefix + getTradeGood(tableCode);
+            return {code:cargocode, cost:cost, description:description};
+        }
+        function getTradeGood(tableCode){
+            if(tableCode === "Ag"){ 
+                tableCode = (MathRandom()*2) >>> 0 == 1 ? "Ga" : "Fa";
+            }else if(tableCode === "Cs" || tableCode === "Cx"){ tableCode = "Cp";}
+            var goods = {
+                "Ga":{
+                    types:["Raws","Consumables","Pharma","Novelties","Rares","Imbalances"],
+                    tables:[
+                        ["Bulk Protein","Bulk Carbs","Bulk Fats", "Bulk Pharma", "Livestock", "Seedstock"],
+                        ["Flavored Waters","Wines","Juices","Nectars","Decoctions","Drinkable Lymphs"],
+                        ["Health Foods","Nutraceuticals","Fast Drug","Painkillers","Antiseptic","Antibiotics"],
+                        ["Incenses","Iridescents","Photonics","Pigments","Noisemakers","Soundmakers"],
+                        ["Fine Furs","Meat Delicacies","Fruit Delicacies","Candies","Textiles","Exotic Sauces"],
+                        ["As","De","Fl","Ic","Na","In"]
+                    ]},
+                "Fa":{
+                    types:["Raws","Consumables","Pharma","Novelties","Rares","Imbalances"],
+                    tables:[
+                        ["Bulk Woods","Bulk Pelts","Bulk Herbs","Bulk Spices","Bulk Nitrates","Foodstuffs"],
+                        ["Flowers","Aromatics","Pheromones","Secretions","Adhesives","Novel Flavorings"],
+                        ["Antifungals","Antivirals","Panacea","Pseudomones","Anagathics","Slow Drug"],
+                        ["Strange Seeds","Motile Plants","Reactive Plants","Reactive Woods","IR Emitters","Lek Emitters"],
+                        ["Spices","Organic Gems","Flavorings","Aged Meats","Fermented Fluids","Fine Aromatics"],
+                        ["Po","Ri","Va","Ic","Na","In"]
+                    ]
+                },
+                "As":{
+                    types:["Raws","Samples","Valuta","Novelties","Rares","Imbalances"],
+                    tables:[
+                        ["Bulk Nitrates","Bulk Carbon","Bulk Iron","Bulk Copper","Radioactive Ores","Bulk Ices"],
+                        ["Ores","Ices","Carbons","Metals","Uranium","Chelates"],
+                        ["Platinum","Gold","Gallium","Silver","Thorium","Radium"],
+                        ["Unusual Rocks","Fused Metals","Strange Crystals","Fine Dusts","Magnetics","Light-Sensitives"],
+                        ["Gemstones","Alloys","Iridium Sponge","Lanthanum","Isotopes","Anti-Matter"],
+                        ["Ag","De","Na","Po","Ri","Ic"]
+                    ]
+                },
+                "De":{
+                    types:["Raws","Samples","Pharma","Novelties","Rares","Uniques"],
+                    tables:[
+                        ["Bulk Nitrates","Bulk Minerals","Bulk Abrasives","Bulk Particulates","Exotic Fauna","Exotic Flora"],
+                        ["Archeologicals","Fauna","Flora","Minerals","Ephemerals","Polymers"],
+                        ["Stimulants","Bulk Herbs","Palliatives","Pheromones","Antibiotics","Combat Drug"],
+                        ["Envirosuits","Reclamation Suits","Navigators","Dupe Masterpieces","ShimmerCloth","ANIFX Blocker"],
+                        ["Excretions","Flavorings","Nectars","Pelts","ANIFX Dyes","Seedstock"],
+                        ["Pheromones","Artifacts","Sparx","Repulsant","Dominants","Fossils"]
+                    ]
+                },
+                "Fl":{
+                    types:["Raws","Samples","Pharma","Novelties","Rares","Imbalances"],
+                    tables:[
+                        ["Bulk Carbon","Bulk Petros","Bulk Precipitates","Exotic Fluids","Organic Polymers","Bulk Synthetics"],
+                        ["Archeologicals","Fauna","Flora","Germanes","Flill","Chelates"],
+                        ["Antifungals","Antivirals","Palliatives","Counter-prions","Antibiotics","Cold Sleep Pills"],
+                        ["Silanes","Lek Emitters","Aware Blockers","Soothants","Self-Solving Puzzles","Fluidic Timepieces"],
+                        ["Flavorings","Unusual Fluids","Encapsulants","Insidiants","Corrosives","Exotic Aromatics"],
+                        ["In","Ri","Ic","Na","Ag","Po"]
+                    ]
+                },
+                "Ic":{
+                    types:["Raws","Samples","Pharma","Novelties","Rares","Uniques"],
+                    tables:[
+                        ["Bulk Ices","Bulk Precipitates","Bulk Ephemerals","Exotic Flora","Bulk Gases","Bulk Oxygen"],
+                        ["Archeologicals","Fauna","Flora","Minerals","Luminescents","Polymers"],
+                        ["Antifungals","Antivirals","Palliatives","Restoratives","Antibiotics","Antiseptics"],
+                        ["Heat Pumps","Mag Emitters","Percept Blockers","Silanes","Cold Light Blocks","VHDUS Blocker"],
+                        ["Unusual Ices","Cryo Alloys","Rare Minerals","Unusual Fluids","Cryogems","VHDUS Dyes"],
+                        ["Fossils","Cryogems","Vision Suppressant","Fission Suppressant","Wafers","Cold Sleep Pills"]
+                    ]
+                },
+                "Na":{
+                    types:["Raws","Samples","Novelties","Rares","Uniques","Imbalances"],
+                    tables:[
+                        ["Bulk Abrasives","Bulk Gases","Bulk Minerals","Bulk Precipitates","Exotic Fauna","Exotic Flora"],
+                        ["Archeologicals","Fauna","Flora","Minerals","Ephemerals","Polymers"],
+                        ["Branded Tools","Drinkable Lymphs","Strange Seeds","Pattern Creators","Pigments","Warm Leather"],
+                        ["Hummingsand","Masterpieces","Fine Carpets","Isotopes","Pelts","Seedstock"],
+                        ["Masterpieces","Unusual Rocks","Artifacts","Non-Fossil Carca","Replicating Clays", "ANIFX Emitter"],
+                        ["Ag","Ri","In","Ic","De","Fl"]
+                    ]
+                },
+                "In":{
+                    types:["Manufactureds","Scrap/Waste","Manufactureds","Pharma","Data","Consumables"],
+                    tables:[
+                        ["Electronics","Photonics","Magnetics","Fluidics","Polymers","Gravitics"],
+                        ["Obsoletes","Used Goods","Reparables","Radioactives","Metals","Sludges"],
+                        ["Biologics","Mechanicals","Textiles","Weapons","Armor","Robots"],
+                        ["Nostrums","Restoratives","Palliatives","Chelates","Antidotes","Antitoxins"],
+                        ["Software","Databases","Expert Systems","Upgrades","Backups","Raw Sensings"],
+                        ["Disposables","Respirators","Filter Masks","Combination","Parts","Improvements"]
+                    ]
+                },
+                "Po":{
+                    types:["Raws","Entertainments","Novelties","Rares","Uniques","Imbalances"],
+                    tables:[
+                        ["Bulk Nutrients","Bulk Fibers","Bulk Organics","Bulk Minerals","Bulk Textiles","Exotic Flora"],
+                        ["Art","Recordings","Writings","Tactiles","Osmancies","Wafers"],
+                        ["Strange Crystals","Strange Seeds","Pigments","Emotion Lighting","Silanes","Flora"],
+                        ["Gemstones","Antiques","Collectibles","Allotropes","Spices","Seedstock"],
+                        ["Masterpieces","Exotic Flora","Antiques","Incomprehensibles","Fossils","VHDUS Emitter"],
+                        ["In","Ri","Fl","Ic","Ag","Va"]
+                    ]
+                },
+                "Ri":{
+                    types:["Raws","Novelties","Consumables","Rares","Uniques","Entertainments"],
+                    tables:[
+                        ["Bulk Foodstuffs","Bulk Protein","Bulk Carbs","Bulk Fats","Exotic Flora","Exotic Fauna"],
+                        ["Echostones","Self-Defenders","Attractants","Sophont Cuisine","Sophont Hats","Variable Tattoos"],
+                        ["Branded Foods","Branded Drinks","Branded Clothes","Flavored Drinks","Flowers","Music"],
+                        ["Delicacies","Spices","Tisanes","Nectars","Pelts","Variable Tattoos"],
+                        ["Antique Art","Masterpieces","Artifacts","Fine Art","Meson Barriers","Famous Wafers"],
+                        ["Edutainments","Recordings","Writings","Tactiles","Osmancies","Wafers"]
+                    ]
+                },
+                "Va":{
+                    types:["Raws","Novelties","Consumables","Rares","Samples","Scrap/Waste"],
+                    tables:[
+                        ["Bulk Dusts","Bulk Minerals","Bulk Metals","Radioactive Ores","Bulk Particulates","Ephemerals"],
+                        ["Branded Vacc Suits","Awareness Pinger","Strange Seeds","Pigments","Unusual Minerals","Exotic Crystals"],
+                        ["Branded Oxygen","Vacc Suit Scents","Vacc Suit Patches","Branded Tools","Holo-Companions","Flavored Air"],
+                        ["Vacc Gems","Unusual Dusts","Insulants","Crafted Devices","Rare Minerals","Catalysts"],
+                        ["Archeologicals","Fauna","Flora","Minerals","Ephemerals","Polymers"],
+                        ["Obsoletes","Used Goods","Reparables","Plutonium","Metals","Sludges"]
+                    ]
+                },
+                "Cp":{
+                    types:["Data","Novelties","Consumables","Rares","Valuta","Red Tape"],
+                    tables:[
+                        ["Software","Expert Systems","Databases","Upgrades","Backups","Raw Sensings"],
+                        ["Incenses","Contemplatives","Cold Welders","Polymer Sheets","Has","Skin Tones"],
+                        ["Branded Clothes","Branded Devices","Flavored Drinks","Flavorings","Decorations","Group Symbols"],
+                        ["Monumental Art","Holo Sculpture","Collectible Books","Jewelry","Museum Items","Monumental Art"],
+                        ["Coinage","Currency","Money Cards","Gold","Silver","Platinum"],
+                        ["Reguations","Synchronizations","Expert Systems","Educationals","Mandates","Accountings"]
+                    ]
+                }
+            }
+            var roll1 = d6()-1, roll2 = d6()-1;
+            var type = goods[tableCode].types[roll1];
+            if(type !== "Imbalances"){
+                return type + " (" + goods[tableCode].tables[roll1][roll2] + ")";
+            }else{
+                var imbalanceCategory = goods[tableCode].tables[roll1][roll2];
+                return "[+"+imbalanceCategory+"]" + " " + getTradeGood(imbalanceCategory);
+            }
+        }
+        function getRandomTradeCodes() {
+            var classifications1 = [
+                ["Ba De","De He Po","Di Fl Oc", "Hi Ic In Va","Ba De He","De He Hi In Na Po"],
+                ["Ba He", "De Hi In", "As Ba Va", "He Na Po Pi", "De Hi Pr", "De He Hi In Po"],
+                ["Di He", "Ba He Po", "Ba Fl He", "De Na Po Pi", "Di Ic Va", "De He Na Ni Po"],
+                ["De Pi", "Fl Oc Ph", "De Di Po", "He Na Ni Po", "De He Hi", "He Hi In Na Po"],
+                ["Ba Fl", "Fl Hi Oc", "De Ph Ri", "Ba De He Po", "Na Ph Pi Va", "De Hi In Na Po"],
+                ["Di", "De He Lo", "Fl Ph Wa", "De Di He Po", "Hi In Na Va", "Hi Ic In Na Va"],
+                ["Ag", "Oc Ph Pi", "Fl Hi Wa", "Ic Na Ph Pi", "Fl He Ni", "As Hi In Na Va"],
+                ["Ri", "Ph Wa", "Na Pi", "He Ni", "Hi Po", "Ni Oc"],
+                ["Hi In", "Fl Ni", "Ni Pa", "Hi In", "Ic Va", "Fl Lo"],
+                ["Ni", "Ga", "Va", "Po", "De Lo", "Ri"],
+                ["","","","","",""],
+                ["Lo", "Ph","Wa","Pi","Ic","Fl"],
+                ["Hi In", "Lo Wa", "Ni Va", "Ag Pi", "De Po", "Lo Va"],
+                ["Po", "Hi Pr", "Na Ni", "Pa Ph", "Ph Po", "Ri Wa"],
+                ["Na", "Hi In Oc", "Ph Pi Po", "Hi Ic In Na", "Ag Ga Ni Ri", "As Na Ph Pi Va"],
+                ["Ba", "De Po Ph", "Hi In Po", "Ga Pa Ph Ri", "As Na Ni Va", "Ic Na Ph Pi Va"],
+                ["Lo Oc", "De Ni Ri", "De Ni Pr", "De Na Ni Po", "Ba De Po", "De Na Ph Pi Po"],
+                ["Di Fl", "De Hi Po", "Oc Ph Ri", "Ic Na Pi Va", "De He Ph", "He Na Ph Pi Po"],
+                ["Ba Oc", "Di He Po", "Di Fl He", "Ag Ga Ni Pr", "Hi Oc Pr", "De He Na Pi Po"],
+                ["Di Oc", "De He Pi", "As Di Va", "As Na Pi Va", "Ic Ba Va", "De He Ph Pi Po"],
+                ["De Di", "De Ph Pi", "Ba Fl Oc", "Ic Na Ni Va", "De Di He", "De He Na Ph Pi Po"]
+            ];
+            var classifications2 = [
+                ["De Ph","Ni Oc Pr","Pa Ph Ri","Oc Pi","Fl Oc","De He Ph Pi"],
+                ["Oc Ph","Na Po Pi","De Lo Po","As Va","Di Wa","De He Po Pi"],
+                ["Ic Ba","Ni Oc Ri","Ni Ri Wa","Hi In Na","Pi Po","Na Po Ph Pi"],
+                ["Ic Di","Fl Lo Wa","Hi Pr Wa","Na Ni Po","Oc Ri","Hi In Na Po"],
+                ["Ba Po","De Pi Po","Fl Ni Oc","Ag Ga Ri","Ic Lo Va","De Hi In Po"],
+                ["Di Po","He Ph Pi","Ic Na Pi","Ic Na Ni","Ag Ni Pr","De Hi Na Po"],
+                ["Ba Ga","He Hi In","Fl He Lo","Ri Ph Wa","As Ni Va","Ic Ph Pi Va"],
+                ["Di Ga","Fl He Ph","Na Ph Pi","Fl He Ni","De Ni Po","Ri Ph"],
+                ["Na Po","Ic Lo","Fl Ph","Ic Pi","Fl He","Ic Ni"],
+                ["He Pi","Ag Ri","Ni Ri","Ni Wa","Ag Ga","Ag"],
+                ["","","","","",""],
+                ["Ba","Di","De","He","Oc","Hi"],
+                ["Lo Po","Fl Hi","Pi Wa","De Ni","He Lo","Ni Po"],
+                ["Ga Lo","Ag Ni","Ph Pi","Hi Wa","Hi Ga","Ni Pr"],
+                ["Fl Wa","Hi Ic In","He Lo Po","Fl He Hi","Ag Ni Ri","He Hi In Po"],
+                ["Ba Va","Fl Lo Oc","Ag Ga Ni","Ga Hi Pr","Pa Ph Pi","He Ph Pi Po"],
+                ["Di Va","Fl Ni Wa","Ga Ni Pa","De Na Po","Ic Ni Va","De Na Ph Po"],
+                ["De Hi","Na Ph Po","Ni Pr Wa","De He Ni","As Lo Va","De Ph Pi Po"],
+                ["De He","He Pi Po","Na Pi Va","Ga Pa Ph","Na Ni Va","De He Ni Po"],
+                ["De Ri","Ic Pi Va","Ph Pi Wa","Ic Ph Pi","He Ni Po","De He Lo Po"],
+                ["Hi Oc","Hi Na Po","Hi In Wa","He Po","Ba Wa","De He Hi In"]
+            ];
+            var table = d6() <=3 ? classifications1 : classifications2;
+            var row = d6() + d6() + d6() + d6() - 4;
+            var column = d6() - 1;
+            return table[row][column]
+        }
+        function d6(num) {
+            if (!num) { num = 1; }
+            var sum = 0;
+            for (var i = 0; i < num; i++) {
+                sum += ((MathRandom() * 6) >>> 0) + 1;
+            }
+            return sum;
+        }        
+        function pseudoRandomNumberGenerator(word){
+            var seed = xmur3(word);
+            var a = seed(), b = seed(), c = seed(), d = seed();
+            return xoshiro128ss(a, b, c, d);
+        }
+        function xmur3(str) {
+            for(var i = 0, h = 1779033703 ^ str.length; i < str.length; i++) {
+                h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+                h = h << 13 | h >>> 19;
+            } return function() {
+                h = Math.imul(h ^ (h >>> 16), 2246822507);
+                h = Math.imul(h ^ (h >>> 13), 3266489909);
+                return (h ^= h >>> 16) >>> 0;
+            }
+        }
+        function xoshiro128ss(a, b, c, d) {
+            return function() {
+                var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
+                c ^= a; d ^= b;
+                b ^= c; a ^= d; c ^= t;
+                d = d << 11 | d >>> 21;
+                return (r >>> 0) / 4294967296;
+            }
+        }
+    })();
+    </script>
+    </body>
+    
+    </html>
