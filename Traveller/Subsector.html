@@ -2514,8 +2514,8 @@
                     if(tech > maximumtech){
                         maximumtech = tech;
                     }
-                    if (tech >= 12) { system.mainworld.tradecodes.push("Ht"); }
-                    else if (tech <= 5) { system.mainworld.tradecodes.push("Lt"); }
+                    if (tech >= 12 && system.mainworld.tradecodes.indexOf("Ht") === -1) { system.mainworld.tradecodes.push("Ht"); }
+                    else if (tech <= 5 && system.mainworld.tradecodes.indexOf("Lt") === -1) { system.mainworld.tradecodes.push("Lt"); }
                     if (mainworld.tradecodes.indexOf("Cy") > 0) {
                         // figure out the colony owner here!
                     }
