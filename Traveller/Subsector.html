@@ -480,6 +480,7 @@
                 </fieldset>
                 <fieldset class="collapsed">
                     <legend>Overlays</legend>
+                    
                     <label for="slcHeatMap">Heat Map: <select name="slcHeatMap" id="slcHeatMap">
                             <option value="-1" selected=selected>No Heatmap</option>
                             <option value="0">Starport</option>
@@ -497,7 +498,8 @@
                         </select>
                     </label><br />
                     <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes"
-                            checked="checked" /> Show Travel Codes</label>
+                            checked="checked" /> Show Travel Codes&nbsp;</label><label for="chkShowTradeRoutes">&nbsp;<input type="checkbox" name="chkShowTradeRoutes" id="chkShowTradeRoutes"/> Show Trade Routes</label>
+                            <label for="numProfitThreshold">(Two-Way Profit Threshold: <input id="numProfitThreshold" type="number" style="width:4em" value="2500"/>)</label><br/>
                 </fieldset>
                 <fieldset class="collapsed">
                     <legend>Configuration</legend>
@@ -750,6 +752,7 @@
                                 id="sectordata" cols="128" rows="10"></textarea></label>
                         <br />
                         <input type="button" value="Export to .tsv" id="btnExportCsv" />
+                        <input type="button" value="Export to Excel-friendly .tsv" id="btnExportExcel" />
                         <input type="button" value="Export to .txt" id="btnExportTxt" />
                         <input type="button" value="Export to .png Poster from TravellerMap.com" id="btnTravellerMapPoster" />
                     </fieldset>
@@ -1416,7 +1419,7 @@
         </div>
     </div>
     <div data-nav="analysis">
-        <fieldset class="collapsed">
+        <fieldset>
             <legend>Native Intelligent Life</legend>
             <div id="nilOutput">
 
@@ -1467,7 +1470,7 @@
             }
         }
         (function () {
-            //globals
+            //globalsRESH
             var wordMaker;
             var HEX_SIZE = 27,
                 HEX_BORDER_COLOR = "white",
@@ -1484,7 +1487,8 @@
                 SUBSECTOR_HEIGHT = 10,
                 SUBSECTOR_X_OFFSET = 8,
                 SUBSECTOR_Y_OFFSET = 0,
-                FONT = "sans-serif";
+                FONT = "sans-serif",
+                TRADE_ROUTE_THRESHOLD = Number(document.getElementById("numProfitThreshold").value);
             var HEX_MATH = {
                 radius: HEX_SIZE,
                 xOffset: HEX_SIZE * 3,
@@ -1497,7 +1501,7 @@
             var mins = [-1, -1, -1, -1, -1, -1, -1, -1, -3, -1, -1],
                 maxes = [0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
                 labels = ["starport", "size", "atmo", "hydro", "pop", "gov", "law", "tech"];
-            var _systems = {};
+            var _systems = {}, systemArray = [];
             var routes = [];
 
             var canvas = document.getElementById("canvas");
@@ -1573,6 +1577,21 @@
                     removeChildElements(output);
                     output.innerHTML = "Roll " + ++skillRoll + ": " + getCasteSkill();
                 });
+                document.getElementById("numProfitThreshold").addEventListener("input",function(){
+                    var newNum = Number(document.getElementById("numProfitThreshold").value);
+                    console.log(newNum);
+                    if( !isNaN(newNum)){
+                        TRADE_ROUTE_THRESHOLD = newNum;
+                        var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                        var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                        console.log(TRADE_ROUTE_THRESHOLD);
+                        analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                        drawMap(mapContent);
+                    }
+                });
+                document.getElementById("chkShowTradeRoutes").addEventListener("click",function(){
+                    drawMap(mapContent);
+                })
                 canvas.addEventListener("mousemove", function (e) {
                     var hexIdentified = false;
                     var x = e.clientX - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().left;
@@ -1615,21 +1634,6 @@
                                 }
                             }
                         }
-                        // for (var i = 0, len = mapContent.length; i < len; i++) {
-                        //     var hex = mapContent[i];
-                        //     if (!hexIdentified) {
-                        //         if (coordsInHexagon(x, y, hex)) {
-                        //             hex.highlighted = true;
-                        //             hexIdentified = true;
-                        //             if (lastHighlightedHex) {
-                        //                 lastHighlightedHex.highlighted = false;
-                        //             }
-                        //             lastHighlightedHex = hex;
-                        //             drawMap(mapContent);
-                        //             break;
-                        //         }
-                        //     }
-                        // }
                         if(redrawRequested){
                             drawMap(mapContent);
                         }
@@ -1772,7 +1776,7 @@
                     drawMap(mapContent);
                 });
                 document.getElementById("btnApplyData").addEventListener("click", function () {
-                    var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, JSON.parse(document.getElementById("data").value));
+                    mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, JSON.parse(document.getElementById("data").value));
                     document.getElementById("sectordata").value = getSectorData(mapContent);
                     var systems = [];
                     for (var i = 0, len = mapContent.length; i < len; i++) {
@@ -1853,6 +1857,17 @@
                     a.download = document.getElementById("txtSeed").value + ".tsv";
                     a.click();
                 });
+                document.getElementById("btnExportExcel").addEventListener("click", function () {
+                    var sectorData = document.getElementById("sectordata").value;
+                    sectorData = sectorData.replace(/\t/g,"\"\t=\"");
+                    sectorData = sectorData.replace(/\n/g,"\"\n=\"");
+                    sectorData = "=\"" + sectorData + "\"";
+                    var a = document.createElement("a");
+                    a.href = "data:text/tab-separated-values;charset=utf-8," + encodeURIComponent(sectorData);
+                    a.download = document.getElementById("txtSeed").value + ".tsv";
+                    a.click();
+                });
+                
                 document.getElementById("btnExportTxt").addEventListener("click", function () {
                     var sectorData = document.getElementById("sectordata").value;
                     var a = document.createElement("a");
@@ -2058,7 +2073,7 @@
                 var namesSoFar = {};
                 //  0-7 = UWP, 8 = Importance, 9 = Total Pop, 10 = RUs
                 mins = [-1, -1, -1, -1, -1, -1, -1, -1, -3, -1, -1], maxes = [0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0];
-                var systemArray = [];
+                systemArray = [];
                 var permitDieback = document.getElementById("chkPermitDieback").checked,
                 mainworldRules =  document.getElementById("slctMainworldRules").value,
                 applyHillSphereLimits = document.getElementById("chkApplyHillSphereLimits").checked,
@@ -2085,13 +2100,13 @@
                             namesSoFar[name] = { hexlocation: tcoord, x: x, y: y };
                             var details = 
                             generateSystemDetails(tcoord, 
-                            ggFrequency, 
-                            permitDieback, 
-                            maxTechLevel, 0, 
-                            mainworldRules, 
-                            populateNonMainworlds, 
-                            applyHillSphereLimits, 
-                            allowInnerWhiteDwarfs);
+                                ggFrequency, 
+                                permitDieback, 
+                                maxTechLevel, 0, 
+                                mainworldRules, 
+                                populateNonMainworlds, 
+                                applyHillSphereLimits, 
+                                allowInnerWhiteDwarfs);
                             //console.log(details);
                             for (var i = 0, len = mins.length; i < len; i++) {
                                 var currValue;
@@ -2155,9 +2170,9 @@
                     system.name = name;
                     systems[system.tcoord].name = name;
                 }
+                mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
                 analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
                 document.getElementById("data").value = JSON.stringify(systems);
-                var mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
                 applyTravelCodes(mapContent);
                 document.getElementById("sectordata").value = getSectorData(mapContent);
                 if (document.getElementById("chkGenerateNatives").checked) {
@@ -2236,19 +2251,19 @@
                     if (typeof map[i].system !== "undefined") {
                         var system = map[i].system;
                         sectordata += "\n"
-                            + system.tcoord + "\t"
-                            + system.name + "\t"
-                            + system.uwp + "\t"
-                            + getBasesAbbrev(system.bases) + "\t"
-                            + system.mainworld.tradecodes.join(" ") + "\t"
-                            + (system.isRed ? "R" : (system.isAmber ? "A" : "")) + "\t"
-                            + system.pbg + "\t"
-                            + system.allegiance + "\t"
-                            + getStarsAbbrev(system.stars) + "\t"
-                            + "{" + (system.importance.extension > 0 ? "+" : "") + system.importance.extension + "}\t"
-                            + "(" + system.economics.extension + ")\t"
-                            + "[" + system.mainworld.cultural.extension + "]\t"
-                            + system.nobility.join("");
+                            + ""+system.tcoord + "\t"
+                            + ""+system.name + "\t"
+                            + ""+system.uwp + "\t"
+                            + ""+getBasesAbbrev(system.bases) + "\t"
+                            + ""+system.mainworld.tradecodes.join(" ") + "\t"
+                            + ""+(system.isRed ? "R" : (system.isAmber ? "A" : "")) + "\t"
+                            + ""+system.pbg + "\t"
+                            + ""+system.allegiance + "\t"
+                            + ""+getStarsAbbrev(system.stars) + "\t"
+                            + ""+"{" + (system.importance.extension > 0 ? "+" : "") + system.importance.extension + "}\t"
+                            + ""+"(" + system.economics.extension + ")\t"
+                            + ""+"[" + system.mainworld.cultural.extension + "]\t"
+                            + ""+system.nobility.join("")+"";
                     }
                 }
                 return sectordata;
@@ -2351,7 +2366,7 @@
             }
             function analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital) {
                 var capital, maxImportance = -4, tradeCodeCount = 0;
-                
+                routes = [];
                 var subsectorMaxImportance =
                     [
                         -4, -4, -4, -4,
@@ -2504,8 +2519,8 @@
                     if (mainworld.tradecodes.indexOf("Cy") > 0) {
                         // figure out the colony owner here!
                     }
+                    system.neighbors = getNeighbors(system.tcoord);
                 }
-                
                 averagetech = sumTech / systemArray.length;
                 if(numImportantWorlds === 0){ 
                     averagecommunitytech = "N/A"; 
@@ -2549,6 +2564,7 @@
                         capital.nobility.push("F");
                     }
                 }
+                
             }
 
             function generateHexes(x, y, systems) {
@@ -2622,7 +2638,9 @@
                 for (var i = 0, len = mapContent.length; i < len; i++) {
                     drawFinal(mapContent[i], options);
                 }
-                drawRoutes();
+                if(document.getElementById("chkShowTradeRoutes").checked){
+                    drawRoutes();
+                }
                 ctx.restore();
                 document.getElementById("data").value = JSON.stringify(_systems);
             }
@@ -2928,22 +2946,6 @@
                 var y0 = coords.y - HEX_MATH.halfYOffset,
                     y1 = coords.y,
                     y2 = y1 + HEX_MATH.halfYOffset;
-
-                // var point1 = getHexCorner(coords,HEX_MATH.diameter, 0); // center right vertex
-                // var x3 = point1.x; 
-                // var y1 = coords.y;
-                // var point2 = getHexCorner(coords,HEX_MATH.diameter, 1); // bottom right vertex
-                // var x2 = point2.x; 
-                // var y2 = point2.y;
-                // var point3 = getHexCorner(coords,HEX_MATH.diameter, 2); // bottom left vertex
-                // var x1 = point3.x;
-                // var y2 = point3.y;
-                // var point4 = getHexCorner(coords, HEX_MATH.diameter, 3); // center left vertex
-                // var x0 = point4.x; // center left vertex
-                // var point5 = getHexCorner(coords, HEX_MATH.diameter, 4); // top left vertex
-                // var y0 = point5.y;
-                // var x4 = x1 + (x2 - x1) / 2
-
 
                 ctx.strokeStyle = HEX_BORDER_COLOR;
                 var oldLineWidth = ctx.lineWidth;
@@ -3498,71 +3500,75 @@
                         }
                     }
                 }
+                
             }
             function getRoute(tcoord1, tcoord2, maxJump) {
                 // TO DO: Build array of system coordinates between two coordinates
             }
-            function getNeighbors(tcoord, range, excluded) {
-                if (typeof excluded == "undefined") {
-                    excluded = {};
-                }
-                excluded[tcoord] = true;
+            function getNeighbors(tcoord) {
                 var xy = TCoordToXYCoord(tcoord);
                 var x = xy.x, y = xy.y;
                 var candidates = [];
-                if (x % 2 === 0) {
-                    if (x > 1) {
-                        candidates.push(XYCoordToTCoord(x - 1, y));
-                        if (y < SUBSECTOR_HEIGHT) {
-                            candidates.push(XYCoordToTCoord(x - 1, y + 1));
+                if (x&1 === 1) {
+                    if (x > 0) {
+                        candidates.push([x - 1, y]);
+                        if (y < SUBSECTOR_HEIGHT-1) {
+                            candidates.push([x - 1, y + 1]);
                         }
                     }
-                    if (y > 1) {
-                        candidates.push(XYCoordToTCoord(x, y - 1));
+                    if (y > 0) {
+                        candidates.push([x, y - 1]);
                     }
-                    if (y < SUBSECTOR_HEIGHT) {
-                        candidates.push(XYCoordToTCoord(x, y + 1));
+                    if (y < SUBSECTOR_HEIGHT-1) {
+                        candidates.push([x, y + 1]);
                     }
-                    if (x < SUBSECTOR_WIDTH) {
-                        candidates.push(XYCoordToTCoord(x + 1, y));
-                        if (y < SUBSECTOR_HEIGHT) {
-                            candidates.push(XYCoordToTCoord(x + 1, y + 1));
+                    if (x < SUBSECTOR_WIDTH-1) {
+                        candidates.push([x + 1, y]);
+                        if (y < SUBSECTOR_HEIGHT-1) {
+                            candidates.push([x + 1, y + 1]);
                         }
                     }
                 } else {
-                    if (x > 1) {
-                        if (y > 1) {
-                            candidates.push(XYCoordToTCoord(x - 1, y - 1));
+                    if (x > 0) {
+                        if (y > 0) {
+                            candidates.push([x - 1, y - 1]);
                         }
-                        candidates.push(XYCoordToTCoord(x - 1, y));
+                        candidates.push([x - 1, y]);
                     }
-                    if (y > 1) {
-                        candidates.push(XYCoordToTCoord(x, y - 1));
+                    if (y > 0) {
+                        candidates.push([x, y - 1]);
                     }
-                    if (y < SUBSECTOR_HEIGHT) {
-                        candidates.push(XYCoordToTCoord(x, y + 1));
+                    if (y < SUBSECTOR_HEIGHT-1) {
+                        candidates.push([x, y + 1]);
                     }
-                    if (x < SUBSECTOR_WIDTH) {
-                        if (y > 1) {
-                            candidates.push(XYCoordToTCoord(x + 1, y - 1));
+                    if (x < SUBSECTOR_WIDTH-1) {
+                        if (y > 0) {
+                            candidates.push([x + 1, y - 1]);
                         }
-                        candidates.push(XYCoordToTCoord(x + 1, y));
+                        candidates.push([x + 1, y]);
                     }
                 }
                 var neighbors = [];
+                var thisSystem = mapContent[x + (y*(SUBSECTOR_WIDTH))].system;
                 for (var i = 0; i < candidates.length; i++) {
                     var candidate = candidates[i];
-                    if (!excluded[candidate]) {
-                        if (_systems[candidate]) {
-                            neighbors.push(_systems[candidate])
+                    var index = candidate[0] + (candidate[1] * (SUBSECTOR_WIDTH));
+                    if (mapContent[index].system) {
+                        var target = mapContent[index].system;
+                        var exportCargo = getCargo(thisSystem.mainworld.tech,thisSystem.mainworld.tradecodes,false);
+                        var importCargo = getCargo(target.mainworld.tech,target.mainworld.tradecodes,false);
+                        var exportProfit = calculatePrice( exportCargo,target.mainworld.tech,target.mainworld.tradecodes)-exportCargo.cost,
+                        importProfit = calculatePrice( importCargo,thisSystem.mainworld.tech,thisSystem.mainworld.tradecodes)-importCargo.cost;
+                        var tradeStrength = importProfit+exportProfit, twoWayTrade = exportProfit>0&&importProfit>0;
+                        var neighbor = {
+                            tcoord:target.tcoord,
+                            export:exportProfit,
+                            import:importProfit,
+                            favored:twoWayTrade,
+                            trade:tradeStrength
                         }
-                    }
-                    excluded[candidate] = true;
-                    if (range > 1) {
-                        var moreNeighbors = getNeighbors(candidate, range - 1, excluded);
-                        if (moreNeighbors.length > 0) {
-                            neighbors.push(...moreNeighbors);
-                        }
+                        neighbors.push(neighbor);
+                        if(twoWayTrade && tradeStrength > TRADE_ROUTE_THRESHOLD){routes.push([thisSystem.tcoord,target.tcoord]);}
                     }
                 }
                 return neighbors;
@@ -4398,7 +4404,8 @@
                 document.getElementById("btnExpandCollapseTraffic").style.display = "inline-block";
             }
             
-            function getCargo(tl,tradeCodes){
+            function getCargo(tl,tradeCodes,allowImbalances){
+                if(typeof allowImbalances === "undefined"){ allowImbalances = true;}
                 var cargocode = tl.toString() + " - " + tradeCodes.join(" ");
                 if(tradeCodes.length == 0 || tradeCodes[0].length === 0){
                     cargocode += "(No Trade Codes)"
@@ -4456,8 +4463,10 @@
                 
                 cost += tl*100;
                 cargocode += " - Cr " + cost;
-
-                var description = prefix + getTradeGood(tableCode);
+                var description = "typical cargo";
+                if(allowImbalances){
+                    description = prefix + getTradeGood(tableCode);
+                }
                 return {code:cargocode, cost:cost, tradeCodes:tradeCodes, description:description, tl:tl};
             }
 
