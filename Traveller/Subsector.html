@@ -365,6 +365,7 @@
 
         #nativedetails .roller {
             display: inline-block;
+            vertical-align: text-top;
         }
 
         #nativedetails .collapsed .roller {
@@ -398,6 +399,8 @@
 
         }
         #DestinationDetails{display:none;}
+        .dice{font-size:1rem; user-select:none; min-width:2rem; text-align:center; cursor:pointer; display:inline-block; vertical-align:middle; opacity: 0.6;}
+        .dice:hover{opacity:1;}
     </style>
     <nav class="menu">
         <ul>
@@ -499,7 +502,7 @@
                         </select>
                     </label><br />
                     <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes"
-                            checked="checked" /> Show Travel Codes&nbsp;</label><label for="chkShowTradeRoutes">&nbsp;<input type="checkbox" name="chkShowTradeRoutes" id="chkShowTradeRoutes"/> Show Trade Routes</label>
+                            checked="checked" /> Show Travel Codes&nbsp;</label><label for="chkShowTradeRoutes">&nbsp;<input type="checkbox" checked="checked" name="chkShowTradeRoutes" id="chkShowTradeRoutes"/> Show Trade Routes</label>
                             <label for="numProfitThreshold">(Two-Way Profit Threshold: <input id="numProfitThreshold" type="number" style="width:4em" value="2500"/>)</label>
                             <br/><label for="slctMinJump1Starport">Required Starport Rating for Jump-1 Route: <select id="slctMinJump1Starport">
                                 <option value="A">A</option>
@@ -673,8 +676,8 @@
                                         <option value=25>25</option>
                                         <option value=24>24</option>
                                         <option value=23>23</option>
-                                        <option selected=selected value=22>22</option>
-                                        <option value=21>21</option>
+                                        <option value=22>22</option>
+                                        <option selected=selected value=21>21</option>
                                         <option value=20>20</option>
                                         <option value=19>19</option>
                                     </select></label><br />
@@ -791,9 +794,9 @@
         <canvas id="canvas"></canvas>
         <div id="SystemDetailsContainer" style="display:none;">
             <div id="SystemDetails">
-                <h1><span data-system="tcoord"></span>: <span data-system="name">System Name</span><span
+                <h1><span title="Reroll system name" class="dice" data-randomize="systemname">🎲</span>&nbsp;<span data-system="tcoord"></span>: <span data-system="name">System Name</span><span
                         id="dialog_close">X</span></h1>
-                <h2><span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes"
+                <h2><span title="Reroll system details" class="dice" data-randomize="system">🎲</span>&nbsp;<span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes"
                         data-mainworld="tradecodes" data-join=" "></span></h2>
                 <h3 style="font-weight:normal; font-size:medium;" data-mainworld="tradecodes" data-lookup="tradecode"
                     data-join=", "></h3>
@@ -1710,7 +1713,8 @@
                                     document.getElementById("txtDestTradeCodes").value = lastSelectedHex.system.mainworld.tradecodes.join(" ");
                                     if(typeof cargo.tl !== "undefined"){
                                         var price = calculatePrice(cargo,lastSelectedHex.system.mainworld.tech,lastSelectedHex.system.mainworld.tradecodes);
-                                        document.getElementById("CargoPrice").innerHTML = "Cr " + price.toString();
+                                        var profit = price - cargo.cost;
+                                        document.getElementById("CargoPrice").innerHTML = "Cr " + price.toString() + " (" + (profit >= 0 ? "+":"") + (profit) +")";
                                     }
                                 } else {
                                     detailBlock.style.display = "none";
@@ -1785,7 +1789,10 @@
                     }
                 });
                 document.getElementById("slctMapSize").addEventListener("input", mapSizeChanged);
-
+                var randomizers = document.querySelectorAll("[data-randomize]");
+                for(var i = 0, len = randomizers.length; i < len; i++){
+                    randomizers[i].addEventListener("click",randomizerClicked);
+                }
                 document.getElementById("fontFamily").addEventListener("keyup", updateStyle);
                 document.getElementById("hexBorderColor").addEventListener("keyup", function () {
                     var newColor = document.getElementById("hexBorderColor").value;
@@ -2077,22 +2084,16 @@
                     seed = document.getElementById("txtSeed").value
                 }
 
-                //console.log("Setting window hash");
                 var $density = document.getElementById("slctStellarDensity").value
-                //console.log("density = " + $density);
                 var sizeSelector = document.getElementById("slctMapSize");
                 var $size = sizeSelector.value
                 var sizeOption = sizeSelector.querySelectorAll("option")[sizeSelector.selectedIndex];
                 SUBSECTOR_X_OFFSET = +(sizeOption.getAttribute("data-subsectorxoffset"));
                 SUBSECTOR_Y_OFFSET = +(sizeOption.getAttribute("data-subsectoryoffset"));
-                //console.log("size = " + $size);
                 window.location.hash = "$seed=" + encodeURI(seed) + "&$density=" + $density + "&$size=" + $size;
 
-                //console.log("Seeding number generators");
                 MathRandom = pseudoRandomNumberGenerator(seed.toString());
                 wordMaker.setRandom(MathRandom);
-
-                //console.log("Generating subsector map");
 
                 var ggFrequency = document.getElementById("slctGGFrequency").value;
                 var density = document.getElementById("slctStellarDensity").value;
@@ -2138,7 +2139,6 @@
 
                             var tcoord = XYCoordToTCoord(x, y);
                             var name = tcoord;
-                            //console.log("Adding " + name + " to " + tcoord);
                             namesSoFar[name] = { hexlocation: tcoord, x: x, y: y };
                             var details = 
                             generateSystemDetails(tcoord, 
@@ -2149,7 +2149,6 @@
                                 populateNonMainworlds, 
                                 applyHillSphereLimits, 
                                 allowInnerWhiteDwarfs);
-                            //console.log(details);
                             for (var i = 0, len = mins.length; i < len; i++) {
                                 var currValue;
                                 if (i < 8) {
@@ -2191,7 +2190,8 @@
                                 allegiance: details.allegiance,
                                 isRed: false,
                                 isAmber: false,
-                                nobility: details.nobility
+                                nobility: details.nobility,
+                                sysArrayIndex:systemArray.length
                             };
                             systems[tcoord] = system;
                             systemArray.push(system);
@@ -2743,7 +2743,7 @@
                 document.getElementById("slctAmberGovLaw").setAttribute("data-color", document.getElementById("slctAmberGovLaw").value = "N/A");
                 document.getElementById("slctRedGovLaw").setAttribute("data-color", document.getElementById("slctRedGovLaw").value = "Amber");
                 document.getElementById("slctAmberGovLawThreshold").setAttribute("data-color", document.getElementById("slctAmberGovLawThreshold").value = 20);
-                document.getElementById("slctRedGovLawThreshold").setAttribute("data-color", document.getElementById("slctRedGovLawThreshold").value = 22);
+                document.getElementById("slctRedGovLawThreshold").setAttribute("data-color", document.getElementById("slctRedGovLawThreshold").value = 21);
                 document.getElementById("slctDangerousAtmoThreshold").setAttribute("data-color", document.getElementById("slctDangerousAtmoThreshold").value = 12);
                 document.getElementById("slctDangerousAtmoThresholdMax").setAttribute("data-color", document.getElementById("slctDangerousAtmoThresholdMax").value = 12);
                 document.getElementById("slctRedZoneX").setAttribute("data-color", document.getElementById("slctRedZoneX").value = "Red");
@@ -4743,7 +4743,94 @@
                 return price;
             }
         
-            
+            function randomizerClicked(e){
+                var rtype = e.target.getAttribute("data-randomize");
+                var tcoord = lastSelectedHex.system.tcoord;
+                var xycoord = TCoordToXYCoord(tcoord);
+                var index = XYtoIndex(xycoord.x,xycoord.y);
+                switch(rtype){
+                    case "system": 
+                        var name = mapContent[index].system.name;
+                        var ggFrequency = document.getElementById("slctGGFrequency").value;
+                        var density = document.getElementById("slctStellarDensity").value;
+                        var permitDieback = document.getElementById("chkPermitDieback").checked;
+                        var maxTechLevel = document.getElementById("slctMaxTechLevel").value;
+                        var permitDieback = document.getElementById("chkPermitDieback").checked,
+                        mainworldRules =  document.getElementById("slctMainworldRules").value,
+                        applyHillSphereLimits = document.getElementById("chkApplyHillSphereLimits").checked,
+                        allowInnerWhiteDwarfs = document.getElementById("chkAllowInnerWhiteDwarfs").checked,
+                        populateNonMainworlds = document.getElementById("chkPopulateNonMainworlds").checked;
+                        var details = 
+                            generateSystemDetails(tcoord, 
+                                ggFrequency, 
+                                permitDieback, 
+                                maxTechLevel, 0, 
+                                mainworldRules, 
+                                populateNonMainworlds, 
+                                applyHillSphereLimits, 
+                                allowInnerWhiteDwarfs);
+                            for (var i = 0, len = mins.length; i < len; i++) {
+                                var currValue;
+                                if (i < 8) {
+                                    currValue = details.mainworld[labels[i]];
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if (currValue < currMin) { mins[i] = currValue; }
+                                    if (currValue > currMax) { maxes[i] = currValue; }
+                                }
+                                else if (i === 8) {
+                                    currValue = details.importance.extension;
+                                } else if (i === 9) {
+                                    currValue = details.totalpop;
+                                    if (currValue > 0) { currValue = Math.round(Math.log10(currValue)); }
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if (currValue < currMin) { mins[i] = currValue; }
+                                    if (currValue > currMax) { maxes[i] = currValue; }
+                                } else if (i === 10) {
+                                    currValue = details.economics.RU;
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if (currValue < currMin) { mins[i] = currValue; }
+                                    if (currValue > currMax) { maxes[i] = currValue; }
+                                }
+
+                            }
+                            var system = {
+                                name: name,
+                                mainworld: details.mainworld,
+                                uwp: details.uwp.toUpperCase(),
+                                gg: details.gg,
+                                isAsteroidBelt: details.mainworld.isAsteroidBelt,
+                                planetoidBelts: details.planetoidBelts,
+                                bases: details.bases,
+                                stars: details.stars,
+                                economics: details.economics,
+                                importance: details.importance,
+                                totalpop: details.totalpop,
+                                tcoord: tcoord,
+                                pbg: details.pbg,
+                                allegiance: details.allegiance,
+                                isRed: false,
+                                isAmber: false,
+                                nobility: details.nobility,
+                                sysArrayIndex:mapContent[index].system.sysArrayIndex
+                            };
+                            mapContent[index].system = system;
+                            _systems[tcoord] = system;
+                            systemArray[mapContent[index].system.sysArrayIndex] = system;
+                        break;
+                    case "systemname":
+                        var name = addCaps(wordMaker.getRandomName("system"));
+                        mapContent[index].system.name = name;
+                        _systems[tcoord].name = name;
+                        systemArray[mapContent[index].system.sysArrayIndex].name = name;
+                        break;
+                    default: break;
+                }
+                var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                drawMap(mapContent);
+                renderSystem(mapContent[index].system);
+            }
             function expandCollapseTraffic(e){
                 var nodes = document.querySelectorAll("#shipList h2");
                 if(e.target.getAttribute("data-action")==="collapse"){
