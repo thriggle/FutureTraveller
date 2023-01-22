@@ -1527,7 +1527,7 @@
                 maxes = [0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
                 labels = ["starport", "size", "atmo", "hydro", "pop", "gov", "law", "tech"];
             var _systems = {}, systemArray = [];
-            var routes = [];
+            var routes = [], NIL = [];
 
             var canvas = document.getElementById("canvas");
             canvas.setAttribute("width", SUBSECTOR_WIDTH * HEX_MATH.xOffset + HEX_MATH.radius + CANVAS_PADDING * 2);
@@ -2224,6 +2224,49 @@
                 }
                 drawMap(mapContent);
             }
+            function rollNativeForWorld(system, likelihood, max){
+                var native = false;
+                if (system.mainworld.atmo >= 2 && system.mainworld.pop >= 7) {
+                    var isExotic = likelihood !== "really" && system.mainworld.atmo >= 10 && system.mainworld.atmo <= 12;
+                    var exoticMod = isExotic ? system.mainworld.atmo - 9 : 0;
+                    var check = ((MathRandom() * (max + exoticMod)) >>> 0) + 1;
+                    if (check === 1) {
+                        var species = { name: addCaps(wordMaker.getRandomName("word")) };
+                        species.homeworld = system;
+                        generateRandomAlien(species, MathRandom);
+                        delete species.homeworld;
+                        system.natives = species;
+                        native = {system: system,sophont:species};  
+                    }
+                }
+                return native;
+            }
+            function sortNatives(){
+                NIL = [];
+                for (var i = 0, len = mapContent.length; i < len; i++) {
+                    if (mapContent[i].system) {
+                        if(mapContent[i].system.natives){
+                            NIL.push({system:mapContent[i].system,sophont:mapContent[i].system.natives})
+                        }
+                    }
+                }
+                NIL.sort(function(a,b){
+                    if(a.system.importance.extension > b.system.importance.extension){
+                        return -1;
+                    }else if(b.system.importance.extension > a.system.importance.extension){
+                        return 1;
+                    }else if(a.system.mainworld.tech > b.system.mainworld.tech){
+                        return -1;
+                    }else if(b.system.mainworld.tech > a.system.mainworld.tech){
+                        return 1;
+                    }else if(a.sophont.name < b.sophont.name){
+                        return -1;
+                    }else{
+                        return 1;
+                    }
+                });
+                renderNILSummary(NIL);
+            }
             function generateNatives(mapContent, likelihood) {
                 var max = 0;
                 switch (likelihood) {
@@ -2243,29 +2286,15 @@
                         max = 1;
                         break;
                 }
-                var NIL = [];
-                
-                
+                NIL = [];
+
                 var lifecount = 0;
                 for (var i = 0, len = mapContent.length; i < len; i++) {
                     if (mapContent[i].system) {
-                        if (mapContent[i].system.mainworld.atmo >= 2 && mapContent[i].system.mainworld.pop >= 7) {
-                            //console.log( mapContent[i].system.name + ": " + mapContent[i].system.mainworld.atmo +", " + mapContent[i].system.mainworld.pop);
-                            var isExotic = likelihood !== "really" && mapContent[i].system.mainworld.atmo >= 10 && mapContent[i].system.mainworld.atmo <= 12;
-                            var exoticMod = isExotic ? mapContent[i].system.mainworld.atmo - 9 : 0;
-                            var check = ((MathRandom() * (max + exoticMod)) >>> 0) + 1;
-                            if (check === 1) {
-                                lifecount++;
-                                //console.log("Native Intelligence on " + mapContent[i].system.tcoord + " " + mapContent[i].system.name + "!");
-                                var species = { name: addCaps(wordMaker.getRandomName("word")) };
-                                species.homeworld = mapContent[i].system;
-                                generateRandomAlien(species, MathRandom);
-                                delete species.homeworld;
-                                mapContent[i].system.natives = species;
-                                NIL.push({system: mapContent[i].system,sophont:species});
-                                   
-                                
-                            }
+                        var native = rollNativeForWorld(mapContent[i].system,likelihood,max);
+                        if(native){
+                            lifecount++;
+                            NIL.push(native);
                         }
                     }
                 }
@@ -4811,11 +4840,36 @@
                                 isRed: false,
                                 isAmber: false,
                                 nobility: details.nobility,
-                                sysArrayIndex:mapContent[index].system.sysArrayIndex
+                                sysArrayIndex:mapContent[index].system.sysArrayIndex,
+                                index:mapContent[index].system.index 
                             };
+                            var max = 0;
+                            var likelihood = document.getElementById("slctNativeLikelihood").value
+                            switch (likelihood) {
+                                case "rare": // ~1 per sector
+                                    max = 45;
+                                    break;
+                                case "reasonable": // ~1 per subsector
+                                    max = 9;
+                                    break;
+                                case "common": // 1 in 2 chance per candidate world
+                                    max = 2;
+                                    break;
+                                case "everywhere": // every non-exotic candidate world
+                                    max = 1;
+                                    break;
+                                case "really": // every candidate world
+                                    max = 1;
+                                    break;
+                            }
+                            var native = rollNativeForWorld(system,likelihood,max);                            
                             mapContent[index].system = system;
                             _systems[tcoord] = system;
                             systemArray[mapContent[index].system.sysArrayIndex] = system;
+                            if(native){
+                                sortNatives();
+                            }
+                            
                         break;
                     case "systemname":
                         var name = addCaps(wordMaker.getRandomName("system"));
@@ -4825,6 +4879,7 @@
                         break;
                     default: break;
                 }
+                applyTravelCodes(mapContent);
                 var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                 var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                 analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
