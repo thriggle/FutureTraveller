@@ -2579,20 +2579,26 @@
                     for (var i = 0, len = subsectorCapitals.length; i < len; i++) {
                         if (subsectorCapitals[i]) {
                             subsectorCapitals[i].isCapital = true;
-                            subsectorCapitals[i].mainworld.tradecodes.push("Cp");
+                            if(subsectorCapitals[i].mainworld.tradecodes.indexOf("Cp") === -1){
+                                subsectorCapitals[i].mainworld.tradecodes.push("Cp");
+                            }
                             subsectorCapitals[i].mainworld.tradecodes.sort();
                             var indexOfLesserDuke = subsectorCapitals[i].nobility.indexOf("f");
                             if (indexOfLesserDuke) {
                                 subsectorCapitals[i].nobility.splice(indexOfLesserDuke, indexOfLesserDuke + 1)
                             }
-                            subsectorCapitals[i].nobility.push("F");
+                            if(subsectorCapitals[i].nobility.indexOf("F") === -1){
+                                subsectorCapitals[i].nobility.push("F");
+                            }
                         }
                     }
 
                 }
                 if (capital && designateSectorCapital) {
                     capital.isCapital = true;
-                    capital.mainworld.tradecodes.push("Cs");
+                    if(subsectorCapitals[i].mainworld.tradecodes.indexOf("Cs") === -1){
+                        capital.mainworld.tradecodes.push("Cs");
+                    }
                     var subsectorCapitalCodeIndex = capital.mainworld.tradecodes.indexOf("Cp");
                     if (subsectorCapitalCodeIndex >= 0) {
                         capital.mainworld.tradecodes.splice(subsectorCapitalCodeIndex, 1);
