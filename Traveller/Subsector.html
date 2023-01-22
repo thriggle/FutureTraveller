@@ -169,7 +169,9 @@
             margin-top: 0;
             margin-bottom: 0;
         }
-
+        #SystemDetails h1{
+            cursor:move;
+        }
         #SystemDetails ul {
             margin-top: 0px;
         }
@@ -1528,7 +1530,7 @@
                 labels = ["starport", "size", "atmo", "hydro", "pop", "gov", "law", "tech"];
             var _systems = {}, systemArray = [];
             var routes = [], NIL = [];
-
+            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0; // used for dragging system details dialog around
             var canvas = document.getElementById("canvas");
             canvas.setAttribute("width", SUBSECTOR_WIDTH * HEX_MATH.xOffset + HEX_MATH.radius + CANVAS_PADDING * 2);
             canvas.setAttribute("height", SUBSECTOR_HEIGHT * HEX_MATH.yOffset + HEX_MATH.halfYOffset + CANVAS_PADDING * 2);
@@ -1592,6 +1594,7 @@
             }
             function attachEventListeners() {
                 var abilityRoll = 0, skillRoll = 0;
+                document.querySelector("#SystemDetails h1").addEventListener("mousedown",startDraggingDialog);
                 document.getElementById("btnGetSpecialAbility").addEventListener("click", function () {
                     var output = document.getElementById("specialAbility");
                     removeChildElements(output);
@@ -2051,6 +2054,33 @@
                         }
                     }
                 });
+            }
+            function startDraggingDialog(e){
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = stopDraggingDialog;
+                document.onmousemove = dragDialog;
+            }
+            function dragDialog(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // calculate the new cursor position:
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // set the element's new position:
+                var dialog = document.getElementById("SystemDetailsContainer");
+                dialog.style.top = (dialog.offsetTop - pos2) + "px";
+                dialog.style.left = (dialog.offsetLeft - pos1) + "px";
+            }
+
+            function stopDraggingDialog() {
+                // stop moving when mouse button is released:
+                document.onmouseup = null;
+                document.onmousemove = null;
             }
             function mapSizeChanged() {
                 var choice = document.getElementById("slctMapSize").value;
