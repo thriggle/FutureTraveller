@@ -169,7 +169,7 @@
             margin-top: 0;
             margin-bottom: 0;
         }
-        #SystemDetails h1{
+        #SystemDetails h1 [data-system="tcoord"]{
             cursor:move;
         }
         #SystemDetails ul {
@@ -796,7 +796,7 @@
         <canvas id="canvas"></canvas>
         <div id="SystemDetailsContainer" style="display:none;">
             <div id="SystemDetails">
-                <h1><span title="Reroll system name" class="dice" data-randomize="systemname">🎲</span>&nbsp;<span data-system="tcoord"></span>: <span data-system="name">System Name</span><span
+                <h1><span title="Reroll system name" class="dice" data-randomize="systemname">🎲</span>&nbsp;<span data-system="tcoord"></span>: <span data-system="name" >System Name</span><span title="Edit system name" id="btnEditSystemName" class="dice">✏️</span><input type="text" title="Change the system name" id="txtSystemName" style="display:none"/><span id="btnSaveSystemName" title="Update system name" class="dice" style="display:none;">💾</span><SPAN class="dice" title="Cancel editing system name" style="display:none;" id="btnCancelSystemName">❌</SPAN><span
                         id="dialog_close">X</span></h1>
                 <h2><span title="Reroll system details" class="dice" data-randomize="system">🎲</span>&nbsp;<span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes"
                         data-mainworld="tradecodes" data-join=" "></span></h2>
@@ -1594,7 +1594,7 @@
             }
             function attachEventListeners() {
                 var abilityRoll = 0, skillRoll = 0;
-                document.querySelector("#SystemDetails h1").addEventListener("mousedown",startDraggingDialog);
+                document.querySelector("[data-system=\"tcoord\"]").addEventListener("mousedown",startDraggingDialog);
                 document.getElementById("btnGetSpecialAbility").addEventListener("click", function () {
                     var output = document.getElementById("specialAbility");
                     removeChildElements(output);
@@ -1796,6 +1796,32 @@
                 for(var i = 0, len = randomizers.length; i < len; i++){
                     randomizers[i].addEventListener("click",randomizerClicked);
                 }
+                document.getElementById("btnSaveSystemName").addEventListener("click",function(){
+                    var txtSystemName = document.getElementById("txtSystemName");
+                    txtSystemName.style.display = "none";
+                    updateSystemName(txtSystemName.value);
+                    document.getElementById("btnCancelSystemName").style.display = "none";
+                    document.getElementById("btnSaveSystemName").style.display = "none";
+                    document.getElementById("btnEditSystemName").style.display = "inline-block";
+                });
+                document.getElementById("btnEditSystemName").addEventListener("click",function(){
+                    document.getElementById("btnEditSystemName").style.display = "none";
+                    var txtSystemName = document.getElementById("txtSystemName");
+                    txtSystemName.value = lastSelectedHex.system.name;
+                    txtSystemName.style.display = "inline-block";
+
+                    var btnSaveSystemName = document.getElementById("btnSaveSystemName");
+                    btnSaveSystemName.style.display = "inline-block";
+
+                    var btnCancelSystemName =  document.getElementById("btnCancelSystemName");
+                    btnCancelSystemName.style.display = "inline-block";                   
+                });
+                document.getElementById("btnCancelSystemName").addEventListener("click",function(){
+                    document.getElementById("txtSystemName").style.display = "none";
+                    document.getElementById("btnSaveSystemName").style.display = "none";
+                    document.getElementById("btnCancelSystemName").style.display = "none";
+                    document.getElementById("btnEditSystemName").style.display = "inline-block";
+                });
                 document.getElementById("fontFamily").addEventListener("keyup", updateStyle);
                 document.getElementById("hexBorderColor").addEventListener("keyup", function () {
                     var newColor = document.getElementById("hexBorderColor").value;
@@ -1841,11 +1867,7 @@
                 });
                 document.getElementById("btnPopulateSystems").addEventListener("click", populateSubsector);
                 document.getElementById("btnClearSystems").addEventListener("click", function () {
-                    //var mapContent = [];
-                    //document.getElementById("sizeSlider").value = HEX_SIZE;
                     mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT);
-                    //updateStyle();
-                    //ctx.font = ""+fontSize+"pt "+FONT;
                     drawMap(mapContent);
                 });
                 document.getElementById("slcHeatMap").addEventListener("change", function () {
@@ -2056,12 +2078,15 @@
                 });
             }
             function startDraggingDialog(e){
-                e = e || window.event;
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = stopDraggingDialog;
-                document.onmousemove = dragDialog;
+                if(document.querySelector("[data-nav=\"map\"]").style.display !== "none"){
+                    e = e || window.event;
+                    e.preventDefault();
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    document.onmouseup = stopDraggingDialog;
+                    document.onmousemove = dragDialog;
+                }
+                
             }
             function dragDialog(e) {
                 e = e || window.event;
@@ -3750,6 +3775,10 @@
                 //ctx.restore();
             }
             function renderSystem(system) {
+                document.getElementById("txtSystemName").style.display = "none";
+                document.getElementById("btnSaveSystemName").style.display = "none";
+                document.getElementById("btnCancelSystemName").style.display = "none";
+                document.getElementById("btnEditSystemName").style.display = "inline-block";
                 var lookups = {
                     orbitdistance: {
                         "-1": "<0.2 AU",
@@ -4801,7 +4830,21 @@
                 price = Math.round(price);
                 return price;
             }
-        
+            function updateSystemName(name){
+                var tcoord = lastSelectedHex.system.tcoord;
+                var xycoord = TCoordToXYCoord(tcoord);
+                var index = XYtoIndex(xycoord.x,xycoord.y);
+                mapContent[index].system.name = name;
+                _systems[tcoord].name = name;
+                systemArray[mapContent[index].system.sysArrayIndex].name = name;
+                applyTravelCodes(mapContent);
+                var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                drawMap(mapContent);
+                renderSystem(mapContent[index].system);
+                document.getElementById("sectordata").value = getSectorData(mapContent);
+            }
             function randomizerClicked(e){
                 var rtype = e.target.getAttribute("data-randomize");
                 var tcoord = lastSelectedHex.system.tcoord;
@@ -4915,6 +4958,7 @@
                 analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
                 drawMap(mapContent);
                 renderSystem(mapContent[index].system);
+                document.getElementById("sectordata").value = getSectorData(mapContent);
             }
             function expandCollapseTraffic(e){
                 var nodes = document.querySelectorAll("#shipList h2");
