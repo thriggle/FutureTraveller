@@ -476,7 +476,7 @@
                                 id="canvasBackgroundColor" /></label><br />
                         <label for="fontFamily">Font: <input type="text" id="fontFamily" name="fontFamily"
                                 value="Segoe UI, sans-serif" /></label><br/>
-                        <label for="tradeRouteColor">Trade Route Color: <input type="text" name="tradeRouteColor" id="tradeRouteColor" value="rgba(50,255,100,0.4)"></label>
+                        <label for="tradeRouteColor">Trade Route Color: <input type="text" name="tradeRouteColor" id="tradeRouteColor" value="rgba(50,200,80,1)"></label>
                     </fieldset>
                 </fieldset>
                 <fieldset class="collapsed">
@@ -1498,7 +1498,7 @@
                 CAPITAL_TEXT_COLOR = "rgb(255,100,100)",
                 SECTORCAPITAL_TEXT_COLOR = "rgb(255,20,20)",
                 CAPITAL_BACKGROUND_COLOR = "black",
-                TRADE_ROUTE_COLOR = "rgba(50,255,100,0.4)",
+                TRADE_ROUTE_COLOR = document.getElementById("tradeRouteColor").value,
                 TEXT_COLOR = "white",
                 COORD_TEXT_COLOR = "transparent",
                 CANVAS_PADDING = 20,
@@ -1509,8 +1509,8 @@
                 FONT = "sans-serif",
                 TRADE_ROUTE_THRESHOLD = Number(document.getElementById("numProfitThreshold").value);
             var DOUBLE_TRADE_ROUTE_THRESHOLD = 2*TRADE_ROUTE_THRESHOLD;
-            var MIN_JUMP1_ROUTE_STARPORT = "E", 
-                MIN_JUMP2_ROUTE_STARPORT = "C";
+            var MIN_JUMP1_ROUTE_STARPORT = document.getElementById("slctMinJump1Starport").value, 
+                MIN_JUMP2_ROUTE_STARPORT = document.getElementById("slctMinJump2Starport").value;
             var HEX_MATH = {
                 radius: HEX_SIZE,
                 xOffset: HEX_SIZE * 3,
@@ -3662,6 +3662,13 @@
                         y: hex.x % 2 == 0 ? hex.y * HEX_MATH.yOffset : hex.y * HEX_MATH.yOffset + HEX_MATH.halfYOffset
                     };
                     ctx.moveTo(coords.x, coords.y);
+                    var oldFillStyle = ctx.fillStyle;
+                    ctx.fillStyle = TRADE_ROUTE_COLOR;
+                    ctx.beginPath();
+                    ctx.arc(coords.x, coords.y, fontSize*3/5, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.closePath();
+                    ctx.fillStyle = oldFillStyle;
                     ctx.beginPath();
                     ctx.moveTo(coords.x, coords.y);
                     var destHex = TCoordToXYCoord(destKey);
@@ -3671,6 +3678,12 @@
                     };
                     ctx.lineTo(dest.x, dest.y);
                     ctx.stroke();
+                    ctx.closePath();
+                    oldFillStyle = ctx.fillStyle;
+                    ctx.fillStyle = TRADE_ROUTE_COLOR;
+                    ctx.beginPath();
+                    ctx.arc(dest.x, dest.y, fontSize*3/5, 0, 2 * Math.PI);
+                    ctx.fill();
                     ctx.closePath();
                 }
                 ctx.strokeStyle = oldStrokeStyle;
