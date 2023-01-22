@@ -475,7 +475,8 @@
                         <label for="canvasBackgroundColor">Background Color: <input type="text" name="canvasBackgroundColor"
                                 id="canvasBackgroundColor" /></label><br />
                         <label for="fontFamily">Font: <input type="text" id="fontFamily" name="fontFamily"
-                                value="Segoe UI, sans-serif" /></label>
+                                value="Segoe UI, sans-serif" /></label><br/>
+                        <label for="tradeRouteColor">Trade Route Color: <input type="text" name="tradeRouteColor" id="tradeRouteColor" value="rgba(50,255,100,0.4)"></label>
                     </fieldset>
                 </fieldset>
                 <fieldset class="collapsed">
@@ -499,7 +500,24 @@
                     </label><br />
                     <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes"
                             checked="checked" /> Show Travel Codes&nbsp;</label><label for="chkShowTradeRoutes">&nbsp;<input type="checkbox" name="chkShowTradeRoutes" id="chkShowTradeRoutes"/> Show Trade Routes</label>
-                            <label for="numProfitThreshold">(Two-Way Profit Threshold: <input id="numProfitThreshold" type="number" style="width:4em" value="2500"/>)</label><br/>
+                            <label for="numProfitThreshold">(Two-Way Profit Threshold: <input id="numProfitThreshold" type="number" style="width:4em" value="2500"/>)</label>
+                            <br/><label for="slctMinJump1Starport">Required Starport Rating for Jump-1 Route: <select id="slctMinJump1Starport">
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option selected="selected" value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="X">X</option>
+                            </select></label>
+                            <label for="slctMinJump2Starport">for Jump-2 Route: <select id="slctMinJump2Starport">
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option selected="selected" value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="X">X</option>
+                            </select>
+                            <br/>
                 </fieldset>
                 <fieldset class="collapsed">
                     <legend>Configuration</legend>
@@ -1480,6 +1498,7 @@
                 CAPITAL_TEXT_COLOR = "rgb(255,100,100)",
                 SECTORCAPITAL_TEXT_COLOR = "rgb(255,20,20)",
                 CAPITAL_BACKGROUND_COLOR = "black",
+                TRADE_ROUTE_COLOR = "rgba(50,255,100,0.4)",
                 TEXT_COLOR = "white",
                 COORD_TEXT_COLOR = "transparent",
                 CANVAS_PADDING = 20,
@@ -1489,6 +1508,9 @@
                 SUBSECTOR_Y_OFFSET = 0,
                 FONT = "sans-serif",
                 TRADE_ROUTE_THRESHOLD = Number(document.getElementById("numProfitThreshold").value);
+            var DOUBLE_TRADE_ROUTE_THRESHOLD = 2*TRADE_ROUTE_THRESHOLD;
+            var MIN_JUMP1_ROUTE_STARPORT = "E", 
+                MIN_JUMP2_ROUTE_STARPORT = "C";
             var HEX_MATH = {
                 radius: HEX_SIZE,
                 xOffset: HEX_SIZE * 3,
@@ -1582,12 +1604,32 @@
                     console.log(newNum);
                     if( !isNaN(newNum)){
                         TRADE_ROUTE_THRESHOLD = newNum;
+                        DOUBLE_TRADE_ROUTE_THRESHOLD = 2*TRADE_ROUTE_THRESHOLD;
                         var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                         var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
-                        console.log(TRADE_ROUTE_THRESHOLD);
                         analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
                         drawMap(mapContent);
                     }
+                });
+                document.getElementById("tradeRouteColor").addEventListener("input",function(){
+                    TRADE_ROUTE_COLOR = document.getElementById("tradeRouteColor").value;
+                    if(document.getElementById("chkShowTradeRoutes").checked){
+                        drawMap(mapContent);
+                    }
+                });
+                document.getElementById("slctMinJump1Starport").addEventListener("change",function(){
+                    MIN_JUMP1_ROUTE_STARPORT = document.getElementById("slctMinJump1Starport").value;
+                    var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                        var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                        analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                        drawMap(mapContent);
+                });
+                document.getElementById("slctMinJump2Starport").addEventListener("change",function(){
+                    MIN_JUMP2_ROUTE_STARPORT = document.getElementById("slctMinJump2Starport").value;
+                    var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                        var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                        analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                        drawMap(mapContent);
                 });
                 document.getElementById("chkShowTradeRoutes").addEventListener("click",function(){
                     drawMap(mapContent);
@@ -2171,9 +2213,9 @@
                     systems[system.tcoord].name = name;
                 }
                 mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
+                applyTravelCodes(mapContent);
                 analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
                 document.getElementById("data").value = JSON.stringify(systems);
-                applyTravelCodes(mapContent);
                 document.getElementById("sectordata").value = getSectorData(mapContent);
                 if (document.getElementById("chkGenerateNatives").checked) {
                     generateNatives(mapContent, document.getElementById("slctNativeLikelihood").value);
@@ -2635,11 +2677,12 @@
                 for (var i = 0, len = mapContent.length; i < len; i++) {
                     mapContent[i] = drawHex(mapContent[i], options);
                 }
-                for (var i = 0, len = mapContent.length; i < len; i++) {
-                    drawFinal(mapContent[i], options);
-                }
+                
                 if(document.getElementById("chkShowTradeRoutes").checked){
                     drawRoutes();
+                }
+                for (var i = 0, len = mapContent.length; i < len; i++) {
+                    drawFinal(mapContent[i], options);
                 }
                 ctx.restore();
                 document.getElementById("data").value = JSON.stringify(_systems);
@@ -3505,70 +3548,84 @@
             function getRoute(tcoord1, tcoord2, maxJump) {
                 // TO DO: Build array of system coordinates between two coordinates
             }
+            function XYtoIndex(x,y){
+                if(x >= SUBSECTOR_WIDTH || y >= SUBSECTOR_HEIGHT || x < 0 || y < 0){ return -1;}
+                return x + (y * (SUBSECTOR_WIDTH));
+            }
             function getNeighbors(tcoord) {
                 var xy = TCoordToXYCoord(tcoord);
                 var x = xy.x, y = xy.y;
+                var thisSystem = mapContent[x + (y*(SUBSECTOR_WIDTH))].system;
+                if(thisSystem.isRed || thisSystem.mainworld.starport > MIN_JUMP1_ROUTE_STARPORT){ return [];}
+                var isGoodStarport = thisSystem.mainworld.starport <= MIN_JUMP2_ROUTE_STARPORT;
+                
                 var candidates = [];
-                if (x&1 === 1) {
-                    if (x > 0) {
-                        candidates.push([x - 1, y]);
-                        if (y < SUBSECTOR_HEIGHT-1) {
-                            candidates.push([x - 1, y + 1]);
-                        }
+                if (x&1 === 1) { // neighbors to left/right are vertically offset down
+                    if(isGoodStarport){
+                        candidates.push([x-1,y-1]);
+                        candidates.push([x-1,y+2]);
+                        candidates.push([x-2,y]);
+                        candidates.push([x-2,y-1]);
+                        candidates.push([x-2,y+1]);
+                        candidates.push([x,y-2]);
+                        candidates.push([x,y+2]);
+                        candidates.push([x+1, y-1]);
+                        candidates.push([x+2,y]);
+                        candidates.push([x+2,y+1]);
+                        candidates.push([x+2,y-1]);
+                        candidates.push([x+1, y+2]);
                     }
-                    if (y > 0) {
-                        candidates.push([x, y - 1]);
+                    candidates.push([x - 1, y]);
+                    candidates.push([x - 1, y + 1]);
+                    candidates.push([x, y - 1]);
+                    candidates.push([x, y + 1]);  
+                    candidates.push([x + 1, y]);
+                    candidates.push([x + 1, y + 1]);
+                } else { // neighbors to left/right are vertically offset up
+                    if(isGoodStarport){
+                        candidates.push([x-1,y-2]);
+                        candidates.push([x-1,y+1]);
+                        candidates.push([x-2,y]);
+                        candidates.push([x-2,y-1]);
+                        candidates.push([x-2,y+1]);
+                        candidates.push([x,y-2]);
+                        candidates.push([x,y+2]);
+                        candidates.push([x+1,y+1]);
+                        candidates.push([x+2,y+1]);
+                        candidates.push([x+1,y-2]);
+                        candidates.push([x+2,y]);
+                        candidates.push([x+2,y-1]);
                     }
-                    if (y < SUBSECTOR_HEIGHT-1) {
-                        candidates.push([x, y + 1]);
-                    }
-                    if (x < SUBSECTOR_WIDTH-1) {
-                        candidates.push([x + 1, y]);
-                        if (y < SUBSECTOR_HEIGHT-1) {
-                            candidates.push([x + 1, y + 1]);
-                        }
-                    }
-                } else {
-                    if (x > 0) {
-                        if (y > 0) {
-                            candidates.push([x - 1, y - 1]);
-                        }
-                        candidates.push([x - 1, y]);
-                    }
-                    if (y > 0) {
-                        candidates.push([x, y - 1]);
-                    }
-                    if (y < SUBSECTOR_HEIGHT-1) {
-                        candidates.push([x, y + 1]);
-                    }
-                    if (x < SUBSECTOR_WIDTH-1) {
-                        if (y > 0) {
-                            candidates.push([x + 1, y - 1]);
-                        }
-                        candidates.push([x + 1, y]);
-                    }
+                    candidates.push([x - 1, y - 1]);  
+                    candidates.push([x - 1, y]);
+                    candidates.push([x, y - 1]);
+                    candidates.push([x, y + 1]);
+                    candidates.push([x + 1, y - 1]);  
+                    candidates.push([x + 1, y]);  
                 }
                 var neighbors = [];
-                var thisSystem = mapContent[x + (y*(SUBSECTOR_WIDTH))].system;
+                
                 for (var i = 0; i < candidates.length; i++) {
                     var candidate = candidates[i];
-                    var index = candidate[0] + (candidate[1] * (SUBSECTOR_WIDTH));
-                    if (mapContent[index].system) {
-                        var target = mapContent[index].system;
-                        var exportCargo = getCargo(thisSystem.mainworld.tech,thisSystem.mainworld.tradecodes,false);
-                        var importCargo = getCargo(target.mainworld.tech,target.mainworld.tradecodes,false);
-                        var exportProfit = calculatePrice( exportCargo,target.mainworld.tech,target.mainworld.tradecodes)-exportCargo.cost,
-                        importProfit = calculatePrice( importCargo,thisSystem.mainworld.tech,thisSystem.mainworld.tradecodes)-importCargo.cost;
-                        var tradeStrength = importProfit+exportProfit, twoWayTrade = exportProfit>0&&importProfit>0;
-                        var neighbor = {
-                            tcoord:target.tcoord,
-                            export:exportProfit,
-                            import:importProfit,
-                            favored:twoWayTrade,
-                            trade:tradeStrength
-                        }
-                        neighbors.push(neighbor);
-                        if(twoWayTrade && tradeStrength > TRADE_ROUTE_THRESHOLD){routes.push([thisSystem.tcoord,target.tcoord]);}
+                    var index = XYtoIndex(candidate[0],candidate[1]);
+                    if (index >= 0 & index < mapContent.length && mapContent[index].system) {
+                        var target = mapContent[index].system;    
+                        if(!target.isRed && target.mainworld.starport <= MIN_JUMP1_ROUTE_STARPORT && (!isGoodStarport || (isGoodStarport && target.mainworld.starport <= MIN_JUMP2_ROUTE_STARPORT))){
+                            var exportCargo = getCargo(thisSystem.mainworld.tech,thisSystem.mainworld.tradecodes,false);
+                            var importCargo = getCargo(target.mainworld.tech,target.mainworld.tradecodes,false);
+                            var exportProfit = calculatePrice( exportCargo,target.mainworld.tech,target.mainworld.tradecodes)-exportCargo.cost,
+                            importProfit = calculatePrice( importCargo,thisSystem.mainworld.tech,thisSystem.mainworld.tradecodes)-importCargo.cost;
+                            var tradeStrength = importProfit+exportProfit, twoWayTrade = exportProfit>0&&importProfit>0;
+                            var neighbor = {
+                                tcoord:target.tcoord,
+                                export:exportProfit,
+                                import:importProfit,
+                                favored:twoWayTrade,
+                                trade:tradeStrength
+                            }
+                            neighbors.push(neighbor);
+                            if((twoWayTrade && tradeStrength > TRADE_ROUTE_THRESHOLD)||tradeStrength > DOUBLE_TRADE_ROUTE_THRESHOLD){routes.push([thisSystem.tcoord,target.tcoord]);}
+                        }                    
                     }
                 }
                 return neighbors;
@@ -3588,7 +3645,7 @@
                 var keys = Object.keys(_systems);
                 var oldStrokeStyle = ctx.strokeStyle;
                 var oldLineWidth = ctx.lineWidth;
-                ctx.strokeStyle = "rgba(255,255,255,0.4)";
+                ctx.strokeStyle = TRADE_ROUTE_COLOR;
                 ctx.lineWidth = HEX_SIZE / 10;
                 for (var i = 0, len = routes.length; i < len; i++) {
                     var key = routes[i][0];
