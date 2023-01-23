@@ -11,6 +11,14 @@
     <script src="js/SystemGenerator.js"></script>
     <script src="js/SophontGenerator.js"></script>
     <style>
+        body{
+            background-color:black;
+            color:white;
+        }
+        body.light{
+            background-color:white;
+            color:black;
+        }
         @font-face {
             font-family: Bahnschrift;
             src: url(/Traveller/fonts/BAHNSCHRIFT.TTF);
@@ -21,17 +29,17 @@
         nav.menu ul{ margin:0px; }
         nav.menu li{display:inline-block;font-family: Bahnschrift; user-select: none; }
         nav.menu li a{cursor:pointer; text-decoration: none; color:white; background-color:black; display:inline-block; 
-            padding:0.75rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; border:1px solid black; border-bottom:0px;}
+            padding:0.75rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; border:1px solid white; border-bottom:0px;}
         nav.menu li a:hover{ color:black; background-color: rgb(198, 198, 198);}
-        nav.menu li a.selected{ color:black; background-color: white;}
-        [data-nav]{ display:none; border:1px solid black;}
+        nav.menu li a.selected{ color:black; background-color: white; border:1px solid black;}
+        [data-nav]{ display:none; border:1px solid gray;}
         [data-nav='map']{display:block; border:0px;}
         div.control-block{
             display:inline-block; vertical-align:text-top;
         }
         div.controls{
             font-family: 'Consolas', 'Inconsolas', 'Courier New', Courier, monospace;
-            resize:horizontal; overflow:hidden; border:1px solid black; width:63rem;
+            resize:horizontal; overflow:hidden; border:1px solid gray; width:63rem;
         }
         fieldset {
             font-family: 'Consolas', 'Inconsolas', 'Courier New', Courier, monospace;
@@ -389,7 +397,7 @@
         #nilOutput table{ border-collapse: collapse; border:1px solid black; font-family:Bahnschrift;}
         #nilOutput th{ border-bottom:1px solid black; vertical-align: bottom; font-weight:normal; background-color:rgb(25, 45, 57); color:white;}
         #nilOutput td{ border-bottom:1px solid black; vertical-align: middle; text-align:center; font-size:smaller;}
-        #nilOutput tr:nth-child(even) { background-color:rgba(240,240,240,0.9);}
+        #nilOutput tr:nth-child(even) { background-color:rgba(240,240,240,0.2);}
         #randSystemDetails [data-copy='donot']{display:none;}
         .CargoContainer{
             border-radius:10px;
@@ -409,7 +417,7 @@
             <li><a target="map" class="selected">Map</a></li>
             <li><a target="tools">Tools</a></li>
             <li><a target="analysis">Analysis</a></li>
-            
+            <span style="display:block;float:right;"><label for="chkLightTheme"><input id="chkLightTheme" type="checkbox"> Light Theme</label></span>
         </ul>
     </nav>
     <div data-nav="map">
@@ -1600,6 +1608,13 @@
                     removeChildElements(output);
                     output.innerHTML = "Roll " + ++abilityRoll + ": " + getRandomSpecialAbility();
                 });
+                document.getElementById("chkLightTheme").addEventListener("click",function(){
+                    if(document.getElementById("chkLightTheme").checked){
+                        document.body.classList.add("light");
+                    }else{
+                        document.body.classList.remove("light");
+                    }
+                });
                 document.getElementById("btnGetCasteSkill").addEventListener("click", function () {
                     var output = document.getElementById("casteSkill");
                     removeChildElements(output);
@@ -1632,7 +1647,7 @@
                 });
                 document.getElementById("slctMinJump2Starport").addEventListener("change",function(){
                     MIN_JUMP2_ROUTE_STARPORT = document.getElementById("slctMinJump2Starport").value;
-                    var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                        var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                         var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                         analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
                         drawMap(mapContent);
@@ -1878,6 +1893,9 @@
                 });
                 document.getElementById("btnApplyTravelCodes").addEventListener("click", function () {
                     applyTravelCodes(mapContent);
+                    var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                    var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                    analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
                     drawMap(mapContent);
                     document.getElementById("sectordata").value = getSectorData(mapContent);
                     document.getElementById("btnApplyTravelCodes").disabled = true;
@@ -2519,8 +2537,14 @@
                 var averagecommunitytech = 0;
                 var numImportantWorlds = 0, sumImportantTech = 0;
                 for (var i = 0, len = systemArray.length; i < len; i++) {
+                    
                     var system = systemArray[i];
                     var mainworld = system.mainworld;
+                    var subsectorCapitalCodeIndex = mainworld.tradecodes.indexOf("Cp");
+                    if (subsectorCapitalCodeIndex >= 0) {
+                        system.mainworld.tradecodes.splice(subsectorCapitalCodeIndex, 1);
+                        system.isCapital = false;
+                    }
                     for (var j = 0, jlen = labels.length; j < jlen; j++) {
                         var label = labels[j];
                         var value = mainworld[label];
