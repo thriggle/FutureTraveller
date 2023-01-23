@@ -56,14 +56,17 @@ function isValidStellarNumbers(type,decimal,size,allowwhitedwarf){
     }
     return isOk;
 }
-function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel, diebackPenalty, ruleset, allowNonMWPops, applyHillSphereLimit, allowInnerWhiteDwarfs){
+function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel, diebackPenalty, ruleset, allowNonMWPops, applyHillSphereLimit, allowInnerWhiteDwarfs, predefinedUWP){
     //console.log(name);
     if(typeof ruleset === "undefined"){ ruleset = "T5";}
     if(typeof diebackPenalty === "undefined"){ diebackPenalty = 2;}
     if(typeof allowNonMWPops === "undefined"){allowNonMWPops = true;}
     if(typeof applyHillSphereLimit === "undefined"){ applyHillSphereLimit = true;}
     if(typeof allowInnerWhiteDwarfs === "undefined"){ allowInnerWhiteDwarfs = true;}
-    
+    if(typeof predefinedUWP === "undefined"){ predefinedUWP = false;}else{
+        //St Siz Atm Hyd Pop Gov Law - TL
+        // PBG:### {Ix} (Ex) [Cx]
+    }
     var planetoidBelts = Math.max(d6()-3,0);
     var gg = d6(2) <= gasGiantFrequency ? Math.max(((d6(2)/2) >> 0) - 2,1) : 0;
     var roll;
@@ -289,14 +292,16 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if(roll <= 4){
         starport = "A";
         if(d6(2)<=6){ 
-            if(d6(2)<=4){
-                bases.push("Naval Depot");
-            }else{ bases.push("Naval");}
+            if(d6(2)<=4){}
+            //    bases.push("Naval Depot");
+            //}else{ bases.push("Naval"); }
+            bases.push("Naval");
         }
         if(d6(2)<=4){ 
-            if(d6(2)<=7){
-                bases.push("Way Station");
-            }else{ bases.push("Scout");}
+            if(d6(2)<=7){}
+            //    bases.push("Way Station");
+            //}else{ bases.push("Scout");}
+            bases.push("Scout");
         }
     }
     else if(roll <= 6){
