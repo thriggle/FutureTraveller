@@ -2680,7 +2680,7 @@
                 }
                 if (capital && designateSectorCapital) {
                     capital.isCapital = true;
-                    if(subsectorCapitals[i].mainworld.tradecodes.indexOf("Cs") === -1){
+                    if(capital.mainworld.tradecodes.indexOf("Cs") === -1){
                         capital.mainworld.tradecodes.push("Cs");
                     }
                     var subsectorCapitalCodeIndex = capital.mainworld.tradecodes.indexOf("Cp");
