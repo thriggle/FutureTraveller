@@ -513,25 +513,75 @@
                     </label><br />
                     <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes"
                             checked="checked" /> Show Travel Codes&nbsp;</label><label for="chkShowTradeRoutes">&nbsp;<input type="checkbox" checked="checked" name="chkShowTradeRoutes" id="chkShowTradeRoutes"/> Show Trade Routes</label>
-                            <label for="numProfitThreshold">(Two-Way Profit Threshold: <input id="numProfitThreshold" type="number" style="width:4em" value="2500"/>)</label>
-                            <br/><label for="slctMinJump1Starport">Required Starport Rating for Jump-1 Route: <select id="slctMinJump1Starport">
+                            <fieldset class="collapsed">
+                                <legend>Trade Routes</legend>
+                                <label for="numProfitThreshold">(Minimum Profit Threshold: <input id="numProfitThreshold" type="number" style="width:4em" value="1250"/></label>
+                                <label for="numParsecPremium">Premium per Parsec: <input id="numParsecPremium" type="number" style="width:4em" value="1250"/>)</label>
+                            <br/><label for="slctMinJump1Starport">Jump-1 Route Min Starport: <select id="slctMinJump1Starport">
                                 <option value="A">A</option>
                                 <option value="B">B</option>
                                 <option value="C">C</option>
                                 <option selected="selected" value="D">D</option>
                                 <option value="E">E</option>
                                 <option value="X">X</option>
+                            </select></label> 
+                            <label for="slctMinJump1Importance">Min Importance: <select id="slctMinJump1Importance">
+                                <option value="6">+6 Very Important</option>
+                                <option value="5">+5 Very Important</option>
+                                <option value="4">+4 Important</option>
+                                <option value="3">+3 Ordinary</option>
+                                <option value="2">+2 Ordinary</option>
+                                <option value="1">+1 Ordinary</option>
+                                <option selected="selected" value="0">0 Unimportant</option>
+                                <option value="-1">-1 Unimportant</option>
+                                <option value="-2">-2 Very Unimportant</option>
+                                <option value="-3">-3 Very Unimportant</option>
                             </select></label>
-                            <label for="slctMinJump2Starport">for Jump-2 Route: <select id="slctMinJump2Starport">
+                            <br/>
+                            <label for="slctMinJump2Starport">Jump-2 Route Min Starport: <select id="slctMinJump2Starport">
                                 <option value="A">A</option>
                                 <option value="B">B</option>
                                 <option selected="selected" value="C">C</option>
                                 <option value="D">D</option>
                                 <option value="E">E</option>
                                 <option value="X">X</option>
-                            </select>
+                            </select></label>
+                            <label for="slctMinJump2Importance">Min Importance: <select id="slctMinJump2Importance">
+                                <option value="6">+6 Very Important</option>
+                                <option value="5">+5 Very Important</option>
+                                <option value="4">+4 Important</option>
+                                <option value="3">+3 Ordinary</option>
+                                <option value="2">+2 Ordinary</option>
+                                <option selected="selected" value="1">+1 Ordinary</option>
+                                <option value="0">0 Unimportant</option>
+                                <option value="-1">-1 Unimportant</option>
+                                <option value="-2">-2 Very Unimportant</option>
+                                <option value="-3">-3 Very Unimportant</option>
+                            </select></label>
                             <br/>
-                </fieldset>
+                            <label for="slctMinJump3Starport">Jump-3 Route Min Starport: <select id="slctMinJump3Starport">
+                                <option value="A">A</option>
+                                <option selected="selected" value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="X">X</option>
+                            </select></label>
+                            <label for="slctMinJump3Importance">Min Importance: <select id="slctMinJump3Importance">
+                                <option value="6">+6 Very Important</option>
+                                <option value="5">+5 Very Important</option>
+                                <option value="4">+4 Important</option>
+                                <option value="3">+3 Ordinary</option>
+                                <option selected="selected" value="2">+2 Ordinary</option>
+                                <option value="1">+1 Ordinary</option>
+                                <option value="0">0 Unimportant</option>
+                                <option value="-1">-1 Unimportant</option>
+                                <option value="-2">-2 Very Unimportant</option>
+                                <option value="-3">-3 Very Unimportant</option>
+                            </select></label>
+                            <br/>
+                        </fieldset>
+                        </fieldset>
                 <fieldset class="collapsed">
                     <legend>Configuration</legend>
                     <fieldset class="collapsed">
@@ -1431,7 +1481,8 @@
                     </div>
                 </fieldset>
                 <fieldset class="collapsed" data-copy="donot">
-                    <legend>Local Cargo</legend>
+                    <legend>Local Trade</legend>
+                    <div id="TradePartners"></div>
                     <div class="CargoContainer">
                         <input type="button" value="Generate Cargo" id="btnGenerateCargo"><br/>
                         <h2 id="CargoCode">(Generate local cargo)</h2>
@@ -1485,21 +1536,7 @@
     </div>
     <script src="js/NameGenerator.js"></script>
     <script>
-        var menus = document.querySelectorAll("nav.menu ul li a");
-        for(var i = 0, len = menus.length; i < len; i++){
-            var node = menus[i];
-            node.addEventListener("click",onNavigate);
-        }
-        function onNavigate(e){
-            var target = e.target.getAttribute("target");
-            if(target){
-                var current = document.querySelector("nav.menu ul li a.selected");
-                current.classList.remove(current.className);
-                e.target.classList.add("selected");
-                document.querySelector("[data-nav='"+current.getAttribute("target")+"']").style.display = "none";
-                document.querySelector("[data-nav='"+target+"']").style.display = "block";
-            }
-        }
+        
         (function () {
             //globalsRESH
             var wordMaker;
@@ -1520,10 +1557,15 @@
                 SUBSECTOR_X_OFFSET = 8,
                 SUBSECTOR_Y_OFFSET = 0,
                 FONT = "sans-serif",
-                TRADE_ROUTE_THRESHOLD = Number(document.getElementById("numProfitThreshold").value);
-            var DOUBLE_TRADE_ROUTE_THRESHOLD = 2*TRADE_ROUTE_THRESHOLD;
+                TRADE_ROUTE_THRESHOLD = Number(document.getElementById("numProfitThreshold").value),
+                TRADE_ROUTE_PREMIUM = Number(document.getElementById("numParsecPremium").value),
+                MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
             var MIN_JUMP1_ROUTE_STARPORT = document.getElementById("slctMinJump1Starport").value, 
-                MIN_JUMP2_ROUTE_STARPORT = document.getElementById("slctMinJump2Starport").value;
+                MIN_JUMP2_ROUTE_STARPORT = document.getElementById("slctMinJump2Starport").value,
+                MIN_JUMP3_ROUTE_STARPORT = document.getElementById("slctMinJump3Starport").value,
+                MIN_JUMP1_ROUTE_IMPORTANCE = Number(document.getElementById("slctMinJump1Importance").value),
+                MIN_JUMP2_ROUTE_IMPORTANCE = Number(document.getElementById("slctMinJump2Importance").value),
+                MIN_JUMP3_ROUTE_IMPORTANCE = Number(document.getElementById("slctMinJump3Importance").value);
             var HEX_MATH = {
                 radius: HEX_SIZE,
                 xOffset: HEX_SIZE * 3,
@@ -1539,6 +1581,22 @@
             var _systems = {}, systemArray = [];
             var routes = [], NIL = [];
             var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0; // used for dragging system details dialog around
+            var menus = document.querySelectorAll("nav.menu ul li a");
+            for(var i = 0, len = menus.length; i < len; i++){
+                var node = menus[i];
+                node.addEventListener("click",onNavigate);
+            }
+            function onNavigate(e){
+                var target = e.target.getAttribute("target");
+                if(target){
+                    var current = document.querySelector("nav.menu ul li a.selected");
+                    current.classList.remove(current.className);
+                    e.target.classList.add("selected");
+                    document.querySelector("[data-nav='"+current.getAttribute("target")+"']").style.display = "none";
+                    document.querySelector("[data-nav='"+target+"']").style.display = "block";
+                    MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
+                }
+            }
             var canvas = document.getElementById("canvas");
             canvas.setAttribute("width", SUBSECTOR_WIDTH * HEX_MATH.xOffset + HEX_MATH.radius + CANVAS_PADDING * 2);
             canvas.setAttribute("height", SUBSECTOR_HEIGHT * HEX_MATH.yOffset + HEX_MATH.halfYOffset + CANVAS_PADDING * 2);
@@ -1620,12 +1678,20 @@
                     removeChildElements(output);
                     output.innerHTML = "Roll " + ++skillRoll + ": " + getCasteSkill();
                 });
+                document.getElementById("numParsecPremium").addEventListener("input",function(){
+                    var newNum = Number(document.getElementById("numParsecPremium").value);
+                    if( !isNaN(newNum)){
+                        TRADE_ROUTE_PREMIUM = newNum;
+                        var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                        var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                        analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                        drawMap(mapContent);
+                    }
+                });
                 document.getElementById("numProfitThreshold").addEventListener("input",function(){
                     var newNum = Number(document.getElementById("numProfitThreshold").value);
-                    console.log(newNum);
                     if( !isNaN(newNum)){
                         TRADE_ROUTE_THRESHOLD = newNum;
-                        DOUBLE_TRADE_ROUTE_THRESHOLD = 2*TRADE_ROUTE_THRESHOLD;
                         var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                         var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                         analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
@@ -1648,6 +1714,34 @@
                 document.getElementById("slctMinJump2Starport").addEventListener("change",function(){
                     MIN_JUMP2_ROUTE_STARPORT = document.getElementById("slctMinJump2Starport").value;
                         var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                        var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                        analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                        drawMap(mapContent);
+                });
+                document.getElementById("slctMinJump1Importance").addEventListener("change",function(){
+                    MIN_JUMP1_ROUTE_IMPORTANCE = Number(document.getElementById("slctMinJump1Importance").value);
+                    var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                        var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                        analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                        drawMap(mapContent);
+                });
+                document.getElementById("slctMinJump2Importance").addEventListener("change",function(){
+                    MIN_JUMP2_ROUTE_IMPORTANCE = Number(document.getElementById("slctMinJump2Importance").value);
+                    var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                        var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                        analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                        drawMap(mapContent);
+                });
+                document.getElementById("slctMinJump3Starport").addEventListener("change",function(){
+                    MIN_JUMP3_ROUTE_STARPORT = document.getElementById("slctMinJump3Starport").value;
+                        var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                        var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                        analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                        drawMap(mapContent);
+                });
+                document.getElementById("slctMinJump3Importance").addEventListener("change",function(){
+                    MIN_JUMP3_ROUTE_IMPORTANCE = Number(document.getElementById("slctMinJump3Importance").value);
+                    var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                         var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                         analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
                         drawMap(mapContent);
@@ -1693,6 +1787,7 @@
                                     lastHighlightedHex = hex;
                                     hex.highlighted = true;
                                     drawMap(mapContent);
+                                    redrawRequested = false;
                                     break;
                                 }
                             }
@@ -1705,13 +1800,16 @@
                 canvas.addEventListener("click", function (e) {
                     var x = e.clientX - HEX_MATH.diameter - CANVAS_PADDING - canvas.getBoundingClientRect().left;
                     var y = e.clientY - HEX_MATH.halfYOffset - CANVAS_PADDING - canvas.getBoundingClientRect().top;
+                    var hexFound = false;
                     for (var i = 0, len = mapContent.length; i < len; i++) {
                         var hex = mapContent[i];
                         if (coordsInHexagon(x, y, hex)) {
+                            hexFound = true;
                             if (hex.selected) {
                                 hex.selected = false;
                                 var detailBlock = document.getElementById("SystemDetailsContainer");
                                 detailBlock.style.display = "none";
+                                MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
                             }
                             else {
                                 if (lastSelectedHex) {
@@ -1722,10 +1820,12 @@
                                 var detailBlock = document.getElementById("SystemDetailsContainer");
                                 if (hex.system) {
                                     renderSystem(hex.system);
-                                    detailBlock.style.left = e.pageX + "px";// - canvas.getBoundingClientRect().left +"px";
-                                    detailBlock.style.top = e.pageY + "px";//- canvas.getBoundingClientRect().top+"px";
-                                    detailBlock.style.display = "inline-block";
-                                    detailBlock.style.position = "absolute";
+                                    if(!MANUAL_SYSTEM_WINDOW_PLACEMENT){
+                                        detailBlock.style.left = e.pageX + "px";// - canvas.getBoundingClientRect().left +"px";
+                                        detailBlock.style.top = e.pageY + "px";//- canvas.getBoundingClientRect().top+"px";
+                                        detailBlock.style.display = "inline-block";
+                                        detailBlock.style.position = "absolute";
+                                    }
                                     document.querySelector("[data-nav='map']").appendChild(detailBlock);
                                     document.getElementById("destTL").value = lastSelectedHex.system.mainworld.tech;
                                     document.getElementById("txtDestTradeCodes").value = lastSelectedHex.system.mainworld.tradecodes.join(" ");
@@ -1736,14 +1836,19 @@
                                     }
                                 } else {
                                     detailBlock.style.display = "none";
+                                    MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
                                 }
                                 break;
                             }
                         } else {
                             if (hex.selected) {
                                 hex.selected = false;
+                                
                             }
                         }
+                    }
+                    if(!hexFound){
+                        MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
                     }
                     drawMap(mapContent);
                 });
@@ -1766,6 +1871,7 @@
                     }
                     if(mapContent[i].system){
                         renderSystem(mapContent[i].system);
+                        MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
                         var detailBlock = document.getElementById("SystemDetailsContainer");
                         var targetBlock = document.getElementById("randSystemDetails");
                         targetBlock.appendChild(detailBlock);
@@ -1797,6 +1903,7 @@
                     }
                     removeChildElements(document.getElementById("specialAbility"));
                     removeChildElements(document.getElementById("casteSkill"));
+                    MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
                 });
                 document.getElementById("txtSeed").addEventListener("keyup", function (e) {
                     MathRandom = pseudoRandomNumberGenerator(this.value);
@@ -1883,6 +1990,7 @@
                 document.getElementById("btnPopulateSystems").addEventListener("click", populateSubsector);
                 document.getElementById("btnClearSystems").addEventListener("click", function () {
                     mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT);
+                    MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
                     drawMap(mapContent);
                 });
                 document.getElementById("slcHeatMap").addEventListener("change", function () {
@@ -2103,6 +2211,7 @@
                     pos4 = e.clientY;
                     document.onmouseup = stopDraggingDialog;
                     document.onmousemove = dragDialog;
+                    MANUAL_SYSTEM_WINDOW_PLACEMENT = true;
                 }
                 
             }
@@ -3670,52 +3779,95 @@
                 var xy = TCoordToXYCoord(tcoord);
                 var x = xy.x, y = xy.y;
                 var thisSystem = mapContent[x + (y*(SUBSECTOR_WIDTH))].system;
-                if(thisSystem.isRed || thisSystem.mainworld.starport > MIN_JUMP1_ROUTE_STARPORT){ return [];}
-                var isGoodStarport = thisSystem.mainworld.starport <= MIN_JUMP2_ROUTE_STARPORT;
+                if(thisSystem.isRed || thisSystem.mainworld.starport > MIN_JUMP1_ROUTE_STARPORT || thisSystem.importance.extension < MIN_JUMP1_ROUTE_IMPORTANCE){ return [];}
+                var isGoodStarport = thisSystem.mainworld.starport <= MIN_JUMP2_ROUTE_STARPORT && thisSystem.importance.extension >= MIN_JUMP2_ROUTE_IMPORTANCE;
+                var isGreatStarport = thisSystem.mainworld.starport <= MIN_JUMP3_ROUTE_STARPORT && thisSystem.importance.extension >= MIN_JUMP3_ROUTE_IMPORTANCE;
                 
                 var candidates = [];
                 if (x&1 === 1) { // neighbors to left/right are vertically offset down
                     if(isGoodStarport){
-                        candidates.push([x-1,y-1]);
-                        candidates.push([x-1,y+2]);
-                        candidates.push([x-2,y]);
-                        candidates.push([x-2,y-1]);
-                        candidates.push([x-2,y+1]);
-                        candidates.push([x,y-2]);
-                        candidates.push([x,y+2]);
-                        candidates.push([x+1, y-1]);
-                        candidates.push([x+2,y]);
-                        candidates.push([x+2,y+1]);
-                        candidates.push([x+2,y-1]);
-                        candidates.push([x+1, y+2]);
+                        candidates.push([x-1,y-1,2]);
+                        candidates.push([x-1,y+2,2]);
+                        candidates.push([x-2,y,2]);
+                        candidates.push([x-2,y-1,2]);
+                        candidates.push([x-2,y+1,2]);
+                        candidates.push([x,y-2,2]);
+                        candidates.push([x,y+2,2]);
+                        candidates.push([x+1, y-1,2]);
+                        candidates.push([x+2,y,2]);
+                        candidates.push([x+2,y+1,2]);
+                        candidates.push([x+2,y-1,2]);
+                        candidates.push([x+1, y+2,2]);
+                        if(isGreatStarport){
+                            var d = 3;
+                            candidates.push([x,y-3,d]);
+                            candidates.push([x+1,y-2,d]);
+                            candidates.push([x+2,y-2,d]);
+                            candidates.push([x+3,y-1,d]);
+                            candidates.push([x+3,y,d]);
+                            candidates.push([x+3,y+1,d]);
+                            candidates.push([x+3,y+2,d]);
+                            candidates.push([x+2,y+2,d]);
+                            candidates.push([x+1,y+3,d]);
+                            candidates.push([x,y+3,d]);
+                            candidates.push([x-1,y+3,d]);
+                            candidates.push([x-2,y+2,d]);
+                            candidates.push([x-3,y+2,d]);
+                            candidates.push([x-3,y+1,d]);
+                            candidates.push([x-3,y,d]);
+                            candidates.push([x-3,y-1,d]);
+                            candidates.push([x-2,y-2,d]);
+                            candidates.push([x-1,y-2,d]);
+                        }
                     }
-                    candidates.push([x - 1, y]);
-                    candidates.push([x - 1, y + 1]);
-                    candidates.push([x, y - 1]);
-                    candidates.push([x, y + 1]);  
-                    candidates.push([x + 1, y]);
-                    candidates.push([x + 1, y + 1]);
+                    candidates.push([x - 1, y,1]);
+                    candidates.push([x - 1, y + 1,1]);
+                    candidates.push([x, y - 1,1]);
+                    candidates.push([x, y + 1,1]);  
+                    candidates.push([x + 1, y,1]);
+                    candidates.push([x + 1, y + 1,1]);
                 } else { // neighbors to left/right are vertically offset up
                     if(isGoodStarport){
-                        candidates.push([x-1,y-2]);
-                        candidates.push([x-1,y+1]);
-                        candidates.push([x-2,y]);
-                        candidates.push([x-2,y-1]);
-                        candidates.push([x-2,y+1]);
-                        candidates.push([x,y-2]);
-                        candidates.push([x,y+2]);
-                        candidates.push([x+1,y+1]);
-                        candidates.push([x+2,y+1]);
-                        candidates.push([x+1,y-2]);
-                        candidates.push([x+2,y]);
-                        candidates.push([x+2,y-1]);
+                        candidates.push([x-1,y-2,2]);
+                        candidates.push([x-1,y+1,2]);
+                        candidates.push([x-2,y,2]);
+                        candidates.push([x-2,y-1,2]);
+                        candidates.push([x-2,y+1,2]);
+                        candidates.push([x,y-2,2]);
+                        candidates.push([x,y+2,2]);
+                        candidates.push([x+1,y+1,2]);
+                        candidates.push([x+2,y+1,2]);
+                        candidates.push([x+1,y-2,2]);
+                        candidates.push([x+2,y,2]);
+                        candidates.push([x+2,y-1,2]);
+                        if(isGreatStarport){
+                            var d = 3;
+                            candidates.push([x,y-3,d]);
+                            candidates.push([x+1,y-3,d]);
+                            candidates.push([x+2,y-2,d]);
+                            candidates.push([x+3,y-2,d]);
+                            candidates.push([x+3,y-1,d]);
+                            candidates.push([x+3,y,d]);
+                            candidates.push([x+3,y+1,d]);
+                            candidates.push([x+2,y+2,d]);
+                            candidates.push([x+1,y+2,d]);
+                            candidates.push([x+0,y+3,d]);
+                            candidates.push([x-1,y+2,d]);
+                            candidates.push([x-2,y+2,d]);
+                            candidates.push([x-3,y+1,d]);
+                            candidates.push([x-3,y,d]);
+                            candidates.push([x-3,y-1,d]);
+                            candidates.push([x-3,y-2,d]);
+                            candidates.push([x-2,y-2,d]);
+                            candidates.push([x-1,y-3,d]);
+                        }
                     }
-                    candidates.push([x - 1, y - 1]);  
-                    candidates.push([x - 1, y]);
-                    candidates.push([x, y - 1]);
-                    candidates.push([x, y + 1]);
-                    candidates.push([x + 1, y - 1]);  
-                    candidates.push([x + 1, y]);  
+                    candidates.push([x - 1, y - 1,1]);  
+                    candidates.push([x - 1, y,1]);
+                    candidates.push([x, y - 1,1]);
+                    candidates.push([x, y + 1,1]);
+                    candidates.push([x + 1, y - 1,1]);  
+                    candidates.push([x + 1, y,1]);  
                 }
                 var neighbors = [];
                 
@@ -3723,22 +3875,36 @@
                     var candidate = candidates[i];
                     var index = XYtoIndex(candidate[0],candidate[1]);
                     if (index >= 0 & index < mapContent.length && mapContent[index].system) {
-                        var target = mapContent[index].system;    
-                        if(!target.isRed && target.mainworld.starport <= MIN_JUMP1_ROUTE_STARPORT && (!isGoodStarport || (isGoodStarport && target.mainworld.starport <= MIN_JUMP2_ROUTE_STARPORT))){
+                        var target = mapContent[index].system;
+                        var targetDistance = candidates[i][2];
+                        var profitThreshold = TRADE_ROUTE_THRESHOLD + (targetDistance*TRADE_ROUTE_PREMIUM);
+                        var targetIsOkayStarport = target.mainworld.starport <= MIN_JUMP1_ROUTE_STARPORT && target.importance.extension >= MIN_JUMP1_ROUTE_IMPORTANCE;
+                        if(targetIsOkayStarport){
+                            if(targetDistance === 2){
+                                targetIsOkayStarport = target.mainworld.starport <= MIN_JUMP2_ROUTE_STARPORT && target.importance.extension >= MIN_JUMP2_ROUTE_IMPORTANCE;
+                            }else if(targetDistance === 3){
+                                targetIsOkayStarport = target.mainworld.starport <= MIN_JUMP3_ROUTE_STARPORT && target.importance.extension >= MIN_JUMP3_ROUTE_IMPORTANCE;
+                            }
+                        }
+                        if((!target.isRed) && targetIsOkayStarport ){
                             var exportCargo = getCargo(thisSystem.mainworld.tech,thisSystem.mainworld.tradecodes,false);
                             var importCargo = getCargo(target.mainworld.tech,target.mainworld.tradecodes,false);
                             var exportProfit = calculatePrice( exportCargo,target.mainworld.tech,target.mainworld.tradecodes)-exportCargo.cost,
                             importProfit = calculatePrice( importCargo,thisSystem.mainworld.tech,thisSystem.mainworld.tradecodes)-importCargo.cost;
-                            var tradeStrength = importProfit+exportProfit, twoWayTrade = exportProfit>0&&importProfit>0;
+                            var tradeStrength = importProfit+exportProfit, twoWayTrade = exportProfit>0 && importProfit>0;
                             var neighbor = {
                                 tcoord:target.tcoord,
                                 export:exportProfit,
                                 import:importProfit,
-                                favored:twoWayTrade,
-                                trade:tradeStrength
+                                mutual:twoWayTrade,
+                                trade:tradeStrength,
+                                distance: targetDistance,
+                                name: target.name
                             }
                             neighbors.push(neighbor);
-                            if((twoWayTrade && tradeStrength > TRADE_ROUTE_THRESHOLD)||tradeStrength > DOUBLE_TRADE_ROUTE_THRESHOLD){routes.push([thisSystem.tcoord,target.tcoord]);}
+                            if((twoWayTrade && tradeStrength > profitThreshold) || tradeStrength > 2*profitThreshold){
+                                routes.push([thisSystem.tcoord,target.tcoord]);
+                            }
                         }                    
                     }
                 }
@@ -4470,6 +4636,41 @@
                 function getLimitString(star) {
                     return "100D=Orbit " + star.jlimit.toString() + " (" + lookups["orbitdistance"][star.jlimit.toString()] + ") 1000D=Orbit " + star.mlimit + " (" + lookups["orbitdistance"][star.mlimit.toString()] + ")"
                 }
+                var tradePartners = document.getElementById("TradePartners");
+                clearElement(tradePartners);
+                if(system.neighbors){
+                    system.neighbors.sort(function(a,b){
+                        if(a.trade > b.trade){
+                            return -1;
+                        }else if(b.trade > a.trade){
+                            return 1;
+                        }else if(a.name < b.name){
+                            return -1;
+                        }else{
+                            return 1;
+                        }
+                    });
+                    var ul = tradePartners.appendChild(document.createElement(ul));
+                    for(var i = 0, len = system.neighbors.length; i < len; i++){
+                        var neighbor = system.neighbors[i];
+                        var li = ul.appendChild(document.createElement("li"));
+                        var details;
+                        if(neighbor.mutual){
+                            details = "Mutual trade with ";
+                        }else if(neighbor.export > 0){
+                            details = "Exports to ";
+                        }else if(neighbor.import > 0){
+                            details = "Imports from ";
+                        }else{
+                            details = "Incidental traffic from ";
+                        }
+                        details +=  neighbor.name + " (" + neighbor.tcoord + ")";
+                        li.appendChild(document.createTextNode(
+                            details
+                        ))
+                    }
+                }
+                
             }
             function addLineToElement(el,text){
                 el.appendChild(document.createElement("br"));
