@@ -111,12 +111,9 @@
             document.getElementById("CargoPrice").innerHTML = "Cr " + price;
         }
         function getCargo(){
-            var cargocode = tl.toString() + " - " + tradeCodes.join(" ");
-            if(tradeCodes.length == 0 || tradeCodes[0].length === 0){
-                cargocode += "(No Trade Codes)"
-            }
+            
             cost = 3000;
-            var relevantCodes =[];
+            var relevantCodes =[], labelCodes = [];
             var details = [""];
             for(var i = 0, len = tradeCodes.length; i < len; i++){
                 var code = tradeCodes[i];
@@ -125,21 +122,22 @@
                     case "As": 
                     case "Po": 
                     case "In": relevantCodes.push(code);
-                    case "Hi": cost -= 1000; break;
+                    case "Hi": cost -= 1000; labelCodes.push(code); break;
                     case "Fl": 
                     case "Ri": 
                     case "Va": 
                     case "De": relevantCodes.push(code);
                     case "Lo": 
                     case "Ni":
-                        case "Ba": cost += 1000; break;
-                        case "Fa":
-                            case "Ic": 
-                            case "Na": 
+                    case "Ba": cost += 1000; labelCodes.push(code); break;
+                    case "Fa":
+                    case "Ic": 
+                    case "Na": 
                     case "Cp": 
                     case "Cs": 
                     case "Cx": 
-                    case "Ga": relevantCodes.pop(code);
+                    case "Ga": relevantCodes.push(code); break;
+                    case "Po": labelCodes.push(code);
                     default: break;
                 }
             }
@@ -151,7 +149,7 @@
             if(tradeCodes.indexOf("Fl") >= 0){ details.push("Unusual"); }
             if(tradeCodes.indexOf("Ga") >= 0){ details.push("Premium"); }
             if(tradeCodes.indexOf("He") >= 0){ details.push("Strange"); }
-            if(tradeCodes.indexOf("Hi") >= 0 && tradeCodes.indexOf("In") === -1){ details.push("Strange"); }
+            if(tradeCodes.indexOf("Hi") >= 0 && tradeCodes.indexOf("In") === -1){ details.push("Processed"); }
             if(tradeCodes.indexOf("Ic") >= 0){ details.push("Cryo"); }
             //if(tradeCodes.indexOf("Lo") >= 0){ details.push("Unlabeled"); }
             if(tradeCodes.indexOf("Ni") >= 0){ details.push("Unprocessed"); }
@@ -164,15 +162,21 @@
             if(relevantCodes.length === 0){ relevantCodes = ["Na"]; }
             
             var tableCode = relevantCodes[(MathRandom()*relevantCodes.length) >>> 0]
-            var prefix = details.length > 0 ? details[(MathRandom()*details.length) >>> 0] + " " : "";
+            var prefix = (details.length > 0 ? (details[(MathRandom()*details.length) >>> 0]) : "");
+                if(prefix.length > 0){ prefix += " ";}
+                
             
             cost += tl*100;
+            var cargocode = tl.toString() + " - " + relevantCodes.join(" ");
+            if(relevantCodes.length == 0 || relevantCodes[0].length === 0){
+                cargocode += "(No Trade Codes)"
+            }
             cargocode += " - Cr " + cost;
 
-            var description = prefix + getTradeGood(tableCode);
+            var description = getTradeGood(prefix,tableCode);
             return {code:cargocode, cost:cost, description:description};
         }
-        function getTradeGood(tableCode){
+        function getTradeGood(prefix, tableCode){
             if(tableCode === "Ag"){ 
                 tableCode = (MathRandom()*2) >>> 0 == 1 ? "Ga" : "Fa";
             }else if(tableCode === "Cs" || tableCode === "Cx"){ tableCode = "Cp";}
@@ -312,11 +316,11 @@
             var roll1 = d6()-1, roll2 = d6()-1;
             var type = goods[tableCode].types[roll1];
             if(type !== "Imbalances"){
-                return type + " (" + goods[tableCode].tables[roll1][roll2] + ")";
-            }else{
-                var imbalanceCategory = goods[tableCode].tables[roll1][roll2];
-                return "[+"+imbalanceCategory+"]" + " " + getTradeGood(imbalanceCategory);
-            }
+                    return type + " (" + prefix + goods[tableCode].tables[roll1][roll2] + ")";
+                }else{
+                    var imbalanceCategory = goods[tableCode].tables[roll1][roll2];
+                    return "Imbalance [+"+imbalanceCategory+"] " + getTradeGood(prefix,imbalanceCategory);
+                }
         }
         function getRandomTradeCodes() {
             var classifications1 = [
