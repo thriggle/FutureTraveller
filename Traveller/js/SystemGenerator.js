@@ -56,21 +56,195 @@ function isValidStellarNumbers(type,decimal,size,allowwhitedwarf){
     }
     return isOk;
 }
+function updateTradeCodes(system){
+    var tradecodes = [], starport = system.starport, bases = system.bases, popdigit = system.mainworld.popdigit, size = system.size, atmo = system.atmo, hydro = system.hydro, pop = system.pop, gov = system.gov, law = system.law, tech = system.tech;
+    var uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
+    system.mainworld.uwp = uwp;
+    var difference = system.stars.primary.HZOrbit - system.mainworld.orbit;
+    if(difference >= 2){
+        tradecodes.push("Tr");
+    }else if(difference === 1){
+        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+            tradecodes.push("Tr");
+        }else{
+            tradecodes.push("Ho");
+        }
+    }else if(difference === 0){
+
+    }else if(difference === -1){
+        if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
+            tradecodes.push("Tu");
+        }else{
+            tradecodes.push("Co");
+        }
+    }else if(difference <= -2){
+        //if(size >= 2 && size <= 9 && hydro > 0){
+            tradecodes.push("Fr"); 
+        //}
+    }
+    if(system.mainworld.orbit <= 1){ tradecodes.push("Tz"); }
+    
+    // trade codes
+    if(size === 0 && atmo === 0 && hydro === 0){ tradecodes.push("As"); }
+    if(atmo >= 2 && atmo <= 9 && hydro === 0){ tradecodes.push("De"); }
+    if(atmo >= 10 && atmo <= 12 && hydro >= 1){ tradecodes.push("Fl"); }
+    if(size >= 6 && size <= 8 && 
+        (atmo === 5 || atmo === 6 || atmo === 8) &&
+        (hydro >= 5 && hydro <= 7)
+    ){ 
+        tradecodes.push("Ga"); 
+    }
+    if(size >= 3 && 
+        (atmo === 2 || atmo === 4 || atmo === 7 || atmo === 9 || atmo === 10 || atmo === 11 || atmo === 12) &&
+        (hydro <= 2)
+    ){
+        tradecodes.push("He");
+    }
+    if( atmo <= 1 && hydro >= 1){ tradecodes.push("Ic"); }
+    if(size >= 10 && hydro === 10 && (
+        (atmo >= 3 && atmo <=9) || (atmo >= 13)
+    )){ tradecodes.push("Oc");}
+    if(size <= 9 && hydro === 10 && (
+        (atmo >= 3 && atmo <=9) || (atmo >= 13)
+    )){ tradecodes.push("Wa");}
+    if(atmo === 0){tradecodes.push("Va");}
+    
+    if(pop === 0){
+        
+        if(tech > 0){ tradecodes.push("Di");}
+        else{tradecodes.push("Ba");}
+    }
+    else if(pop <= 3){
+        tradecodes.push("Lo");
+    }else if(pop <= 6){
+        tradecodes.push("Ni");
+    }else if(pop === 8){
+        tradecodes.push("Ph");
+    }else if(pop >= 9){
+        tradecodes.push("Hi");
+    }
+    if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop === 4 || pop === 8)){ tradecodes.push("Pa"); }
+    if(atmo >= 4 && atmo <= 9 && hydro >= 4 && hydro <= 8 && (pop >= 5 && pop <= 7)){ tradecodes.push("Ag"); }
+    if(atmo <= 3 && hydro <= 3 && pop >= 6){ tradecodes.push("Na"); }
+    if(gov === 6){ // captive gov
+
+        if( (atmo === 2 || atmo === 3 || atmo === 10 || atmo === 11) &&
+        hydro <= 5 && pop >=3 && pop <= 6 && law >= 6 && law <= 9 && gov === 6
+        ){
+            tradecodes.push("Px");
+        }else if(pop <= 4 && (law == 0 || law == 4 || law == 5)){
+            tradecodes.push("Re");
+        }
+       
+    }
+    if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9) && (pop === 7 || pop === 8)){ tradecodes.push("Pi");}
+    if((atmo <=2 || atmo === 4 || atmo ===7 || atmo === 9 || atmo === 10 || atmo === 11 || atmo === 12) 
+        && (pop >= 9)){ tradecodes.push("In");
+    }
+    if(atmo >= 2 && atmo <= 5 && hydro <= 3){
+        tradecodes.push("Po");
+    }
+    if(atmo === 6 || atmo === 8){
+        if(pop === 5 || pop === 9){ tradecodes.push("Pr"); }
+        else if(pop >= 6 && pop <= 8){ tradecodes.push("Ri"); }
+    }
+    if(pop >= 5 && pop <= 10 && gov === 6 && law <= 3){ tradecodes.push("Cy");}
+    
+
+    var importance = 0, importanceDesc = "", dailyships = "0", weeklyships = "0";
+    if(starport === "A" || starport === "B"){ importance +=1; }
+    else if(starport === "D" || starport === "E" || starport === "X"){ importance -= 1;}
+    if(tech >= 16){importance += 1;}
+    if(tech >= 10){importance += 1;}
+    if(tech <= 8){importance -= 1;}
+    if(tradecodes.indexOf("Ag")>=0){ importance += 1;}
+    if(tradecodes.indexOf("Hi")>=0){ importance += 1;}
+    if(tradecodes.indexOf("In")>=0){ importance += 1;}
+    if(tradecodes.indexOf("Ri")>=0){ importance += 1;}
+    if(pop <= 6){ importance -=1;}
+    if(bases.indexOf("Naval") >= 0 && bases.indexOf("Scout") >= 0){ importance += 1;}
+    if(bases.indexOf("Way Station") >= 0 || bases.indexOf("Naval Depot") >= 0){ importance += 1;}
+    var isImportant = importance >= 4;
+    if(importance <= -2){ importanceDesc = "Very Unimportant"; }
+    else if(importance <= 0){ importanceDesc = "Unimportant"; dailyships = "1"; weeklyships = importance === 0 ? "2" : "1";}
+    else if(importance <= 3){ 
+        importanceDesc = "Ordinary"; 
+        if(importance === 1){dailyships = "1-2"; weeklyships = "10";}
+        else if(importance === 2){dailyships = "2-4"; weeklyships = "20";}
+        else if(importance === 3){dailyships = "3-6"; weeklyships = "30";}
+    }
+    else if(importance <= 4){ importanceDesc = "Important"; dailyships = "15-20"; weeklyships = "100";}
+    else if(importance >= 5){ importanceDesc = "Very Important"; dailyships = "100"; weeklyships = "1000";}
+    var isUnimportant = importance <= 0;
+    var economics = {resources:0,infrastructure:0,labor:0,efficiency:0};
+    economics.resources = d6(2) + (tech >= 8 ? system.gg+system.planetoidBelts: 0);
+    economics.labor = Math.max(0, pop - 1);
+    if(pop === 0){
+        economics.infrastructure = 0;
+    }else if(pop <= 3){
+        economics.infrastructure = Math.max(0,importance);
+    }else if(pop <= 6){
+        economics.infrastructure = Math.max(0,d6() + importance);
+    }else{
+        economics.infrastructure = Math.max(0,d6(2) + importance);
+    }
+    economics.efficiency = d6()-d6();
+    economics.extension = ""+ext(economics.resources) + ext(economics.labor) + ext(economics.infrastructure) + (economics.efficiency >= 0 ? "+" : "") + (economics.efficiency == 0 ? 1 : economics.efficiency);
+    economics.RU = Math.max(1,economics.resources)*Math.max(1,economics.labor)*Math.max(1,economics.infrastructure)*(economics.efficiency === 0 ? 1 : economics.efficiency);
+    system.economics = economics;
+    var cultural = {};
+    if(pop === 0){
+        cultural = {heterogeneity:0, acceptance:0, strangeness:0, symbols:0, extension:"0000"}
+    }else{
+        cultural.heterogeneity = Math.max(1, pop + d6()-d6());
+        cultural.acceptance = Math.max(1, importance + pop);
+        cultural.strangeness = Math.max(1, d6() - d6() + 5);
+        cultural.symbols = Math.max(1, d6() - d6() + tech);
+        cultural.extension = ext(cultural.heterogeneity)+ext(cultural.acceptance)+ext(cultural.strangeness)+ext(cultural.symbols);
+    }
+    tradecodes.sort();
+    uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
+    var highport = false;
+    if(starport === "A" && pop >= 7){ highport = true;}
+    else if(starport === "B" && pop >= 8){ highport = true;}
+    else if(starport === "C" && pop >= 9){ highport = true;}
+    var roughpop = popdigit * Math.pow(10,pop);
+    system.mainworld.roughpop = roughpop;
+    system.mainworld.cultural = cultural;
+    system.mainworld.highport = highport;
+    system.mainworld.isAsteroidBelt = size===0;
+
+    if(system.mainworld.worldtype === "Far Satellite"){ tradecodes.push("Sa"); }
+    else if(system.mainworld.worldtype === "Close Satellite"){ tradecodes.push("Lk"); }
+    var totalpops = getTotalPop(system.stars.primary);
+    var totalpop = 0;
+    for(var i = 0, len = totalpops.length; i < len; i++){
+        totalpop += totalpops[i] * Math.pow(10,i);
+    }
+    // nobility
+    var nobility = ["B"];
+    if(tradecodes.indexOf("Pa") >= 0 || tradecodes.indexOf("Pr") >= 0){ nobility.push("c"); }
+    if(tradecodes.indexOf("Ag") >= 0 || tradecodes.indexOf("Ri") >= 0){ nobility.push("C"); }
+    if(tradecodes.indexOf("Pi") >= 0){ nobility.push("D");}
+    if(tradecodes.indexOf("Ph") >= 0){ nobility.push("e");}
+    if(tradecodes.indexOf("In") >= 0 || tradecodes.indexOf("Hi") >= 0){ nobility.push("E"); }
+    if(isImportant){ nobility.push("f");}
+    system.mainworld.tradecodes = tradecodes;
+    system.importance = {weeklytraffic:weeklyships, dailytraffic:dailyships, isImportant:isImportant, isUnimportant:isUnimportant, extension:importance,description:importanceDesc};
+    return system;
+}
 function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel, diebackPenalty, ruleset, allowNonMWPops, applyHillSphereLimit, allowInnerWhiteDwarfs, predefinedUWP){
-    //console.log(name);
     if(typeof ruleset === "undefined"){ ruleset = "T5";}
     if(typeof diebackPenalty === "undefined"){ diebackPenalty = 2;}
     if(typeof allowNonMWPops === "undefined"){allowNonMWPops = true;}
     if(typeof applyHillSphereLimit === "undefined"){ applyHillSphereLimit = true;}
     if(typeof allowInnerWhiteDwarfs === "undefined"){ allowInnerWhiteDwarfs = true;}
-    if(typeof predefinedUWP === "undefined"){ predefinedUWP = false;}else{
-        //St Siz Atm Hyd Pop Gov Law - TL
-        // PBG:### {Ix} (Ex) [Cx]
-    }
+    
     var planetoidBelts = Math.max(d6()-3,0);
     var gg = d6(2) <= gasGiantFrequency ? Math.max(((d6(2)/2) >> 0) - 2,1) : 0;
     var roll;
-    var uwp = "",popdigit = 0,totalpop=0;
+    var uwp = predefinedUWP ? predefinedUWP : "",popdigit = 0,totalpop=0;
+    console.log(uwp);
     var tradecodes = [];
     var stars = {primary:{},primary_companion:false,close:false,near:false, near_companion:false,close_companion:false,far:false, far_companion:false};
     var primaryType = d6()-d6(),
@@ -100,8 +274,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }
     stars.primary = getStar(primaryType,primaryDecimal,primarySize,20);
     stars.primary.worldtype = "primary star";
-    //stars.primary.numOrbits = 20;
-    //stars.primary.satellites = new Array(20);
+
     var primarySurface = getInnermostOrbit(stars.primary);
     var secondaryOrbitDeduction = 2;
     if(primarySurface > -1){ 
@@ -287,126 +460,141 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }
     
     var bases = [];
-    roll = d6(2); // roll for starport
-    var starport;
-    if(roll <= 4){
-        starport = "A";
-        if(d6(2)<=6){ 
-            if(d6(2)<=4){}
-            //    bases.push("Naval Depot");
-            //}else{ bases.push("Naval"); }
-            bases.push("Naval");
+    var starport, size, atmo, hydro, pop, gov, law, tech;
+    if(typeof predefinedUWP !== "undefined" && predefinedUWP !== false && predefinedUWP.length >= 9){
+        console.log(predefinedUWP);
+        starport = predefinedUWP[0];
+        switch(starport){
+            case "A": 
+                if(d6(2)<=6){ bases.push("Naval"); }; 
+                if(d6(2)<=4){ bases.push("Scout"); }
+            break;
+            case "B":
+                if(d6(2)<=5){ bases.push("Naval");}
+                if(d6(2)<=5){ bases.push("Scout");}
+                break;
+            case "C":
+                if(d6(2)<=6){bases.push("Scout");}
+            break;
+            case "D":
+                if(d6(2)<=7){bases.push("Scout");}
+            break;
+            case "E":
+            break;
+            case "X":
+            break;
+            default: console.log("Invalid starport in UWP: " + starport); break;
         }
-        if(d6(2)<=4){ 
-            if(d6(2)<=7){}
-            //    bases.push("Way Station");
-            //}else{ bases.push("Scout");}
-            bases.push("Scout");
+        size = revExt(predefinedUWP[1]);
+        atmo = revExt(predefinedUWP[2]);
+        hydro = revExt(predefinedUWP[3]);
+        pop = revExt(predefinedUWP[4]);
+        gov = revExt(predefinedUWP[5]);
+        law = revExt(predefinedUWP[6]);
+        tech = predefinedUWP.length > 9 ? Number(predefinedUWP[8]+predefinedUWP[9]) : revExt(predefinedUWP[8]);
+        uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
+
+        if(pop===0){
+            bases = [];
+            popdigit = 0;
+        }else{
+            popdigit = d19()
         }
-    }
-    else if(roll <= 6){
-        starport = "B";
-        if(d6(2)<=5){ bases.push("Naval");}
-        if(d6(2)<=5){ bases.push("Scout");}
-    }
-    else if(roll <= 8){
-        starport = "C";
-        if(d6(2)<=6){bases.push("Scout");}
-    }
-    else if(roll == 9){
-        starport = "D";
-        if(d6(2)<=7){bases.push("Scout");}
-    }
-    else if(roll <= 11){
-        starport = "E";
-    }
-    else if(roll == 12){
-        starport = "X";
-    }
-    // roll for size
-    var size = d6(2)-2; 
-    if(size === 10){ size = d6()+9; }
-    uwp += size.toString(36);
-    //roll for atmosphere
-    var atmo = d6()-d6()+size;
-    if(atmo < 0 || size === 0){ atmo = 0;}
-    if(atmo > 15){atmo = 15;}
-    uwp += atmo.toString(36);
-    //roll for hydro
-    var hydroMods = 0;
-    if(atmo < 2 || atmo > 9){hydroMods = 4;}
-    var hydro = d6()-d6()+atmo+hydroMods;
-    if(size < 2 || hydro < 0){hydro = 0;}
-    if(hydro > 10){hydro = 10;}
-    uwp += hydro.toString(36);
-    // roll for pop
-    var pop = d6(2)-2, pop2 = d6(2)-2;
-    var popdigit = 0;
-    if(pop===0){
-        //uwp = "X"+uwp.substring(1); 
-        //starport = "X"; 
-        bases = [];
-        popdigit = 0;
     }else{
-        popdigit = d19()
-    }
-    
-    if(pop === 10){ pop = d6(2)+3;}
-    if(pop2 === 10){ pop2 = d6(2)+3;}
-    pop2 = Math.max(pop,pop2);
-
-    uwp += pop.toString(36);
-    // roll for gov
-    var gov = d6()-d6()+pop;
-    if(gov > 15){gov = 15;}
-    if(gov < 0){gov = 0;}
-    if(pop === 0){gov = 0;}
-    uwp += gov.toString(36);
-    // roll for law
-    var law = d6()-d6()+gov;
-    if(law < 0){law = 0;}
-    if(law > 18){law = 18;}
-    if(pop === 0){ law = 0;}
-    if(law <= 17){
-        uwp += law.toString(36);
-    }else{
-        uwp += (law+1).toString(36);
-    }
-    // roll for TL
-    var tech = d6(1);
-    if(starport === "A"){tech+=6;}
-    else if(starport === "B"){tech+=4;}
-    else if(starport === "C"){tech+=2;}
-    else if(starport === "X"){tech -= 4;}
-
-    if(pop > 0){
-        if(size <= 1 ){tech += 2;}
-        else if(size <= 4 ){tech += 1;}
-
-        if(atmo <= 3 ){tech += 1;}
-        else if(atmo >= 10 ){tech += 1;}
-
-        if(hydro === 9 ){tech += 1;}
-        else if(hydro === 10 ){tech += 2;}
+        roll = d6(2); // roll for starport
+        if(roll <= 4){
+            starport = "A";
+            if(d6(2)<=6){ 
+                if(d6(2)<=4){}
+                //    bases.push("Naval Depot");
+                //}else{ bases.push("Naval"); }
+                bases.push("Naval");
+            }
+            if(d6(2)<=4){ 
+                if(d6(2)<=7){}
+                //    bases.push("Way Station");
+                //}else{ bases.push("Scout");}
+                bases.push("Scout");
+            }
+        }
+        else if(roll <= 6){
+            starport = "B";
+            if(d6(2)<=5){ bases.push("Naval");}
+            if(d6(2)<=5){ bases.push("Scout");}
+        }
+        else if(roll <= 8){
+            starport = "C";
+            if(d6(2)<=6){bases.push("Scout");}
+        }
+        else if(roll == 9){
+            starport = "D";
+            if(d6(2)<=7){bases.push("Scout");}
+        }
+        else if(roll <= 11){
+            starport = "E";
+        }
+        else if(roll == 12){
+            starport = "X";
+        }
         
-        if(pop <= 5 ){ tech += 1; }
-        else if(pop === 9){ tech += 2;}
-        else if(pop >= 10){ tech += 4;}
-    }
-    if((tech > 0 && gov === 0) || gov === 5){ tech += 1;}
-    else if(gov === 13){ tech -= 2;}
+        
+        // roll for size
+        size = d6(2)-2; 
+        if(size === 10){ size = d6()+9; }
+        uwp += size.toString(36);
+        //roll for atmosphere
+        atmo = d6()-d6()+size;
+        if(atmo < 0 || size === 0){ atmo = 0;}
+        if(atmo > 15){atmo = 15;}
+        uwp += atmo.toString(36);
+        //roll for hydro
+        var hydroMods = 0;
+        if(atmo < 2 || atmo > 9){hydroMods = 4;}
+        hydro = d6()-d6()+atmo+hydroMods;
+        if(size < 2 || hydro < 0){hydro = 0;}
+        if(hydro > 10){hydro = 10;}
+        uwp += hydro.toString(36);
+        // roll for pop
+        pop = d6(2)-2, pop2 = d6(2)-2;
+        var popdigit = 0;
+        if(pop===0){
+            //uwp = "X"+uwp.substring(1); 
+            //starport = "X"; 
+            bases = [];
+            popdigit = 0;
+        }else{
+            popdigit = d19()
+        }
+        
+        if(pop === 10){ pop = d6(2)+3;}
+        if(pop2 === 10){ pop2 = d6(2)+3;}
+        pop2 = Math.max(pop,pop2);
 
-    if(pop === 0){ // reduce tech level on dieback worlds
-        //var reduction = diebackPenalty;
-        //tech -= reduction;
-        //if(reduction > 0){
-        //    if(tech <= 8 && starport === "A"){ starport = "B"; uwp = "B"+uwp.substring(1);}
-        //    else if(tech <= 7 && starport === "B"){ starport = "C"; uwp = "C"+uwp.substring(1);}
-        //    else if(tech <= 3 && starport === "C"){ starport = "D"; uwp = "D"+uwp.substring(1);}
-        //    else if(tech === 1 && starport === "D"){ starport = "E"; uwp = "E"+uwp.substring(1);}
-        //}
-        if(tech > 0){
-            // This will be a dieback world. Give them the tech bonuses for planet features.
+        uwp += pop.toString(36);
+        // roll for gov
+        gov = d6()-d6()+pop;
+        if(gov > 15){gov = 15;}
+        if(gov < 0){gov = 0;}
+        if(pop === 0){gov = 0;}
+        uwp += gov.toString(36);
+        // roll for law
+        law = d6()-d6()+gov;
+        if(law < 0){law = 0;}
+        if(law > 18){law = 18;}
+        if(pop === 0){ law = 0;}
+        if(law <= 17){
+            uwp += law.toString(36);
+        }else{
+            uwp += (law+1).toString(36);
+        }
+        // roll for TL
+        tech = d6(1);
+        if(starport === "A"){tech+=6;}
+        else if(starport === "B"){tech+=4;}
+        else if(starport === "C"){tech+=2;}
+        else if(starport === "X"){tech -= 4;}
+
+        if(pop > 0){
             if(size <= 1 ){tech += 2;}
             else if(size <= 4 ){tech += 1;}
 
@@ -415,27 +603,47 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
 
             if(hydro === 9 ){tech += 1;}
             else if(hydro === 10 ){tech += 2;}
+            
+            if(pop <= 5 ){ tech += 1; }
+            else if(pop === 9){ tech += 2;}
+            else if(pop >= 10){ tech += 4;}
         }
-    } 
-    if(tech < 0){tech = 0;}
-    if(tech > +(maxTechLevel)){
-        tech = +(maxTechLevel);
-    }
-    if(pop === 0){ 
-        if(!permitDieback || pop2 === 0){ 
-            tech = 0;
+        if((tech > 0 && gov === 0) || gov === 5){ tech += 1;}
+        else if(gov === 13){ tech -= 2;}
+
+        if(pop === 0){ 
+            if(tech > 0){
+                // This will be a dieback world. Give them the tech bonuses for planet features.
+                if(size <= 1 ){tech += 2;}
+                else if(size <= 4 ){tech += 1;}
+
+                if(atmo <= 3 ){tech += 1;}
+                else if(atmo >= 10 ){tech += 1;}
+
+                if(hydro === 9 ){tech += 1;}
+                else if(hydro === 10 ){tech += 2;}
+            }
+        } 
+        if(tech < 0){tech = 0;}
+        if(tech > +(maxTechLevel)){
+            tech = +(maxTechLevel);
         }
-        if(tech===0){ // barren worlds require starport E or X
-            if(starport !== "E"){
-                starport = "X";
-                uwp = "X" + uwp.substring(1);
+        if(pop === 0){ 
+            if(!permitDieback || pop2 === 0){ 
+                tech = 0;
+            }
+            if(tech===0){ // barren worlds require starport E or X
+                if(starport !== "E"){
+                    starport = "X";
+                    uwp = "X" + uwp.substring(1);
+                }
             }
         }
-    }
-    if(tech <= 17){
-        uwp += "-"+tech.toString(36);
-    }else{
-        uwp += "-" + ((+(tech)+1).toString(36));
+        if(tech <= 17){
+            uwp += "-"+tech.toString(36);
+        }else{
+            uwp += "-" + ((+(tech)+1).toString(36));
+        }
     }
     // roll to see if the world is a satellite
     roll = d6()-d6();
