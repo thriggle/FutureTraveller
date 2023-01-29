@@ -75,8 +75,10 @@
                     typeof this != "undefined" ? this :
                         {}
 );
-
-function NameGenerator(sourceJson,callback,forbiddenWords,randomizer){
+function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject){
+    if(typeof fromObject == "undefined"){
+        fromObject = false;
+    }
     var MathRandom;
     if(randomizer){
         MathRandom = randomizer;
@@ -117,17 +119,24 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer){
     this.templates = {};
     this.unpackStringTemplate = unpackStringTemplate;
     var UnpackedStringTemplates = { names: {} };
-
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", sourceJson);
-    xhr.addEventListener("load", function loadStrings(evt) {
-        var rawJson = xhr.responseText;
-        templates = getWeightedPatternsFromJSON({}, JSON.parse(JSON.minify(rawJson)));
+    if(fromObject){
+        templates = getWeightedPatternsFromJSON({}, sourceJson);
         var keys = Object.keys(templates);
         var generator = {templates:templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
         callback(generator);
-    });
-    xhr.send();
+    }else{
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", sourceJson);
+        xhr.addEventListener("load", function loadStrings(evt) {
+            var rawJson = xhr.responseText;
+            templates = getWeightedPatternsFromJSON({}, JSON.parse(JSON.minify(rawJson)));
+            var keys = Object.keys(templates);
+            var generator = {templates:templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
+            callback(generator);
+        });
+        xhr.send();
+    }
+    
     function setSeed(seed){
         MathRandom = pseudoRandomNumberGenerator(seed);
     }
