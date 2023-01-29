@@ -431,6 +431,7 @@
 
         }
         #DestinationDetails{display:none;}
+        #txtUWP{ width:5rem;}
         .dice{font-size:1rem; user-select:none; min-width:2rem; text-align:center; cursor:pointer; display:inline-block; vertical-align:middle; opacity: 0.6;}
         .dice:hover{opacity:1;}
     </style>
@@ -882,9 +883,9 @@
         </div>
         <div id="SystemDetailsContainer" style="display:none;">
             <div id="SystemDetails">
-                <h1><span title="Reroll system name" class="dice" data-randomize="systemname">🎲</span>&nbsp;<span data-system="tcoord"></span>: <span data-system="name" >System Name</span><span title="Edit system name" id="btnEditSystemName" class="dice">✏️</span><input type="text" title="Change the system name" id="txtSystemName" style="display:none"/><span id="btnSaveSystemName" title="Update system name" class="dice" style="display:none;">💾</span><SPAN class="dice" title="Cancel editing system name" style="display:none;" id="btnCancelSystemName">❌</SPAN><span id="btnDeleteSystem" class="dice">🗑️</span><span
+                <h1><span title="Reroll system name" class="dice" data-randomize="systemname">🎲</span>&nbsp;<span data-system="tcoord"></span>: <span data-system="name" >System Name</span><span title="Edit system name" id="btnEditSystemName" class="dice">🖊️</span><input type="text" title="Change the system name" id="txtSystemName" style="display:none"/><span id="btnSaveSystemName" title="Update system name" class="dice" style="display:none;">💾</span><SPAN class="dice" title="Cancel editing system name" style="display:none;" id="btnCancelSystemName">❌</SPAN><span id="btnDeleteSystem" title="Delete this system" class="dice">🗑️</span><span
                         id="dialog_close">X</span></h1>
-                <h2><span title="Reroll system details" class="dice" data-randomize="system">🎲</span>&nbsp;<span title="Universal World Profile" data-system="uwp"></span> <span title="Trade Codes"
+                <h2><span title="Reroll UWP and system" class="dice" data-randomize="system">🎲</span>&nbsp;<span title="Universal World Profile" data-system="uwp"></span><span title="Edit UWP" id="btnEditUWP" class="dice">🖊️</span><input type="text" title="Change the UWP" id="txtUWP" style="display:none"/><span id="btnBuildFromUWP" title="Generate new system using given UWP" class="dice" style="display:none;">⚗️</span><span id="btnUpdateUWP" title="Update the mainworld UWP without changing system details" class="dice" style="display:none;">💾</span><SPAN class="dice" title="Cancel editing UWP" style="display:none;" id="btnCancelEditUWP">❌</SPAN> <span title="Trade Codes"
                         data-mainworld="tradecodes" data-join=" "></span></h2>
                 <h3 style="font-weight:normal; font-size:medium;" data-mainworld="tradecodes" data-lookup="tradecode"
                     data-join=", "></h3>
@@ -1954,6 +1955,44 @@
                 for(var i = 0, len = randomizers.length; i < len; i++){
                     randomizers[i].addEventListener("click",randomizerClicked);
                 }
+                document.getElementById("btnUpdateUWP").addEventListener("click",function(){
+                    var txtUWP = document.getElementById("txtUWP");
+                    txtUWP.style.display = "none";
+                    updateSystemUWP(txtUWP.value.toUpperCase());
+                    document.getElementById("btnCancelEditUWP").style.display = "none";
+                    document.getElementById("btnUpdateUWP").style.display = "none";
+                    document.getElementById("btnBuildFromUWP").style.display = "none";
+                    document.getElementById("btnEditUWP").style.display = "inline-block";
+                    document.querySelector("[data-system=\"uwp\"]").style.display = "inline";
+                });
+                document.getElementById("btnBuildFromUWP").addEventListener("click",function(){
+                    var txtUWP = document.getElementById("txtUWP");
+                    txtUWP.style.display = "none";                    
+                    rerollSystemWithPredefinedUWP(txtUWP.value.toUpperCase());
+                    document.getElementById("btnCancelEditUWP").style.display = "none";
+                    document.getElementById("btnUpdateUWP").style.display = "none";
+                    document.getElementById("btnBuildFromUWP").style.display = "none";
+                    document.getElementById("btnEditUWP").style.display = "inline-block";
+                    document.querySelector("[data-system=\"uwp\"]").style.display = "inline";
+                });
+                document.getElementById("btnEditUWP").addEventListener("click",function(){
+                    var txtUWP = document.getElementById("txtUWP");
+                    txtUWP.value = lastSelectedHex.system.uwp;
+                    txtUWP.style.display = "inline-block";
+                    document.getElementById("btnUpdateUWP").style.display = "inline-block";
+                    document.getElementById("btnCancelEditUWP").style.display = "inline-block";
+                    document.getElementById("btnBuildFromUWP").style.display = "inline-block";
+                    document.getElementById("btnEditUWP").style.display = "none";
+                    document.querySelector("[data-system=\"uwp\"]").style.display = "none";
+                });
+                document.getElementById("btnCancelEditUWP").addEventListener("click",function(){
+                    document.getElementById("txtUWP").style.display = "none";
+                    document.getElementById("btnUpdateUWP").style.display = "none";
+                    document.getElementById("btnBuildFromUWP").style.display = "none";
+                    document.getElementById("btnCancelEditUWP").style.display = "none";
+                    document.getElementById("btnEditUWP").style.display = "inline-block";
+                    document.querySelector("[data-system=\"uwp\"]").style.display = "inline";
+                });
                 document.getElementById("btnSaveSystemName").addEventListener("click",function(){
                     var txtSystemName = document.getElementById("txtSystemName");
                     txtSystemName.style.display = "none";
@@ -1961,8 +2000,11 @@
                     document.getElementById("btnCancelSystemName").style.display = "none";
                     document.getElementById("btnSaveSystemName").style.display = "none";
                     document.getElementById("btnEditSystemName").style.display = "inline-block";
+                    document.querySelector("[data-system=\"name\"]").style.display = "inline";
                 });
+                
                 document.getElementById("btnEditSystemName").addEventListener("click",function(){
+                    document.querySelector("[data-system=\"name\"]").style.display = "none";
                     document.getElementById("btnEditSystemName").style.display = "none";
                     var txtSystemName = document.getElementById("txtSystemName");
                     txtSystemName.value = lastSelectedHex.system.name;
@@ -1979,6 +2021,7 @@
                     document.getElementById("btnSaveSystemName").style.display = "none";
                     document.getElementById("btnCancelSystemName").style.display = "none";
                     document.getElementById("btnEditSystemName").style.display = "inline-block";
+                    document.querySelector("[data-system=\"name\"]").style.display = "inline";
                 });
                 document.getElementById("fontFamily").addEventListener("keyup", updateStyle);
                 document.getElementById("hexBorderColor").addEventListener("keyup", function () {
@@ -2473,14 +2516,13 @@
                 }
             }
             function populateSubsector() {
+                document.getElementById("SystemDetailsContainer").style.display = "none";
+                document.getElementById("AddSystemContainer").style.display = "none";
                 var useRandomSeed = document.getElementById("chkUseRandom").checked;
                 var seed;
                 if (useRandomSeed) {
                     seed1 = Math.floor(Math.random() * 1000000);
-                    //MathRandom = pseudoRandomNumberGenerator(seed1.toString());
-                    //wordMaker.setRandom(MathRandom);
                     seed = addCaps(wordMaker.getRandomName("system") + seed1);
-                    //seed = "xCamp Arngarfps891823"
                     document.getElementById("txtSeed").value = seed;
 
                 } else {
@@ -5257,6 +5299,140 @@
                 _systems[tcoord].name = name;
                 systemArray[mapContent[index].system.sysArrayIndex].name = name;
                 applyTravelCodes(mapContent);
+                var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                drawMap(mapContent);
+                renderSystem(mapContent[index].system);
+                document.getElementById("sectordata").value = getSectorData(mapContent);
+            }
+            function updateSystemUWP(uwp){
+                var tcoord = lastSelectedHex.system.tcoord;
+                var xycoord = TCoordToXYCoord(tcoord);
+                var index = XYtoIndex(xycoord.x,xycoord.y);
+                mapContent[index].system.uwp = uwp;
+                mapContent[index].system.starport = uwp[0];
+                mapContent[index].system.mainworld.starport = uwp[0];
+                mapContent[index].system.size = revExt(uwp[1]);
+                mapContent[index].system.mainworld.size = revExt(uwp[1]);
+                mapContent[index].system.atmo = revExt(uwp[2]);
+                mapContent[index].system.mainworld.atmo = revExt(uwp[2]);
+                mapContent[index].system.hydro = revExt(uwp[3]);
+                mapContent[index].system.mainworld.hydro = revExt(uwp[3]);
+                mapContent[index].system.pop = revExt(uwp[4]);
+                mapContent[index].system.mainworld.pop = revExt(uwp[4]);
+                mapContent[index].system.gov = revExt(uwp[5]);
+                mapContent[index].system.mainworld.gov = revExt(uwp[5]);
+                mapContent[index].system.law = revExt(uwp[6]);
+                mapContent[index].system.mainworld.law = revExt(uwp[6]);
+                mapContent[index].system.tech = uwp.length > 9 ? Number(uwp[8] + uwp[9]) : revExt(uwp[8]);
+                mapContent[index].system.mainworld.tech = uwp.length > 9 ? Number(uwp[8] + uwp[9]) : revExt(uwp[8]);
+                mapContent[index].system = updateTradeCodes(mapContent[index].system);
+                _systems[tcoord] = mapContent[index].system;
+                systemArray[mapContent[index].system.sysArrayIndex] = mapContent[index].system;
+                applyTravelCodes(mapContent);
+                var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                drawMap(mapContent);
+                renderSystem(mapContent[index].system);
+                document.getElementById("sectordata").value = getSectorData(mapContent);
+            }
+            function rerollSystemWithPredefinedUWP(uwp){
+                var tcoord = lastSelectedHex.system.tcoord;
+                var xycoord = TCoordToXYCoord(tcoord);
+                var index = XYtoIndex(xycoord.x,xycoord.y);
+                var name = mapContent[index].system.name;
+                var ggFrequency = document.getElementById("slctGGFrequency").value;
+                var density = document.getElementById("slctStellarDensity").value;
+                var permitDieback = document.getElementById("chkPermitDieback").checked;
+                var maxTechLevel = document.getElementById("slctMaxTechLevel").value;
+                var permitDieback = document.getElementById("chkPermitDieback").checked,
+                mainworldRules =  document.getElementById("slctMainworldRules").value,
+                applyHillSphereLimits = document.getElementById("chkApplyHillSphereLimits").checked,
+                allowInnerWhiteDwarfs = document.getElementById("chkAllowInnerWhiteDwarfs").checked,
+                populateNonMainworlds = document.getElementById("chkPopulateNonMainworlds").checked;
+                var details = 
+                            generateSystemDetails(tcoord, 
+                                ggFrequency, 
+                                permitDieback, 
+                                maxTechLevel, 0, 
+                                mainworldRules, 
+                                populateNonMainworlds, 
+                                applyHillSphereLimits, 
+                                allowInnerWhiteDwarfs,uwp);
+                            for (var i = 0, len = mins.length; i < len; i++) {
+                                var currValue;
+                                if (i < 8) {
+                                    currValue = details.mainworld[labels[i]];
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if (currValue < currMin) { mins[i] = currValue; }
+                                    if (currValue > currMax) { maxes[i] = currValue; }
+                                }
+                                else if (i === 8) {
+                                    currValue = details.importance.extension;
+                                } else if (i === 9) {
+                                    currValue = details.totalpop;
+                                    if (currValue > 0) { currValue = Math.round(Math.log10(currValue)); }
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if (currValue < currMin) { mins[i] = currValue; }
+                                    if (currValue > currMax) { maxes[i] = currValue; }
+                                } else if (i === 10) {
+                                    currValue = details.economics.RU;
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if (currValue < currMin) { mins[i] = currValue; }
+                                    if (currValue > currMax) { maxes[i] = currValue; }
+                                }
+
+                            }
+                            var system = {
+                                name: name,
+                                mainworld: details.mainworld,
+                                uwp: details.uwp.toUpperCase(),
+                                gg: details.gg,
+                                isAsteroidBelt: details.mainworld.isAsteroidBelt,
+                                planetoidBelts: details.planetoidBelts,
+                                bases: details.bases,
+                                stars: details.stars,
+                                economics: details.economics,
+                                importance: details.importance,
+                                totalpop: details.totalpop,
+                                tcoord: tcoord,
+                                pbg: details.pbg,
+                                allegiance: details.allegiance,
+                                isRed: false,
+                                isAmber: false,
+                                nobility: details.nobility,
+                                sysArrayIndex:mapContent[index].system.sysArrayIndex,
+                                index:mapContent[index].system.index 
+                            };
+                            var max = 0;
+                            var likelihood = document.getElementById("slctNativeLikelihood").value
+                            switch (likelihood) {
+                                case "rare": // ~1 per sector
+                                    max = 45;
+                                    break;
+                                case "reasonable": // ~1 per subsector
+                                    max = 9;
+                                    break;
+                                case "common": // 1 in 2 chance per candidate world
+                                    max = 2;
+                                    break;
+                                case "everywhere": // every non-exotic candidate world
+                                    max = 1;
+                                    break;
+                                case "really": // every candidate world
+                                    max = 1;
+                                    break;
+                            }
+                            var native = rollNativeForWorld(system,likelihood,max);                            
+                            mapContent[index].system = system;
+                            _systems[tcoord] = system;
+                            systemArray[mapContent[index].system.sysArrayIndex] = system;
+                            if(native){
+                                sortNatives();
+                            }
+                            applyTravelCodes(mapContent);
                 var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                 var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                 analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
