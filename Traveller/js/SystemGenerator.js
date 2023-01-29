@@ -458,32 +458,84 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             stars.primary.satellites[stars.far.orbit+amp] = stars.far;
         }
     }
+
     
+    roll = d6()-d6(); // roll for mainworld orbit
+    
+    var MWOrbit = stars.primary.HZOrbit; var climate = "";
+    if(stars.primary.type === "M"){roll += 2;}
+    else if(stars.primary.type === "O" || stars.primary.type === "B"){ roll -= 2;}
+    if(roll<=-6){ 
+        MWOrbit -= 2; 
+    }
+    else if(roll <= -3){ 
+        MWOrbit -=1; 
+    }
+    else if(roll <= 2){ MWOrbit = stars.primary.HZOrbit;  }
+    else if(roll <= 5){ 
+        MWOrbit += 1; 
+    }
+    else if(roll >= 6){ 
+        MWOrbit += 2;         
+    }
+    if(size === 0){ // asteroid belt placement is independent of HZ
+        roll = d6(2) - 3;
+        MWOrbit = stars.primary.HZOrbit + roll;
+    }
+    if(MWOrbit < 0){ MWOrbit = 0;}
+    var validOrbit = false;
+    if(typeof stars.primary.satellites[MWOrbit] !== "undefined"){ // check if desired orbit already occupied (by a star)
+        while(!validOrbit){ // mainworld will be placed in next available orbit
+            MWOrbit += 1;
+            validOrbit = typeof stars.primary.satellites[MWOrbit] === "undefined";
+            
+        }       
+    }
+
     var bases = [];
-    var starport, size, atmo, hydro, pop, gov, law, tech;
+    var starport, size, atmo, hydro, pop, gov, law, tech;;
+    if(ruleset !== "T5" && predefinedUWP !== false){
+        switch(ruleset){
+            case "CE":
+                var CESystem = getCepheusEngineUWP(stars.primary.HZOrbit - MWOrbit);
+                predefinedUWP = CESystem.uwp;
+                bases = CESystem.bases;
+                break;
+            case "MgT2":
+                var MongooseSystem = getMgT2UWP(stars.primary.HZOrbit - MWOrbit);
+                predefinedUWP = MongooseSystem.uwp;
+                bases = MongooseSystem.bases;
+                climate = MongooseSystem.temp;
+                break;
+            default: console.log("Unrecognized ruleset code: " + ruleset); break;
+        }
+    }
+    
     if(typeof predefinedUWP !== "undefined" && predefinedUWP !== false && predefinedUWP.length >= 9){
         console.log(predefinedUWP);
         starport = predefinedUWP[0];
-        switch(starport){
+        if(ruleset === "T5"){
+            switch(starport){
             case "A": 
-                if(d6(2)<=6){ bases.push("Naval"); }; 
-                if(d6(2)<=4){ bases.push("Scout"); }
+            if(d6(2)<=6){ bases.push("Naval"); }; 
+            if(d6(2)<=4){ bases.push("Scout"); }
             break;
             case "B":
                 if(d6(2)<=5){ bases.push("Naval");}
                 if(d6(2)<=5){ bases.push("Scout");}
                 break;
-            case "C":
-                if(d6(2)<=6){bases.push("Scout");}
+                case "C":
+            if(d6(2)<=6){bases.push("Scout");}
             break;
             case "D":
                 if(d6(2)<=7){bases.push("Scout");}
-            break;
+                break;
             case "E":
-            break;
+                break;
             case "X":
-            break;
+                break;
             default: console.log("Invalid starport in UWP: " + starport); break;
+            }
         }
         size = revExt(predefinedUWP[1]);
         atmo = revExt(predefinedUWP[2]);
@@ -645,6 +697,8 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             uwp += "-" + ((+(tech)+1).toString(36));
         }
     }
+    
+
     // roll to see if the world is a satellite
     roll = d6()-d6();
     var MWType, MWPrimary, MWOrbitAroundPrimary;
@@ -688,58 +742,30 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             MWPrimary = "Planet";
         }
     }    
-    roll = d6()-d6(); // roll for mainworld orbit
-    
-    var MWOrbit = stars.primary.HZOrbit; var climate = "";
-    if(stars.primary.type === "M"){roll += 2;}
-    else if(stars.primary.type === "O" || stars.primary.type === "B"){ roll -= 2;}
-    if(roll<=-6){ 
-        MWOrbit -= 2; 
-    }
-    else if(roll <= -3){ 
-        MWOrbit -=1; 
-    }
-    else if(roll <= 2){ MWOrbit = stars.primary.HZOrbit;  }
-    else if(roll <= 5){ 
-        MWOrbit += 1; 
-    }
-    else if(roll >= 6){ 
-        MWOrbit += 2;         
-    }
-    if(size === 0){ // asteroid belt placement is independent of HZ
-        roll = d6(2) - 3;
-        MWOrbit = stars.primary.HZOrbit + roll;
-    }
-    if(MWOrbit < 0){ MWOrbit = 0;}
-    var validOrbit = false;
-    if(typeof stars.primary.satellites[MWOrbit] !== "undefined"){ // check if desired orbit already occupied (by a star)
-        while(!validOrbit){ // mainworld will be placed in next available orbit
-            MWOrbit += 1;
-            validOrbit = typeof stars.primary.satellites[MWOrbit] === "undefined";
-            
-        }       
-    }
-    var difference = stars.primary.HZOrbit - MWOrbit;
+
+    var difference = stars.primary.HZOrbit - MWOrbit; // >= 1 hot, 0 = temperate <=-1 cold
+    var needsClimate = climate.length === 0;
     if(difference >= 2){
-        tradecodes.push("Tr"); climate = "Hot. Tropic.";
+        tradecodes.push("Tr"); if(needsClimate){climate = "Hot. Tropic.";}
     }else if(difference === 1){
         if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-            tradecodes.push("Tr"); climate = "Tropic.";
+            tradecodes.push("Tr"); if(needsClimate){climate = "Tropic.";}
         }else{
-            tradecodes.push("Ho"); climate = "Hot.";
+            tradecodes.push("Ho"); if(needsClimate){climate = "Hot.";}
         }
     }else if(difference === 0){
-        climate = "Temperate.";
+        if(atmo === 0){console.log(climate);}
+        if(needsClimate){climate = "Temperate.";}
     }else if(difference === -1){
         if(size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7){
-            tradecodes.push("Tu"); climate = "Tundra.";
+            tradecodes.push("Tu"); if(needsClimate){climate = "Tundra.";}
         }else{
-            tradecodes.push("Co"); climate = "Cold.";
+            tradecodes.push("Co"); if(needsClimate){climate = "Cold.";}
         }
     }else if(difference <= -2){
         //if(size >= 2 && size <= 9 && hydro > 0){
             tradecodes.push("Fr"); 
-            climate = "Frozen.";
+            if(needsClimate){climate = "Frozen.";}
         //}
     }
     if(MWOrbit <= 1){ tradecodes.push("Tz"); }
@@ -869,7 +895,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     else if(starport === "B" && pop >= 8){ highport = true;}
     else if(starport === "C" && pop >= 9){ highport = true;}
     var roughpop = popdigit * Math.pow(10,pop);
-    var mainworld = {cultural:cultural, isMainworld:true, roughpop:roughpop, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech,worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
+    var mainworld = {cultural:cultural, isMainworld:true, roughpop:roughpop, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
     if(applyHillSphereLimit){
         mainworld = applyHillSphereLimitToMainworld(mainworld);
     }
@@ -1845,6 +1871,316 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech, allowNonMWPops, permitDie
     var uwp = port + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
     var tradecodes = getNonMWTradeCodes(mw, size, atmo, hydro, pop, gov, law, tech);
     return {worldtype:type, size:size, pop:pop, maxpop:pop2, uwp:uwp, tradecodes:tradecodes};
+}
+function getMgT2UWP(zone){
+     // if zone >= 1 hot, 0 = temperate <=-1 cold
+    var uwp ="", bases = [];
+    var techDM = 0;
+    var size = d6(2) - 2; 
+    if(size<=1){techDM +=2;}else if(size <=4){techDM +=1;}
+    var atmo = d6(2)-7+size;
+    if(atmo < 0){atmo = 0;}
+    if(atmo<=3 || atmo >= 10){techDM +=1;}
+    if(zone >= 1){ 
+        hzMod = 4;
+        //Hot edge of habitable zone
+    }else if(zone <= -1){ 
+        hzMod = -4;
+        //Cold edge of habitable zone
+    }
+    else{
+        hzMod = 0;
+        //Habitable zone
+    }
+    var temp;
+    if(atmo <= 1){ 
+        temp = "Swings between roasting and freezing.";
+    }else{
+        if(atmo <= 3){atmoMod = -2;}
+        else if(atmo <= 5 || atmo === 14){atmoMod = -1;}
+        else if(atmo <= 7){atmoMod = 0;}
+        else if(atmo <= 9){atmoMod = 1;}
+        else if(atmo === 10 || atmo === 13 || atmo === 15){atmoMod =2;}
+        else{atmoMod = 6;}
+        var tempRoll = d6(2) + hzMod + atmoMod;
+        if(tempRoll <= 2){
+            temp = "Frozen.";
+        }else if(tempRoll <= 4){
+            temp = "Cold.";
+        }else if(tempRoll <= 9){
+            temp = "Temperate.";
+        }else if(tempRoll <= 11){
+            temp = "Hot.";
+        }else{
+            temp = "Boiling.";
+        }
+    }
+    var hydro;
+    if(size <= 1){ hydro = 0;}
+    else{
+        var hydroDM = 0;
+        var atmoDM = atmo;
+        if(atmo <= 1 || atmo >= 10){ atmoDM = -4;}
+        if(atmo!==13){
+            if(temp === "Hot."){hydroDM -= 2;}
+            else if(temp === "Boiling."){ hydroDM -=4;}
+        }
+        hydro = d6(2)-7+atmoDM+hydroDM;
+        if(hydro < 0){hydro = 0;}
+    }
+    if(hydro=== 0 || hydro===9){techDM +=1;}
+    else if(hydro === 10){techDM += 2;}
+    // pop
+    var pop = d6(2)-2;
+    if(pop <= 5 || techDM === 8){techDM +=1;}
+    else if(pop === 9){techDM += 2;}
+    else if(pop == 10){techDM += 4;}
+
+    var gov, law, starport, tech;
+    if(pop === 0){ gov = 0; law = 0; tech = 0; starport = "X";}
+    else{
+        // gov;
+        gov = d6(2)-7+pop;
+        if(gov < 0){gov = 0;}
+        // law            
+        law = d6(2)-7+gov;
+        if(law < 0){law = 0;}
+        if(law === 0 || law === 5){
+            techDM += 1;
+        }else if(law === 7){ techDM +=2; }
+        else if(law === 13 || law ===14){ techDM -=2;}
+        // starport
+        var starportDM = 0;
+        if(pop === 8 || pop === 9){
+            starportDM = 1;
+        }else if(pop >= 10){
+            starportDM = 2;
+        }else if(pop <= 2){
+            starportDM = -2;
+        }else if(pop <= 4){
+            starportDM = -1;
+        }
+        var starportRoll = d6(2)+starportDM;
+        if(starportRoll <= 2){
+            starport = "X";
+            techDM -= 4;
+            if(d6(2)>=10){
+                bases.push("Corsair");
+            }
+        }else if(starportRoll <= 4){
+            starport = "E";
+            if(d6(2)>=10){
+                bases.push("Corsair");
+            }
+        }else if(starportRoll <= 6){
+            starport = "D";
+            if(d6(2)>=8){
+                bases.push("Scout");
+            }
+            if(d6(2)>=12){
+                bases.push("Corsair");
+            }
+            
+        }else if(starportRoll <= 8){
+            starport = "C";
+            techDM += 2;
+            if(d6(2)>=10){
+                bases.push("Military");
+            }
+            if(d6(2)>=9){
+                bases.push("Scout");
+            }
+        }else if(starportRoll <= 10){
+            starport = "B";
+            techDM += 4;
+            if(d6(2)>=8){
+                bases.push("Military");
+            }
+            if(d6(2)>=8){
+                bases.push("Naval");
+            }
+            if(d6(2)>=9){
+                bases.push("Scout");
+            }
+        }else if(starportRoll >= 11){
+            starport = "A";
+            techDM += 6;
+            if(d6(2)>=8){
+                bases.push("Military");
+            }
+            if(d6(2)>=8){
+                bases.push("Naval");
+            }
+            if(d6(2)>=10){
+                bases.push("Scout");
+            }
+        }
+        //tech;
+        tech = d6() + techDM;
+    }
+    uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
+    return {uwp:uwp, bases:bases, temp:temp}
+}
+function getCepheusEngineUWP(zone){
+     // if zone >= 1 hot, 0 = temperate <=-1 cold
+     var uwp ="", bases = [];
+     var techDM = 0;
+     var size = d6(2) - 2; 
+     if(size<=1){techDM +=2;}else if(size <=4){techDM +=1;}
+     var atmo = d6(2)-7+size;
+     if(atmo < 0){atmo = 0;}
+     if(atmo<=3 || atmo >= 10){techDM +=1;}
+     if(zone >= 1){ 
+         hzMod = 4;
+         //Hot edge of habitable zone
+     }else if(zone <= -1){ 
+         hzMod = -4;
+         //Cold edge of habitable zone
+     }
+     else{
+         hzMod = 0;
+         //Habitable zone
+     }
+     var temp;
+     if(atmo <= 1){ 
+         temp = "Swings between roasting and freezing.";
+     }else{
+         if(atmo <= 3){atmoMod = -2;}
+         else if(atmo <= 5 || atmo === 14){atmoMod = -1;}
+         else if(atmo <= 7){atmoMod = 0;}
+         else if(atmo <= 9){atmoMod = 1;}
+         else if(atmo === 10 || atmo === 13 || atmo === 15){atmoMod =2;}
+         else{atmoMod = 6;}
+         var tempRoll = d6(2) + hzMod + atmoMod;
+         if(tempRoll <= 2){
+             temp = "Frozen.";
+         }else if(tempRoll <= 4){
+             temp = "Cold.";
+         }else if(tempRoll <= 9){
+             temp = "Temperate.";
+         }else if(tempRoll <= 11){
+             temp = "Hot.";
+         }else{
+             temp = "Boiling.";
+         }
+     }
+     var hydro;
+     if(size <= 1){ hydro = 0;}
+     else{
+         var hydroDM = 0;
+         var atmoDM = atmo;
+         if(atmo <= 1 || atmo >= 10){ atmoDM = -4;}
+         if(atmo === 14){ atmoDM = -2;}
+         if(atmo!==13){
+             if(temp === "Hot."){hydroDM -= 2;}
+             else if(temp === "Boiling."){ hydroDM -=4;}
+         }
+         hydro = d6(2)-7+atmoDM+hydroDM;
+         if(hydro < 0){hydro = 0;}
+     }
+     if(hydro=== 0 || hydro===9){techDM +=1;}
+     else if(hydro === 10){techDM += 2;}
+     // pop
+     var pop = d6(2)-2;
+     var popDM = 0;
+     if(size <= 2){ popDM -=1; }
+     if(atmo >= 10){ popDM -=2; }
+     else if(atmo === 6){ popDM += 3;}
+     else if(atmo === 5 || atmo === 8){ popDM +=1; }
+     if(hydro === 0 && atmo < 3){ popDM -=2;}
+     pop += popDM;
+     if(pop < 0){pop = 0;}else if(pop > 10){ pop = 10;}
+
+     if(pop <= 5 || techDM === 8){techDM +=1;}
+     else if(pop === 9){techDM += 2;}
+     else if(pop == 10){techDM += 4;}
+ 
+     var gov, law, starport, tech;
+
+     if(pop === 0){ gov = 0; law = 0; tech = 0; starport = "X";}
+     else{
+         // gov;
+         gov = d6(2)-7+pop;
+         if(gov < 0){gov = 0;}
+         if(gov > 15){gov = 15;}
+         // law            
+         law = d6(2)-7+gov;
+         if(law < 0){law = 0;}
+         if(law > 10){law = 10;}
+         if(law === 0 || law === 5){
+             techDM += 1;
+         }else if(law === 7){ techDM +=2; }
+         else if(law === 13 || law ===14){ techDM -=2;}
+
+         // starport
+         var starportRoll = d6(2)+pop;
+         if(starportRoll <= 2){
+             starport = "X";
+             techDM -= 4;
+             if(d6(2) === 12){
+                bases.push("Pirate");
+            }
+         }else if(starportRoll <= 4){
+             starport = "E";
+             if(d6(2) === 12){
+                bases.push("Pirate");
+            }
+         }else if(starportRoll <= 6){
+             starport = "D";
+             if(d6(2)>=7){
+                 bases.push("Scout");
+             }
+             if(d6(2) === 12){
+                bases.push("Pirate");
+            }
+             
+         }else if(starportRoll <= 8){
+             starport = "C";
+             techDM += 2;
+             if(d6(2) === 12){
+                bases.push("Pirate");
+            }
+             if(d6(2)>=8){
+                 bases.push("Scout");
+             }
+         }else if(starportRoll <= 10){
+             starport = "B";
+             techDM += 4;
+             if(d6(2)>=8){
+                 bases.push("Naval");
+             }else{
+                if(d6(2) === 12){
+                    bases.push("Pirate");
+                }
+             }
+             if(d6(2)>=9){
+                 bases.push("Scout");
+             }
+         }else if(starportRoll >= 11){
+             starport = "A";
+             techDM += 6;
+             if(d6(2)>=8){
+                 bases.push("Naval");
+             }
+             if(d6(2)>=10){
+                 bases.push("Scout");
+             }
+         }
+         //tech;
+         tech = d6() + techDM;
+         if(tech < 4 && (pop >= 6 && (hydro === 0 || hydro === 10))){
+             tech = 4;
+         }
+         if(tech < 5 && (atmo === 4 || atmo === 7 || atmo === 9)){
+            tech = 5;
+         }
+         if(tech < 7){
+            if(atmo <=3 || (atmo >= 10 && atmo <= 12)){ tech = 7;}
+            if(hydro === 10 && (atmo === 14 || atmo === 13)){ tech = 7;}
+         }
+     }
+     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
+     return {uwp:uwp, bases:bases, temp:temp}
 }
 function getNonMWTradeCodes(mw, size, atmo, hydro, pop, gov, law, tech){
     var codes = [];
