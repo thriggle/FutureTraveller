@@ -157,6 +157,7 @@
     </div>
     <script src="js/NameGenerator.js"></script>
     <script src="js/SystemGenerator.js"></script>
+    <script src="js/names.js"></script>
     <script>
         function sat(i){
             var orbits = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
@@ -217,27 +218,32 @@
             }
             return strDistance;// / 149 597 871;
         }        
-            
-        
-        NameGenerator("js/names.jsonc",function(generator){
-            document.getElementById("btnGenerateSystem").addEventListener("click",function(){
-                console.clear();
-                var gasGiantFrequency = 8, permitDieback = false, maxTechLevel = 16;
-                var system = generateSystemDetails(
-                    addCaps(generator.getRandomName("system")), 
-                    gasGiantFrequency,
-                    maxTechLevel
-                );
-                renderSystem(system);
-            });
-            var gasGiantFrequency = 8, permitDieback = false, maxTechLevel = 16;
-            var system = generateSystemDetails(
-                addCaps(generator.getRandomName("system")), 
-                gasGiantFrequency,
-                maxTechLevel
+        // NameGenerator(getNames(), function (o) { wordMaker = o; populateSubsector(); }, null, MathRandom,true);
+        NameGenerator(
+                getNames(),
+                function(generator){
+                    document.getElementById("btnGenerateSystem").addEventListener("click",function(){
+                        console.clear();
+                        var gasGiantFrequency = 8, permitDieback = false, maxTechLevel = 16;
+                        var system = generateSystemDetails(
+                            addCaps(generator.getRandomName("system")), 
+                            gasGiantFrequency,
+                            maxTechLevel
+                        );
+                        renderSystem(system);
+                    });
+                    var gasGiantFrequency = 8, permitDieback = false, maxTechLevel = 16;
+                    var system = generateSystemDetails(
+                        addCaps(generator.getRandomName("system")), 
+                        gasGiantFrequency,
+                        maxTechLevel
+                    );
+                    renderSystem(system);
+                },
+                null,
+                Math.random,
+                true
             );
-            renderSystem(system);
-        });
         function renderSystem(system){
                 var lookups = {
                     orbitdistance:{
