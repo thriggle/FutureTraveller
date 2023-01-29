@@ -536,74 +536,7 @@
                     </label><br />
                     <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes"
                             checked="checked" /> Show Travel Codes&nbsp;</label><label for="chkShowTradeRoutes">&nbsp;<input type="checkbox" checked="checked" name="chkShowTradeRoutes" id="chkShowTradeRoutes"/> Show Trade Routes</label>
-                            <fieldset class="collapsed">
-                                <legend>Trade Routes</legend>
-                                <label for="numProfitThreshold">(Minimum Profit Threshold: <input id="numProfitThreshold" type="number" style="width:4em" value="1250"/></label>
-                                <label for="numParsecPremium">Premium per Parsec: <input id="numParsecPremium" type="number" style="width:4em" value="1250"/>)</label>
-                            <br/><label for="slctMinJump1Starport">Jump-1 Route Min Starport: <select id="slctMinJump1Starport">
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option selected="selected" value="D">D</option>
-                                <option value="E">E</option>
-                                <option value="X">X</option>
-                            </select></label> 
-                            <label for="slctMinJump1Importance">Min Importance: <select id="slctMinJump1Importance">
-                                <option value="6">+6 Very Important</option>
-                                <option value="5">+5 Very Important</option>
-                                <option value="4">+4 Important</option>
-                                <option value="3">+3 Ordinary</option>
-                                <option value="2">+2 Ordinary</option>
-                                <option value="1">+1 Ordinary</option>
-                                <option selected="selected" value="0">0 Unimportant</option>
-                                <option value="-1">-1 Unimportant</option>
-                                <option value="-2">-2 Very Unimportant</option>
-                                <option value="-3">-3 Very Unimportant</option>
-                            </select></label>
-                            <br/>
-                            <label for="slctMinJump2Starport">Jump-2 Route Min Starport: <select id="slctMinJump2Starport">
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option selected="selected" value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="E">E</option>
-                                <option value="X">X</option>
-                            </select></label>
-                            <label for="slctMinJump2Importance">Min Importance: <select id="slctMinJump2Importance">
-                                <option value="6">+6 Very Important</option>
-                                <option value="5">+5 Very Important</option>
-                                <option value="4">+4 Important</option>
-                                <option value="3">+3 Ordinary</option>
-                                <option value="2">+2 Ordinary</option>
-                                <option selected="selected" value="1">+1 Ordinary</option>
-                                <option value="0">0 Unimportant</option>
-                                <option value="-1">-1 Unimportant</option>
-                                <option value="-2">-2 Very Unimportant</option>
-                                <option value="-3">-3 Very Unimportant</option>
-                            </select></label>
-                            <br/>
-                            <label for="slctMinJump3Starport">Jump-3 Route Min Starport: <select id="slctMinJump3Starport">
-                                <option value="A">A</option>
-                                <option selected="selected" value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="E">E</option>
-                                <option value="X">X</option>
-                            </select></label>
-                            <label for="slctMinJump3Importance">Min Importance: <select id="slctMinJump3Importance">
-                                <option value="6">+6 Very Important</option>
-                                <option value="5">+5 Very Important</option>
-                                <option value="4">+4 Important</option>
-                                <option value="3">+3 Ordinary</option>
-                                <option selected="selected" value="2">+2 Ordinary</option>
-                                <option value="1">+1 Ordinary</option>
-                                <option value="0">0 Unimportant</option>
-                                <option value="-1">-1 Unimportant</option>
-                                <option value="-2">-2 Very Unimportant</option>
-                                <option value="-3">-3 Very Unimportant</option>
-                            </select></label>
-                            <br/>
-                        </fieldset>
+                            
                         </fieldset>
                 <fieldset class="collapsed">
                     <legend>Configuration</legend>
@@ -611,11 +544,22 @@
                         <legend>Astrographics</legend>
                         <label for="slctMainworldRules">System Gen Ruleset:
                             <select name="slctMainworldRules" id="slctMainworldRules">
-                                <option value="T5">T5</option>
+                                <option selected="selected" value="T5">T5</option>
+                                <option value="CE">Cepheus Engine</option>
+                                <option value="MgT2">Mongoose 2nd Edition</option>
                             </select></label><br />
                         <label for="slctGGFrequency">Gas Giant Occurrence: <select name="slctGGFrequency" id="slctGGFrequency">
+                                <option value=2>2 on 2D 3%</option>
+                                <option value=3>3- on 2D 8%</option>
+                                <option value=4>4- on 2D 17%</option>
+                                <option value=5>5- on 2D 28%</option>
+                                <option value=6>6- on 2D 42%</option>
+                                <option value=7>7- on 2D 58%</option>
                                 <option selected=selected value=8>8- on 2D (T5) 72%</option>
                                 <option value=9>9- on 2D (CE) 83%</option>
+                                <option value=10>10- on 2D 92%</option>
+                                <option value=11>11- on 2D 97%</option>
+                                <option value=12>12- on 2D 100%</option>
                             </select></label><br />
                             <label for="chkApplyHillSphereLimits"><input type="checkbox" checked="checked"
                                 id="chkApplyHillSphereLimits" name="chkApplyHillSphereLimits">Limit satellite orbits to Hill sphere</label><br />
@@ -845,7 +789,74 @@
                         </fieldset>
         
                     </fieldset>
-        
+                    <fieldset class="collapsed">
+                        <legend>Trade Routes</legend>
+                        <label for="numProfitThreshold">(Minimum Profit Threshold: <input id="numProfitThreshold" type="number" style="width:4em" value="1250"/></label>
+                        <label for="numParsecPremium">Premium per Parsec: <input id="numParsecPremium" type="number" style="width:4em" value="1250"/>)</label>
+                        <br/><label for="slctMinJump1Starport">Jump-1 Route Min Starport: <select id="slctMinJump1Starport">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option selected="selected" value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="X">X</option>
+                        </select></label> 
+                        <label for="slctMinJump1Importance">Min Importance: <select id="slctMinJump1Importance">
+                            <option value="6">+6 Very Important</option>
+                            <option value="5">+5 Very Important</option>
+                            <option value="4">+4 Important</option>
+                            <option value="3">+3 Ordinary</option>
+                            <option value="2">+2 Ordinary</option>
+                            <option value="1">+1 Ordinary</option>
+                            <option selected="selected" value="0">0 Unimportant</option>
+                            <option value="-1">-1 Unimportant</option>
+                            <option value="-2">-2 Very Unimportant</option>
+                            <option value="-3">-3 Very Unimportant</option>
+                        </select></label>
+                        <br/>
+                        <label for="slctMinJump2Starport">Jump-2 Route Min Starport: <select id="slctMinJump2Starport">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option selected="selected" value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="X">X</option>
+                        </select></label>
+                        <label for="slctMinJump2Importance">Min Importance: <select id="slctMinJump2Importance">
+                            <option value="6">+6 Very Important</option>
+                            <option value="5">+5 Very Important</option>
+                            <option value="4">+4 Important</option>
+                            <option value="3">+3 Ordinary</option>
+                            <option value="2">+2 Ordinary</option>
+                            <option selected="selected" value="1">+1 Ordinary</option>
+                            <option value="0">0 Unimportant</option>
+                            <option value="-1">-1 Unimportant</option>
+                            <option value="-2">-2 Very Unimportant</option>
+                            <option value="-3">-3 Very Unimportant</option>
+                        </select></label>
+                        <br/>
+                        <label for="slctMinJump3Starport">Jump-3 Route Min Starport: <select id="slctMinJump3Starport">
+                            <option value="A">A</option>
+                            <option selected="selected" value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="X">X</option>
+                        </select></label>
+                        <label for="slctMinJump3Importance">Min Importance: <select id="slctMinJump3Importance">
+                            <option value="6">+6 Very Important</option>
+                            <option value="5">+5 Very Important</option>
+                            <option value="4">+4 Important</option>
+                            <option value="3">+3 Ordinary</option>
+                            <option selected="selected" value="2">+2 Ordinary</option>
+                            <option value="1">+1 Ordinary</option>
+                            <option value="0">0 Unimportant</option>
+                            <option value="-1">-1 Unimportant</option>
+                            <option value="-2">-2 Very Unimportant</option>
+                            <option value="-3">-3 Very Unimportant</option>
+                        </select></label>
+                        <br/>
+                    </fieldset>
                 </fieldset>
         
                 <fieldset class="collapsed">
@@ -2076,8 +2087,13 @@
                 document.getElementById("btnPopulateSystems").addEventListener("click", populateSubsector);
                 document.getElementById("btnClearSystems").addEventListener("click", function () {
                     mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT);
+                    applyTravelCodes(mapContent);
+                    systemArray = [];
+                    analyzeMap([], false, false);
+                    document.getElementById("sectordata").value = getSectorData(mapContent);
                     MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
                     drawMap(mapContent);
+                    sortNatives();
                 });
                 document.getElementById("slcHeatMap").addEventListener("change", function () {
                     drawMap(mapContent);
