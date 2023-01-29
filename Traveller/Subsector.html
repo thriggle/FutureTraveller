@@ -2473,6 +2473,8 @@
                 }
             }
             function populateSubsector() {
+                document.getElementById("SystemDetailsContainer").style.display = "none";
+                document.getElementById("AddSystemContainer").style.display = "none";
                 var useRandomSeed = document.getElementById("chkUseRandom").checked;
                 var seed;
                 if (useRandomSeed) {
