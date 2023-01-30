@@ -495,17 +495,19 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }
     var highport = false;
     var bases = [];
-    var starport, size, atmo, hydro, pop, gov, law, tech;;
+    var starport, size, atmo, hydro, pop, gov, law, tech, pop2;
     if(ruleset !== "T5" && predefinedUWP == false){
         switch(ruleset){
             case "CE":
                 var CESystem = getCepheusEngineUWP(stars.primary.HZOrbit - MWOrbit,maxTechLevel);
                 predefinedUWP = CESystem.uwp;
                 bases = CESystem.bases;
+                pop2 = revExt(predefinedUWP[4]);
                 break;
             case "MgT2":
                 var MongooseSystem = getMgT2UWP(stars.primary.HZOrbit - MWOrbit,maxTechLevel);
                 predefinedUWP = MongooseSystem.uwp;
+                pop2 = revExt(predefinedUWP[4]);
                 bases = MongooseSystem.bases;
                 climate = MongooseSystem.temp;
                 highPort = MongooseSystem.hasHighPort;
@@ -713,7 +715,8 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         if(hydro > 10){hydro = 10;}
         uwp += hydro.toString(36);
         // roll for pop
-        pop = d6(2)-2, pop2 = d6(2)-2;
+        pop = d6(2)-2;
+         pop2 = d6(2)-2;
         var popdigit = 0;
         if(pop===0){
             //uwp = "X"+uwp.substring(1); 
