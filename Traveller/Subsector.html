@@ -1686,6 +1686,13 @@
                                 document.getElementById("slctStellarDensity").value = addCaps(newDensity);
                             }
                         }
+                        if(pair[0].toLowerCase() === "$rules"){
+                            var newRules = pair[1];
+                            if(typeof newRules !== "undefined" && newRules.length > 0){
+                                console.log("rules = " + newRules);
+                                document.getElementById("slctMainworldRules").value = newRules;
+                            }
+                        }
                     }
                 }
                 if (seed.length > 0) {
@@ -2333,6 +2340,12 @@
                                         document.getElementById("slctStellarDensity").value = newDensity;
                                     }
                                 }
+                                if(pair[0].toLowerCase() === "$rules"){
+                                    var newRules = pair[1];
+                                    if(typeof newRules !== "undefined" && newRules.length > 0){
+                                        document.getElementById("slctMainworldRules").value = newRules;
+                                    }
+                                }
                             }
                             var newValue = decodeURI(seed);
                             if (document.getElementById("txtSeed").value == newValue && document.getElementById("slctStellarDensity").value == newDensity && document.getElementById("slctMapSize").value == newSize) {
@@ -2558,9 +2571,10 @@
                 var sizeSelector = document.getElementById("slctMapSize");
                 var $size = sizeSelector.value
                 var sizeOption = sizeSelector.querySelectorAll("option")[sizeSelector.selectedIndex];
+                var $rules = document.getElementById("slctMainworldRules").value;
                 SUBSECTOR_X_OFFSET = +(sizeOption.getAttribute("data-subsectorxoffset"));
                 SUBSECTOR_Y_OFFSET = +(sizeOption.getAttribute("data-subsectoryoffset"));
-                window.location.hash = "$seed=" + encodeURI(seed) + "&$density=" + $density + "&$size=" + $size;
+                window.location.hash = "$seed=" + encodeURI(seed) + "&$density=" + $density + "&$size=" + $size + "&$rules=" + $rules;
 
                 MathRandom = pseudoRandomNumberGenerator(seed.toString());
                 wordMaker.setRandom(MathRandom);
