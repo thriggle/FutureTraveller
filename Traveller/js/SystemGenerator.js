@@ -56,7 +56,7 @@ function isValidStellarNumbers(type,decimal,size,allowwhitedwarf){
     }
     return isOk;
 }
-function updateTradeCodes(system){
+function updateTradeCodes(system, rules){
     var tradecodes = [], starport = system.starport, bases = system.bases, popdigit = system.mainworld.popdigit, size = system.size, atmo = system.atmo, hydro = system.hydro, pop = system.pop, gov = system.gov, law = system.law, tech = system.tech;
     var uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
     system.mainworld.uwp = uwp;
@@ -204,14 +204,16 @@ function updateTradeCodes(system){
     }
     tradecodes.sort();
     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
-    var highport = false;
-    if(starport === "A" && pop >= 7){ highport = true;}
-    else if(starport === "B" && pop >= 8){ highport = true;}
-    else if(starport === "C" && pop >= 9){ highport = true;}
+    if(typeof rules === "undefined" || rules === "T5"){
+        var highport = false;
+        if(starport === "A" && pop >= 7){ highport = true;}
+        else if(starport === "B" && pop >= 8){ highport = true;}
+        else if(starport === "C" && pop >= 9){ highport = true;}
+        system.mainworld.highport = highport;
+    }
     var roughpop = popdigit * Math.pow(10,pop);
     system.mainworld.roughpop = roughpop;
     system.mainworld.cultural = cultural;
-    system.mainworld.highport = highport;
     system.mainworld.isAsteroidBelt = size===0;
 
     if(system.mainworld.worldtype === "Far Satellite"){ tradecodes.push("Sa"); }
@@ -491,21 +493,22 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             
         }       
     }
-
+    var highport = false;
     var bases = [];
     var starport, size, atmo, hydro, pop, gov, law, tech;;
     if(ruleset !== "T5" && predefinedUWP !== false){
         switch(ruleset){
             case "CE":
-                var CESystem = getCepheusEngineUWP(stars.primary.HZOrbit - MWOrbit);
+                var CESystem = getCepheusEngineUWP(stars.primary.HZOrbit - MWOrbit,maxTechLevel);
                 predefinedUWP = CESystem.uwp;
                 bases = CESystem.bases;
                 break;
             case "MgT2":
-                var MongooseSystem = getMgT2UWP(stars.primary.HZOrbit - MWOrbit);
+                var MongooseSystem = getMgT2UWP(stars.primary.HZOrbit - MWOrbit,maxTechLevel);
                 predefinedUWP = MongooseSystem.uwp;
                 bases = MongooseSystem.bases;
                 climate = MongooseSystem.temp;
+                highPort = MongooseSystem.hasHighPort;
                 break;
             default: console.log("Unrecognized ruleset code: " + ruleset); break;
         }
@@ -623,6 +626,11 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         pop2 = Math.max(pop,pop2);
 
         uwp += pop.toString(36);
+
+        if(starport === "A" && pop >= 7){ highport = true;}
+        else if(starport === "B" && pop >= 8){ highport = true;}
+        else if(starport === "C" && pop >= 9){ highport = true;}
+
         // roll for gov
         gov = d6()-d6()+pop;
         if(gov > 15){gov = 15;}
@@ -890,10 +898,8 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }
     tradecodes.sort();
     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
-    var highport = false;
-    if(starport === "A" && pop >= 7){ highport = true;}
-    else if(starport === "B" && pop >= 8){ highport = true;}
-    else if(starport === "C" && pop >= 9){ highport = true;}
+    
+    
     var roughpop = popdigit * Math.pow(10,pop);
     var mainworld = {cultural:cultural, isMainworld:true, roughpop:roughpop, popdigit:popdigit, maxpop:pop2, uwp:uwp, highport:highport, tradecodes:tradecodes, size:size, atmo:atmo, hydro:hydro, pop:pop, gov:gov, law:law, tech:tech, worldtype:MWType, primary:MWPrimary,climate:climate,orbitAroundPrimary:MWOrbitAroundPrimary, isAsteroidBelt:size===0,orbit:MWOrbit,starport:starport};
     if(applyHillSphereLimit){
@@ -1872,7 +1878,7 @@ function createPlanet(mw, type,maxSize,maxPop,maxTech, allowNonMWPops, permitDie
     var tradecodes = getNonMWTradeCodes(mw, size, atmo, hydro, pop, gov, law, tech);
     return {worldtype:type, size:size, pop:pop, maxpop:pop2, uwp:uwp, tradecodes:tradecodes};
 }
-function getMgT2UWP(zone){
+function getMgT2UWP(zone, maxTechLevel){
      // if zone >= 1 hot, 0 = temperate <=-1 cold
     var uwp ="", bases = [];
     var techDM = 0;
@@ -1937,18 +1943,23 @@ function getMgT2UWP(zone){
     else if(pop == 10){techDM += 4;}
 
     var gov, law, starport, tech;
+    var hasHighPort = false;
     if(pop === 0){ gov = 0; law = 0; tech = 0; starport = "X";}
     else{
+        
         // gov;
         gov = d6(2)-7+pop;
+        var corsairDM = 0;
         if(gov < 0){gov = 0;}
         // law            
         law = d6(2)-7+gov;
         if(law < 0){law = 0;}
-        if(law === 0 || law === 5){
-            techDM += 1;
-        }else if(law === 7){ techDM +=2; }
-        else if(law === 13 || law ===14){ techDM -=2;}
+        if(law === 0){ corsairDM = 2;}else if(law >= 2){ corsairDM = -2;}
+        if(gov === 0 || gov === 5){ 
+            techDM += 1; 
+        }else if(gov === 7){ techDM +=2; }
+        else if(gov === 13 || gov ===14){ techDM -=2;}
+        
         // starport
         var starportDM = 0;
         if(pop === 8 || pop === 9){
@@ -1964,12 +1975,12 @@ function getMgT2UWP(zone){
         if(starportRoll <= 2){
             starport = "X";
             techDM -= 4;
-            if(d6(2)>=10){
+            if(d6(2) + corsairDM >= 10){
                 bases.push("Corsair");
             }
         }else if(starportRoll <= 4){
             starport = "E";
-            if(d6(2)>=10){
+            if(d6(2) + corsairDM >= 10){
                 bases.push("Corsair");
             }
         }else if(starportRoll <= 6){
@@ -1977,7 +1988,7 @@ function getMgT2UWP(zone){
             if(d6(2)>=8){
                 bases.push("Scout");
             }
-            if(d6(2)>=12){
+            if(d6(2) + corsairDM >= 12){
                 bases.push("Corsair");
             }
             
@@ -2004,6 +2015,7 @@ function getMgT2UWP(zone){
             }
         }else if(starportRoll >= 11){
             starport = "A";
+
             techDM += 6;
             if(d6(2)>=8){
                 bases.push("Military");
@@ -2017,11 +2029,24 @@ function getMgT2UWP(zone){
         }
         //tech;
         tech = d6() + techDM;
+        if(tech > maxTechLevel){ tech = maxTechLevel;}
+        var highportDM = 0;
+        if(tech < 9){
+        }else if(tech >= 9 && tech <= 11){
+            highportDM = 1;
+        }else{
+            highportDM = 2;
+        }
+        if(pop >= 9){ highportDM += 1;}else if(pop <= 6){ highportDM -=1;}
+        if(starport === "A"){ hasHighPort = d6(2) + highportDM >= 6; }
+        else if(starport === "B"){ hasHighPort = d6(2) + highportDM >= 8;}
+        else if(starport === "C"){ hasHighPort = d6(2) + highportDM >= 10;}
+        else if(starport === "D"){ hasHighPort = d6(2) + highportDM >= 12;}
     }
     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
-    return {uwp:uwp, bases:bases, temp:temp}
+    return {uwp:uwp, bases:bases, temp:temp, hasHighPort:hasHighPort}
 }
-function getCepheusEngineUWP(zone){
+function getCepheusEngineUWP(zone, maxTechLevel){
      // if zone >= 1 hot, 0 = temperate <=-1 cold
      var uwp ="", bases = [];
      var techDM = 0;
@@ -2107,10 +2132,10 @@ function getCepheusEngineUWP(zone){
          law = d6(2)-7+gov;
          if(law < 0){law = 0;}
          if(law > 10){law = 10;}
-         if(law === 0 || law === 5){
+         if(gov === 0 || gov === 5){
              techDM += 1;
-         }else if(law === 7){ techDM +=2; }
-         else if(law === 13 || law ===14){ techDM -=2;}
+         }else if(gov === 7){ techDM +=2; }
+         else if(gov === 13 || gov ===14){ techDM -=2;}
 
          // starport
          var starportRoll = d6(2)+pop;
@@ -2178,6 +2203,7 @@ function getCepheusEngineUWP(zone){
             if(atmo <=3 || (atmo >= 10 && atmo <= 12)){ tech = 7;}
             if(hydro === 10 && (atmo === 14 || atmo === 13)){ tech = 7;}
          }
+         if(tech < maxTechLevel){ tech = maxTechLevel;}
      }
      uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
      return {uwp:uwp, bases:bases, temp:temp}

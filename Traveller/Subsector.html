@@ -542,7 +542,7 @@
                     <legend>Configuration</legend>
                     <fieldset class="collapsed">
                         <legend>Astrographics</legend>
-                        <label for="slctMainworldRules">System Gen Ruleset:
+                        <label for="slctMainworldRules">UWP Gen Ruleset:
                             <select name="slctMainworldRules" id="slctMainworldRules">
                                 <option selected="selected" value="T5">T5</option>
                                 <option value="CE">Cepheus Engine</option>
@@ -575,8 +575,8 @@
                                 <option value=20>20 (L)</option>
                                 <option value=19>19 (K)</option>
                                 <option value=18>18 (J)</option>
-                                <option value=17>17 (H)</option>
-                                <option value=16 selected="selected">16 (G)</option>
+                                <option value=17 selected="selected">17 (H)</option>
+                                <option value=16>16 (G)</option>
                                 <option value=15>15 (F)</option>
                                 <option value=14>14 (E)</option>
                                 <option value=13>13 (D)</option>
@@ -3850,6 +3850,15 @@
                         var scale = fontSize / 2;
                         strokeStar(hexX - scale * 5, hexY - scale * 5, 5, scale * 0.7, scale * 1.7);
                         break;
+                    case "Corsair":
+                    case "Pirate":
+                        var scale = fontSize / 2;
+                        drawPirateBase(hexX - scale * 5, hexY - scale * 5, scale * 1.7);
+                        break;
+                    case "Military":
+                        var scale = fontSize / 2;
+                        drawMilitaryBase(hexX + scale * 7, hexY + scale, scale);
+                        break;
                     case "Way Station":
                         var scale = fontSize / 2;
                         ctx.beginPath();
@@ -3867,6 +3876,32 @@
                         ctx.lineWidth = oldLineWidth;
                         break;
                 }
+            }
+            function drawPirateBase(cx,cy,outerRadius){
+                ctx.beginPath();
+                ctx.strokeStyle = TEXT_COLOR;
+                var yOffset = outerRadius/2;
+                ctx.moveTo(cx - outerRadius, cy - outerRadius + yOffset);
+                ctx.lineTo(cx + outerRadius, cy + outerRadius - yOffset);
+                ctx.stroke();
+                ctx.moveTo(cx + outerRadius, cy - outerRadius + yOffset);
+                ctx.lineTo(cx - outerRadius, cy + outerRadius - yOffset);
+                ctx.stroke();
+                ctx.fillStyle = TEXT_COLOR;
+                ctx.beginPath();
+                ctx.arc(cx, cy - outerRadius, fontSize / 2, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.closePath();
+            }
+            function drawMilitaryBase(cx,cy,outerRadius){
+                ctx.beginPath();
+                ctx.fillStyle = TEXT_COLOR;
+                ctx.moveTo(cx - outerRadius, cy + outerRadius);
+                ctx.lineTo(cx - outerRadius, cy - outerRadius);
+                ctx.lineTo(cx + outerRadius, cy - outerRadius);
+                ctx.lineTo(cx + outerRadius, cy + outerRadius);
+                ctx.closePath();
+                ctx.fill();
             }
             function drawStar(cx, cy, spikes, outerRadius, innerRadius) {
                 var rot = Math.PI / 2 * 3;
