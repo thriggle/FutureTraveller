@@ -434,6 +434,7 @@
         #txtUWP{ width:5rem;}
         .dice{font-size:1rem; user-select:none; min-width:2rem; text-align:center; cursor:pointer; display:inline-block; vertical-align:middle; opacity: 0.6;}
         .dice:hover{opacity:1;}
+        [data-randomize]{display:none;}
     </style>
     <nav class="menu">
         <ul>
@@ -894,9 +895,9 @@
         </div>
         <div id="SystemDetailsContainer" style="display:none;">
             <div id="SystemDetails">
-                <h1><span title="Reroll system name" class="dice" data-randomize="systemname">🎲</span>&nbsp;<span data-system="tcoord"></span>: <span data-system="name" >System Name</span><span title="Edit system name" id="btnEditSystemName" class="dice">🖊️</span><input type="text" title="Change the system name" id="txtSystemName" style="display:none"/><span id="btnSaveSystemName" title="Update system name" class="dice" style="display:none;">💾</span><SPAN class="dice" title="Cancel editing system name" style="display:none;" id="btnCancelSystemName">❌</SPAN><span id="btnDeleteSystem" title="Delete this system" class="dice">🗑️</span><span
+                <h1><span data-system="tcoord"></span>: <span data-system="name" >System Name</span><span title="Edit system name" id="btnEditSystemName" class="dice">🖊️</span><input type="text" title="Change the system name" id="txtSystemName" style="display:none"/><span title="Reroll system name" class="dice" data-randomize="systemname">🎲</span><span id="btnSaveSystemName" title="Update system name" class="dice" style="display:none;">💾</span><SPAN class="dice" title="Cancel editing system name" style="display:none;" id="btnCancelSystemName">❌</SPAN><span id="btnDeleteSystem" title="Delete this system" class="dice">🗑️</span><span
                         id="dialog_close">X</span></h1>
-                <h2><span title="Reroll UWP and system" class="dice" data-randomize="system">🎲</span>&nbsp;<span title="Universal World Profile" data-system="uwp"></span><span title="Edit UWP" id="btnEditUWP" class="dice">🖊️</span><input type="text" title="Change the UWP" id="txtUWP" style="display:none"/><span id="btnBuildFromUWP" title="Generate new system using given UWP" class="dice" style="display:none;">⚗️</span><span id="btnUpdateUWP" title="Update the mainworld UWP without changing system details" class="dice" style="display:none;">💾</span><SPAN class="dice" title="Cancel editing UWP" style="display:none;" id="btnCancelEditUWP">❌</SPAN> <span title="Trade Codes"
+                <h2><span title="Reroll UWP and system" class="dice" data-randomize="system">🎲</span><span title="Universal World Profile" data-system="uwp"></span><span title="Edit UWP" id="btnEditUWP" class="dice">🖊️</span><input type="text" title="Change the UWP" id="txtUWP" style="display:none"/><span id="btnBuildFromUWP" title="Generate new system using given UWP" class="dice" style="display:none;">⚗️</span><span id="btnUpdateUWP" title="Update the mainworld UWP without changing system details" class="dice" style="display:none;">💾</span><SPAN class="dice" title="Cancel editing UWP" style="display:none;" id="btnCancelEditUWP">❌</SPAN> <span title="Trade Codes"
                         data-mainworld="tradecodes" data-join=" "></span></h2>
                 <h3 style="font-weight:normal; font-size:medium;" data-mainworld="tradecodes" data-lookup="tradecode"
                     data-join=", "></h3>
@@ -1985,6 +1986,7 @@
                     document.getElementById("btnBuildFromUWP").style.display = "none";
                     document.getElementById("btnEditUWP").style.display = "inline-block";
                     document.querySelector("[data-system=\"uwp\"]").style.display = "inline";
+                    document.querySelector("[data-randomize=\"system\"]").style.display = "none";
                 });
                 document.getElementById("btnEditUWP").addEventListener("click",function(){
                     var txtUWP = document.getElementById("txtUWP");
@@ -1995,6 +1997,7 @@
                     document.getElementById("btnBuildFromUWP").style.display = "inline-block";
                     document.getElementById("btnEditUWP").style.display = "none";
                     document.querySelector("[data-system=\"uwp\"]").style.display = "none";
+                    document.querySelector("[data-randomize=\"system\"]").style.display = "inline";
                 });
                 document.getElementById("btnCancelEditUWP").addEventListener("click",function(){
                     document.getElementById("txtUWP").style.display = "none";
@@ -2003,6 +2006,7 @@
                     document.getElementById("btnCancelEditUWP").style.display = "none";
                     document.getElementById("btnEditUWP").style.display = "inline-block";
                     document.querySelector("[data-system=\"uwp\"]").style.display = "inline";
+                    document.querySelector("[data-randomize=\"system\"]").style.display = "none";
                 });
                 document.getElementById("btnSaveSystemName").addEventListener("click",function(){
                     var txtSystemName = document.getElementById("txtSystemName");
@@ -2012,11 +2016,14 @@
                     document.getElementById("btnSaveSystemName").style.display = "none";
                     document.getElementById("btnEditSystemName").style.display = "inline-block";
                     document.querySelector("[data-system=\"name\"]").style.display = "inline";
+                    document.querySelector("[data-randomize=\"systemname\"]").style.display = "none";
                 });
                 
                 document.getElementById("btnEditSystemName").addEventListener("click",function(){
                     document.querySelector("[data-system=\"name\"]").style.display = "none";
                     document.getElementById("btnEditSystemName").style.display = "none";
+                    document.querySelector("[data-randomize=\"systemname\"]").style.display = "inline";
+                    document.getElementById("btnDeleteSystem").style.display = "inline";
                     var txtSystemName = document.getElementById("txtSystemName");
                     txtSystemName.value = lastSelectedHex.system.name;
                     txtSystemName.style.display = "inline-block";
@@ -2031,8 +2038,10 @@
                     document.getElementById("txtSystemName").style.display = "none";
                     document.getElementById("btnSaveSystemName").style.display = "none";
                     document.getElementById("btnCancelSystemName").style.display = "none";
+                    document.getElementById("btnDeleteSystem").style.display = "none";
                     document.getElementById("btnEditSystemName").style.display = "inline-block";
                     document.querySelector("[data-system=\"name\"]").style.display = "inline";
+                    document.querySelector("[data-randomize=\"systemname\"]").style.display = "none";
                 });
                 document.getElementById("fontFamily").addEventListener("keyup", updateStyle);
                 document.getElementById("hexBorderColor").addEventListener("keyup", function () {
@@ -4244,6 +4253,17 @@
                 document.getElementById("btnSaveSystemName").style.display = "none";
                 document.getElementById("btnCancelSystemName").style.display = "none";
                 document.getElementById("btnEditSystemName").style.display = "inline-block";
+                document.querySelector("[data-system=\"uwp\"]").style.display = "inline";
+                document.querySelector("[data-system=\"name\"]").style.display = "inline";
+                document.querySelector("[data-randomize=\"systemname\"]").style.display = "none";
+                document.querySelector("[data-randomize=\"system\"]").style.display = "none";
+                document.getElementById("btnDeleteSystem").style.display = "none";
+                document.getElementById("txtUWP").style.display = "none";
+                document.getElementById("btnBuildFromUWP").style.display = "none";
+                document.getElementById("btnUpdateUWP").style.display = "none";
+                document.getElementById("btnCancelEditUWP").style.display = "none";
+                document.getElementById("btnEditUWP").style.display = "inline";
+
                 var lookups = {
                     orbitdistance: {
                         "-1": "<0.2 AU",
@@ -5588,23 +5608,28 @@
                             if(native){
                                 sortNatives();
                             }
-                            
+                            applyTravelCodes(mapContent);
+                            var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                            var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                            analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                            drawMap(mapContent);
+                            renderSystem(mapContent[index].system);
+                            document.getElementById("sectordata").value = getSectorData(mapContent);
                         break;
                     case "systemname":
-                        var name = addCaps(wordMaker.getRandomName("system"));
+                        wordMaker.setSeed((Math.random()*1000000).toString());
+                        document.getElementById("txtSystemName").value = addCaps(wordMaker.getRandomName("system"));
+                        /*
                         mapContent[index].system.name = name;
                         _systems[tcoord].name = name;
                         systemArray[mapContent[index].system.sysArrayIndex].name = name;
+                        document.querySelector("[data-system=\"name\"]").style.display = "inline";
+                        e.target.style.display = "none";
+                        */
                         break;
                     default: break;
                 }
-                applyTravelCodes(mapContent);
-                var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
-                var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
-                analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
-                drawMap(mapContent);
-                renderSystem(mapContent[index].system);
-                document.getElementById("sectordata").value = getSectorData(mapContent);
+                
             }
             function expandCollapseTraffic(e){
                 var nodes = document.querySelectorAll("#shipList h2");
