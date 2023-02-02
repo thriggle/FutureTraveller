@@ -510,7 +510,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
                 var MongooseSystem = getMgT2UWP(stars.primary.HZOrbit - MWOrbit, maxTechLevel);
                 predefinedUWP = MongooseSystem.uwp;
                 pop2 = revExt(predefinedUWP[4]);
-                bases = MongooseSystem.bases; basesPopulated = true;
+                bases = MongooseSystem.bases; basesPopulated=true;
                 climate = MongooseSystem.temp;
                 highPort = MongooseSystem.hasHighPort;
                 break;
@@ -527,6 +527,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         pop2 = pop;
         gov = revExt(predefinedUWP[5]);
         law = revExt(predefinedUWP[6]);
+
         tech = predefinedUWP.length > 9 ? Number(predefinedUWP[8] + predefinedUWP[9]) : revExt(predefinedUWP[8]);
         if(pop !== 0 && popdigit === 0){
             popdigit = d19();
