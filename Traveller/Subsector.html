@@ -705,9 +705,10 @@
                                         <option value=24>24</option>
                                         <option value=23>23</option>
                                         <option value=22>22</option>
-                                        <option selected=selected value=21>21</option>
-                                        <option value=20>20</option>
+                                        <option value=21>21</option>
+                                        <option selected=selected value=20>20</option>
                                         <option value=19>19</option>
+                                        <option value=19>18</option>
                                     </select></label><br />
                                 <label for="slctAmberGovLaw"><select name="slctAmberGovLaw" data-color="N/A"
                                         id="slctAmberGovLaw">
@@ -727,6 +728,7 @@
                                         <option value=21>21</option>
                                         <option selected=selected value=20>20</option>
                                         <option value=19>19</option>
+                                        <option value=19>18</option>
                                     </select></label><br />
                                 <label for="slctAmberZoneLL"><select name="slctAmberZoneLL" data-color="N/A"
                                         id="slctAmberZoneLL">
@@ -734,6 +736,8 @@
                                         <option value="Amber">Amber</option>
                                         <option value="Red">Red</option>
                                     </select> Highest LL World(s) (min <select id="slctMaxLawLevelThreshold">
+                                        <option value=17>17</option>
+                                        <option value=16>16</option>
                                         <option value=15>15</option>
                                         <option value=14>14</option>
                                         <option value=13>13</option>
@@ -749,6 +753,8 @@
                                         <option value="Amber">Amber</option>
                                         <option value="Red">Red</option>
                                     </select> High Law (<select id="slctLawLevelThreshold">
+                                        <option value=17>17</option>
+                                        <option value=16>16</option>
                                         <option value=15>15</option>
                                         <option value=14>14</option>
                                         <option value=13>13</option>
@@ -3311,7 +3317,7 @@
                                     } else {
                                         mapContent[i].system.isAmber = true;
                                     }
-                                    mapContent[i].system.travelcodenotes += "Among strictest law levels in the subsector.  ";
+                                    mapContent[i].system.travelcodenotes += "Among strictest law levels in the region.  ";
                                 }
                             }
                             if (AmberZone9LL !== "N/A") { // amber zone 9+ law level 
@@ -3321,7 +3327,7 @@
                                     } else {
                                         mapContent[i].system.isAmber = true;
                                     }
-                                    mapContent[i].system.travelcodenotes += "Law levels " + LLThreshold.toString() + "+.  ";
+                                    mapContent[i].system.travelcodenotes += "Law level " + LLThreshold.toString() + "+.  ";
                                 }
                             }
                             if (AmberZone0LL !== "N/A") { // amber zone 0 law level
