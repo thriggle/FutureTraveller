@@ -4180,7 +4180,9 @@ function generateRandomAlien(species,rand){
                 },
                 taildesc:{
                     "Proboscis/Extended Snout":"an extended snout or proboscis",
-                    "Prehensile Tail":"a prehensile tail"
+                    "Prehensile Tail":"a prehensile tail",
+                    "Tail":"a long tail",
+                    "Vestigial Tail":"a stubby, vestigial tail"
                 }
             }[key][species[key]];
         }else{
@@ -4225,7 +4227,12 @@ function generateRandomAlien(species,rand){
                 }
             }
         }
-        summary += ". ";
+
+        if(species.tail === "T" || species.tail === "V"){
+            summary += ", and have " + summarize("taildesc")+". ";
+        }else{
+            summary += ". ";
+        }
        
         
         var appendages = getAppendages();
