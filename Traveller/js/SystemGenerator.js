@@ -505,6 +505,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
                 predefinedUWP = CESystem.uwp;
                 bases = CESystem.bases; basesPopulated = true;
                 pop2 = revExt(predefinedUWP[4]);
+                highport = CESystem.highport;
                 break;
             case "MgT2":
                 var MongooseSystem = getMgT2UWP(stars.primary.HZOrbit - MWOrbit, maxTechLevel);
@@ -512,7 +513,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
                 pop2 = revExt(predefinedUWP[4]);
                 bases = MongooseSystem.bases; basesPopulated=true;
                 climate = MongooseSystem.temp;
-                highPort = MongooseSystem.hasHighPort;
+                highport = MongooseSystem.hasHighPort;
                 break;
             default: console.log("Unrecognized ruleset code: " + ruleset); break;
         }
@@ -555,110 +556,12 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
                         break;
                     default: console.log("Invalid starport in UWP: " + starport); break;
                 }
-            } else if (ruleset === "CE") {
-                if (starport === "X") {
-                    if (d6(2) === 12) {
-                        bases.push("Pirate");
-                    }
-                } else if (starport === "E") {
-                    if (d6(2) === 12) {
-                        bases.push("Pirate");
-                    }
-                } else if (starport === "D") {
-                    if (d6(2) >= 7) {
-                        bases.push("Scout");
-                    }
-                    if (d6(2) === 12) {
-                        bases.push("Pirate");
-                    }
-
-                } else if (starport === "C") {
-                    if (d6(2) === 12) {
-                        bases.push("Pirate");
-                    }
-                    if (d6(2) >= 8) {
-                        bases.push("Scout");
-                    }
-                } else if (starport === "B") {
-                    starport = "B";
-                    if (d6(2) >= 8) {
-                        bases.push("Naval");
-                    } else {
-                        if (d6(2) === 12) {
-                            bases.push("Pirate");
-                        }
-                    }
-                    if (d6(2) >= 9) {
-                        bases.push("Scout");
-                    }
-                } else if (starport === "A") {
-                    if (d6(2) >= 8) {
-                        bases.push("Naval");
-                    }
-                    if (d6(2) >= 10) {
-                        bases.push("Scout");
-                    }
-                }
-            } else if (ruleset === "MgT2") {
-                var corsairDM = 0;
-                if (law === 0) { corsairDM = 2; } else if (law >= 2) { corsairDM = -2; }
-                if (starport === "X") {
-                    if (d6(2) + corsairDM >= 10) {
-                        bases.push("Corsair");
-                    }
-                } else if (starport === "E") {
-                    if (d6(2) + corsairDM >= 10) {
-                        bases.push("Corsair");
-                    }
-                } else if (starport === "D") {
-                    if (d6(2) >= 8) {
-                        bases.push("Scout");
-                    }
-                    if (d6(2) + corsairDM >= 12) {
-                        bases.push("Corsair");
-                    }
-
-                } else if (starport === "C") {
-                    if (d6(2) >= 10) {
-                        bases.push("Military");
-                    }
-                    if (d6(2) >= 9) {
-                        bases.push("Scout");
-                    }
-                } else if (starport === "B") {
-                    if (d6(2) >= 8) {
-                        bases.push("Military");
-                    }
-                    if (d6(2) >= 8) {
-                        bases.push("Naval");
-                    }
-                    if (d6(2) >= 9) {
-                        bases.push("Scout");
-                    }
-                } else if (starport === "A") {
-                    if (d6(2) >= 8) {
-                        bases.push("Military");
-                    }
-                    if (d6(2) >= 8) {
-                        bases.push("Naval");
-                    }
-                    if (d6(2) >= 10) {
-                        bases.push("Scout");
-                    }
-                }
-                var highportDM = 0;
-                if (tech < 9) {
-                } else if (tech >= 9 && tech <= 11) {
-                    highportDM = 1;
-                } else {
-                    highportDM = 2;
-                }
-                if (pop >= 9) { highportDM += 1; } else if (pop <= 6) { highportDM -= 1; }
-                if (starport === "A") { highport = d6(2) + highportDM >= 6; }
-                else if (starport === "B") { highport = d6(2) + highportDM >= 8; }
-                else if (starport === "C") { highport = d6(2) + highportDM >= 10; }
-                else if (starport === "D") { highport = d6(2) + highportDM >= 12; }
-            }
+            } else{
+                var basesAndHighport = getBasesAndHighport(starport, pop, law, tech, ruleset);
+                bases = basesAndHighport.bases;
+                highport = basesAndHighport.highport
+                
+            } 
             if (pop === 0) {
                 bases = [];
                 popdigit = 0;
@@ -1034,6 +937,121 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if (mainworld.tradecodes.indexOf("In") >= 0 || mainworld.tradecodes.indexOf("Hi") >= 0) { nobility.push("E"); }
     if (isImportant) { nobility.push("f"); }
     return { name: name, nobility: nobility, economics: economics, pbg: ext(popdigit) + ext(planetoidBelts) + ext(gg), totalpop: totalpop, popdigit: popdigit, allegiance: "Im", uwp: uwp, bases: bases, stars: stars, gg: gg, planetoidBelts: planetoidBelts, importance: { weeklytraffic: weeklyships, dailytraffic: dailyships, isImportant: isImportant, isUnimportant: isUnimportant, extension: importance, description: importanceDesc }, mainworld: mainworld, tradecodes: tradecodes };
+}
+function getBasesAndHighport(starport, pop, law, tech, ruleset){
+    var bases = [], highport = false;
+    switch(ruleset){
+        case "CE":
+            if (starport === "X") {
+                if (d6(2) === 12) {
+                    bases.push("Pirate");
+                }
+            } else if (starport === "E") {
+                if (d6(2) === 12) {
+                    bases.push("Pirate");
+                }
+            } else if (starport === "D") {
+                if (d6(2) >= 7) {
+                    bases.push("Scout");
+                }
+                if (d6(2) === 12) {
+                    bases.push("Pirate");
+                }
+
+            } else if (starport === "C") {
+                if (d6(2) === 12) {
+                    bases.push("Pirate");
+                }
+                if (d6(2) >= 8) {
+                    bases.push("Scout");
+                }
+            } else if (starport === "B") {
+                starport = "B";
+                if (d6(2) >= 8) {
+                    bases.push("Naval");
+                } else {
+                    if (d6(2) === 12) {
+                        bases.push("Pirate");
+                    }
+                }
+                if (d6(2) >= 9) {
+                    bases.push("Scout");
+                }
+            } else if (starport === "A") {
+                if (d6(2) >= 8) {
+                    bases.push("Naval");
+                }
+                if (d6(2) >= 10) {
+                    bases.push("Scout");
+                }
+            }
+            if (starport === "A" && pop >= 7) { highport = true; }
+            else if (starport === "B" && pop >= 8) { highport = true; }
+            else if (starport === "C" && pop >= 9) { highport = true; }
+            break;
+        case "MgT2":
+            var corsairDM = 0;
+            if (law === 0) { corsairDM = 2; } else if (law >= 2) { corsairDM = -2; }
+            if (starport === "X") {
+                if (d6(2) + corsairDM >= 10) {
+                    bases.push("Corsair");
+                }
+            } else if (starport === "E") {
+                if (d6(2) + corsairDM >= 10) {
+                    bases.push("Corsair");
+                }
+            } else if (starport === "D") {
+                if (d6(2) >= 8) {
+                    bases.push("Scout");
+                }
+                if (d6(2) + corsairDM >= 12) {
+                    bases.push("Corsair");
+                }
+
+            } else if (starport === "C") {
+                if (d6(2) >= 10) {
+                    bases.push("Military");
+                }
+                if (d6(2) >= 9) {
+                    bases.push("Scout");
+                }
+            } else if (starport === "B") {
+                if (d6(2) >= 8) {
+                    bases.push("Military");
+                }
+                if (d6(2) >= 8) {
+                    bases.push("Naval");
+                }
+                if (d6(2) >= 9) {
+                    bases.push("Scout");
+                }
+            } else if (starport === "A") {
+                if (d6(2) >= 8) {
+                    bases.push("Military");
+                }
+                if (d6(2) >= 8) {
+                    bases.push("Naval");
+                }
+                if (d6(2) >= 10) {
+                    bases.push("Scout");
+                }
+            }
+            var highportDM = 0;
+            if (tech < 9) {
+            } else if (tech >= 9 && tech <= 11) {
+                highportDM = 1;
+            } else {
+                highportDM = 2;
+            }
+            if (pop >= 9) { highportDM += 1; } else if (pop <= 6) { highportDM -= 1; }
+            if (starport === "A") { highport = d6(2) + highportDM >= 6; }
+            else if (starport === "B") { highport = d6(2) + highportDM >= 8; }
+            else if (starport === "C") { highport = d6(2) + highportDM >= 10; }
+            else if (starport === "D") { highport = d6(2) + highportDM >= 12; }
+            else{ highport = false;}
+            break;
+        }
+    return {bases:bases, highport:highport}
 }
 function getTotalPop(star, total) {
     if (typeof total == "undefined") {
@@ -2055,18 +2073,16 @@ function getMgT2UWP(zone, maxTechLevel) {
     else if (pop == 10) { techDM += 4; }
 
     var gov, law, starport, tech;
-    var hasHighPort = false;
     if (pop === 0) { gov = 0; law = 0; tech = 0; starport = "X"; }
     else {
 
         // gov;
         gov = d6(2) - 7 + pop;
-        var corsairDM = 0;
         if (gov < 0) { gov = 0; }
         // law            
         law = d6(2) - 7 + gov;
         if (law < 0) { law = 0; }
-        if (law === 0) { corsairDM = 2; } else if (law >= 2) { corsairDM = -2; }
+       
         if (gov === 0 || gov === 5) {
             techDM += 1;
         } else if (gov === 7) { techDM += 2; }
@@ -2087,77 +2103,28 @@ function getMgT2UWP(zone, maxTechLevel) {
         if (starportRoll <= 2) {
             starport = "X";
             techDM -= 4;
-            if (d6(2) + corsairDM >= 10) {
-                bases.push("Corsair");
-            }
         } else if (starportRoll <= 4) {
             starport = "E";
-            if (d6(2) + corsairDM >= 10) {
-                bases.push("Corsair");
-            }
         } else if (starportRoll <= 6) {
             starport = "D";
-            if (d6(2) >= 8) {
-                bases.push("Scout");
-            }
-            if (d6(2) + corsairDM >= 12) {
-                bases.push("Corsair");
-            }
-
         } else if (starportRoll <= 8) {
             starport = "C";
             techDM += 2;
-            if (d6(2) >= 10) {
-                bases.push("Military");
-            }
-            if (d6(2) >= 9) {
-                bases.push("Scout");
-            }
         } else if (starportRoll <= 10) {
             starport = "B";
             techDM += 4;
-            if (d6(2) >= 8) {
-                bases.push("Military");
-            }
-            if (d6(2) >= 8) {
-                bases.push("Naval");
-            }
-            if (d6(2) >= 9) {
-                bases.push("Scout");
-            }
         } else if (starportRoll >= 11) {
             starport = "A";
-
             techDM += 6;
-            if (d6(2) >= 8) {
-                bases.push("Military");
-            }
-            if (d6(2) >= 8) {
-                bases.push("Naval");
-            }
-            if (d6(2) >= 10) {
-                bases.push("Scout");
-            }
         }
         //tech;
         tech = d6() + techDM;
         if (tech > maxTechLevel) { tech = maxTechLevel; }
-        var highportDM = 0;
-        if (tech < 9) {
-            if (tech < 0) { tech = 0; }
-        } else if (tech >= 9 && tech <= 11) {
-            highportDM = 1;
-        } else {
-            highportDM = 2;
-        }
-        if (pop >= 9) { highportDM += 1; } else if (pop <= 6) { highportDM -= 1; }
-        if (starport === "A") { hasHighPort = d6(2) + highportDM >= 6; }
-        else if (starport === "B") { hasHighPort = d6(2) + highportDM >= 8; }
-        else if (starport === "C") { hasHighPort = d6(2) + highportDM >= 10; }
-        else if (starport === "D") { hasHighPort = d6(2) + highportDM >= 12; }
+        
     }
     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
-    return { uwp: uwp, bases: bases, temp: temp, hasHighPort: hasHighPort }
+    var basesAndHighport = getBasesAndHighport(starport, pop, law, tech, "MgT2");
+    return { uwp: uwp, bases: basesAndHighport.bases, temp: temp, hasHighPort: basesAndHighport.highport }
 }
 function getCepheusEngineUWP(zone, maxTechLevel) {
     // if zone >= 1 hot, 0 = temperate <=-1 cold
@@ -2255,54 +2222,19 @@ function getCepheusEngineUWP(zone, maxTechLevel) {
         if (starportRoll <= 2) {
             starport = "X";
             techDM -= 4;
-            if (d6(2) === 12) {
-                bases.push("Pirate");
-            }
         } else if (starportRoll <= 4) {
             starport = "E";
-            if (d6(2) === 12) {
-                bases.push("Pirate");
-            }
         } else if (starportRoll <= 6) {
             starport = "D";
-            if (d6(2) >= 7) {
-                bases.push("Scout");
-            }
-            if (d6(2) === 12) {
-                bases.push("Pirate");
-            }
-
         } else if (starportRoll <= 8) {
             starport = "C";
             techDM += 2;
-            if (d6(2) === 12) {
-                bases.push("Pirate");
-            }
-            if (d6(2) >= 8) {
-                bases.push("Scout");
-            }
         } else if (starportRoll <= 10) {
             starport = "B";
             techDM += 4;
-            if (d6(2) >= 8) {
-                bases.push("Naval");
-            } else {
-                if (d6(2) === 12) {
-                    bases.push("Pirate");
-                }
-            }
-            if (d6(2) >= 9) {
-                bases.push("Scout");
-            }
         } else if (starportRoll >= 11) {
             starport = "A";
             techDM += 6;
-            if (d6(2) >= 8) {
-                bases.push("Naval");
-            }
-            if (d6(2) >= 10) {
-                bases.push("Scout");
-            }
         }
         //tech;
         tech = d6() + techDM;
@@ -2319,8 +2251,9 @@ function getCepheusEngineUWP(zone, maxTechLevel) {
         }
         if (tech > maxTechLevel) { tech = maxTechLevel; }
     }
+    var basesAndHighport = getBasesAndHighport(starport, pop, law, tech, "CE");
     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
-    return { uwp: uwp, bases: bases, temp: temp }
+    return { uwp: uwp, bases: basesAndHighport.bases, temp: temp, highport:basesAndHighport.highport }
 }
 function getNonMWTradeCodes(mw, size, atmo, hydro, pop, gov, law, tech) {
     var codes = [];
