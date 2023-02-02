@@ -666,7 +666,7 @@ function getNames(){
             //,"1:{aslan.6sylword}"
         ],
         "1sylword":[
-            "3:{aslan.v}",
+            //"3:{aslan.v}",
             "3:{aslan.cv}",
             "2:{aslan.vc}",
             "2:{aslan.cvc}"
@@ -2953,7 +2953,59 @@ function getNames(){
         "animal":[
             "2:{ship.fearsomecritter}",
             "10:{ship.realcritter}",
+            "10:{ship.travcritter}",
             "1:{ship.butterfly}"
+        ],
+        "travcritter":[
+            "arrow slasher",
+            "anola",
+            "basa",
+            "beaker|beaked monkey",
+            "blinder",
+            "bush runner",
+            "carthus",
+            //"chamax",
+            "chraenta",
+            "daka",
+            "daghadasi",
+            "elyosa",
+            "erakruul",
+            "floater",
+            "gasbag",
+            "gazaal",
+            "grapplepede",
+            "groat",
+            "grubber",
+            "gruut",
+            "ixtlil",
+            "lii-rat",
+            "kian",
+            "nashu",
+            "nibbon",
+            "nightsleek",
+            "nokhopii worm",
+            "nushilii",
+            "ostu",
+            "poisson-fue",
+            "remex muta",
+            "rock pouncer",
+            "ruuta",
+            "sea sifter",
+            "sea slasher",
+            "slasher",
+            "snowcat",
+            "square manta",
+            "ssazhenta",
+            "takai lizard",
+            "thakak",
+            "thanic chaser",
+            "tkighir",
+            "tluugir",
+            "trapper",
+            "tree kraken",
+            "tree rat",
+            "tumblespider",
+            "walston"
         ],
         "butterfly":[
             "abantiades",
@@ -3812,7 +3864,8 @@ function getNames(){
             "2:{ship.memorial}",
             "2:{ship.vicevirtue}",
             "{ship.nature}",
-            "2:{ship.bigidea}"
+            "2:{ship.bigidea}",
+            "{ship.animal}"
         ],
         "combo":[
             "{ship.combo1}{ship.combo2}"

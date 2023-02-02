@@ -247,7 +247,6 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     var gg = d6(2) <= gasGiantFrequency ? Math.max(((d6(2) / 2) >> 0) - 2, 1) : 0;
     var roll;
     var uwp = predefinedUWP ? predefinedUWP : "", popdigit = 0, totalpop = 0;
-    console.log(uwp);
     var tradecodes = [];
     var stars = { primary: {}, primary_companion: false, close: false, near: false, near_companion: false, close_companion: false, far: false, far_companion: false };
     var primaryType = d6() - d6(),
@@ -776,7 +775,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             tradecodes.push("Ho"); if (needsClimate) { climate = "Hot."; }
         }
     } else if (difference === 0) {
-        if (atmo === 0) { console.log(climate); }
+       // if (atmo === 0) { console.log(climate); }
         if (needsClimate) { climate = "Temperate."; }
     } else if (difference === -1) {
         if (size >= 6 && size <= 9 && atmo >= 4 && atmo <= 9 && hydro >= 3 && hydro <= 7) {
@@ -1247,8 +1246,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                 var moons = planet.satellites;
                 var numAdditionalMoons = d6() - 1 - numExistingMoons;
                 if (numAdditionalMoons > 0) {
-                    var diff = orbit - star.HZOrbit;
-                    if (isNaN(diff)) { console.log(779); }
+                    var diff = planet.orbit - star.HZOrbit;
                     var moonMaker = diff <= 1 ? createInnerSatellite : createOuterSatellite;
                     for (var m = 0; m < numAdditionalMoons; m++) {
                         var moon = moonMaker(mainworld, planet.size, mainworld.pop - 1, maxTech, allowNonMWPops, permitDieback);
