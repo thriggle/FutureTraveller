@@ -149,15 +149,22 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject)
     function restoreDefaultForbiddenWords(){
         forbiddenWords = defaultForbiddenWords;
     }
-    function getRandomName(key, bannedWords) {
+    function getRandomName(key, bannedWords, topLevel) {
+        var extraLogs = false;
         if(typeof bannedWords === "undefined"){
             bannedWords = forbiddenWords;
         }
+        if(typeof topLevel === "undefined"){
+            topLevel = true;
+            extraLogs = true;
+        }
         var templatesSubset = this.templates[key];
-        var template = templatesSubset[(templatesSubset.length * MathRandom()) >>> 0];
+        var templateRoll =(templatesSubset.length * MathRandom()) >>> 0 ;
+        var template = templatesSubset[templateRoll];
         var phrases = this.unpackStringTemplate(template); // convert string into array of phrase objects with child segments
         UnpackedStringTemplates.names[key] = phrases;
-        var phrase = phrases[(phrases.length * MathRandom()) >>> 0];
+        var phraseRoll = (phrases.length * MathRandom()) >>> 0
+        var phrase = phrases[ phraseRoll ];
         var currentText = "";
         var references = [];
         var checkNot = -1;
@@ -169,10 +176,10 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject)
                 if(piece.endsWith(">") && references.length > 0){
                 var matches = piece.match(/<!\d>/g);
                    if(matches.length > 0){
-                      var number = +(matches[matches.length-1].match(/\d/)[0]);
-                      checkNot = number;
-                      var regex = new RegExp("<!"+number.toString() + ">","g");
-                      piece = piece.replace(regex,"");
+                        var number = +(matches[matches.length-1].match(/\d/)[0]);
+                        checkNot = number;
+                        var regex = new RegExp("<!"+number.toString() + ">","g");
+                        piece = piece.replace(regex,"");
                    }else{
                        checkNot = -1;
                    }
@@ -181,20 +188,22 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject)
                 }
                 currentText += piece;
             } else if (segment.reference) {
-                piece = this.getRandomName(segment.reference);
+                piece = this.getRandomName(segment.reference,bannedWords,false);
                 if(checkNot >= 0){
                     while(piece == references[checkNot]){
-                        piece = this.getRandomName(segment.reference);
+                        console.log("replacing " + piece+ "...");
+                        piece = this.getRandomName(segment.reference,bannedWords,false);
+                        console.log(piece);
                     }
                 }
                 currentText += piece;
                 references.push(piece);
             } else if (segment.references) {
                 var ref = segment.references[(segment.references.length * MathRandom()) >>> 0];
-                piece = this.getRandomName(ref);;
+                piece = this.getRandomName(ref,bannedWords,false);;
                 if(checkNot >= 0){
                     while(piece == references[checkNot]){
-                        piece = this.getRandomName(ref);
+                        piece = this.getRandomName(ref,bannedWords,false);
                     }
                 }
                 currentText += piece;
@@ -208,7 +217,7 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject)
             }
         }
         if(bannedWords.indexOf(currentText) >= 0){
-            currentText = this.getRandomName(key, bannedWords);
+            currentText = this.getRandomName(key, bannedWords,true);
         }
         return currentText.replace(/\s+/g," ");
     }
