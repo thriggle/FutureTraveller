@@ -191,9 +191,7 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject)
                 piece = this.getRandomName(segment.reference,bannedWords,false);
                 if(checkNot >= 0){
                     while(piece == references[checkNot]){
-                        console.log("replacing " + piece+ "...");
                         piece = this.getRandomName(segment.reference,bannedWords,false);
-                        console.log(piece);
                     }
                 }
                 currentText += piece;
