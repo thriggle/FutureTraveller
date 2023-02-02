@@ -5395,33 +5395,37 @@
                 var tcoord = lastSelectedHex.system.tcoord;
                 var xycoord = TCoordToXYCoord(tcoord);
                 var index = XYtoIndex(xycoord.x,xycoord.y);
-                mapContent[index].system.uwp = uwp;
-                mapContent[index].system.starport = uwp[0];
-                mapContent[index].system.mainworld.starport = uwp[0];
-                mapContent[index].system.size = revExt(uwp[1]);
-                mapContent[index].system.mainworld.size = revExt(uwp[1]);
-                mapContent[index].system.atmo = revExt(uwp[2]);
-                mapContent[index].system.mainworld.atmo = revExt(uwp[2]);
-                mapContent[index].system.hydro = revExt(uwp[3]);
-                mapContent[index].system.mainworld.hydro = revExt(uwp[3]);
-                mapContent[index].system.pop = revExt(uwp[4]);
-                mapContent[index].system.mainworld.pop = revExt(uwp[4]);
-                mapContent[index].system.gov = revExt(uwp[5]);
-                mapContent[index].system.mainworld.gov = revExt(uwp[5]);
-                mapContent[index].system.law = revExt(uwp[6]);
-                mapContent[index].system.mainworld.law = revExt(uwp[6]);
-                mapContent[index].system.tech = uwp.length > 9 ? Number(uwp[8] + uwp[9]) : revExt(uwp[8]);
-                mapContent[index].system.mainworld.tech = uwp.length > 9 ? Number(uwp[8] + uwp[9]) : revExt(uwp[8]);
-                mapContent[index].system = updateTradeCodes(mapContent[index].system);
-                _systems[tcoord] = mapContent[index].system;
-                systemArray[mapContent[index].system.sysArrayIndex] = mapContent[index].system;
-                applyTravelCodes(mapContent);
-                var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
-                var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
-                analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
-                drawMap(mapContent);
-                renderSystem(mapContent[index].system);
-                document.getElementById("sectordata").value = getSectorData(mapContent);
+                var olduwp = mapContent[index].system.uwp
+                if(uwp !== olduwp){
+                    mapContent[index].system.uwp = uwp;
+                    mapContent[index].system.starport = uwp[0];
+                    mapContent[index].system.mainworld.starport = uwp[0];
+                    mapContent[index].system.size = revExt(uwp[1]);
+                    mapContent[index].system.mainworld.size = revExt(uwp[1]);
+                    mapContent[index].system.atmo = revExt(uwp[2]);
+                    mapContent[index].system.mainworld.atmo = revExt(uwp[2]);
+                    mapContent[index].system.hydro = revExt(uwp[3]);
+                    mapContent[index].system.mainworld.hydro = revExt(uwp[3]);
+                    mapContent[index].system.pop = revExt(uwp[4]);
+                    mapContent[index].system.mainworld.pop = revExt(uwp[4]);
+                    mapContent[index].system.gov = revExt(uwp[5]);
+                    mapContent[index].system.mainworld.gov = revExt(uwp[5]);
+                    mapContent[index].system.law = revExt(uwp[6]);
+                    mapContent[index].system.mainworld.law = revExt(uwp[6]);
+                    mapContent[index].system.tech = uwp.length > 9 ? Number(uwp[8] + uwp[9]) : revExt(uwp[8]);
+                    mapContent[index].system.mainworld.tech = uwp.length > 9 ? Number(uwp[8] + uwp[9]) : revExt(uwp[8]);
+                    mapContent[index].system = updateTradeCodes(mapContent[index].system);
+                    _systems[tcoord] = mapContent[index].system;
+                    systemArray[mapContent[index].system.sysArrayIndex] = mapContent[index].system;
+                    applyTravelCodes(mapContent);
+                    var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                    var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                    analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                    drawMap(mapContent);
+                    
+                    document.getElementById("sectordata").value = getSectorData(mapContent);
+                }
+                renderSystem(mapContent[index].system);                
             }
             function rerollSystemWithPredefinedUWP(uwp){
                 var tcoord = lastSelectedHex.system.tcoord;
