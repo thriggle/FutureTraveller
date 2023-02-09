@@ -4218,6 +4218,7 @@ function getNames(){
             "2:warlock",
             "2:warlord",
             "2:warrior",
+            "2:wayfinder",
             "2:werewolf",
             "1:whale",
             "1:wight",
@@ -4723,7 +4724,7 @@ function getNames(){
             "halo",
             "mass",
             "megalith",
-            "3:moon",
+            "2:moon",
             "moonlet",
             "mote",
             "nebula",
@@ -4738,7 +4739,7 @@ function getNames(){
             "3:rock",
             "satellite",
             "shard",
-            "spall",
+            "2:spall",
             "2:sphere",
             "splinter",
             "4:star",
@@ -4747,6 +4748,7 @@ function getNames(){
             "umbra",
             "vacuum",
             "void",
+            "well",
             "11:world"
         ],
         "adjective":[
