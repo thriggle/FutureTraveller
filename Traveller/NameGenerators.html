@@ -31,10 +31,28 @@
         fieldset.collapsed > legend::before{
             content:"► ";
         }
+        .flexctr{
+            display:flex;
+            flex-direction: row-reverse;
+        }
+        .sidebar{
+            flex-grow:1;
+            border:1px solid black;
+            border-radius: 1rem;
+            padding: 0.5rem;
+        }
+        .flexchld{
+            flex-grow:4;
+        }
     </style>
     <script src="js/NameGenerator.js"></script>
-    <fieldset class="collapsed">
-        <legend>Anglic Words</legend>
+    <script src="js/names.js"></script>
+    <div class="flexctr">
+        <div class="sidebar">
+        </div>
+        <div class="flexchld">
+            <fieldset class="collapsed">
+            <legend>Anglic Words</legend>
         <input type="button" id="btnWord" name="btnWord" value="Word" data-key="word" /> 
         <span data-for="btnWord" >Generate a word using English phonotactics</span>
         <hr/>
@@ -67,7 +85,7 @@
         <input type="button" id="btnAslan5" name="btnAslan5" value="Five-Syllable Aslan Word" data-key="aslan.5sylword" /> 
         <span data-for="btnAslan5" >Generate a five-syllable Aslan word</span>
         <!-- <hr/>
-        <input type="button" id="btnAslan6" name="btnAslan6" value="Six-Syllable Aslan Word" data-key="aslan.6sylword" /> 
+            <input type="button" id="btnAslan6" name="btnAslan6" value="Six-Syllable Aslan Word" data-key="aslan.6sylword" /> 
         <span data-for="btnAslan6" >Generate a six-syllable Aslan word</span>
         // -->
     </fieldset><br/>
@@ -113,9 +131,17 @@
         <input type="button" id="btnShipNaval" name="btnShipNaval" value="Naval" data-key="ship.navalname" /> 
         <span data-for="btnShipNaval" >Generate a likely naval starship name</span>
     </fieldset>
-    <script>
-        NameGenerator("js/names.jsonc",addEventListeners);
-        function addEventListeners(generator){
+</div>
+</div>
+<script>
+    //NameGenerator("js/names.jsonc",addEventListeners);
+    NameGenerator(getNames(), addEventListeners, null, Math.random,true);
+    function removeChildElements(element) {
+        while (element.childNodes.length > 0) {
+            element.removeChild(element.childNodes[element.childNodes.length - 1]);
+        }
+    }
+    function addEventListeners(generator){
             var buttons = document.querySelectorAll("input[data-key]");
             for(var i = 0, len = buttons.length; i < len; i++){
                 var button = buttons[i];
@@ -125,6 +151,14 @@
                     var btnName = e.srcElement.getAttribute("name");
                     var label = document.querySelector("span[data-for=\""+btnName+"\"]");
                     label.innerText = addCaps(value);
+                    var sidebar = document.querySelector(".sidebar");
+                    removeChildElements(sidebar);
+                    sidebar.appendChild(document.createTextNode("More " + e.srcElement.value + " Examples"));
+                    var ol = sidebar.appendChild(document.createElement("ol"));
+                    ol.appendChild(document.createElement("li")).appendChild(document.createTextNode(addCaps(value)));
+                    for(var i = 0; i < 9; i++){
+                        ol.appendChild(document.createElement("li")).appendChild(document.createTextNode(addCaps(generator.getRandomName(key))));
+                    }
                 });
             }
             var collapserHandles = document.querySelectorAll("fieldset legend");
