@@ -2063,7 +2063,8 @@ function getMgT2UWP(zone, maxTechLevel) {
         if (hydro < 0) { hydro = 0; }
     }
     if (hydro === 0 || hydro === 9) { techDM += 1; }
-    else if (hydro === 10) { techDM += 2; }
+    else if(hydro > 10){ hydro = 10;}
+    if (hydro === 10) { techDM += 2; }
     // pop
     var pop = d6(2) - 2;
     if (pop <= 5 || techDM === 8) { techDM += 1; }
@@ -2183,7 +2184,8 @@ function getCepheusEngineUWP(zone, maxTechLevel) {
         if (hydro < 0) { hydro = 0; }
     }
     if (hydro === 0 || hydro === 9) { techDM += 1; }
-    else if (hydro === 10) { techDM += 2; }
+    else if (hydro > 10){ hydro = 10;}
+    if (hydro === 10) { techDM += 2; }
     // pop
     var pop = d6(2) - 2;
     var popDM = 0;
