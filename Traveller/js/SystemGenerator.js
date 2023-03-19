@@ -2117,7 +2117,8 @@ function getMgT2UWP(zone, maxTechLevel) {
         }
         //tech;
         tech = d6() + techDM;
-        if (tech > maxTechLevel) { tech = maxTechLevel; }
+        if(tech < 0) { tech = 0; }
+        else if (tech > maxTechLevel) { tech = maxTechLevel; }
         
     }
     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
@@ -2247,7 +2248,8 @@ function getCepheusEngineUWP(zone, maxTechLevel) {
             if (atmo <= 3 || (atmo >= 10 && atmo <= 12)) { tech = 7; }
             if (hydro === 10 && (atmo === 14 || atmo === 13)) { tech = 7; }
         }
-        if (tech > maxTechLevel) { tech = maxTechLevel; }
+        if(tech < 0){ tech = 0; }
+        else if (tech > maxTechLevel) { tech = maxTechLevel; }
     }
     var basesAndHighport = getBasesAndHighport(starport, pop, law, tech, "CE");
     uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
