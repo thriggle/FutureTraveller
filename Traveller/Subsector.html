@@ -2682,7 +2682,8 @@
                                 isRed: false,
                                 isAmber: false,
                                 nobility: details.nobility,
-                                sysArrayIndex:systemArray.length
+                                sysArrayIndex:systemArray.length,
+                                worldcount: details.worldcount
                             };
                             systems[tcoord] = system;
                             systemArray.push(system);
@@ -2806,7 +2807,7 @@
                 console.log(lifecount + " natives generated.");
             }
             function getSectorData(map) {
-                var sectordata = "Hex\tName\tUWP\tBases\tRemarks\tZone\tPBG\tAllegiance\tStars\t{Ix}\t(Ex)\t[Cx]\tN";
+                var sectordata = "Hex\tName\tUWP\tBases\tRemarks\tZone\tPBG\tW\tAllegiance\tStars\t{Ix}\t(Ex)\t[Cx]\tN";
                 for (var i = 0, len = map.length; i < len; i++) {
                     if (typeof map[i].system !== "undefined") {
                         var system = map[i].system;
@@ -2816,8 +2817,9 @@
                             + ""+system.uwp + "\t"
                             + ""+getBasesAbbrev(system.bases) + "\t"
                             + ""+system.mainworld.tradecodes.join(" ") + "\t"
-                            + ""+(system.isRed ? "R" : (system.isAmber ? "A" : "")) + "\t"
+                            + ""+(system.isRed ? "R" : (system.isAmber ? "A" : "-")) + "\t"
                             + ""+system.pbg + "\t"
+                            + ""+system.worldcount + "\t"
                             + ""+system.allegiance + "\t"
                             + ""+getStarsAbbrev(system.stars) + "\t"
                             + ""+"{" + (system.importance.extension > 0 ? "+" : "") + system.importance.extension + "}\t"
