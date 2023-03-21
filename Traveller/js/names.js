@@ -2993,6 +2993,7 @@ function getNames(){
             "sea sifter",
             "sea slasher",
             "slasher",
+            "snohl",
             "snowcat",
             "square manta",
             "ssazhenta",
