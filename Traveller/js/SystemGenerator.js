@@ -921,7 +921,9 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     }
     if (mainworld.worldtype === "Far Satellite") { mainworld.tradecodes.push("Sa"); }
     else if (mainworld.worldtype === "Close Satellite") { mainworld.tradecodes.push("Lk"); }
-    stars = placeWorlds(stars, mainworld, gg, planetoidBelts, d6(2), +maxTechLevel, allowNonMWPops, permitDieback, applyHillSphereLimit)
+    var otherWorlds = d6(2);
+    stars = placeWorlds(stars, mainworld, gg, planetoidBelts, otherWorlds, +maxTechLevel, allowNonMWPops, permitDieback, applyHillSphereLimit);
+    var worldCount = 1 + planetoidBelts + gg + otherWorlds;
     var totalpops = getTotalPop(stars.primary);
     var totalpop = 0;
     for (var i = 0, len = totalpops.length; i < len; i++) {
@@ -935,7 +937,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if (mainworld.tradecodes.indexOf("Ph") >= 0) { nobility.push("e"); }
     if (mainworld.tradecodes.indexOf("In") >= 0 || mainworld.tradecodes.indexOf("Hi") >= 0) { nobility.push("E"); }
     if (isImportant) { nobility.push("f"); }
-    return { name: name, nobility: nobility, economics: economics, pbg: ext(popdigit) + ext(planetoidBelts) + ext(gg), totalpop: totalpop, popdigit: popdigit, allegiance: "Im", uwp: uwp, bases: bases, stars: stars, gg: gg, planetoidBelts: planetoidBelts, importance: { weeklytraffic: weeklyships, dailytraffic: dailyships, isImportant: isImportant, isUnimportant: isUnimportant, extension: importance, description: importanceDesc }, mainworld: mainworld, tradecodes: tradecodes };
+    return { name: name, nobility: nobility, economics: economics, pbg: ext(popdigit) + ext(planetoidBelts) + ext(gg), totalpop: totalpop, popdigit: popdigit, allegiance: "Im", uwp: uwp, bases: bases, stars: stars, gg: gg, planetoidBelts: planetoidBelts, importance: { weeklytraffic: weeklyships, dailytraffic: dailyships, isImportant: isImportant, isUnimportant: isUnimportant, extension: importance, description: importanceDesc }, mainworld: mainworld, tradecodes: tradecodes, worldcount: worldCount };
 }
 function getBasesAndHighport(starport, pop, law, tech, ruleset){
     var bases = [], highport = false;
@@ -1341,6 +1343,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
             if (typeof star.satellites[orbit] === "undefined") {
                 if (planet.worldtype === "Other World") {
                     planet = createOtherWorld(mainworld, orbit, star.HZOrbit, mainworld.pop - 1, maxTech, allowNonMWPops, permitDieback, applyHillSphereLimit);
+                    if(planet.worldtype === "Worldlet"){planetsToPlace.push({ worldtype: "Other World", uwp: "??Y000000-0" });}
                 } else if (planet.worldtype.indexOf("Giant") > 0) {
                     // add gas giant moons
                     var numExistingMoons = 0;
@@ -1407,6 +1410,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                     if (orbit - amp >= 0 && typeof star.satellites[orbit - amp] === "undefined") {
                         if (planet.worldtype === "Other World") {
                             planet = createOtherWorld(mainworld, orbit - amp, star.HZOrbit, mainworld.pop - 1, maxTech, allowNonMWPops, permitDieback, applyHillSphereLimit);
+                            if(planet.worldtype === "Worldlet"){planetsToPlace.push({ worldtype: "Other World", uwp: "??Y000000-0" });}
                         }
                         star.satellites[orbit - amp] = planet; //{worldtype:planet.worldtype,uwp:planet.uwp, details:planet};
                         var orbitDetails = createOrbitDetails(orbit - amp);
@@ -1425,6 +1429,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                     } else if (star.satellites.length > orbit + amp && typeof star.satellites[orbit + amp] === "undefined") {
                         if (planet.worldtype === "Other World") {
                             planet = createOtherWorld(mainworld, orbit + amp, star.HZOrbit, mainworld.pop - 1, maxTech, allowNonMWPops, permitDieback, applyHillSphereLimit);
+                            if(planet.worldtype === "Worldlet"){planetsToPlace.push({ worldtype: "Other World", uwp: "??Y000000-0" });}
                         }
                         star.satellites[orbit + amp] = planet; //{worldtype:planet.worldtype,uwp:planet.uwp, details:planet};
                         planet.orbit = orbit + amp;
