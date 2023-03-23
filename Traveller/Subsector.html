@@ -4457,6 +4457,7 @@
                         var li = populaceContainer.appendChild(document.createElement("li"));
                         var rough = system.mainworld.roughpop * system.populace[i].percent / 100;
                         rough = rough.toString().substring(0, 2) + rough.toString().substring(2).replace(/\d/g, '0');
+                        rough = Math.max(1,Number(rough));
                         rough = Number(rough).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                         li.innerHTML = system.populace[i].percent.toFixed(1) + "% " +system.populace[i].name + " (~"
                         + rough
