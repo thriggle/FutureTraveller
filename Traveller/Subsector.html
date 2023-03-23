@@ -612,7 +612,7 @@
                             <label for="chkDesignateSectorCapital">Designate Sector Capital <input
                                     type="checkbox" id="chkDesignateSectorCapital"></label>
                         </fieldset>
-                        <br />
+                        
                         <fieldset class="collapsed">
                             <legend>Native Life</legend>
                             <label for="chkGenerateNatives"><input type="checkbox" id="chkGenerateNatives"
@@ -627,6 +627,25 @@
                             <br /><span style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Candidate homeworlds
                                 have Atmo 2+ and Pop 7+.
                                 <br />Unless "All Candidate Worlds" selected, natives less likely in exotic atmo.</span>
+                        </fieldset>
+                        <fieldset class="collapsed">
+                            <legend>Populace Composition</legend>
+                            <label for="chkDistributeNIL"><input type="checkbox" id="chkDistributeNIL"
+                                title="chkDistributeNIL" checked="checked"> Generate populace breakdowns </label> <label for="chkAlwaysMakeNativeHomeworldMajority"><input type="checkbox" id="chkAlwaysMakeNativeHomeworldMajority"
+                                    title="chkAlwaysMakeNativeHomeworldMajority" checked="checked"> Always make Native Sophonts the majority on their homeworld </label><br />
+                                
+                            <b>Non-Native Sophont Distribution Weights:</b>
+                            <ol id="sophontDistributionWeights">
+                                <li>Name: <input type="text" value="Humaniti" /> Weight: <input type="number" value="300"/> </li>
+                                <li>Name: <input type="text" value="Vargr" /> Weight: <input type="number" value="20"/> </li>
+                                <li>Name: <input type="text" value="Droyne" /> Weight: <input type="number" value="20"/> </li>
+                                <li>Name: <input type="text" value="Bwap" /> Weight: <input type="number" value="5"/> </li>
+                                <li>Name: <input type="text" value="Aslan" /> Weight: <input type="number" value="5"/> </li>
+                            </ol>
+                            <input type="button" value="Add row" id="btnAddDistributionWeightRow"/><input type="button" value="Remove row" id="btnRemoveDistributionWeightRow"/>
+                            <span>
+                                Weights determine composition of candidate pool from which populace subgroups are determined. They are relative to the number of native life candidates in range if NIL is enabled, or to each other otherwise.
+                            </span> 
                         </fieldset>
                     </fieldset>
                     <fieldset class="collapsed travelcodepickers">
@@ -949,7 +968,9 @@
                         <li><strong>Hydrographics:</strong> <span data-mainworld="hydro" data-lookup="hydro"></span></li>
                         <li><strong>Population:</strong> ~<span data-format="number" data-mainworld="roughpop"></span>
                             (<span data-mainworld="popdigit"></span><span data-mainworld="pop"
-                                data-lookup="pop"></span>)</span></li>
+                                data-lookup="pop"></span>)</span>
+                                <ul id="populaceBreakdown"></ul>
+                        </li>
                         <li><strong>Government:</strong> <span data-mainworld="gov" data-lookup="gov"></span></li>
                         <li><strong>Law:</strong> <span data-mainworld="law" data-lookup="law"></span></li>
                         <li><strong>Tech Level:</strong> <span data-mainworld="tech" data-lookup="tech"></span></li>
@@ -1716,6 +1737,17 @@
             }
             function attachEventListeners() {
                 var abilityRoll = 0, skillRoll = 0;
+                document.getElementById("btnAddDistributionWeightRow").addEventListener("click",function(){
+                    var li = document.getElementById("sophontDistributionWeights").appendChild(document.createElement("li"));
+                    // <li>Name: <input type="text" value="Humaniti" /> Weight: <input type="number" value="150"/> </li>
+                    li.innerHTML = "Name: <input type=\"text\" value=\"Other Sophont\" /> Weight: <input type=\"number\" value=\"0.5\" />";
+                });
+                document.getElementById("btnRemoveDistributionWeightRow").addEventListener("click",function(){
+                    var container = document.getElementById("sophontDistributionWeights");
+                    if(container.children.length > 1){
+                        container.removeChild(container.children[container.children.length-1]);
+                    }
+                });
                 document.querySelector("[data-system=\"tcoord\"]").addEventListener("mousedown",startDraggingDialog);
                 document.getElementById("btnGetSpecialAbility").addEventListener("click", function () {
                     var output = document.getElementById("specialAbility");
@@ -2113,6 +2145,7 @@
                     applyTravelCodes(mapContent);
                     systemArray = [];
                     analyzeMap([], false, false);
+                    determinePopulaceBreakdown(systemArray);
                     document.getElementById("sectordata").value = getSectorData(mapContent);
                     MANUAL_SYSTEM_WINDOW_PLACEMENT = false;
                     drawMap(mapContent);
@@ -2506,33 +2539,35 @@
                 var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                 var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                 analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
-                document.getElementById("data").value = JSON.stringify(_systems);
-                document.getElementById("sectordata").value = getSectorData(mapContent);
+                
                 if (document.getElementById("chkGenerateNatives").checked) {
                     var likelihood = document.getElementById("slctNativeLikelihood").value;
                     max = 0;
                     switch (likelihood) {
                         case "rare": // ~1 per sector
-                            max = 45;
-                            break;
+                        max = 45;
+                        break;
                         case "reasonable": // ~1 per subsector
-                            max = 9;
-                            break;
+                        max = 9;
+                        break;
                         case "common": // 1 in 2 chance per candidate world
-                            max = 2;
-                            break;
+                        max = 2;
+                        break;
                         case "everywhere": // every non-exotic candidate world
-                            max = 1;
-                            break;
+                        max = 1;
+                        break;
                         case "really": // every candidate world
-                            max = 1;
-                            break;
+                        max = 1;
+                        break;
                     }
                     rollNativeForWorld(system, likelihood, max);
                     sortNatives()
                 }else{
                     renderNILSummary([]);
                 }
+                determinePopulaceBreakdown(systemArray);
+                document.getElementById("data").value = JSON.stringify(_systems);
+                document.getElementById("sectordata").value = getSectorData(mapContent);
                 drawMap(mapContent);
             }
             function deleteSystem(hex){
@@ -2555,6 +2590,7 @@
                     var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                     var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                     analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                    determinePopulaceBreakdown(systemArray);
                     document.getElementById("data").value = JSON.stringify(_systems);
                     document.getElementById("sectordata").value = getSectorData(mapContent);
                     hex.selected = false;
@@ -2562,6 +2598,7 @@
                 }
             }
             function populateSubsector() {
+                NIL = [];
                 document.getElementById("SystemDetailsContainer").style.display = "none";
                 document.getElementById("AddSystemContainer").style.display = "none";
                 var useRandomSeed = document.getElementById("chkUseRandom").checked;
@@ -2712,6 +2749,7 @@
                 }else{
                     renderNILSummary([]);
                 }
+                determinePopulaceBreakdown(systemArray);
                 drawMap(mapContent);
             }
             function rollNativeForWorld(system, likelihood, max){
@@ -2726,6 +2764,10 @@
                         generateRandomAlien(species, MathRandom);
                         delete species.homeworld;
                         system.natives = species;
+                        species.stellarReach = system.importance.extension + system.mainworld.tech + system.mainworld.pop;
+                        species.preferredSize = system.mainworld.size;
+                        species.preferredAtmo = system.mainworld.atmo;
+                        species.preferredHydro = system.mainworld.hydro;
                         native = {system: system,sophont:species};  
                     }
                 }
@@ -2876,7 +2918,7 @@
                     }
 
                 }
-                console.log(NIL);
+                //console.log(NIL);
             }
             function getStarsAbbrev(stars) {
                 var abbrev = getStarAbbrev(stars.primary);
@@ -3088,6 +3130,7 @@
                         // figure out the colony owner here!
                     }
                     system.neighbors = getTradePartners(system.tcoord);
+                    
                 }
                 averagetech = sumTech / systemArray.length;
                 if(numImportantWorlds === 0){ 
@@ -3138,9 +3181,127 @@
                         capital.nobility.push("F");
                     }
                 }
-                
+            }
+            function determinePopulaceBreakdown(systemArray){
+                var chkDistributeNIL = document.getElementById("chkDistributeNIL").checked;
+                var alwaysMakeNativeHomeworldMajority = document.getElementById("chkAlwaysMakeNativeHomeworldMajority").checked;
+                if(chkDistributeNIL){
+                    var sophontDistributionWeights = document.querySelectorAll("#sophontDistributionWeights li input[type='number']");
+                    var sophontDistributionNames = document.querySelectorAll("#sophontDistributionWeights li input[type='text']");
+                    var namesAndWeights = [];
+                    for(var i = 0, len = sophontDistributionNames.length; i < len; i++){
+                        if(sophontDistributionNames[i].value.length > 0 && sophontDistributionWeights[i].value > 0){
+                            namesAndWeights.push({name: sophontDistributionNames[i].value, weight: sophontDistributionWeights[i].value});
+                        }
+                    }
+                    for(var i = 0, len = systemArray.length; i < len; i++){
+                        var targetSystem = systemArray[i];
+                        var het = targetSystem.mainworld.cultural.heterogeneity;
+                        if(typeof targetSystem.x === "undefined"){
+                            var xy = TCoordToXYCoord(targetSystem.tcoord);
+                            targetSystem.x = xy.x;
+                            targetSystem.y = xy.y;
+                        }
+                        var pool = [], baseWeight = 100;
+                        var preferredSophont = "";
+                        if(chkDistributeNIL && NIL.length > 0){
+                            var targetX = targetSystem.x, targetY = targetSystem.y;
+                            var targetQR = oddq_to_axial(targetX,targetY);
+                            var size = targetSystem.mainworld.size, atmo = targetSystem.mainworld.atmo, hydro = targetSystem.mainworld.hydro;
+                            for(var j = 0, jlen = NIL.length; j < jlen; j++){
+                                var candidate = NIL[j];
+                                var weight = candidate.sophont.stellarReach;
+                                var distance = axial_distance(oddq_to_axial(candidate.system.x,candidate.system.y),targetQR);
+                                if(distance < weight){
+                                    var sophontlabel = candidate.sophont.name + " of "+candidate.system.tcoord+" " + candidate.system.name;
+                                    if(distance === 0){ preferredSophont = sophontlabel;}
+                                    weight -= Math.abs(candidate.sophont.preferredSize-size) + Math.abs(candidate.sophont.preferredAtmo-atmo) + Math.abs(candidate.sophont.preferredHydro-hydro);
+                                    weight -= distance;
+                                    if(candidate.system.mainworld.tech < 9){ weight -= distance;}
+                                    if(weight > 0){
+                                        for(var n = 0; n < weight; n++){
+                                            pool.push(sophontlabel);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if(pool.length > 0){
+                            baseWeight = pool.length;
+                        }
+                        for(var j = 0, jlen = namesAndWeights.length; j < jlen; j++){
+                            var num = Math.max(1,(baseWeight/100 * Number(namesAndWeights[j].weight)) >>> 0);
+                            var name = namesAndWeights[j].name;
+                            for(var n = 0; n < num; n++){
+                                pool.push(name);
+                            }
+                        }
+                        if(preferredSophont.length > 0 && !alwaysMakeNativeHomeworldMajority){
+                            for(var n = 0, boost = pool.length*2; n < boost; n++){
+                                pool.push(preferredSophont);
+                            }
+                        }
+                        var groupsSoFar = {};
+                        var groups = [];
+                        var maxAttempts = pool.length;
+                        var nM = het - 1; // number of minority groups
+                        
+                        for(var h = 0; h < het; h++){
+                            if(h === 0 && targetSystem.natives && chkDistributeNIL && alwaysMakeNativeHomeworldMajority){
+                                var thisName = targetSystem.natives.name + " of " + targetSystem.tcoord  + " " + targetSystem.name;
+                                groups.push({name: thisName})
+                                groupsSoFar[thisName] = true;
+                            }else{
+                                var groupIsValid = false, group = "", numAttempts = 0;
+                                while(!groupIsValid && numAttempts < maxAttempts){
+                                    numAttempts++;
+                                    group = pool[MathRandom()*pool.length >>> 0];
+                                    if(!groupsSoFar[group]){ 
+                                        groupsSoFar[group] = true;
+                                        groups.push({name:group});
+                                        groupIsValid = true;
+                                    }
+                                }
+                                if(!groupIsValid){
+                                    groups.push({name:group + " (offshoot)"});
+                                }
+                            }
+                        }
+                        if(nM > 0){
+                            var m0 = 100*((20-nM)/(20+2*nM));
+                            var sqrt = Math.sqrt(nM);
+                            var sumSoFar = m0;
+                            var sumMinorities = 0
+                            for(var n = 1; n < het; n++){
+                                var thisM = d6()/(10*sqrt)*(100-sumSoFar);
+                                groups[n].percent = thisM;
+                                sumSoFar += thisM;
+                                sumMinorities += thisM;
+                            }
+                            groups[0].percent = 100 - sumMinorities;
+                            for(var n = 0; n < het; n++){
+                                
+                            }
+                        }else if(het === 1){
+                            groups[0].percent = 100;
+                        }
+                        targetSystem.populace = groups.sort(function(a,b){return a.percent > b.percent ? -1 : 1});
+                    }
+                }else{
+ 
+                }
             }
 
+            function oddq_to_axial(x,y){
+                var q = x
+                var r = y - (x - (x&1)) / 2
+                return {q:q, r:r}
+            }
+            function axial_distance(a, b){
+                return (Math.abs(a.q - b.q) 
+                    + Math.abs(a.q + a.r - b.q - b.r)
+                    + Math.abs(a.r - b.r)) / 2
+            }
             function generateHexes(x, y, systems) {
                 var systemsPredefined = true;
                 if (typeof systems === "undefined") {
@@ -3376,12 +3537,14 @@
                                 }
                             }
                             if (RedZoneX !== "N/A" && mapContent[i].system.mainworld.starport.toUpperCase() === "X") { // red no starport
+                               var note = "No starport facilities.  "
                                 if (RedZoneX === "Red") {
                                     mapContent[i].system.isRed = true;
+                                    note = "Population under interdiction.  ";
                                 } else {
                                     mapContent[i].system.isAmber = true;
                                 }
-                                mapContent[i].system.travelcodenotes += "Population under interdiction.  ";
+                                mapContent[i].system.travelcodenotes += note; 
                             }
                             if (RedGovLaw !== "N/A") {
                                 if (mapContent[i].system.mainworld.gov + mapContent[i].system.mainworld.law >= RedGovLawThreshold) {
@@ -3416,7 +3579,7 @@
                                 mapContent[i].system.travelcodenotes += "Barren/Uninhabited.  ";
 
                             }
-                            if (AmberZoneBaX !== "N/A" && mapContent[i].system.starport === "X") { // amber zone uninhabited
+                            if (AmberZoneBaX !== "N/A" && mapContent[i].system.starport === "X") { // amber zone no starport
 
                                 if (AmberZoneBaX === "Red") {
                                     mapContent[i].system.isRed = true;
@@ -4287,7 +4450,20 @@
                 document.getElementById("btnUpdateUWP").style.display = "none";
                 document.getElementById("btnCancelEditUWP").style.display = "none";
                 document.getElementById("btnEditUWP").style.display = "inline";
-
+                var populaceContainer = document.getElementById("populaceBreakdown");
+                clearElement(populaceContainer);
+                if(system.populace){
+                    for(var i = 0, len = system.populace.length; i < len; i++){
+                        var li = populaceContainer.appendChild(document.createElement("li"));
+                        var rough = system.mainworld.roughpop * system.populace[i].percent / 100;
+                        rough = rough.toString().substring(0, 2) + rough.toString().substring(2).replace(/\d/g, '0');
+                        rough = Number(rough).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        li.innerHTML = system.populace[i].percent.toFixed(1) + "% " +system.populace[i].name + " (~"
+                        + rough
+                        +")";
+                    }
+                }
+                
                 var lookups = {
                     orbitdistance: {
                         "-1": "<0.2 AU",
@@ -5429,6 +5605,7 @@
                     var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                     var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                     analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                    determinePopulaceBreakdown(systemArray);
                     drawMap(mapContent);
                     
                     document.getElementById("sectordata").value = getSectorData(mapContent);
@@ -5458,81 +5635,82 @@
                                 populateNonMainworlds, 
                                 applyHillSphereLimits, 
                                 allowInnerWhiteDwarfs,uwp);
-                            for (var i = 0, len = mins.length; i < len; i++) {
-                                var currValue;
-                                if (i < 8) {
-                                    currValue = details.mainworld[labels[i]];
-                                    var currMin = mins[i], currMax = maxes[i];
-                                    if (currValue < currMin) { mins[i] = currValue; }
-                                    if (currValue > currMax) { maxes[i] = currValue; }
-                                }
-                                else if (i === 8) {
-                                    currValue = details.importance.extension;
-                                } else if (i === 9) {
-                                    currValue = details.totalpop;
-                                    if (currValue > 0) { currValue = Math.round(Math.log10(currValue)); }
-                                    var currMin = mins[i], currMax = maxes[i];
-                                    if (currValue < currMin) { mins[i] = currValue; }
-                                    if (currValue > currMax) { maxes[i] = currValue; }
-                                } else if (i === 10) {
-                                    currValue = details.economics.RU;
-                                    var currMin = mins[i], currMax = maxes[i];
-                                    if (currValue < currMin) { mins[i] = currValue; }
-                                    if (currValue > currMax) { maxes[i] = currValue; }
-                                }
+                for (var i = 0, len = mins.length; i < len; i++) {
+                    var currValue;
+                    if (i < 8) {
+                        currValue = details.mainworld[labels[i]];
+                        var currMin = mins[i], currMax = maxes[i];
+                        if (currValue < currMin) { mins[i] = currValue; }
+                        if (currValue > currMax) { maxes[i] = currValue; }
+                    }
+                    else if (i === 8) {
+                        currValue = details.importance.extension;
+                    } else if (i === 9) {
+                        currValue = details.totalpop;
+                        if (currValue > 0) { currValue = Math.round(Math.log10(currValue)); }
+                        var currMin = mins[i], currMax = maxes[i];
+                        if (currValue < currMin) { mins[i] = currValue; }
+                        if (currValue > currMax) { maxes[i] = currValue; }
+                    } else if (i === 10) {
+                        currValue = details.economics.RU;
+                        var currMin = mins[i], currMax = maxes[i];
+                        if (currValue < currMin) { mins[i] = currValue; }
+                        if (currValue > currMax) { maxes[i] = currValue; }
+                    }
 
-                            }
-                            var system = {
-                                name: name,
-                                mainworld: details.mainworld,
-                                uwp: details.uwp.toUpperCase(),
-                                gg: details.gg,
-                                isAsteroidBelt: details.mainworld.isAsteroidBelt,
-                                planetoidBelts: details.planetoidBelts,
-                                bases: details.bases,
-                                stars: details.stars,
-                                economics: details.economics,
-                                importance: details.importance,
-                                totalpop: details.totalpop,
-                                tcoord: tcoord,
-                                pbg: details.pbg,
-                                allegiance: details.allegiance,
-                                isRed: false,
-                                isAmber: false,
-                                nobility: details.nobility,
-                                sysArrayIndex:mapContent[index].system.sysArrayIndex,
-                                index:mapContent[index].system.index 
-                            };
-                            var max = 0;
-                            var likelihood = document.getElementById("slctNativeLikelihood").value
-                            switch (likelihood) {
-                                case "rare": // ~1 per sector
-                                    max = 45;
-                                    break;
-                                case "reasonable": // ~1 per subsector
-                                    max = 9;
-                                    break;
-                                case "common": // 1 in 2 chance per candidate world
-                                    max = 2;
-                                    break;
-                                case "everywhere": // every non-exotic candidate world
-                                    max = 1;
-                                    break;
-                                case "really": // every candidate world
-                                    max = 1;
-                                    break;
-                            }
-                            var native = rollNativeForWorld(system,likelihood,max);                            
-                            mapContent[index].system = system;
-                            _systems[tcoord] = system;
-                            systemArray[mapContent[index].system.sysArrayIndex] = system;
-                            if(native){
-                                sortNatives();
-                            }
-                            applyTravelCodes(mapContent);
+                }
+                var system = {
+                    name: name,
+                    mainworld: details.mainworld,
+                    uwp: details.uwp.toUpperCase(),
+                    gg: details.gg,
+                    isAsteroidBelt: details.mainworld.isAsteroidBelt,
+                    planetoidBelts: details.planetoidBelts,
+                    bases: details.bases,
+                    stars: details.stars,
+                    economics: details.economics,
+                    importance: details.importance,
+                    totalpop: details.totalpop,
+                    tcoord: tcoord,
+                    pbg: details.pbg,
+                    allegiance: details.allegiance,
+                    isRed: false,
+                    isAmber: false,
+                    nobility: details.nobility,
+                    sysArrayIndex:mapContent[index].system.sysArrayIndex,
+                    index:mapContent[index].system.index 
+                };
+                var max = 0;
+                var likelihood = document.getElementById("slctNativeLikelihood").value
+                switch (likelihood) {
+                    case "rare": // ~1 per sector
+                        max = 45;
+                        break;
+                    case "reasonable": // ~1 per subsector
+                        max = 9;
+                        break;
+                    case "common": // 1 in 2 chance per candidate world
+                        max = 2;
+                        break;
+                    case "everywhere": // every non-exotic candidate world
+                        max = 1;
+                        break;
+                    case "really": // every candidate world
+                        max = 1;
+                        break;
+                }
+                var native = rollNativeForWorld(system,likelihood,max);                            
+                mapContent[index].system = system;
+                _systems[tcoord] = system;
+                systemArray[mapContent[index].system.sysArrayIndex] = system;
+                if(native){
+                    sortNatives();
+                }
+                applyTravelCodes(mapContent);
                 var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                 var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                 analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                determinePopulaceBreakdown(systemArray);
                 drawMap(mapContent);
                 renderSystem(mapContent[index].system);
                 document.getElementById("sectordata").value = getSectorData(mapContent);
@@ -5627,7 +5805,7 @@
                                     max = 1;
                                     break;
                             }
-                            var native = rollNativeForWorld(system,likelihood,max);                            
+                            var native = rollNativeForWorld(system,likelihood,max);
                             mapContent[index].system = system;
                             _systems[tcoord] = system;
                             systemArray[mapContent[index].system.sysArrayIndex] = system;
@@ -5638,6 +5816,7 @@
                             var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                             var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
                             analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                            determinePopulaceBreakdown(systemArray);
                             drawMap(mapContent);
                             renderSystem(mapContent[index].system);
                             document.getElementById("sectordata").value = getSectorData(mapContent);

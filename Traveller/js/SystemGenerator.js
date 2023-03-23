@@ -937,7 +937,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
     if (mainworld.tradecodes.indexOf("Ph") >= 0) { nobility.push("e"); }
     if (mainworld.tradecodes.indexOf("In") >= 0 || mainworld.tradecodes.indexOf("Hi") >= 0) { nobility.push("E"); }
     if (isImportant) { nobility.push("f"); }
-    return { name: name, nobility: nobility, economics: economics, pbg: ext(popdigit) + ext(planetoidBelts) + ext(gg), totalpop: totalpop, popdigit: popdigit, allegiance: "Im", uwp: uwp, bases: bases, stars: stars, gg: gg, planetoidBelts: planetoidBelts, importance: { weeklytraffic: weeklyships, dailytraffic: dailyships, isImportant: isImportant, isUnimportant: isUnimportant, extension: importance, description: importanceDesc }, mainworld: mainworld, tradecodes: tradecodes, worldcount: worldCount };
+    return { name: name, nobility: nobility, economics: economics, pbg: ext(popdigit) + ext(planetoidBelts) + ext(gg), totalpop: totalpop, popdigit: popdigit, allegiance: "Im", uwp: uwp, bases: bases, stars: stars, gg: gg, planetoidBelts: planetoidBelts, importance: { weeklytraffic: weeklyships, dailytraffic: dailyships, isImportant: isImportant, isUnimportant: isUnimportant, extension: importance, description: importanceDesc }, mainworld: mainworld, tradecodes: tradecodes, worldcount: stars.worldcount };
 }
 function getBasesAndHighport(starport, pop, law, tech, ruleset){
     var bases = [], highport = false;
@@ -1080,7 +1080,7 @@ function getInnermostOrbit(star) {
     return -1;
 }
 function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops, permitDieback, applyHillSphereLimit) {
-
+    var numWorlds = 0;
     var availableOrbits = stars.primary.numOrbits;
     var arrStars = [stars.primary];
     var closeIndex = -1;
@@ -1128,6 +1128,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
         }
         planetsToPlace.push(mainworld);
     } else if (mainworld.primary === "Gas Giant") {
+        numWorlds++;
         var giant = createGasGiant();
         if (giant.worldtype === "Small Gas Giant") {
             SGGCount += 1;
@@ -1138,6 +1139,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
         planetsToPlace.push(giant);
         gg -= 1;
     } else if (mainworld.primary === "Planet") {
+        numWorlds++;
         var bw = createBigWorld(mainworld, mainworld.pop - 1, maxTech, allowNonMWPops, permitDieback)
         //bw.satellites = new Array(26);
         bw.orbit = mainworld.orbit;
@@ -1167,6 +1169,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
     s = 0;
     var attemptCounterMax = planetsToPlace.length;
     var attemptCounter = 0;
+    
     while (planetsToPlace.length > 0 && availableOrbits >= planetsToPlace.length) {
         attemptCounter += 1;
         if (attemptCounter >= attemptCounterMax) {
@@ -1179,9 +1182,8 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                 }
             }
             if (numAvailableOrbits === 0) {
-                console.log(mainworld);
-                console.log("Problem detected for " + mainworld.uwp + ". " + planetsToPlace.length + " worlds left to place. Only " + numAvailableOrbits + " orbits available.");
-                console.log(arrStars);
+                // we had planets left to place but there are no more orbits available.
+                // oh well!
                 planetsToPlace = [];
                 break;
             }
@@ -1197,8 +1199,8 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                 planet.au = orbitDetails.au;
                 planetsToPlace.splice(0, 1);
                 availableOrbits -= 1;
+                if(planet.worldtype !== "Worldlet"){numWorlds++;}
                 if (planet.worldtype.indexOf("Giant") === -1) {
-
                     var difference = star.HZOrbit - planet.orbit;
                     planet.tradecodes = addClimateCodes(planet, difference, size, atmo, hydro, pop, planet.orbit);
 
@@ -1216,6 +1218,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         planetsToPlace.splice(0, 1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
+                        if(planet.worldtype !== "Worldlet"){numWorlds++;}
                         if (planet.worldtype.indexOf("Giant") === -1) {
                             var difference = star.HZOrbit - planet.orbit;
                             planet.tradecodes = addClimateCodes(planet, difference, size, atmo, hydro, pop, planet.orbit);
@@ -1230,6 +1233,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         planetsToPlace.splice(0, 1);
                         availableOrbits -= 1;
                         placedSuccessfully = true;
+                        if(planet.worldtype !== "Worldlet"){numWorlds++;}
                         if (planet.worldtype.indexOf("Giant") === -1) {
                             var difference = star.HZOrbit - planet.orbit;
                             planet.tradecodes = addClimateCodes(planet, difference, size, atmo, hydro, pop, planet.orbit);
@@ -1398,6 +1402,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                 planet.au = orbitDetails.au;
                 planetsToPlace.splice(0, 1);
                 availableOrbits -= 1;
+                if(planet.worldtype !== "Worldlet"){numWorlds++;}
                 if (planet.worldtype.indexOf("Giant") === -1) {
                     var difference = star.HZOrbit - planet.orbit;
                     if (isNaN(difference)) { console.log(928); }
@@ -1419,6 +1424,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         planet.au = orbitDetails.au;
                         planetsToPlace.splice(0, 1);
                         availableOrbits -= 1;
+                        if(planet.worldtype !== "Worldlet"){numWorlds++;}
                         placedSuccessfully = true;
                         planet.orbit = orbit - amp;
                         if (planet.worldtype.indexOf("Giant") === -1) {
@@ -1440,6 +1446,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
                         availableOrbits -= 1;
                         placedSuccessfully = true;
                         planet.orbit = orbit + amp;
+                        if(planet.worldtype !== "Worldlet"){numWorlds++;}
                         if (planet.worldtype.indexOf("Giant") === -1) {
                             var difference = star.HZOrbit - planet.orbit;
                             if (isNaN(difference)) { console.log(966); }
@@ -1457,6 +1464,7 @@ function placeWorlds(stars, mainworld, gg, belts, other, maxTech, allowNonMWPops
     if (stars.close) { stars.close = arrStars[closeIndex]; }
     if (stars.near) { stars.near = arrStars[nearIndex]; }
     if (stars.far) { stars.far = arrStars[farIndex]; }
+    stars.worldcount = numWorlds;
     return stars;
 }
 function addClimateCodes(planet, difference, size, atmo, hydro, pop, orbit) {
