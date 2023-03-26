@@ -451,10 +451,11 @@
                 <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
                 <select name="slctMapSize" id="slctMapSize">
                     <option value="Sector" data-subsectorxoffset="0" data-subsectoryoffset="0" >Sector (32x40)</option>
-                    <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="0" >Alpha Quadrant (16x20)</option>
-                    <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="0">Beta Quadrant</option>
-                    <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="20">Gamma Quadrant</option>
-                    <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="20">Delta Quadrant</option>
+                    <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="0" >Alpha Quadrant (ABEF) (16x20)</option>
+                    <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="0">Beta Quadrant (CDGH)</option>
+                    <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="20">Gamma Quadrant (IJMN)</option>
+                    <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="20">Delta Quadrant (KLOP)</option>
+                    <option value="Quadrant" data-subsectorxoffset="8" data-subsectoryoffset="10">Central Quadrant (FGJK)</option>
                     <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="0" selected="selected">Subsector A (8x10)</option>
                     <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="0">Subsector B</option>
                     <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="0">Subsector C</option>
@@ -494,7 +495,7 @@
                     <label for="sizeSlider">Scale: <span id="sizeIndicator"></span></label><input type="range" min="4" max="50"
                         id="sizeSlider" />
                     <label for="slctStyle">Theme: </label><select name="slctStyle" id="slctStyle" data-text="white"
-                        data-canvasbg="black" data-ctext="transparent" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
+                        data-canvasbg="black" data-ctext="white" data-hexfg="cyan" data-hexbg="rgba(0,200,255,0.2)">
                         <option value="light">light</option>
                         <option value="dark">dark</option>
                         <option value="transparent">transparent</option>
@@ -535,6 +536,8 @@
                             <option value="11">Native Intelligent Life</option>
                         </select>
                     </label><br />
+                    <label for="chkDisplaySubsectorGrid"><input type="checkbox" name="chkDisplaySubsectorGrid" id="chkDisplaySubsectorGrid"
+                        /> Display Subsector Grid&nbsp; </label><label for="gridLineColor"> Line Color: <input type="text" name="gridLineColor" id="gridLineColor" value="rgba(100,200,200,0.2)"></label><br/>
                     <label for="chkShowTravelCodes"><input type="checkbox" name="chkShowTravelCodes" id="chkShowTravelCodes"
                             checked="checked" /> Show Travel Codes&nbsp;</label><label for="chkShowTradeRoutes">&nbsp;<input type="checkbox" name="chkShowTradeRoutes" id="chkShowTradeRoutes"/> Show Trade Routes</label>
                             
@@ -643,8 +646,8 @@
                                 <li>Name: <input type="text" value="Aslan" /> Weight: <input type="number" value="5"/> </li>
                             </ol>
                             <input type="button" value="Add row" id="btnAddDistributionWeightRow"/><input type="button" value="Remove row" id="btnRemoveDistributionWeightRow"/>
-                            <span>
-                                Weights determine composition of candidate pool from which populace subgroups are determined. They are relative to the number of native life candidates in range if NIL is enabled, or to each other otherwise.
+                            <span style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">
+                                Weights determine composition of candidate pool from which populace subgroups are pulled. They are relative to the number of native life candidates in range if NIL is enabled, or to each other otherwise.
                             </span> 
                         </fieldset>
                     </fieldset>
@@ -1625,6 +1628,8 @@
                 SUBSECTOR_HEIGHT = 10,
                 SUBSECTOR_X_OFFSET = 8,
                 SUBSECTOR_Y_OFFSET = 0,
+                GRID_LINE_COLOR = document.getElementById("gridLineColor").value,
+                displaySubsectorGrid = false,
                 FONT = "sans-serif",
                 TRADE_ROUTE_THRESHOLD = Number(document.getElementById("numProfitThreshold").value),
                 TRADE_ROUTE_PREMIUM = Number(document.getElementById("numParsecPremium").value),
@@ -1737,6 +1742,16 @@
             }
             function attachEventListeners() {
                 var abilityRoll = 0, skillRoll = 0;
+                document.getElementById("chkDisplaySubsectorGrid").addEventListener("change",function(){
+                    displaySubsectorGrid = document.getElementById("chkDisplaySubsectorGrid").checked;
+                    drawMap(mapContent);
+                });
+                document.getElementById("gridLineColor").addEventListener("input",function(){
+                    GRID_LINE_COLOR = document.getElementById("gridLineColor").value;
+                    if(displaySubsectorGrid){
+                        drawMap(mapContent);
+                    }
+                });
                 document.getElementById("btnAddDistributionWeightRow").addEventListener("click",function(){
                     var li = document.getElementById("sophontDistributionWeights").appendChild(document.createElement("li"));
                     // <li>Name: <input type="text" value="Humaniti" /> Weight: <input type="number" value="150"/> </li>
@@ -3363,12 +3378,25 @@
                     ctx.fillRect(0, 0, w, h);
                 }
                 ctx.save();
+                
                 ctx.globalCompositeOperation = 'source-over';
                 ctx.translate(HEX_MATH.diameter + CANVAS_PADDING, HEX_MATH.halfYOffset + CANVAS_PADDING);
                 for (var i = 0, len = mapContent.length; i < len; i++) {
                     mapContent[i] = drawHex(mapContent[i], options);
                 }
-                
+                if(displaySubsectorGrid){
+                    ctx.strokeStyle = GRID_LINE_COLOR;
+                    for(var i = 0-(HEX_MATH.diameter*.75); i < w; i+= HEX_MATH.diameter*12){
+                        ctx.moveTo(i,0-HEX_MATH.diameter);
+                        ctx.lineTo(i,72*HEX_MATH.diameter);
+                        ctx.stroke();
+                    }
+                    for(var i = 0-(HEX_MATH.halfYOffset*.5); i < h; i+= HEX_MATH.halfYOffset*20){
+                        ctx.moveTo(0-HEX_MATH.diameter,i);
+                        ctx.lineTo(72*HEX_MATH.diameter,i);
+                        ctx.stroke();
+                    }
+                }                
                 if(document.getElementById("chkShowTradeRoutes").checked){
                     drawRoutes();
                 }

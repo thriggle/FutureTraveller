@@ -4200,7 +4200,7 @@ function generateRandomAlien(species,rand){
         if(species.bfpdesc != "Typical"){
             summary += summarize("bfpdesc")+" ";
         }
-        summary += summarize("symmetry") + " " + summarize("locomotion") +", "+(species.stance === "Horizontal" ? "measuring " : "standing ")+summarize("height")+" (" + species.height + ") " + (species.height > "1.5m" && species.height != "1m" && species.size < 72 ? "but massing only " : "and massing around ")+species.size + "kg"+(species.size === 72 ? ", about the same mass as a human." : (" — about "+Math.round((species.size / 72)*10)/10+" times "+(species.size > 72 ? "heavier than":"the mass of")+" an average human.")) ;
+        summary += summarize("symmetry") + " " + summarize("locomotion") +", "+(species.stance === "Vertical" && species.locomotion === "Walker" ? "measuring " : "standing ")+summarize("height")+" (" + species.height + ") " + (species.height > "1.5m" && species.height != "1m" && species.size < 72 ? "but massing only " : "and massing around ")+species.size + "kg"+(species.size === 72 ? ", about the same mass as a human." : (" — about "+Math.round((species.size / 72)*10)/10+" times "+(species.size > 72 ? "heavier than":"the mass of")+" an average human.")) ;
         if(species.manipulators > 0){
             if(species.nonstandardmanipulators > 0){
                 if(species.tail === "P" || species.tail === "M"){
