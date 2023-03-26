@@ -4236,14 +4236,17 @@ function generateRandomAlien(species,rand){
        
         
         var appendages = getAppendages();
+        var numManipLegs = appendages.legsWithManipulators;
+        var numTotalLegs = numManipLegs + appendages.legs;
+        var theAforementioned_ = (numManipLegs === species.manipulators ? "the aforementioned ":(numManipLegs === 1 ? "a " : ""));
         if(species.locomotion == "Walker" || species.locomotion === "Amphib" || species.locomotion === "Triphib"){
-            if(appendages.flippers > 0 && (appendages.legs > 0 || appendages.legsWithManipulators > 0)){
+            if(appendages.flippers > 0 && (appendages.legs > 0 || numManipLegs > 0)){
                 summary += "They stand on " + appendages.flippers + " flippers and ";
-                if(appendages.legsWithManipulators > 0 && appendages.legs > 0){
-                    summary += (appendages.legsWithManipulators + appendages.legs) + " legs, " + appendages.legsWithManipulators + " of which double as manipulators.";
+                if(numManipLegs> 0 && appendages.legs > 0){
+                    summary += "a total of " + numTotalLegs + " legs, " + (numManipLegs) + " of which double"+(numManipLegs > 1 ?" as manipulators.":"s as a manipulator.");
                 }else{
-                    if(appendages.legsWithManipulators > 0){
-                        summary += appendages.legsWithManipulators + " legs that double as manipulators."
+                    if(numManipLegs > 0){
+                        summary += numManipLegs + " legs that double"+(numManipLegs > 1 ?" as manipulators.":"s as a manipulator.");
                     }else if(appendages.legs > 0 ){
                         summary += appendages.legs + " leg"+(appendages.legs !== 1 ? "s" : "")+".";
                     }
@@ -4269,11 +4272,11 @@ function generateRandomAlien(species,rand){
                 }
             }else if(appendages.legs){
                 summary += "They stand on ";
-                if(appendages.legsWithManipulators > 0 && appendages.legs > 0){
-                    summary += (appendages.legsWithManipulators + appendages.legs) + " legs (" + appendages.legsWithManipulators + " of which double as manipulators)";
+                if(numManipLegs > 0 && appendages.legs > 0){
+                    summary += "a total of " + (numTotalLegs) + " legs, " + numManipLegs + " of which double"+(numManipLegs > 1 ?" as "+theAforementioned_+"manipulators":"s as "+theAforementioned_+"manipulator");
                 }else{
-                    if(appendages.legsWithManipulators > 0){
-                        summary += appendages.legsWithManipulators + " legs (which double as manipulators)"
+                    if(numManipLegs > 0){
+                        summary += numManipLegs + " leg"+(numManipLegs > 1 ?"s (which double as "+theAforementioned_+"manipulators)":" (which doubles as "+theAforementioned_+"manipulator)");
                     }else if(appendages.legs > 0 ){
                         summary += appendages.legs + " leg"+(appendages.legs !== 1 ? "s" : "");
                     }
@@ -4283,35 +4286,41 @@ function generateRandomAlien(species,rand){
                 }else{
                     summary += ".";
                 }
-            }else if(appendages.legsWithManipulators){
-                summary += "These appendages double as legs."
+            }else if(numManipLegs){
+                if(species.manipulators == numManipLegs){
+                    summary += numManipLegs > 1 ? "These appendages double as legs." : "This appendage doubles as a leg."
+                }else if(species.manipulators > numManipLegs){
+                    summary += numManipLegs > 1 ? (numManipLegs + " of these appendages double as legs.") : "One of these appendages doubles as a leg."
+                }
                 if(appendages.wings){
                     summary += " They also have " + appendages.wings + " wings."
                 }
+            }else{
+                summary += (species.locomotion === "Walker" ? "They" : "On land, they") + " slide along the ground without legs.";
             }
             
         }else{
-            if(appendages.arms > 0 && (appendages.flippers + appendages.legs + appendages.legsWithManipulators + appendages.wings) > 0){
-                summary += "In addition to their "+appendages.arms+" arms, they have ";
+            if(appendages.arms > 0 && (appendages.flippers + appendages.legs + numManipLegs + appendages.wings) > 0){
+                summary += "In addition to their "+appendages.arms+" arm"+(appendages.arms > 1 ?"s":"")+", they have ";
             }else{
-                if(appendages.flippers > 0 || appendages.wings > 0 || appendages.legs > 0 || appendages.legsWithManipulators > 0){
+                if(appendages.flippers > 0 || appendages.wings > 0 || appendages.legs > 0 || numManipLegs > 0){
                     summary += " They have "
                 }
             }
             
-            if((appendages.flippers > 0 || appendages.wings > 0) && (appendages.legs > 0 || appendages.legsWithManipulators > 0)){
+            if((appendages.flippers > 0 || appendages.wings > 0) && (appendages.legs > 0 || numManipLegs > 0)){
                 if(appendages.wings > 0){
-                    summary += appendages.wings + " wings and ";
+                    summary += appendages.wings + " wing"+(appendages.wings>1?"s":"")+" and ";
                 }
                 if(appendages.flippers > 0){
-                    summary += appendages.flippers + " flippers and ";
+                    summary += appendages.flippers + " flipper"+(appendages.flippers>1?"s":"")+" and ";
                 }
-                if(appendages.legsWithManipulators > 0 && appendages.legs > 0){
+                if(numManipLegs > 0 && appendages.legs > 0){
                     
-                    summary += (appendages.legsWithManipulators + appendages.legs) + " legs, " + appendages.legsWithManipulators + " of which double as manipulators.";
+                    summary += "a total of " + (numTotalLegs) + " legs, " + numManipLegs + " of which double as "+theAforementioned_+"manipulators.";
                 }else{
-                    if(appendages.legsWithManipulators > 0){
-                        summary += appendages.legsWithManipulators + " legs that double as manipulators."
+                    if(numManipLegs > 0){
+                        summary += numManipLegs + (numManipLegs > 1 ? " legs that double as "+theAforementioned_+"manipulators.": " leg that doubles as "+theAforementioned_+"manipulator.");
                     }else if(appendages.legs > 0 ){
                         summary += appendages.legs + " legs.";
                     }
@@ -4324,13 +4333,14 @@ function generateRandomAlien(species,rand){
                     summary += ".";
                 }
             }else if(appendages.legs > 0){
-                if(appendages.legsWithManipulators > 0 && appendages.legs > 0){
-                    summary += (appendages.legsWithManipulators + appendages.legs) + " legs, " + appendages.legsWithManipulators + " of which double as manipulators.";
+                if(numManipLegs > 0 && appendages.legs > 0){
+                    
+                    summary += (numTotalLegs) + " legs, " + numManipLegs + " of which double"+(numManipLegs > 1 ? " as "+theAforementioned_+"manipulators.":"s as "+theAforementioned_+"manipulator.");
                 }else{
-                summary += appendages.legs + " legs.";
+                    summary += appendages.legs + " leg"+(appendages.legs > 1 ? "s":"")+".";
                 }
             }else if(appendages.wings > 0){
-                summary += appendages.wings + " wings.";
+                summary += appendages.wings + " wing"+(appendages.wings > 1 ? "s":"")+".";
             }
         }
         if(species.naturalweapon !== "None"){
