@@ -3251,6 +3251,7 @@
                                 var thisName = targetSystem.natives.name + " of " + targetSystem.tcoord  + " " + targetSystem.name;
                                 groups.push({name: thisName})
                                 groupsSoFar[thisName] = true;
+                                
                             }else{
                                 var groupIsValid = false, group = "", numAttempts = 0;
                                 while(!groupIsValid && numAttempts < maxAttempts){
@@ -3279,9 +3280,6 @@
                                 sumMinorities += thisM;
                             }
                             groups[0].percent = 100 - sumMinorities;
-                            for(var n = 0; n < het; n++){
-                                
-                            }
                         }else if(het === 1){
                             groups[0].percent = 100;
                         }
