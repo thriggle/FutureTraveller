@@ -237,6 +237,7 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject)
         var bracketDepth = 0;
         var phraseArray = [];
         var currentString = "";
+        if(template === ""){ return [""];}
         // build outer array
         for (var i = 0, len = template.length; i < len; i++) {
             var character = template[i];
