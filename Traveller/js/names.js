@@ -2422,6 +2422,7 @@ function getNames(){
             "collector",
             "sniffer",
             "weaver",
+            "taster"
         ],
         "solidmaterial":[
             "clay",
@@ -2687,7 +2688,21 @@ function getNames(){
         "adjective":[
             "{animal.shape}-{animal.parted}",
             "{animal.patterned}",
-            "{animal.gerund}"
+            "{animal.gerund}",
+            "{animal.peltadj}"
+        ],
+        "peltadj":[
+            "blubbery",
+            "downy",
+            "fuzzy",
+            "hairy",
+            "long-haired",
+            "naked",
+            "woolly",
+            "scaly",
+            "shaggy",
+            "silky",
+            "snowy"
         ],
         "gerund":[
             "burrowing",
@@ -2702,7 +2717,9 @@ function getNames(){
             "smiling"
         ],
         "pattern":[
+            "freckled",
             "piebald|pied",
+            "iridescent",
             "roseate",
             "ruddy",
             "scaly",
@@ -2808,6 +2825,7 @@ function getNames(){
             "horned",
             "mouthed",
             "nosed",
+            "plumed",
             "snouted",
             "tailed",
             "toothed",
@@ -2824,6 +2842,7 @@ function getNames(){
             "haunched",
             "legged",
             "maned",
+            "plumed",
             "rumped",
             "shouldered",
             "throated",
