@@ -616,7 +616,7 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
         uwp += atmo.toString(36);
         //roll for hydro
         var hydroMods = 0;
-        if (atmo < 2 || atmo > 9) { hydroMods = 4; }
+        if (atmo < 2 || atmo > 9) { hydroMods = -4; }
         hydro = d6() - d6() + atmo + hydroMods;
         if (size < 2 || hydro < 0) { hydro = 0; }
         if (hydro > 10) { hydro = 10; }
