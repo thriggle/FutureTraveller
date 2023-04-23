@@ -2348,7 +2348,108 @@ function getNames(){
             "{ship.fearsomecritter}",
             "{system.mythologicalfigure}",
             "{animal.shape}{animal.part}",
-            "{animal.realcritter}-<!0>{animal.realcritter}"
+            "{animal.realcritter}-<!0>{animal.realcritter}",
+            "{animal.solid}{animal.solinteractor}",
+            "{animal.solidmaterial}{animal.burrower}",
+            "{animal.liquid}{animal.liqinteractor}"
+        ],
+        "liquid":[
+            "{animal.liquidplantpart}",
+            "{animal.liquidmaterial}",
+            "{animal.liquidanimalpart}",
+        ],
+        "liquidplantpart":[
+            "juice",
+            "nectar",
+            "sap",
+        ],
+        "liquidanimalpart":[
+            "blood",
+            "milk",
+            "lymph",
+            "mucus"
+        ],
+        "liquidmaterial":[
+            "muck",
+            "oil",
+            "silt",
+            "slime",
+            "sludge",
+            "slush",
+            "tar"
+        ],
+        "liqinteractor":[
+            "{animal.drinker}"
+        ],
+        "drinker":[
+            "drinker",
+            "guzzler",
+            "slurper",
+            "sucker",
+            "swallower",
+            "{animal.otherinteractor}"
+        ],
+        "solinteractor":[
+            "{animal.scraper}",
+            "{animal.muncher}",
+        ],
+        "solid":[
+            "{animal.solidplantpart}",
+            "{animal.solidmaterial}"
+        ],
+        "scraper":[
+            "scraper",
+            "scratcher",
+            "shredder"
+        ],
+        "muncher":[
+            "chewer",
+            "cruncher",
+            "eater",
+            "muncher",
+            "swallower",
+            "{animal.otherinteractor}"
+        ],
+        "burrower":[
+            "burrower",
+            "tunneler",
+            "digger",
+            "rooter",
+            "shoveler",
+            "scooper"
+        ],
+        "otherinteractor":[
+            "collector",
+            "sniffer",
+            "weaver",
+        ],
+        "solidmaterial":[
+            "clay",
+            "dirt",
+            "dust",
+            "earth",
+            "ice",
+            "mud",
+            "rock",
+            "soil",
+            "stone",
+            "tundra"
+        ],
+        "solidplantpart":[
+            "bark",
+            "bloom",
+            "blossom",
+            "branch",
+            "bud",
+            "flower",
+            "leaf",
+            "petal",
+            "root",
+            "stalk",
+            "stump",
+            "thorn",
+            "twig",
+            "vine",
         ],
         "realcritter":[
             "aardvark",
@@ -2616,7 +2717,7 @@ function getNames(){
         ],
         "partpattern":[
             "{animal.color}",
-            "2:{animal.gemcolor|diamond}",
+            "2:{animal.gemcolor}|diamond",
             "buff",
             "bump",
             "ripple",
