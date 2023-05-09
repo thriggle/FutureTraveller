@@ -2339,9 +2339,19 @@ function getNames(){
     },
     "animal":{
         "patterns":[
+            "20:{animal.basepattern}",
+            "2:{animal.basepattern} ({animal.color} morph)",
+            "1:{animal.fake}",
+        ],
+        "basepattern":[
             "{animal.modifier?}{animal.shape}{animal.part}",
             "{animal.modifier?}{animal.pattern?}{animal.shape}{animal.part}",
             "2:{animal.modifier?}{animal.adjective} {animal.noun}",
+            "{animal.adjective} <!0>{animal.pattern?}{animal.noun}"
+        ],
+        "fake":[
+            "false {animal.basepattern}",
+            "2:{animal.basepattern} mimic"
         ],
         "noun":[
             "{word}",
@@ -2352,7 +2362,9 @@ function getNames(){
             "{animal.solid}{animal.solinteractor}",
             "{animal.solidmaterial}{animal.burrower}",
             "{animal.liquid}{animal.liqinteractor}",
-            "{animal.terrain} {animal.terraininteractor}"
+            "3:{animal.terrain} {animal.terraininteractor}",
+            "mega{animal.realcritter}|micro{animal.realcritter}",
+            "{animal.realcritter}oid|meta{animal.realcritter}|pseudo{animal.realcritter}"
         ],
         "terrain":[
             "alpine",
@@ -2737,11 +2749,17 @@ function getNames(){
         ],
         "modifier":[
             "common",
+            "dire",
+            "giant",
+            "great",
             "2:greater",
             "2:lesser",
-            "{human.lastname}'s",
+            "miniature",
+            "pygmy",
+            "2:{human.lastname}'s",
             "{word}",
             "least",
+            "little",
             "reclusive"
         ],
         "pattern?":[
@@ -2759,17 +2777,30 @@ function getNames(){
             "{animal.patterned}",
             "{animal.gerund}",
             "{animal.peltadj}",
-            "{animal.color|animal.gemcolor}"
+            "{animal.color|animal.gemcolor}",
+            "{animal.solitaryadj}",
+            "{animal.communaladj}"
         ],
-        
+        "solitaryadj":[
+            "hermit|hermetic",
+            "lonely",
+            "solitary",
+        ],
+        "communaladj":[
+            "communal",
+            "flocking",
+            "society|social",
+            "swarming"
+        ],
         "peltadj":[
             "blubbery",
             "downy",
             "fuzzy",
             "hairy",
             "long-haired",
+            "marbled",
             "naked",
-            "woolly",
+            "wooly",
             "scaly",
             "shaggy",
             "silky",
@@ -2797,12 +2828,12 @@ function getNames(){
             "scaly",
             "shaggy",
             "speckled",
+            "spectacled",
             "spined",
             "spotted",
             "striped",
             "tawny",
-            "warty",
-            "wooly",
+            "warty"
         ],
         "partpattern":[
             "{animal.color}",
@@ -2815,17 +2846,17 @@ function getNames(){
             "stripe",
         ],
         "color":[
-                "black|ebony",
-                "brown|tan|copper",
-                "gray|silver",
-                "red|scarlet|crimson|pink|rose|ruby",
-                "orange",
-                "yellow|golden|amber",
-                "green|veridian|emerald",
-                "blue|cyan|cerulean|azure",
-                "indigo",
-                "violet|purple|lavender",
-                "white|ivory"
+                "Black|Ebony",
+                "Brown|Tan|Copper",
+                "Gray|Silver",
+                "Red|Scarlet|Crimson|Pink|Rose|Ruby",
+                "Orange|Fiery",
+                "Yellow|Golden|Amber",
+                "Green|Veridian|Emerald",
+                "Blue|Cyan|Cerulean|Azure",
+                "Indigo",
+                "Violet|Purple|Lavender",
+                "White|Ivory"
         ],
         "gemcolor":[
             "amber",
@@ -2835,7 +2866,7 @@ function getNames(){
             "emerald",
             "golden",
             "ivory",
-            "onyx",
+            "obsidian|onyx",
             "ruby",
             "sapphire",
             "silver"
@@ -2902,6 +2933,7 @@ function getNames(){
         "parted2":[
             "capped",
             "coated",
+            "crowned",
             "footed",
             "finned",
             "eyed",
@@ -2912,7 +2944,8 @@ function getNames(){
             "rumped",
             "shouldered",
             "throated",
-            "winged"       
+            "winged",
+            "withered"       
         ]
     },
     "ship":{
