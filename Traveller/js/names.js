@@ -2347,7 +2347,7 @@ function getNames(){
             "{animal.modifier?}{animal.shape}{animal.part}",
             "{animal.modifier?}{animal.pattern?}{animal.shape}{animal.part}",
             "2:{animal.modifier?}{animal.adjective} {animal.noun}",
-            "{animal.adjective} <!0>{animal.pattern?}{animal.noun}"
+            "{animal.nonpatternadj} <!0>{animal.pattern?}{animal.noun}"
         ],
         "fake":[
             "false {animal.basepattern}",
@@ -2401,7 +2401,8 @@ function getNames(){
         ],
         "terraininteractor":[
             "{animal.mover}",
-            "{animal.noiser}",            
+            "{animal.noiser}",
+            "{animal.inhabitor}",           
             "hunter",            
             "pouncer",            
             "stalker",           
@@ -2410,6 +2411,7 @@ function getNames(){
         "mover":[
             "bounder",
             "climber",
+            "crawler",
             "creeper",
             "darter",
             "grazer",
@@ -2418,6 +2420,7 @@ function getNames(){
             "runner",
             "shambler",
             "shuffler",
+            "sprinter",
             "strider",
         ],
         "noiser":[
@@ -2458,15 +2461,30 @@ function getNames(){
             "tar"
         ],
         "liqinteractor":[
-            "{animal.drinker}"
+            "5:{animal.drinker}",
+            "{animal.liqinhabitor}",
+            "{animal.otherinteractor}"
+        ],
+        "inhabitor":[
+            "basker",
+            "dweller",
+            "lurker",
+            "prowler"
+        ],
+        "liqinhabitor":[
+            "floater",
+            "slosher",
+            "squelcher",
+            "2:wader",
+            "2:wallower",
+            "{animal.inhabitor}"
         ],
         "drinker":[
             "drinker",
             "guzzler",
             "slurper",
             "sucker",
-            "swallower",
-            "{animal.otherinteractor}"
+            "swallower"
         ],
         "solinteractor":[
             "{animal.scraper}",
@@ -2499,7 +2517,12 @@ function getNames(){
         ],
         "otherinteractor":[
             "collector",
+            "gatherer",
+            "licker",
+            "mover",
+            "shaper",
             "sniffer",
+            "stealer",
             "weaver",
             "taster"
         ],
@@ -2769,7 +2792,12 @@ function getNames(){
             "{animal.pattern}",
             "{animal.partpattern}-{animal.parted|animal.parted2}"
         ],
-        
+        "nonpatternadj":[
+            "{animal.gerund}",
+            "{animal.peltadj}",
+            "{animal.solitaryadj}",
+            "{animal.communaladj}"
+        ],
         "adjective":[
             "{animal.shape}-{animal.parted}",
             "{animal.color}-{animal.parted|animal.parted2}",
@@ -2782,13 +2810,14 @@ function getNames(){
             "{animal.communaladj}"
         ],
         "solitaryadj":[
-            "hermit|hermetic",
-            "lonely",
+            "hermit",
+            "lonely|lonesome",
             "solitary",
         ],
         "communaladj":[
             "communal",
             "flocking",
+            "gregarious",
             "society|social",
             "swarming"
         ],
@@ -2810,14 +2839,21 @@ function getNames(){
         "gerund":[
             "burrowing",
             "creeping",
+            "cackling",
+            "chittering",
             "flying",
             "gliding",
             "grinning",
             "howling",
             "laughing",
+            "lumbering",
             "purring",
             "screaming",
-            "smiling"
+            "shrieking",
+            "smiling",
+            "skulking",
+            "weeping",
+            "whistling",
         ],
         "pattern":[
             "freckled",
@@ -2866,6 +2902,7 @@ function getNames(){
             "emerald",
             "golden",
             "ivory",
+            "marble",
             "obsidian|onyx",
             "ruby",
             "sapphire",
