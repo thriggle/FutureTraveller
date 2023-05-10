@@ -2361,7 +2361,7 @@ function getNames(){
             "{animal.realcritter}-<!0>{animal.realcritter}",
             "{animal.solid}{animal.solinteractor}",
             "{animal.solidmaterial}{animal.burrower}",
-            "{animal.liquid}{animal.liqinteractor}",
+            "{animal.liquid}{animal.liqinteractor}|{animal.liquidmaterial}{animal.liqinhabitor}",
             "3:{animal.terrain} {animal.terraininteractor}",
             "mega{animal.realcritter}|micro{animal.realcritter}",
             "{animal.realcritter}oid|meta{animal.realcritter}|pseudo{animal.realcritter}"
@@ -2461,8 +2461,7 @@ function getNames(){
             "tar"
         ],
         "liqinteractor":[
-            "5:{animal.drinker}",
-            "{animal.liqinhabitor}",
+            "3:{animal.drinker}",
             "{animal.otherinteractor}"
         ],
         "inhabitor":[
