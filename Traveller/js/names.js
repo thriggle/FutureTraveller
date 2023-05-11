@@ -2789,7 +2789,8 @@ function getNames(){
         ],
         "patterned":[
             "{animal.pattern}",
-            "{animal.partpattern}-{animal.parted|animal.parted2}"
+            "{animal.partpattern}-{animal.parted|animal.parted2}",
+            "{animal.partpattern}-{animal.parted2}"
         ],
         "nonpatternadj":[
             "{animal.gerund}",
@@ -2871,10 +2872,13 @@ function getNames(){
             "warty"
         ],
         "partpattern":[
-            "{animal.color}",
-            "2:{animal.gemcolor}|diamond",
+            "2:{animal.color}",
+            "1:{animal.gemcolor}|diamond",
+            "{animal.gemcolor}",
+            "barrel",
             "buff",
             "bump",
+            "flabby",
             "ripple",
             "ruddy",
             "speckle",
@@ -2908,19 +2912,25 @@ function getNames(){
             "silver"
         ],
         "shape":[
+            "axe",
+            "barrel",
             "bow",
             "broad",
             "club",
+            "crescent",
             "diamond",
             "fan",
             "flat",
             "fork",
+            "globe",
+            "hammer",
             "heart",
             "hook",
             "iron",
             "large",
             "long",
             "needle",
+            "pin",
             "prickle",
             "prong",
             "razor",
@@ -2929,8 +2939,11 @@ function getNames(){
             "short",
             "small",
             "spade",
+            "spear",
             "spiral",
+            "spoon",
             "stump",
+            "sword",
             "thorn",
             "wire"
         ],
@@ -2955,6 +2968,7 @@ function getNames(){
             "beaked",
             "clawed",
             "fanged",
+            "finned",
             "horned",
             "mouthed",
             "nosed",
@@ -2964,14 +2978,18 @@ function getNames(){
             "toothed",
             "tongued",
             "tusked",
+            "wattled",
             "winged"
         ],
         "parted2":[
             "capped",
             "coated",
+            "chested",
+            "crested",
             "crowned",
             "footed",
             "finned",
+            "gilled",
             "eyed",
             "haunched",
             "legged",
@@ -2980,6 +2998,7 @@ function getNames(){
             "rumped",
             "shouldered",
             "throated",
+            "wattled",
             "winged",
             "withered"       
         ]
