@@ -2364,7 +2364,20 @@ function getNames(){
             "{animal.liquid}{animal.liqinteractor}|{animal.liquidmaterial}{animal.liqinhabitor}",
             "3:{animal.terrain} {animal.terraininteractor}",
             "mega{animal.realcritter}|micro{animal.realcritter}",
-            "{animal.realcritter}oid|meta{animal.realcritter}|pseudo{animal.realcritter}"
+            "{animal.realcritter}oid|meta{animal.realcritter}|nova{animal.realcritter}|xeno{animal.realcritter}",
+            "pseudo{animal.realcritter}|{animal.numprefix}{animal.realcritter}"
+        ],
+        "numprefix":[
+            "mono",
+            "bi",
+            "tri",
+            "quadri",
+            "penta",
+            "hexa",
+            "septi",
+            "octo",
+            "nona",
+            "deca"
         ],
         "terrain":[
             "alpine",
@@ -2807,7 +2820,8 @@ function getNames(){
             "{animal.peltadj}",
             "{animal.color|animal.gemcolor}",
             "{animal.solitaryadj}",
-            "{animal.communaladj}"
+            "{animal.communaladj}",
+            "{animal.numprefix}pedal"
         ],
         "solitaryadj":[
             "hermit",
@@ -2818,7 +2832,7 @@ function getNames(){
             "communal",
             "flocking",
             "gregarious",
-            "society|social",
+            "social",
             "swarming"
         ],
         "peltadj":[
@@ -2880,7 +2894,9 @@ function getNames(){
             "bump",
             "flabby",
             "ripple",
+            "rough",
             "ruddy",
+            "smooth",
             "speckle",
             "stripe",
         ],
@@ -2926,6 +2942,7 @@ function getNames(){
             "hammer",
             "heart",
             "hook",
+            "hump",
             "iron",
             "large",
             "long",
@@ -2953,6 +2970,7 @@ function getNames(){
             "bill",
             "claw",
             "fang",
+            "hoof",
             "horn",
             "mouth",
             "nose",
@@ -2992,8 +3010,10 @@ function getNames(){
             "gilled",
             "eyed",
             "haunched",
+            "hoofed",
             "legged",
             "maned",
+            "pawed",
             "plumed",
             "rumped",
             "shouldered",
