@@ -18,8 +18,12 @@
             vertical-align:text-top;
             min-height:250px;
         }
+        .bad{color:darkred;}
+        .good{color:blue;}
+        .neutral{color:black;}
     </style>
     <h1 class="QREBS">QREBS = <span id="Q">Q</span><span id="R">R</span><span id="E">E</span><span id="B">B</span><span id="S">S</span></h1>
+    <input type="button" value="Random Evaluation" id="btnEvaluate"/> QREBS: <input id="inQREBS" type="text" /><input type="button" id="btnTranslate" value="Translate" />
     <div class="box">
         <h2>Quality: <span data-value="Q"></span></h2>
         <h3>
@@ -64,26 +68,81 @@
         <br>
         Safety expresses the possibility, even probability, that the use of an object will inflict pain, injury, or even death. (Low safety increases likelihood of a mishap causing injury or damage.)
     </div>
-    <br/><input type="button" value="New Evaluation" id="btnEvaluate"/>
+    <br/>
     <script>
-        document.getElementById("btnEvaluate").addEventListener("click",evaluateEquipment);
+        document.getElementById("btnEvaluate").addEventListener("click",function(){evaluateEquipment();});
         evaluateEquipment();
-        function evaluateEquipment(){
+        document.getElementById("btnTranslate").addEventListener("click",function(){
+            try{
+                evaluateEquipment(document.getElementById("inQREBS").value);
+            }catch{
+                alert("Invalid QREBS score")
+            }
+        });
+        function evaluateEquipment(QREBS){
             var Q = d6(2)-2;
-            var iPeriod = lookup("period",Q);
             var R = flux(),
-                E = flux(),
-                B = flux(),
-                S = flux();
-            document.getElementById("Q").innerHTML = Q;
-            document.getElementById("R").innerHTML = R;
-            document.getElementById("E").innerHTML = E;
-            document.getElementById("B").innerHTML = B;
-            document.getElementById("S").innerHTML = S;
+            E = flux(),
+            B = flux(),
+            S = flux();
+            if(typeof QREBS != "undefined"){
+                Q = parseInt(QREBS[0],32);
+                R = digitToNumber(QREBS[1]);
+                E = digitToNumber(QREBS[2]);
+                B = digitToNumber(QREBS[3]);
+                S = digitToNumber(QREBS[4]);
+            }
+            var iPeriod = lookup("period",Q);
+            
+            var QHolder = document.getElementById("Q"); QHolder.innerHTML = singleChar(Q);
+            if(Q < 5){ QHolder.className = "bad";}else if(Q > 5){ QHolder.className = "good";}else{QHolder.className = "neutral";}
+
+            var RHolder = document.getElementById("R"); RHolder.innerHTML = singleChar(R);
+            if(R < 0){ RHolder.className = "bad";}else if(R > 0){ RHolder.className = "good";}else{RHolder.className = "neutral";}
+
+            var EHolder = document.getElementById("E"); EHolder.innerHTML = singleChar(E);
+            if(E < 0){ EHolder.className = "bad";}else if(E > 0){ EHolder.className = "good";}else{EHolder.className = "neutral";}
+
+            var BHolder = document.getElementById("B"); BHolder.innerHTML = singleChar(B);
+            if(B > 0){ BHolder.className = "bad";}else if(B < 0){ BHolder.className = "good";}else{BHolder.className = "neutral";}
+
+            var SHolder = document.getElementById("S"); SHolder.innerHTML = singleChar(S);
+            if(S < 0){ SHolder.className = "bad";}else if(S > 0){ SHolder.className = "good";}else{SHolder.className = "neutral";}
+            document.getElementById("inQREBS").value = singleChar(Q)+singleChar(R)+singleChar(E)+singleChar(B)+singleChar(S);
             var values = {Q:Q,R:R,E:E,B:B,S:S,Qmod:Q-5}
             var elements = document.querySelectorAll("[data-value]");
             for(var i = 0, len = elements.length; i < len; i++){
                 populate(values, elements[i]);
+            }
+        }
+        function digitToNumber(k){
+            if(isNaN(k)){
+                switch(k.toUpperCase()){
+                    case "A": return -1;break;
+                    case "B": return -2; break;
+                    case "C": return -3; break;
+                    case "D": return -4; break;
+                    case "E": return -5; break;
+                }
+            }else{
+                return parseInt(k);
+            }
+        }
+        function singleChar(num){
+            if(num < 0){
+                switch(num){
+                    case -1: return "A"; break;
+                    case -2: return "B"; break;
+                    case -3: return "C"; break;
+                    case -4: return "D"; break;
+                    case -5: return "E"; break;
+                }
+            }else{
+                if(num >= 10){ 
+                    return num.toString(32).toUpperCase();
+                }else{
+                    return num.toString();
+                }
             }
         }
         function populate(values, element){

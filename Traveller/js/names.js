@@ -2794,8 +2794,7 @@ function getNames(){
             "2:{human.lastname}'s",
             "{word}",
             "least",
-            "little",
-            "reclusive"
+            "little"
         ],
         "pattern?":[
             "","{animal.patterned} "

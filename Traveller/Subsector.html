@@ -450,6 +450,7 @@
                 <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
                 <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
                 <select name="slctMapSize" id="slctMapSize">
+                    <option value="Domain" data-subsectorxoffset="0" data-subsectoryoffset="0" >Domain (128x160)</option>
                     <option value="Sector" data-subsectorxoffset="0" data-subsectoryoffset="0" >Sector (32x40)</option>
                     <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="0" >Alpha Quadrant (ABEF) (16x20)</option>
                     <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="0">Beta Quadrant (CDGH)</option>
@@ -478,11 +479,13 @@
                     <option value="Rift">Rift (3%)</option>
                     <option value="Sparse">Sparse (17%)</option>
                     <option value="Scattered">Scattered (33%)</option>
+                    <option value="Scattered2">Somewhat Scattered (42%)</option>
                     <option value="Standard" selected="selected">Standard (50%)</option>
                     <option value="Dense">Dense (66%)</option>
                     <option value="Cluster">Cluster (83%)</option>
                     <option value="Core">Core (97%)</option>
                     <option value="Clump">Dense in middle</option>
+                    <option value="Flux">Fluctuating</option>
                 </select>
                 <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems"
                         value="Populate Map"></label>
@@ -2458,6 +2461,7 @@
                     case "Subsector": SUBSECTOR_HEIGHT = 10; SUBSECTOR_WIDTH = 8; break;
                     case "Quadrant": SUBSECTOR_HEIGHT = 20; SUBSECTOR_WIDTH = 16; break;
                     case "Sector": SUBSECTOR_HEIGHT = 40; SUBSECTOR_WIDTH = 32; break;
+                    case "Domain": SUBSECTOR_HEIGHT = 160; SUBSECTOR_WIDTH = 128; break;
                 }
                 //updateHexSize(+(document.getElementById("sizeSlider").value));
                 canvas.setAttribute("width", SUBSECTOR_WIDTH * HEX_MATH.xOffset + HEX_MATH.radius + CANVAS_PADDING * 2);
@@ -2645,17 +2649,19 @@
                 var maxTechLevel = document.getElementById("slctMaxTechLevel").value;
                 var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
                 var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
-                var d = 1, target = 3, systems = {};
+                var d = 1, target = 3, systems = {}, rDensity = 5, fluxDensity = false, densities = [];
                 switch (density) {
                     case "Extra Galactic": d = 3, target = 3; break;
                     case "Rift": d = 2, target = 2; break;
                     case "Sparse": d = 1, target = 1; break;
                     case "Scattered": d = 1, target = 2; break;
+                    case "Scattered2": d = 2, target = 6; break;
                     case "Standard": d = 1, target = 3; break;
                     case "Dense": d = 1, target = 4; break;
                     case "Cluster": d = 1, target = 5; break;
                     case "Core": d = 2, target = 11; break;
                     case "Clump": d = 1, target = 2; break;
+                    case "Flux": d = 2, target = 6; rDensity = 13; fluxDensity = true; break;
                 }
                 var namesSoFar = {};
                 //  0-7 = UWP, 8 = Importance, 9 = Total Pop, 10 = RUs
@@ -2667,6 +2673,7 @@
                 allowInnerWhiteDwarfs = document.getElementById("chkAllowInnerWhiteDwarfs").checked,
                 populateNonMainworlds = document.getElementById("chkPopulateNonMainworlds").checked;
                 for (var x = 0; x < SUBSECTOR_WIDTH; x++) {
+                    if(fluxDensity){ densities.push([]);}
                     for (var y = 0; y < SUBSECTOR_HEIGHT; y++) {
                         if (density === "Clump") {
                             if (x >= SUBSECTOR_WIDTH / 3 && x <= SUBSECTOR_WIDTH * 2 / 3 && y >= SUBSECTOR_HEIGHT / 3 && y <= SUBSECTOR_HEIGHT * 2 / 3) {
@@ -2677,6 +2684,48 @@
                                 target = 2;
                             } else {
                                 target = 1;
+                            }
+                        }else if(fluxDensity){
+                            neighbors = [rDensity];
+                            if(x > 0){
+                                neighbors.push(densities[x-1],[y]);
+                                if(y > 0){
+                                    neighbors.push(densities[x-1],[y-1]);
+                                }
+                                if(y < SUBSECTOR_HEIGHT){
+                                    neighbors.push(densities[x-1],[y+1]);
+                                }
+                            }
+                            if(y > 0){
+                                neighbors.push(densities[x][y-1]);
+                            }
+                            var rDensity = neighbors[((MathRandom() * neighbors.length) >>> 0)];
+                            rDensity = rDensity + d6() - d6();
+                            densities[x][y] = rDensity;
+                            if(rDensity < -1) {  rDensity = -1; }else if(rDensity > 20){ rDensity = 17;}
+                            switch(rDensity){
+                                case -1: d = 3, target = 3; break;
+                                case 0: d = 3, target = 3; break;
+                                case 1: d = 3, target = 3; break;
+                                case 2: d = 3, target = 3; break;
+                                case 3: d = 2, target = 2; break;
+                                case 4: d = 2, target = 2; break;
+                                case 5: d = 2, target = 2; break;
+                                case 6: d = 1, target = 1; break;
+                                case 7: d = 1, target = 1; break;
+                                case 8: d = 1, target = 1; break;
+                                case 9: d = 1, target = 1; break;
+                                case 10: d = 1, target = 1; break;
+                                case 11: d = 1, target = 2; break;
+                                case 12: d = 1, target = 2; break;
+                                case 13: d = 1, target = 2; break;
+                                case 14: d = 2, target = 6; break;
+                                case 15: d = 2, target = 6; break;
+                                case 16: d = 2, target = 6; break;
+                                case 17: d = 1, target = 3; break;
+                                case 18: d = 1, target = 3; break;
+                                case 19: d = 1, target = 3; break;
+                                case 20: d = 1, target = 4; break;
                             }
                         }
                         if (d6(d) <= target) {
