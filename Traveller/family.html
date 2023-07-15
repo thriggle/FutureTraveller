@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Generator</title>
+</head>
+<body>
+    <style>
+        fieldset {
+            font-family: 'Consolas', 'Inconsolas', 'Courier New', Courier, monospace;
+            display:block;
+            resize:horizontal; overflow:hidden;
+            max-width: 70rem;
+            
+        }
+        fieldset.collapsed{
+            display:inline-block;
+            vertical-align:top;
+        }
+        fieldset legend {
+            cursor: pointer;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        fieldset legend:hover {
+            color: red;
+        }
+
+        label {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        fieldset>fieldset {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        fieldset * {
+            line-height: 1.5em;
+        }
+        
+        fieldset.collapsed *:not(legend){
+            display: none;
+        }
+
+        fieldset>legend::before{
+            content: "▼ ";
+        }
+
+        fieldset.collapsed>legend::before {
+            content: "► ";
+        }
+    </style>
+    <div>
+        Seed: <input type="text" id="inSeed"> <input type="button" id="btnGetFamily" value="Update Seed"/><input type="button" id="btnGetSeed" value="Random Name"/>
+        <fieldset>
+            <legend>Parents</legend>
+            <div id="parents"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Siblings</legend> 
+            <div id="siblings"></div>
+        </fieldset>
+    </div>
+    <script src="js/names.js"></script>
+    <script src="js/NameGenerator.js"></script>
+    <script>
+        var wordMaker;
+        var collapserHandles = document.querySelectorAll("fieldset legend");
+        var nameJSON = getNames();
+        for (var i = 0, len = collapserHandles.length; i < len; i++) {
+            var handle = collapserHandles[i];
+            handle.addEventListener("click", function (e) {
+                var parent = e.target.parentElement;
+                if (parent.classList.contains("collapsed")) {
+                    parent.classList.remove("collapsed");
+                } else {
+                    parent.classList.add("collapsed");
+                }
+            });
+        }
+        NameGenerator(nameJSON, function(o){ document.getElementById("inSeed").value = o.getRandomName("human"); wordMaker = o;}, null, false, true);
+        setSeed(document.getElementById("inSeed").value);
+        document.getElementById("btnGetFamily").addEventListener("click",function(){ 
+            setSeed(document.getElementById("inSeed").value)
+        });
+        document.getElementById("btnGetSeed").addEventListener("click",function(){
+            var seed = wordMaker.getRandomName("human");
+            document.getElementById("inSeed").value = seed;
+            setSeed(seed);
+        });
+        
+        function setSeed(seed){
+            MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
+            NameGenerator(nameJSON, function (o) { wordMaker = o; getFamily(); }, null, MathRandom,true);
+        }
+        function getFamily(){
+            getParents();
+            getSiblings();
+        }
+        function getParents(){
+            var parents = wordMaker.getRandomName("human") + "<br/>" + wordMaker.getRandomName("human");
+            document.getElementById("parents").innerHTML = parents;
+        }
+        function explodingFlux(){
+            var flux = d6() - d6();
+            if(flux === -5 || flux === 5){
+                return flux + explodingFlux();
+            }else{
+                return flux;
+            }
+        }
+        function getSiblings(){
+            var siblings = "(None)";
+            var numSiblings = explodingFlux();
+            console.log("Number of Siblings: " + numSiblings);
+            if(numSiblings <= 0){numSiblings = 0;}
+            else{
+                var siblingList = [];
+                for(var i = 0; i < numSiblings; i++){
+                    var name = wordMaker.getRandomName("human.firstname"), age = explodingFlux();
+                    var relativeAge = "(same age)";
+                    var absAge = Math.abs(age);
+                    var years = absAge === 1 ? "year" : "years";
+                    if(age < 0){ relativeAge = "("+absAge.toString()+" "+years+" older)";}
+                    else if(age > 0){ relativeAge = "("+age.toString()+" "+years+" younger)"; }
+                    var sibling = {name: name, age:age, desc:name + " " + relativeAge };
+                    siblingList.push(sibling);
+                }
+                siblingList.sort(function(a,b){return a.age < b.age ? -1 : a.age > b.age ? 1 : 0});
+                siblings = siblingList.map(function(elem){return elem.desc}).join("<br/>");
+            }
+            document.getElementById("siblings").innerHTML = siblings;
+        }
+        function pseudoRandomNumberGenerator(word) {
+            var seed = xmur3(word);
+            var a = seed(), b = seed(), c = seed(), d = seed();
+                return xoshiro128ss(a, b, c, d);
+        }
+        function xmur3(str) {
+            for (var i = 0, h = 1779033703 ^ str.length; i < str.length; i++) {
+                h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+                h = h << 13 | h >>> 19;
+            } return function () {
+                h = Math.imul(h ^ (h >>> 16), 2246822507);
+                h = Math.imul(h ^ (h >>> 13), 3266489909);
+                return (h ^= h >>> 16) >>> 0;
+            }
+        }
+        function xoshiro128ss(a, b, c, d) {
+            return function () {
+                var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
+                c ^= a; d ^= b;
+                b ^= c; a ^= d; c ^= t;
+                d = d << 11 | d >>> 21;
+                return (r >>> 0) / 4294967296;
+            }
+        }
+        function d6(num) {
+            if (!num) { num = 1; }
+            var sum = 0;
+            for (var i = 0; i < num; i++) {
+                sum += ((MathRandom() * 6) >>> 0) + 1;
+            }
+            return sum;
+        }
+    </script>
+</body>
+</html>
