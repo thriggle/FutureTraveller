@@ -4,16 +4,25 @@ import { getNames } from "../../Traveller/js/namesModule";
 export default async (req, context) => {
     try{
         const { key } = context.params;
-        getNameGenerator().then(function(generator){
-            return new Response(generator.getRandomName(key));
-        });    
+        NameGeneratorPromise().then(function(generator){
+            console.log("Key = " +key);
+            console.log("Generator = " +generator);
+            const name = generator.getRandomName(key);
+            return new Response(name);
+        }).catch(function(error){ console.log(error); });    
     }catch(error){
         return new Response(error);
     }
 }
-function getNameGenerator(){
-    return new Promise((resolve)=>{
-        NameGenerator(getNames(), function(generator){resolve(generator)}, null, Math.random,true);
+function NameGeneratorPromise(){
+    return new Promise((resolve,reject)=>{
+        NameGenerator(
+            getNames(), 
+            function(generator){resolve(generator);}, 
+            null, 
+            Math.random,
+            true
+        );
     })
 }
 export const config = {
