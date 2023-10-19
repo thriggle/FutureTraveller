@@ -10,7 +10,7 @@
 <body>
     <script src="js/SystemGenerator.js"></script>
     <script src="js/SophontGenerator.js"></script>
-    <script src="js/names.js"></script>
+    
     <style>
         body{
             background-color:black;
@@ -1611,10 +1611,11 @@
     </div>
     <div class="footer">The Traveller game in all forms is owned by Far Future Enterprises. Copyright © 1977 – 2023 <a
         href="http://www.farfuture.net/" target="_blank">Far Future Enterprises</a>.</div>
-    <script src="js/NameGenerator.js"></script>
+        <script src="js/NameGenerator.js" type="module"></script>
+        <script src="js/names.js" type="module"></script>
     <script>
         
-        (function () {
+        setTimeout(function(){(function () {
             //globalsRESH
             var wordMaker;
             var HEX_SIZE = 27,
@@ -1692,7 +1693,7 @@
                 processHash();
             }
             //NameGenerator("js/names.jsonc", function (o) { wordMaker = o; populateSubsector(); }, null, MathRandom);
-            NameGenerator(getNames(), function (o) { wordMaker = o; populateSubsector(); }, null, MathRandom,true);
+            window.globalThis.NameGenerator(window.globalThis.getNames(), function (o) { wordMaker = o; populateSubsector(); }, null, MathRandom,true);
             var lastHighlightedHex, lastSelectedHex;
             attachEventListeners();
             function processHash() {
@@ -5940,7 +5941,7 @@
                     el.removeChild(el.children[el.children.length - 1]);
                 }
             }
-        })();
+        })()},100);
     </script>
 </body>
 </html>
