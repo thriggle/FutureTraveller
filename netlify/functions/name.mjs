@@ -2,12 +2,15 @@ import { NameGenerator } from "../../Traveller/js/NameGenerator";
 import { getNames } from "../../Traveller/js/names";
 
 export default async (req, context) => {
-    NameGenerator(getNames(), sendResponse, null, Math.random,true);
-    function sendResponse(generator){
-        const { key } = context.params;
+    const { key } = context.params;
+    getNameGenerator().then(function(generator){
         return new Response(generator.getRandomName(key));
-    }
-    return new Response("hello world");
+    });    
+}
+function getNameGenerator(){
+    return new Promise((resolve)=>{
+        NameGenerator(getNames(), function(generator){resolve(generator)}, null, Math.random,true);
+    })
 }
 export const config = {
     path: "/api/names/:key"
