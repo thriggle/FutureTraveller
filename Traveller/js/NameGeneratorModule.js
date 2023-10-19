@@ -35,6 +35,7 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
     if(typeof forbiddenWords === "undefined" || forbiddenWords === null){
         forbiddenWords = defaultForbiddenWords;
     }
+    console.log("Attaching properties and methods...")
     this.getRandomName = getRandomName;
     this.setForbiddenWords = setForbiddenWords;
     this.restoreDefaultForbiddenWords = restoreDefaultForbiddenWords;
