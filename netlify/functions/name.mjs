@@ -9,7 +9,7 @@ export default async (req, context) => {
             console.log("Generator = " +generator);
             const name = generator.getRandomName(key);
             return new Response(name);
-        }).catch(function(error){ console.log(error); });    
+        }).catch(function(error){ console.log("An error occurred calling NameGeneratorPromise()."); console.log(error); });    
     }catch(error){
         return new Response(error);
     }
