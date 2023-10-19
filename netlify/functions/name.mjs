@@ -1,11 +1,15 @@
-import { NameGenerator } from "../../Traveller/js/NameGenerator";
-import { getNames } from "../../Traveller/js/names";
+import { NameGenerator } from "../../Traveller/js/NameGeneratorModule";
+import { getNames } from "../../Traveller/js/namesModule";
 
 export default async (req, context) => {
-    const { key } = context.params;
-    getNameGenerator().then(function(generator){
-        return new Response(generator.getRandomName(key));
-    });    
+    try{
+        const { key } = context.params;
+        getNameGenerator().then(function(generator){
+            return new Response(generator.getRandomName(key));
+        });    
+    }catch(error){
+        return new Response(error);
+    }
 }
 function getNameGenerator(){
     return new Promise((resolve)=>{
