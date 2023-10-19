@@ -6,9 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Traveller Sophont Creation System</title>
-    <script src="js/NameGenerator.js"></script>
+    
     <script src="js/SystemGenerator.js"></script>
     <script src="js/SophontGenerator.js"></script>
+    
 </head>
 <style>
     @font-face {
@@ -952,8 +953,11 @@
     <div class="footer">The Traveller game in all forms is owned by Far Future Enterprises. Copyright © 1977 – 2023 <a
             href="http://www.farfuture.net/" target="_blank">Far Future Enterprises</a>.</div>
 </body>
+<script src="js/NameGenerator.js" type="module"></script>
+<script src="js/names.js" type="module"></script>
 <script>
-    var abilityRoll = 0, skillRoll = 0;
+    setTimeout(function(){
+        var abilityRoll = 0, skillRoll = 0;
     document.getElementById("slctStyle").addEventListener("change", function () {
         var style = document.getElementById("slctStyle").value;
         document.body.className = style;
@@ -1001,7 +1005,7 @@
             document.getElementById("homeworldcontainer").classList.add("hidden");
         }
     }
-    NameGenerator("js/names.jsonc", setup, null, MathRandom);
+    window.globalThis.NameGenerator(window.globalThis.getNames(), setup, null, MathRandom, true);
     document.getElementById("btnLoadFromJson").addEventListener("click", function () {
         var json = document.getElementById("json").value;
         var species = JSON.parse(json);
@@ -1343,5 +1347,7 @@
         }
         return capitalizedString;
     }
+    },100)
+    
 </script>
 </html>

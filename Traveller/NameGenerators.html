@@ -57,8 +57,13 @@
             flex-grow:4;
         }
     </style>
-    <script src="js/NameGenerator.js"></script>
-    <script src="js/names.js"></script>
+    <script src="js/NameGenerator.js" type="module"></script>
+    <script src="js/names.js" type="module"></script>
+    <script type="module">
+        import { NameGenerator } from "../js/NameGenerator.js";
+        import { getNames } from "../js/names.js";
+        
+   </script>
     <div class="flexctr">
         <div class="sidebar">
         </div>
@@ -155,8 +160,9 @@
     <input id="chkDarkmode" type="checkbox" checked="checked">Dark Mode</label>
 </div>
 <script>
-    //NameGenerator("js/names.jsonc",addEventListeners);
-    NameGenerator(getNames(), addEventListeners, null, Math.random,true);
+    setTimeout(function(){
+        //NameGenerator("js/names.jsonc",addEventListeners);
+    window.globalThis.NameGenerator(window.globalThis.getNames(), addEventListeners, null, Math.random,true);
     function removeChildElements(element) {
         while (element.childNodes.length > 0) {
             element.removeChild(element.childNodes[element.childNodes.length - 1]);
@@ -216,6 +222,8 @@
             return capitalizedString;
         }
         
+    },1000)
+    
     </script>
 </body>
 

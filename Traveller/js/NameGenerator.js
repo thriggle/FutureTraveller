@@ -75,7 +75,7 @@
                     typeof this != "undefined" ? this :
                         {}
 );
-function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject){
+export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject){
     if(typeof fromObject == "undefined"){
         fromObject = false;
     }
@@ -148,6 +148,20 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject)
     }
     function restoreDefaultForbiddenWords(){
         forbiddenWords = defaultForbiddenWords;
+    }
+    function getRandomSubKey(key, minDepth, maxDepth){
+        if(typeof minDepth === "undefined"){ minDepth = 0;}
+        if(typeof maxDepth === "undefined"){ maxDepth = 2;}
+        if(typeof key === "undefined"){ key = "system"; }
+        var templatesSubset = this.templates[key];
+        var outKey = key;
+        var stop = false;
+        while (minDepth < maxDepth && stop === false){
+            var templatesSubset = this.templates[key];
+            var templateRoll =(templatesSubset.length * MathRandom()) >>> 0 ;
+            var template = templatesSubset[templateRoll];
+            var phrases = this.unpackStringTemplate(template);
+        }
     }
     function getRandomName(key, bannedWords, topLevel) {
         var extraLogs = false;
@@ -405,3 +419,4 @@ function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject)
         return weightedPatterns;
     }
 }
+globalThis.NameGenerator = NameGenerator;
