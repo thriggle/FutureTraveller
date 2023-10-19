@@ -9,13 +9,13 @@ export default async (req, context) => {
             console.log("Generator = " +generator);
             const name = generator.getRandomName(key);
             return new Response(name);
-        });    
+        }).catch(function(error){ console.log(error); });    
     }catch(error){
         return new Response(error);
     }
 }
 function NameGeneratorPromise(){
-    return new Promise((resolve)=>{
+    return new Promise((resolve,reject)=>{
         NameGenerator(
             getNames(), 
             function(generator){resolve(generator);}, 
