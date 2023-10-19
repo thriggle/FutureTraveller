@@ -7,6 +7,7 @@ export default async (req, context) => {
         const { key } = context.params;
         return new Response(generator.getRandomName(key));
     }
+    return new Response("hello world");
 }
 export const config = {
     path: "/api/names/:key"
