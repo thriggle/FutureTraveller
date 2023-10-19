@@ -1,5 +1,5 @@
-import { NameGenerator } from "../../Traveller/js/NameGenerator";
-import { getNames } from "../../Traveller/js/names";
+import { NameGenerator } from "../../Traveller/js/NameGeneratorModule";
+import { getNames } from "../../Traveller/js/namesModule";
 
 export default async (req, context) => {
     const { key } = context.params;
