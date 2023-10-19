@@ -8,3 +8,6 @@ export default async (req, context) => {
         return new Response(generator.getRandomName(key));
     }
 }
+export const config = {
+    path: "/api/names/:key"
+};
