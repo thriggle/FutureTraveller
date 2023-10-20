@@ -1,3 +1,81 @@
+(function (global) {
+    if (typeof global.JSON == "undefined" || !global.JSON) {
+        global.JSON = {};
+    }
+    if(!global.JSON.minify){
+        global.JSON.minify = function JSON_minify(json) {
+
+            var tokenizer = /"|(\/\*)|(\*\/)|(\/\/)|\n|\r/g,
+                in_string = false,
+                in_multiline_comment = false,
+                in_singleline_comment = false,
+                tmp, tmp2, new_str = [], ns = 0, from = 0, lc, rc,
+                prevFrom
+                ;
+    
+            tokenizer.lastIndex = 0;
+    
+            while (tmp = tokenizer.exec(json)) {
+                lc = RegExp.leftContext;
+                rc = RegExp.rightContext;
+                if (!in_multiline_comment && !in_singleline_comment) {
+                    tmp2 = lc.substring(from);
+                    if (!in_string) {
+                        tmp2 = tmp2.replace(/(\n|\r|\s)+/g, "");
+                    }
+                    new_str[ns++] = tmp2;
+                }
+                prevFrom = from;
+                from = tokenizer.lastIndex;
+    
+                // found a " character, and we're not currently in
+                // a comment? check for previous `\` escaping immediately
+                // leftward adjacent to this match
+                if (tmp[0] == "\"" && !in_multiline_comment && !in_singleline_comment) {
+                    // perform look-behind escaping match, but
+                    // limit left-context matching to only go back
+                    // to the position of the last token match
+                    //
+                    // see: https://github.com/getify/JSON.minify/issues/64
+                    tmp2 = lc.substring(prevFrom).match(/\\+$/);
+    
+                    // start of string with ", or unescaped " character found to end string?
+                    if (!in_string || !tmp2 || (tmp2[0].length % 2) == 0) {
+                        in_string = !in_string;
+                    }
+                    from--; // include " character in next catch
+                    rc = json.substring(from);
+                }
+                else if (tmp[0] == "/*" && !in_string && !in_multiline_comment && !in_singleline_comment) {
+                    in_multiline_comment = true;
+                }
+                else if (tmp[0] == "*/" && !in_string && in_multiline_comment && !in_singleline_comment) {
+                    in_multiline_comment = false;
+                }
+                else if (tmp[0] == "//" && !in_string && !in_multiline_comment && !in_singleline_comment) {
+                    in_singleline_comment = true;
+                }
+                else if ((tmp[0] == "\n" || tmp[0] == "\r") && !in_string && !in_multiline_comment && in_singleline_comment) {
+                    in_singleline_comment = false;
+                }
+                else if (!in_multiline_comment && !in_singleline_comment && !(/\n|\r|\s/.test(tmp[0]))) {
+                    new_str[ns++] = tmp[0];
+                }
+            }
+            new_str[ns++] = rc;
+            return new_str.join("");
+        };
+    }    
+})(
+    // attempt to reference the global object
+    typeof globalThis != "undefined" ? globalThis :
+        typeof global != "undefined" ? global :
+            typeof window != "undefined" ? window :
+                typeof self != "undefined" ? self :
+                    typeof this != "undefined" ? this :
+                        {}
+);
+var self = {};
 export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,fromObject){
     if(typeof fromObject == "undefined"){
         fromObject = false;
@@ -35,27 +113,27 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
     if(typeof forbiddenWords === "undefined" || forbiddenWords === null){
         forbiddenWords = defaultForbiddenWords;
     }
-    console.log("Attaching properties and methods...")
-    this.getRandomName = getRandomName;
-    this.setForbiddenWords = setForbiddenWords;
-    this.restoreDefaultForbiddenWords = restoreDefaultForbiddenWords;
-    this.keys = [];
-    this.templates = {};
-    this.unpackStringTemplate = unpackStringTemplate;
+    console.log("Attaching properties and methods...");
+    self.getRandomName = getRandomName;
+    self.setForbiddenWords = setForbiddenWords;
+    self.restoreDefaultForbiddenWords = restoreDefaultForbiddenWords;
+    self.keys = [];
+    self.templates = {};
+    self.unpackStringTemplate = unpackStringTemplate;
     var UnpackedStringTemplates = { names: {} };
     if(fromObject){
-        templates = getWeightedPatternsFromJSON({}, sourceJson);
-        var keys = Object.keys(templates);
-        var generator = {templates:templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
+        self.templates = getWeightedPatternsFromJSON({}, sourceJson);
+        var keys = Object.keys(self.templates);
+        var generator = {templates:self.templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
         callback(generator);
     }else{
         var xhr = new XMLHttpRequest();
         xhr.open("GET", sourceJson);
         xhr.addEventListener("load", function loadStrings(evt) {
             var rawJson = xhr.responseText;
-            templates = getWeightedPatternsFromJSON({}, JSON.parse(JSON.minify(rawJson)));
-            var keys = Object.keys(templates);
-            var generator = {templates:templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
+            self.templates = getWeightedPatternsFromJSON({}, JSON.parse(JSON.minify(rawJson)));
+            var keys = Object.keys(self.templates);
+            var generator = {templates:self.templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
             callback(generator);
         });
         xhr.send();
@@ -77,14 +155,14 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
         if(typeof minDepth === "undefined"){ minDepth = 0;}
         if(typeof maxDepth === "undefined"){ maxDepth = 2;}
         if(typeof key === "undefined"){ key = "system"; }
-        var templatesSubset = this.templates[key];
+        var templatesSubset = self.templates[key];
         var outKey = key;
         var stop = false;
         while (minDepth < maxDepth && stop === false){
-            var templatesSubset = this.templates[key];
+            var templatesSubset = self.templates[key];
             var templateRoll =(templatesSubset.length * MathRandom()) >>> 0 ;
             var template = templatesSubset[templateRoll];
-            var phrases = this.unpackStringTemplate(template);
+            var phrases = self.unpackStringTemplate(template);
         }
     }
     function getRandomName(key, bannedWords, topLevel) {
@@ -96,10 +174,10 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
             topLevel = true;
             extraLogs = true;
         }
-        var templatesSubset = this.templates[key];
+        var templatesSubset = self.templates[key];
         var templateRoll =(templatesSubset.length * MathRandom()) >>> 0 ;
         var template = templatesSubset[templateRoll];
-        var phrases = this.unpackStringTemplate(template); // convert string into array of phrase objects with child segments
+        var phrases = self.unpackStringTemplate(template); // convert string into array of phrase objects with child segments
         UnpackedStringTemplates.names[key] = phrases;
         var phraseRoll = (phrases.length * MathRandom()) >>> 0
         var phrase = phrases[ phraseRoll ];
@@ -126,20 +204,20 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
                 }
                 currentText += piece;
             } else if (segment.reference) {
-                piece = this.getRandomName(segment.reference,bannedWords,false);
+                piece = self.getRandomName(segment.reference,bannedWords,false);
                 if(checkNot >= 0){
                     while(piece == references[checkNot]){
-                        piece = this.getRandomName(segment.reference,bannedWords,false);
+                        piece = self.getRandomName(segment.reference,bannedWords,false);
                     }
                 }
                 currentText += piece;
                 references.push(piece);
             } else if (segment.references) {
                 var ref = segment.references[(segment.references.length * MathRandom()) >>> 0];
-                piece = this.getRandomName(ref,bannedWords,false);;
+                piece = self.getRandomName(ref,bannedWords,false);;
                 if(checkNot >= 0){
                     while(piece == references[checkNot]){
-                        piece = this.getRandomName(ref,bannedWords,false);
+                        piece = self.getRandomName(ref,bannedWords,false);
                     }
                 }
                 currentText += piece;
@@ -153,7 +231,7 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
             }
         }
         if(bannedWords.indexOf(currentText) >= 0){
-            currentText = this.getRandomName(key, bannedWords,true);
+            currentText = self.getRandomName(key, bannedWords,true);
         }
         return currentText.replace(/\s+/g," ");
     }

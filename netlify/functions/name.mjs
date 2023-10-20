@@ -3,13 +3,15 @@ import { getNames } from "../../Traveller/js/namesModule";
 
 export default async (req, context) => {
     try{
-        const { key } = context.params;
-        NameGeneratorPromise().then(function(generator){
+        return new Promise(async (resolve,reject) => {
+            const { key } = context.params;
+            const generator = await NameGeneratorPromise();
             console.log("Key = " +key);
-            console.log("Generator = " +generator);
             const name = generator.getRandomName(key);
-            return new Response(name);
-        }).catch(function(error){ console.log("An error occurred calling NameGeneratorPromise()."); console.log(error); });    
+            console.log(name);
+            var response = new Response(name,{"status":200, "statusText":name, headers:{"Content-Type":"text/html; charset=utf-8"}});
+            resolve(response);
+        })
     }catch(error){
         return new Response(error);
     }
