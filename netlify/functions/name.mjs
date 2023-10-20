@@ -25,7 +25,7 @@ export default async (req, context) => {
                     params.key = key;
                 }
                 if(typeof params.key === "undefined"){params.key = "human";}
-                if(typeof params.top === "undefined"){params.top = 100;}else if(params.top < 0){params.top = 1;}else if(params.top > 1280){ params.top = 1280; }
+                if(typeof params.top === "undefined"){params.top = 100;}else if(params.top < 0){params.top = 1;}else if(params.top > 500000){ params.top = 500000; }
                 console.log(params);
                 console.log(context.geo);
                 var names = [];
