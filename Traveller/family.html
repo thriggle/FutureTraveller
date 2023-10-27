@@ -66,12 +66,15 @@
             <div id="siblings"></div>
         </fieldset>
     </div>
-    <script src="js/names.js"></script>
-    <script src="js/NameGenerator.js"></script>
+    <script src="js/NameGenerator.js" type="module"></script>
+    <script src="js/names.js" type="module"></script>
     <script>
+        setTimeout(
+            function(){
+                var nameJSON = window.globalThis.getNames();
+        var MathRandom = Math.random;
         var wordMaker;
         var collapserHandles = document.querySelectorAll("fieldset legend");
-        var nameJSON = getNames();
         for (var i = 0, len = collapserHandles.length; i < len; i++) {
             var handle = collapserHandles[i];
             handle.addEventListener("click", function (e) {
@@ -83,7 +86,7 @@
                 }
             });
         }
-        NameGenerator(nameJSON, function(o){ document.getElementById("inSeed").value = o.getRandomName("human"); wordMaker = o;}, null, false, true);
+        window.globalThis.NameGenerator(nameJSON, function(o){ document.getElementById("inSeed").value = o.getRandomName("human"); wordMaker = o;}, null, Math.random, true);
         setSeed(document.getElementById("inSeed").value);
         document.getElementById("btnGetFamily").addEventListener("click",function(){ 
             setSeed(document.getElementById("inSeed").value)
@@ -96,7 +99,7 @@
         
         function setSeed(seed){
             MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
-            NameGenerator(nameJSON, function (o) { wordMaker = o; getFamily(); }, null, MathRandom,true);
+            window.globalThis.NameGenerator(nameJSON, function (o) { wordMaker = o; getFamily(); }, null, MathRandom,true);
         }
         function getFamily(){
             getParents();
@@ -168,6 +171,8 @@
             }
             return sum;
         }
+        },300
+        );
     </script>
 </body>
 </html>

@@ -35,7 +35,8 @@
             font-weight:bold;
         }
     </style>
-    <script src="js/NameGenerator.js"></script>
+    <script src="js/NameGenerator.js" type="module"></script>
+    <script src="js/names.js" type="module"></script>
     <h1 id="uwp">Universal World Profile</h1>
     <h2 id="name">System Name</h2>
     <input type="button" value="Generate new system" id="btnGenerate" /><br/><br/>
@@ -78,8 +79,11 @@
     </fieldset>
     
     <script>
+        setTimeout(function(){
+
+        
         var wordMaker;
-        NameGenerator("js/names.jsonc",function(o){
+        window.globalThis.NameGenerator(window.globalThis.getNames(),function(o){
             wordMaker = o;
             generateSystem();
             document.getElementById("btnGenerate").addEventListener("click",function(){
@@ -97,7 +101,7 @@
                     //document.getElementById("warning").appendChild(document.createTextNode(" Executed " + counter +" system generation attempts."));
                 }
             });
-        });
+        }, null, Math.random,true);
         var collapserHandles = document.querySelectorAll("fieldset legend");
         for(var i = 0, len = collapserHandles.length; i < len; i++){
             var handle = collapserHandles[i];
@@ -535,6 +539,7 @@
                 }
                 return sum;
             }
+        },500);
     </script>
 </body>
 </html>

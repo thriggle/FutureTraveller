@@ -3205,8 +3205,9 @@ export function getNames(){
             "6:{aslan}","{aslan} {ship.numeral}",
             "10:{human}","{human} {ship.numeral}",
             "4:{human.lastname}",
+            "2:{ship.noncoloradjective}|{ship.bigadjective}","{ship.noncoloradjective} {ship.numeral}|{ship.bigadjective} {ship.numeral}",
             "9:{human.firstname}'s {ship.noun|ship.noun|system.noun}|{human.lastname}'s {ship.noun|ship.noun|system.noun}",
-            "6:{ship.noun}'s <!0>{ship.noun}","{ship.noun}'s <!0>{ship.noun} {ship.numeral}",
+            "6:{ship.nature|ship.vicevirtue|ship.bigidea|ship.person}'s <!0>{ship.noun}","{ship.nature|ship.vicevirtue|ship.bigidea|ship.person}'s <!0>{ship.noun} {ship.numeral}",
             "6:{human.femalefirstname}", "{human.femalefirstname} {ship.numeral}",
             "3:Pride of {system}|{ship.virtue} of {system}",
             "2:{ship.noun} of <!0>{system.mythologicalname|human.lastname|human.firstname|ship.noun}|{system.mythologicalname|human.lastname|human.firstname|ship.noun}'s <!0>{ship.noun}",
@@ -3657,9 +3658,7 @@ export function getNames(){
             "3:yellow",
             "zaffre"
         ],
-        "adjective":[
-            "15:{ship.color}",
-            "3:{ship.bigadjective}",
+        "noncoloradjective":[
             "adventurous",
             "affluent",
             "amorous",
@@ -3779,6 +3778,11 @@ export function getNames(){
             "wise",
             "zealous"
         ],
+        "adjective":[
+            "15:{ship.color}",
+            "3:{ship.bigadjective}",
+            "118:{ship.noncoloradjective}"
+        ],
         "gerund": [
             "ascending",
             "blazing",
@@ -3824,6 +3828,10 @@ export function getNames(){
             "empyrean",
             "galactic",
             "interstellar",
+            "meteor",
+            "moon",
+            "nebula",
+            "night",
             "rift",
             "rimward",
             "sky",
@@ -4800,6 +4808,7 @@ export function getNames(){
             "drought",
             "feast",
             "fire",
+            "flood",
             "fun",
             "gold",
             "horizon",
@@ -4808,6 +4817,7 @@ export function getNames(){
             "lane",
             "light",
             "love",
+            "king|queen",
             "moon",
             "night",
             "pain",
@@ -4820,7 +4830,8 @@ export function getNames(){
             "sun",
             "thrill",
             "tide",
-            "void"
+            "void",
+            "wealth"
         ],
         "combo2":[
             "bringer",
@@ -4832,6 +4843,7 @@ export function getNames(){
             "eater",
             "ender",
             "farer",
+            "finder",
             "hopper",
             "harvester",
             "hunter",
