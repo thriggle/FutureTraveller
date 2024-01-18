@@ -244,8 +244,14 @@ export function createCharacter(roller, species){
                                 var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
                                 remarks += otcWaiverResult.remarks + newLine;
                                 otcResult.success = otcWaiverResult.success;
-                            }
-                            if(otcResult.success){
+                                if(otcResult.success){
+                                    if(choice === "OTC"){
+                                        armyCommission = true;
+                                    }else{
+                                        navyCommission = true;
+                                    }
+                                }
+                            }else{
                                 var linebreak = `
 `
                                 if(choice === "OTC"){
