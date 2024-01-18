@@ -11,38 +11,19 @@ var dialogCallback = () => {};
 var dialogText = dialog.appendChild(document.createElement("div"));
 var selector = dialog.appendChild(document.createElement("select")); selector.id = "slctDialog";
 var dlgBtn = dialog.appendChild(document.createElement("input")); dlgBtn.setAttribute("type","button"); dlgBtn.setAttribute("value","OK"); dlgBtn.id = "dlgBtn";
-dlgBtn.addEventListener("click",function(){
-    dialog.close(selector.value);
-    dialogCallback(selector.value);
-});
 var cancelDlgBtn = dialog.appendChild(document.createElement("input")); cancelDlgBtn.setAttribute("type","button"); cancelDlgBtn.setAttribute("value","Cancel"); cancelDlgBtn.id = "cancelDlgBtn";
-cancelDlgBtn.addEventListener("click",function(){
-    dialog.close(false);
-});
+dlgBtn.addEventListener("click",() =>{ dialog.close(selector.value); dialogCallback(selector.value); });
+cancelDlgBtn.addEventListener("click",function(){ dialog.close(false); });
 var roller = getRollerFromSeed(), person;
 newCharacter(); 
 document.getElementById("btnReset").addEventListener("click",newCharacter);
-function newCharacter(){
-    clear();
-    person = createCharacter(roller, human);
-    
-    log("Initial UPP: "+ person.characteristics[0].value + "," +  person.characteristics[1].value + "," + person.characteristics[2].value + "," + 
-        person.characteristics[3].value + "," + person.characteristics[4].value + "," + person.characteristics[5].value
-    );
-    log(person.advanceAge(human.getFirstYearOfStage(3)));
-    renderCharacter(person, document.body);
-    enableControls();
-}
+document.getElementById("btnSetLanguage").addEventListener("click",()=>{
+    pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+        log(person.setNativeLanguage(lang));
+        redraw();
+    });
+})
 
-function enableControls(){
-    var buttons = document.querySelectorAll("[data-educationbtn]");
-    for(var i = 0, len = buttons.length; i < len; i++){
-        buttons[i].removeAttribute("disabled");
-    }
-}
-function redraw(){
-    renderCharacter(person, document.body);
-}
 document.getElementById("btnED5").addEventListener("click",()=>{log(person.ED5()); document.getElementById("btnED5").setAttribute("disabled",true); redraw(); });
 document.getElementById("btnApprenticeship").addEventListener("click",function(){
     document.getElementById("btnApprenticeship").setAttribute("disabled",true);
@@ -277,6 +258,26 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
         }
     });
 });
+function newCharacter(){
+    clear();
+    person = createCharacter(roller, human);
+    
+    log("Initial UPP: "+ person.characteristics[0].value + "," +  person.characteristics[1].value + "," + person.characteristics[2].value + "," + 
+        person.characteristics[3].value + "," + person.characteristics[4].value + "," + person.characteristics[5].value
+    );
+    log(person.advanceAge(human.getFirstYearOfStage(3)));
+    renderCharacter(person, document.body);
+    enableControls();
+}
+function enableControls(){
+    var buttons = document.querySelectorAll("[data-educationbtn]");
+    for(var i = 0, len = buttons.length; i < len; i++){
+        buttons[i].removeAttribute("disabled");
+    }
+}
+function redraw(){
+    renderCharacter(person, document.body);
+}
 function pickOption(choices,prompt,callback){
     clearElement(selector); 
     clearElement(dialogText);

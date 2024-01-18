@@ -730,6 +730,7 @@ export function createCharacter(roller, species){
         delete skills[ENUM_SKILLS.Language].Knowledge[nativeLanguage];
         nativeLanguage = newLanguage;
         skills[ENUM_SKILLS.Language].Knowledge[nativeLanguage] = nativeLanguageValue;
+        return "Native language = " +newLanguage;
     }
     function setForcedGrowthClone(isClone){isForcedGrowthClone = isClone;}
     function check(target,difficulty,mods,remarks){
