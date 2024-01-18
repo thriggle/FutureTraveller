@@ -244,8 +244,14 @@ export function createCharacter(roller, species){
                                 var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
                                 remarks += otcWaiverResult.remarks + newLine;
                                 otcResult.success = otcWaiverResult.success;
-                            }
-                            if(otcResult.success){
+                                if(otcResult.success){
+                                    if(choice === "OTC"){
+                                        armyCommission = true;
+                                    }else{
+                                        navyCommission = true;
+                                    }
+                                }
+                            }else{
                                 var linebreak = `
 `
                                 if(choice === "OTC"){
@@ -264,7 +270,7 @@ export function createCharacter(roller, species){
                                 if(KnowledgeSpecialties[choice]){
                                     var otcKnowledge = "invalid";
                                     while(KnowledgeSpecialties[choice].indexOf(otcKnowledge) === -1){
-                                        otcKnowledge = prompt("Please choose a " + choice + " knowledge from this list: " + newLine + KnowledgeSpecialties[choice].join(newLine));
+                                        otcKnowledge = prompt("Please choose a " + choice + " knowledge from this list: " + linebreak + KnowledgeSpecialties[choice].join(linebreak));
                                     }
                                     remarks += gainSkillOrKnowledge(choice,otcKnowledge,true) + newLine;
                                 }else{
