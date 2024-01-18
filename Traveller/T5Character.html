@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        #history{
+            border:1px solid black;
+        }
+    </style>
+    <div style="display:flex">
+    <div style="flex:1">
+        <fieldset>
+            <legend>Character Sheet</legend>
+            <label for="">Age: </label><span data-ageblock=""></span><br/>
+            <fieldset>
+                <legend>Stats</legend>
+                <div data-statblock=""></div>
+            </fieldset>
+            <fieldset>
+                <legend>Skills</legend>
+                <div data-skillblock></div>
+            </fieldset>
+            <fieldset>
+                <legend>Awards</legend>
+                <div data-awards=""></div>
+            </fieldset>
+        </fieldset>
+        <script src="./js/species/CharacterView.js" type="module"></script>
+    </div>
+    <div style="flex:1">
+        <div><fieldset>
+            <legend>Overall</legend>
+            <input type="button" value="Reset" id="btnReset"/>
+        </fieldset>
+            <fieldset>
+                <legend>Education</legend>
+                <div>
+                    <input type="button" data-educationbtn value="Apprenticeship" id="btnApprenticeship"/>
+                    <input type="button" data-educationbtn value="ED5" id="btnED5"/>
+                    <input type="button" data-educationbtn value="TradeSchool" id="btnTradeSchool"/>
+                    <input type="button" data-educationbtn value="College" id="btnCollege"/>
+                    <input type="button" data-educationbtn value="University" id="btnUniversity"/>
+                    <!--<input type="button" data-educationbtn value="NavalAcademy" id="btnNavalAcademy"/>
+                    <input type="button" data-educationbtn value="MilitaryAcademy" id="btnMilitaryAcademy"/>-->
+                    <input type="button" data-educationbtn value="Masters" id="btnMasters"/>
+                    <input type="button" data-educationbtn value="Professors" id="btnProfessors"/>
+                    <!-- <input type="button" data-educationbtn value="MedicalSchool" id="btnMedicalSchool"/>
+                    <input type="button" data-educationbtn value="LawSchool" id="btnLawSchool"/> -->
+                </div>
+            </fieldset>
+        </div>
+        <div id="history" >
+            &nbsp;
+        </div>
+    </div>
+</body>
+</html>
