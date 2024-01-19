@@ -38,7 +38,7 @@ function statBlock(character,element){
         statHTML += "<li> "+ character.characteristics[i].name +": " + character.characteristics[i].value +" </li>";
     }
     statHTML += "</ul>";
-    statHTML += "<span>Genetics: " + character.genetics.join(",")+"</span>";
+    statHTML += "<span>Genetics: " + character.getGenetics().join(",")+"</span>";
     element.insertAdjacentHTML("beforeend",statHTML);
 }
 function skillBlock(character,element){

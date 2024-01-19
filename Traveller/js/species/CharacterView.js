@@ -8,7 +8,7 @@ import { dialogCallback, getDialog, pickOption, pickSkill } from "./dialog.js";
 
 
 var roller = getRollerFromSeed(), person;
-document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
+//document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
 newCharacter(); 
 document.getElementById("btnReset").addEventListener("click",newCharacter);
 document.getElementById("btnRandomHWTCs").addEventListener("click",function(){
@@ -355,6 +355,17 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
 function newCharacter(){
     clear();
     person = createCharacter(roller, human);
+    var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").getAttribute("checked");
+    if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
+    var genes = [
+        document.getElementById("slctGeneticC1").value,
+        document.getElementById("slctGeneticC2").value,
+        document.getElementById("slctGeneticC3").value,
+        document.getElementById("slctGeneticC4").value,
+        document.getElementById("slctGeneticC5").value,
+    ]
+    
+    person.rollStatsFromGenes(genes);
     log("Initial UPP: "+ person.characteristics[0].value + "," +  person.characteristics[1].value + "," + person.characteristics[2].value + "," + 
     person.characteristics[3].value + "," + person.characteristics[4].value + "," + person.characteristics[5].value
     );
