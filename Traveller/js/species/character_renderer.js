@@ -17,7 +17,16 @@ export function clearElement(el) {
     }
 }
 function awards(character,element){
-    element.insertAdjacentHTML("beforeend","<span>" + character.getAwards().join(", ") + "<span>");
+    element.insertAdjacentHTML("beforeend","<div>" + character.getAwards().join(", ") + "<div>");
+    var majors = character.getMajorsLabels();
+    if(majors.length > 0){
+        element.insertAdjacentHTML("beforeend","<div> Majors: " + majors.join(", ") + "<div>");
+    }
+    var minors = character.getMinorsLabels();
+    if(minors.length > 0){
+        element.insertAdjacentHTML("beforeend","<div> Minors: " + minors.join(", ") + "<div>");
+    }
+    
 }
 function ageBlock(character,element){
     var ageHTML = "<span>"+character.getAge() + " years</span>";

@@ -33,9 +33,22 @@
     </div>
     <div style="flex:1">
         <div><fieldset>
-            <legend>Overall</legend>
-            <input type="button" value="Start Over" id="btnReset"/>
-            <input type="button" value="Native Language" id="btnSetLanguage"/>
+            <legend>Background</legend>
+            <input type="button" value="Click here to start over with selected background details" id="btnReset"/><br/>
+            Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
+                <option value="!kee">!kee</option>
+                <option selected="selected" value="Anglic">Anglic</option>
+                <option value="Vilani">Vilani</option>
+                <option value="Battle">Battle</option>
+                <option value="Gonk">Gonk</option>
+                <option value="Gvegh">Gvegh</option>
+                <option value="Oynprith">Oynprith</option>
+                <option value="Sagamaal">Sagamaal</option>
+                <option value="Tezapet">Tezapet</option>
+                <option value="Trokh">Trokh</option>
+                <option value="Zdetl">Zdetl</option>             
+            </select><br/>
+            Homeworld Trade Codes: <input type="text" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" /><input type="button" id="btnRandomHWTCs" value="Random">
         </fieldset>
             <fieldset>
                 <legend>Education</legend>

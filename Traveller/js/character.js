@@ -2,7 +2,7 @@ import { getRollerFromSeed } from "./rnd.js";
 import { human } from "./species/human.js";
 import { ENUM_CHARACTERISTICS } from "./species/species.js";
 import {CLASS_SPECIES} from "./species/species.js";
-import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills, Knowledges as KnowledgeSpecialties } from "./species/skills.js";
+import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills, Knowledges as KnowledgeSpecialties, ArtSkills, TradeSkills } from "./species/skills.js";
 import { getDialog, dialogCallback, pickOption, pickSkill } from "./species/dialog.js";
 export function createCharacter(roller, species){
     if(typeof roller === "undefined"){
@@ -66,6 +66,40 @@ export function createCharacter(roller, species){
         edu_waivers = characteristics[5].value; 
         return {statRolls, characteristics, genetics}
     }
+    function addMajor(skill,knowledge){
+        var hasAlready = false;
+        for(var i = 0, len = majors.length; i < len; i++){
+            if(majors[i].skill === skill){
+                if(typeof knowledge == "undefined"){
+                    if(typeof majors[i].knowledge == "undefined"){ hasAlready = true }
+                }else{
+                    if(typeof majors[i].knowledge !== "undefined" && majors[i].knowledge === knowledge){
+                        hasAlready = true;
+                    }
+                }
+            }
+        }
+        if(!hasAlready){
+            majors.push({skill:skill,knowledge:knowledge});
+        }
+    }
+    function addMinor(skill,knowledge){
+        var hasAlready = false;
+        for(var i = 0, len = minors.length; i < len; i++){
+            if(minors[i].skill === skill){
+                if(typeof knowledge == "undefined"){
+                    if(typeof minors[i].knowledge == "undefined"){ hasAlready = true }
+                }else{
+                    if(typeof minors[i].knowledge !== "undefined" && minors[i].knowledge === knowledge){
+                        hasAlready = true;
+                    }
+                }
+            }
+        }
+        if(!hasAlready){
+            minors.push({skill:skill,knowledge:knowledge});
+        }
+    }
     function gainSkill(skill){
         if(typeof skills[skill] != "undefined"){
             if(skills[skill].Skill >= 0){
@@ -87,6 +121,76 @@ export function createCharacter(roller, species){
         }else{
             skills[skill] = {Skill:0,Knowledge:{}}
             skills[skill].Knowledge[knowledge] = 1;
+        }
+    }
+    function gainSkillsFromHomeworldTradeCodes(codes, callback){
+        var codeArray = codes.split(" ");
+        for(var i = 0, len = codeArray.length; i < len; i++){
+            var code = codeArray[i];
+            var note = code + " trade code on homeworld provides a skill.";
+            switch(code){
+                case "Ag": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Animals,callback); break;
+                case "As": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.ZeroG,callback); break;
+                case "Co": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
+                case "Cp": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Admin,callback); break;
+                case "Cs": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Bureaucrat,callback); break;
+                case "Cx": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Language,callback); break;
+                case "Da": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Fighter,callback); break;
+                case "De": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Survival,callback); break;
+                case "Ds": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.VaccSuit,callback); gainSkillWithPromptForKnowledge(ENUM_SKILLS.ZeroG,callback);break;
+                case "Fa": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Animals,callback); break;
+                case "Fl": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
+                case "Fr": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
+                case "Ga": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Trader,callback); break;
+                case "He": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
+                case "Hi": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Streetwise,callback); break;
+                case "Ho": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
+                case "Ic": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.VaccSuit,callback); break;
+                case "In": gainSkillWithPromptForCategory(note,"TRADE",callback); break;
+                case "Lo": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Flyer,callback); break;
+                case "Na": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Survey,callback); break;
+                case "Ni": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Driver,callback); break;
+                case "Oc": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HighG,callback); break;
+                case "Pa": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Trader,callback); break;
+                case "Pi": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.JOT,callback); break;
+                case "Po": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Steward,callback); break;
+                case "Pr": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Craftsman,callback); break;
+                case "Ri": gainSkillWithPromptForCategory(note,"ART",callback); break;
+                case "Tr": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Survival,callback); break;
+                case "Tu": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Survival,callback); break;
+                case "Tu": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Driver,callback); break;
+                case "Va": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.VaccSuit,callback); break;
+                case "Wa": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Seafarer,callback); break;
+                default: break; 
+            }
+        }
+    }
+    function gainSkillWithPromptForCategory(prompt,skillCategory,callback){
+        switch(skillCategory.toUpperCase()){
+            case "ART": 
+            pickOption(ArtSkills,prompt + " Choose an Art skill.",function(x){proceed(x);});
+            break;
+            case "TRADE": 
+            pickOption(TradeSkills,prompt + " Choose a skilled Trade.",function(x){proceed(x);});
+            break;
+            case "SHIP":
+                case "STARSHIP": 
+                pickOption(StarshipSkillsSkills,prompt + " Choose a Starship Skill.",function(x){proceed(x);});
+                break;
+                case "SOLDIER": 
+                pickOption(SoldierSkillsSkills,prompt + " Choose a Soldier Skill.",function(x){proceed(x);});
+            break;
+        }
+        function proceed(chosenSkill){
+            gainSkillWithPromptForKnowledge(prompt,chosenSkill,callback);
+        }
+    }
+    function gainSkillWithPromptForKnowledge(prompt,skill,callback){
+        if(KnowledgeSpecialties[skill]){
+            pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){proceed(x);})
+        }else{proceed(undefined);}
+        function proceed(chosenKnowledge){
+            callback(prompt + " " + gainSkillOrKnowledge(skill,chosenKnowledge,false));
         }
     }
     function ED5(){
@@ -158,7 +262,7 @@ export function createCharacter(roller, species){
                     if(passResult.success){
                         gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true);
                         remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
-                        majors.push({skill:MajorSkill,knowledge:MajorKnowledge});
+                        addMajor(MajorSkill,MajorKnowledge);
                     }
                     remarks += advanceAge(1);
                 }else{
@@ -238,9 +342,11 @@ export function createCharacter(roller, species){
                         remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
                         if(passResult.success){                          
                             if(secondGain){
+                                addMinor(MinorSkill,MinorKnowledge);
                                 remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
                             }
                             secondGain = !secondGain;
+                            addMajor(MajorSkill,MajorKnowledge);
                             remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
                         }else{
                             var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
@@ -254,8 +360,10 @@ export function createCharacter(roller, species){
                         remarks += advanceAge(1) + newLine;
                     }
                     if(notFlunked){
-                        majors.push({skill:MajorSkill,knowledge:MajorKnowledge});
-                        minors.push({skill:MinorSkill,knowledge:MinorKnowledge});
+                        
+                        addMajor(MajorSkill,MajorKnowledge);
+                        addMinor(MinorSkill,MinorKnowledge);
+                        
                         var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                         remarks += "Honors program? " + honorsResult.remarks + newLine;
                         if(honorsResult.success){
@@ -321,12 +429,22 @@ export function createCharacter(roller, species){
                                             var even_further_remarks = "";
                                             if(KnowledgeSpecialties[new_skill]){
                                                 pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
-                                                    even_further_remarks += gainSkillOrKnowledge(new_skill,new_knowledge,true) + newLine;
-                                                    log(even_further_remarks);
+                                                    log(gainSkillOrKnowledge(new_skill,new_knowledge,true));
+                                                    if(navyCommission){ 
+                                                        pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
+                                                        awards.push(service_choice + " Officer1");
+                                                        log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                        });
+                                                    }
                                                 });
                                             }else{
+                                                if(navyCommission){ 
+                                                    pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
+                                                    awards.push(service_choice + " Officer1");
+                                                    log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                    });
+                                                }
                                                 even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true) + newLine;
-                                           
                                                 log(even_further_remarks);
                                             }
                                         });
@@ -334,12 +452,8 @@ export function createCharacter(roller, species){
                                     if(armyCommission){ 
                                         awards.push("Army Officer1");
                                         further_remarks += "Earned Army commission (Army Officer1).";
-                                    }else if(navyCommission){ 
-                                        pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
-                                            awards.push(service_choice + " Officer1");
-                                            log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                        });
                                     }
+                                    
                                     log(further_remarks);
                                 }else{
                                     further_remarks += "Declined to volunteer for OTC/NOTC.";
@@ -395,8 +509,10 @@ export function createCharacter(roller, species){
                     if(passResult.success){                          
                         if(secondGain){
                             remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
+                            addMajor(MinorSkill,MinorKnowledge);
                         }
                         secondGain = !secondGain;
+                        addMajor(MajorSkill,MajorKnowledge);
                         remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
                     }else{
                         var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
@@ -410,8 +526,8 @@ export function createCharacter(roller, species){
                     remarks += advanceAge(1) + newLine;
                 }
                 if(notFlunked){
-                    majors.push({skill:MajorSkill,knowledge:MajorKnowledge});
-                    minors.push({skill:MinorSkill,knowledge:MinorKnowledge});
+                    addMajor(MajorSkill, MajorKnowledge);
+                    addMinor(MinorSkill,MinorKnowledge);
                     var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Honors program? " + honorsResult.remarks + newLine;
                     if(honorsResult.success){
@@ -464,8 +580,10 @@ export function createCharacter(roller, species){
                     if(passResult.success){                          
                         if(secondGain){
                             remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
+                            addMajor(MinorSkill,MinorKnowledge);
                         }
                         secondGain = !secondGain;
+                        addMajor(MajorSkill,MajorKnowledge);
                         remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
                     }else{
                         var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
@@ -479,8 +597,8 @@ export function createCharacter(roller, species){
                     remarks += advanceAge(1) + newLine;
                 }
                 if(notFlunked){
-                    majors.push({skill:MajorSkill,knowledge:MajorKnowledge});
-                    minors.push({skill:MinorSkill,knowledge:MinorKnowledge});
+                    addMajor(MajorSkill,MajorKnowledge);
+                    addMinor(MinorSkill,MinorKnowledge);
                     var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Honors program? " + honorsResult.remarks + newLine;
                     if(honorsResult.success){
@@ -532,6 +650,7 @@ export function createCharacter(roller, species){
                     remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
                     if(passResult.success){                          
                         remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
+                        addMajor(MajorSkill,MajorKnowledge);
                     }else{
                         var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
                         remarks += passWaiverResult.remarks + newLine;
@@ -544,7 +663,7 @@ export function createCharacter(roller, species){
                     remarks += advanceAge(1) + newLine;
                 }
                 if(notFlunked){
-                    majors.push({skill:MajorSkill,knowledge:undefined});
+                    addMajor(MajorSkill,MajorKnowledge);
                     var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Honors program? " + honorsResult.remarks + newLine;
                     if(honorsResult.success){
@@ -596,7 +715,8 @@ export function createCharacter(roller, species){
                 for(var i = 1; i <= 2 && notFlunked; i++){
                     var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
-                    if(passResult.success){                          
+                    if(passResult.success){                
+                        addMajor(MajorSkill,MajorKnowledge);          
                         remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
                     }else{
                         var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
@@ -610,7 +730,7 @@ export function createCharacter(roller, species){
                     remarks += advanceAge(1) + newLine;
                 }
                 if(notFlunked){
-                    majors.push({skill:MajorSkill,knowledge:undefined});
+                    addMajor(MajorSkill,MajorKnowledge);
                     var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Honors program? " + honorsResult.remarks + newLine;
                     if(honorsResult.success){
@@ -998,15 +1118,35 @@ export function createCharacter(roller, species){
     function getAwards(){
         return awards;
     }
+    function getMajorsLabels(){
+        return getDegreeLabels("major");
+    }
+    function getMinorsLabels(){
+        return getDegreeLabels("minor");
+    }
+    function getDegreeLabels(majorOrMinor){
+        var degrees = [];
+        if(majorOrMinor === "major"){ degrees = majors; }
+        else if(majorOrMinor === "minor"){ degrees = minors; }
+        var labels = [];
+        for(var i = 0, len = degrees.length; i < len; i++){
+            if(typeof degrees[i].knowledge == "undefined"){
+                labels.push(degrees[i].skill);
+            }else{
+                labels.push(degrees[i].skill+"("+degrees[i].knowledge+")");
+            }
+        }
+        return labels;
+    }
     return {
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, characteristics:characteristics,
         skills:skills, genetics:genetics, species:species,
         setAge:setAge, getAge:getAge, getnativeLanguage:getNativeLanguage, setNativeLanguage:setNativeLanguage, 
-        setForcedGrowthClone:setForcedGrowthClone, getAwards:getAwards, 
+        setForcedGrowthClone:setForcedGrowthClone, getAwards:getAwards, getMajorsLabels:getMajorsLabels, getMinorsLabels:getMinorsLabels,
         checkCharacteristic:checkCharacteristic, checkCSK:checkCSK,
         gainKnowledge:gainKnowledge, gainSkill:gainSkill, gainLanguage:gainLanguage,
-        gainSkillOrKnowledge: gainSkillOrKnowledge, 
+        gainSkillOrKnowledge: gainSkillOrKnowledge, gainSkillsFromHomeworldTradeCodes:gainSkillsFromHomeworldTradeCodes,
         gainCharacteristic:gainCharacteristic, decreaseCharacteristic:decreaseCharacteristic,
         advanceAge:advanceAge, promptEducationWaiver:promptEducationWaiver,
         Apprenticeship:Apprenticeship, ED5:ED5, TradeSchool:TradeSchool, 
