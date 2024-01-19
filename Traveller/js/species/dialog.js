@@ -31,7 +31,7 @@ export function getDialog(){
     }
     
 }
-export function pickSkill(category, prompt, callback){
+export function pickSkill(category, prompt, callback, excludedChoice){
     var pickerDialog = getDialog();
     var dialog = pickerDialog.dialog, selector = pickerDialog.selector, dialogText = pickerDialog.dialogText;
     var skills = [];
@@ -180,6 +180,15 @@ export function pickSkill(category, prompt, callback){
                 {name:"Gunner(Turrets)",skill:"Gunner",knowledge:"Turrets"},
             ];
             break;
+    }
+    if(typeof excludedChoice !== "undefined"){
+        for(var i = 0, len = skills.length; i < len; i++){
+            var skill = skills[i];
+            if(skill.name == excludedChoice.name){
+                skills.splice(i,1);
+                break;
+            }
+        }
     }
     clearElement(selector); 
     clearElement(dialogText);

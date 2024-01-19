@@ -72,7 +72,7 @@ document.getElementById("btnCollege").addEventListener("click",function(){
                         log(person.College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                }); 
+                },choice); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -90,7 +90,7 @@ document.getElementById("btnCollege").addEventListener("click",function(){
                         log(person.College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                }); 
+                },choice); 
         }
     });
 });
@@ -118,7 +118,7 @@ document.getElementById("btnUniversity").addEventListener("click",function(){
                         log(person.University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                }); 
+                },choice); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -136,7 +136,7 @@ document.getElementById("btnUniversity").addEventListener("click",function(){
                         log(person.University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                }); 
+                },choice); 
         }
     });
 });
@@ -164,7 +164,7 @@ document.getElementById("btnMasters").addEventListener("click",function(){
                         log(person.Masters(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                }); 
+                },choice); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -182,7 +182,7 @@ document.getElementById("btnMasters").addEventListener("click",function(){
                         log(person.Masters(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                }); 
+                },choice); 
         }
     });
 });
@@ -210,7 +210,7 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
                         log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
                         
                     }
-                }); 
+                },choice); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -228,7 +228,7 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
                         log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
                         
                     }
-                }); 
+                },choice); 
         }
     });
 });
