@@ -7,8 +7,40 @@
 </head>
 <body>
     <style>
+        @font-face {
+            font-family: Bahnschrift;
+            src: url(/Traveller/fonts/BAHNSCHRIFT.TTF);
+        }
+        body{ font-family: Bahnschrift;}
+        fieldset{
+            line-height:1.3rem;
+        }
+        fieldset li{
+            line-height:1.1rem;
+            padding-inline-start:0rem;
+            margin-block-start:0rem;
+            margin-block-end:0rem;
+        }
+        ul{
+            padding-inline-start:0.5rem;
+            margin-block-start:0.5rem;
+            margin-block-end:0.5rem;
+        }
+        ul ul{
+            padding-inline-start:1.1rem;
+            margin-block-start:0rem;
+            margin-block-end:0rem;
+        }
         #history{
             border:1px solid black;
+            padding-left:1rem;
+            background-color:#dfdfdf;
+            color:black;
+        }
+        input[type='button']{
+            padding:0.3rem;
+            border-radius:0.2rem;
+            cursor:pointer;
         }
     </style>
     <div style="display:flex">
@@ -34,7 +66,7 @@
     <div style="flex:1">
         <div><fieldset>
             <legend>Background</legend>
-            <input type="button" value="Click here to start over with selected background details" id="btnReset"/><br/>
+            
             Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
                 <option value="!kee">!kee</option>
                 <option selected="selected" value="Anglic">Anglic</option>
@@ -91,7 +123,8 @@
                 <option value="4">4</option>
                 <option value="5">5</option>
                 <option value="6">6</option>
-            </select>
+            </select><br/>
+            <input type="button" value="Roll up a new character with above settings" id="btnReset"/>
         </fieldset>
             <fieldset>
                 <legend>Education</legend>
@@ -102,7 +135,7 @@
                     <input type="button" data-educationbtn value="College" id="btnCollege"/>
                     <input type="button" data-educationbtn value="University" id="btnUniversity"/>
                     <input type="button" data-educationbtn value="Naval Academy" id="btnNavalAcademy"/>
-                    <input type="button" data-educationbtn value="Military Academy" id="btnMilitaryAcademy"/><br/>
+                    <input type="button" data-educationbtn value="Military Academy" id="btnMilitaryAcademy"/>
                     <input type="button" data-educationbtn value="Masters" id="btnMasters"/>
                     <input type="button" data-educationbtn value="Professors" id="btnProfessors"/>
                     <input type="button" data-educationbtn value="Medical School" id="btnMedicalSchool"/>
