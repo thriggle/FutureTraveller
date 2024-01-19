@@ -66,6 +66,43 @@ export function createCharacter(roller, species){
         edu_waivers = characteristics[5].value; 
         return {statRolls, characteristics, genetics}
     }
+    function rollStatsFromGenes(genes){
+        var gene_statRolls = [];
+        genetics = [];
+        for(var i = 0, len = genes.length; i < len; i++){
+            if(typeof genes[i] === "undefined" || genes[i] === "Random"){
+                gene_statRolls.push(roller.d6(species.Characteristics[i].nD + gender.Characteristics[i].nD + caste.Characteristics[i].nD));
+                
+            }else{
+                genes[i] = +(genes[i]);
+                var temp = roller.d6(species.Characteristics[i].nD + gender.Characteristics[i].nD + caste.Characteristics[i].nD - 1);
+                temp.result += genes[i]; temp.rolls = [genes[i]].concat(temp.rolls);
+                gene_statRolls.push(temp);
+            }
+            if( i < 4 || species.Characteristics[i] === ENUM_CHARACTERISTICS.INS){
+                genetics.push(gene_statRolls[i].rolls[0])
+            }
+        }
+        for(;i<6; i++){
+            gene_statRolls.push(roller.d6(species.Characteristics[i].nD + gender.Characteristics[i].nD + caste.Characteristics[i].nD))
+            if( i < 4 || species.Characteristics[i] === ENUM_CHARACTERISTICS.INS){
+                genetics.push(gene_statRolls[i].rolls[0])
+            }
+        }
+        var gene_characteristics = [
+            {name:species.Characteristics[0].name,value:gene_statRolls[0].result + gender.Characteristics[0].Mod + caste.Characteristics[0].Mod},
+            {name:species.Characteristics[1].name,value:gene_statRolls[1].result + gender.Characteristics[1].Mod + caste.Characteristics[1].Mod},
+            {name:species.Characteristics[2].name,value:gene_statRolls[2].result + gender.Characteristics[2].Mod + caste.Characteristics[2].Mod},
+            {name:species.Characteristics[3].name,value:gene_statRolls[3].result + gender.Characteristics[3].Mod + caste.Characteristics[3].Mod},
+            {name:species.Characteristics[4].name,value:gene_statRolls[4].result + gender.Characteristics[4].Mod + caste.Characteristics[4].Mod},
+            {name:species.Characteristics[5].name,value:gene_statRolls[5].result + gender.Characteristics[5].Mod + caste.Characteristics[5].Mod},
+        ];
+        for(var i = 0, len = gene_characteristics.length; i < len; i++){
+            characteristics[i].value = gene_characteristics[i].value
+            characteristics[i].name = gene_characteristics[i].name
+        }
+        edu_waivers = characteristics[5].value;
+    }
     function addMajor(skill,knowledge){
         var hasAlready = false;
         for(var i = 0, len = majors.length; i < len; i++){
@@ -871,6 +908,7 @@ export function createCharacter(roller, species){
     }
     function setAge(newAge){age = newAge;}
     function getAge(){return age;}
+    function getGenetics(){ return genetics; }
     function getNativeLanguage(){ return nativeLanguage;}
     function setNativeLanguage(newLanguage){
         var nativeLanguageValue = skills[ENUM_SKILLS.Language].Knowledge[nativeLanguage];
@@ -1141,9 +1179,10 @@ export function createCharacter(roller, species){
     return {
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, characteristics:characteristics,
-        skills:skills, genetics:genetics, species:species,
+        skills:skills, getGenetics:getGenetics, species:species,
         setAge:setAge, getAge:getAge, getnativeLanguage:getNativeLanguage, setNativeLanguage:setNativeLanguage, 
-        setForcedGrowthClone:setForcedGrowthClone, getAwards:getAwards, getMajorsLabels:getMajorsLabels, getMinorsLabels:getMinorsLabels,
+        setForcedGrowthClone:setForcedGrowthClone, rollStatsFromGenes:rollStatsFromGenes,
+        getAwards:getAwards, getMajorsLabels:getMajorsLabels, getMinorsLabels:getMinorsLabels,
         checkCharacteristic:checkCharacteristic, checkCSK:checkCSK,
         gainKnowledge:gainKnowledge, gainSkill:gainSkill, gainLanguage:gainLanguage,
         gainSkillOrKnowledge: gainSkillOrKnowledge, gainSkillsFromHomeworldTradeCodes:gainSkillsFromHomeworldTradeCodes,
