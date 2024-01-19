@@ -7,7 +7,7 @@ import { renderCharacter, clearElement } from "./character_renderer.js";
 import { dialogCallback, getDialog, pickOption, pickSkill } from "./dialog.js";
 
 
-var roller = getRollerFromSeed("2"), person;
+var roller = getRollerFromSeed(), person;
 //document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
 newCharacter(); 
 document.getElementById("btnReset").addEventListener("click",newCharacter);
