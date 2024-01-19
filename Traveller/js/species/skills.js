@@ -117,7 +117,7 @@ Knowledges[ENUM_SKILLS.Gunner] = ["Bay Weapons","Ortillery","Screens","Spines","
 Knowledges[ENUM_SKILLS.HeavyWeapons] = ["Artillery","Launcher","Ordnance","WMD"];
 Knowledges[ENUM_SKILLS.Pilot] = ["Small Craft","ACS","BCS"];
 Knowledges[ENUM_SKILLS.Seafarer] = ["Aquanautics","Grav","Boat","Ship","Sub"];
-Knowledges[ENUM_SKILLS.Language] = ["Anglic","!kee","Vilani","Battle","Gonk","Gvegh","Oynprith","Sagamaal","Tezapet","Trokh","Zdetl"];
+Knowledges[ENUM_SKILLS.Language] = ["!kee","Anglic","Vilani","Battle","Gonk","Gvegh","Oynprith","Sagamaal","Tezapet","Trokh","Zdetl"];
 Knowledges[ENUM_SKILLS.Science] = ["Archeology","Biology","Chemistry","History","Linguistics","Philosophy","Physics","Planetology","Psionicology","Psychohistory","Psychology","Robotics","Sophontologys"];
 
 
