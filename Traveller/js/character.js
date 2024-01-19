@@ -63,7 +63,7 @@ export function createCharacter(roller, species){
         if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.EDU && characteristics[4].value > characteristics[3].value){
             skills[MasterSkills.Language].Knowledge[nativeLanguage] = characteristics[4].value;
         }
-        edu_waivers = characteristics[5].value; 
+        edu_waivers = 0; //characteristics[5].value-edu_waivers; 
         return {statRolls, characteristics, genetics}
     }
     function rollStatsFromGenes(genes){
@@ -101,7 +101,7 @@ export function createCharacter(roller, species){
             characteristics[i].value = gene_characteristics[i].value
             characteristics[i].name = gene_characteristics[i].name
         }
-        edu_waivers = characteristics[5].value;
+        edu_waivers = 0;//characteristics[5].value;
     }
     function addMajor(skill,knowledge){
         var hasAlready = false;
@@ -253,11 +253,11 @@ export function createCharacter(roller, species){
         if(typeof note === "undefined"){ note = "";}else{ note += " "}
         var remarks = "";
         var success = false;
-        if(edu_waivers >= 2){
-            var useWaiver = confirm(note + "Do you want to try to use an education waiver? (Current waiver value="+edu_waivers+")");
+        if(characteristics[5].value - edu_waivers >= 2){
+            var useWaiver = confirm(note + "Do you want to try to use an education waiver? (Current waiver value="+(characteristics[5].value - edu_waivers)+")");
             if(useWaiver){
-                var result = check(edu_waivers,2,0,"Education Waiver vs " + edu_waivers)
-                edu_waivers -= 1;
+                var result = check(characteristics[5].value - edu_waivers,2,0,"Education Waiver vs " + (characteristics[5].value - edu_waivers))
+                edu_waivers += 1;
                 success = result.success;
                 remarks += result.remarks;
             }else{
@@ -479,15 +479,15 @@ export function createCharacter(roller, species){
                                                         pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
                                                         awards.push(service_choice + " Officer1");
                                                         log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                                        });
+                                                        },true);
                                                     }
-                                                });
+                                                },true);
                                             }else{
                                                 if(navyCommission){ 
                                                     pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
                                                     awards.push(service_choice + " Officer1");
                                                     log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                                    });
+                                                    },true);
                                                 }
                                                 even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true) + newLine;
                                                 log(even_further_remarks);
