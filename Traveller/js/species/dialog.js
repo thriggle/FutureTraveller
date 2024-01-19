@@ -31,7 +31,7 @@ export function getDialog(){
     }
     
 }
-export function pickSkill(category, prompt, callback, excludedChoice){
+export function pickSkill(category, prompt, callback, excludedChoice, preferredChoice){
     var pickerDialog = getDialog();
     var dialog = pickerDialog.dialog, selector = pickerDialog.selector, dialogText = pickerDialog.dialogText;
     var skills = [];
@@ -346,15 +346,18 @@ export function pickSkill(category, prompt, callback, excludedChoice){
         ];
         break;
         }
-    if(typeof excludedChoice !== "undefined"){
+    var hasExcludedChoice = typeof excludedChoice !== "undefined",
+        hasPrefferredChoice = typeof preferredChoice !== "undefined";
+    if(hasExcludedChoice){
         for(var i = 0, len = skills.length; i < len; i++){
             var skill = skills[i];
             if(skill.name == excludedChoice.name){
                 skills.splice(i,1);
                 break;
-            }
+            } 
         }
     }
+    
     clearElement(selector); 
     clearElement(dialogText);
     dialogText.insertAdjacentHTML("beforeend","<span>"+prompt+"</span>");
@@ -364,6 +367,11 @@ export function pickSkill(category, prompt, callback, excludedChoice){
         option.innerHTML = skills[i].name;
         option.setAttribute("data-skill",skills[i].skill);
         option.setAttribute("data-knowledge",skills[i].knowledge);
+        if(hasPrefferredChoice && preferredChoice.skill == skills[i].skill){
+            if(skills[i].knowledge == preferredChoice.knowledge){
+                option.setAttribute("selected","selected");
+            }
+        }
     }
     dialogCallback = function(){ 
         var option = selector.options[selector.selectedIndex];

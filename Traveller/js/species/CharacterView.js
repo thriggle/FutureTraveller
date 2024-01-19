@@ -7,7 +7,7 @@ import { renderCharacter, clearElement } from "./character_renderer.js";
 import { dialogCallback, getDialog, pickOption, pickSkill } from "./dialog.js";
 
 
-var roller = getRollerFromSeed(), person;
+var roller = getRollerFromSeed("1"), person;
 //document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
 newCharacter(); 
 document.getElementById("btnReset").addEventListener("click",newCharacter);
@@ -261,6 +261,13 @@ document.getElementById("btnUniversity").addEventListener("click",function(){
     });
 });
 document.getElementById("btnMasters").addEventListener("click",function(){
+    var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
+    if(majors.length > 0){
+        preferredMajor = majors[majors.length-1];
+    }
+    if(minors.length > 0){
+        preferredMinor = minors[minors.length-1];
+    }
     pickSkill("C", "Please choose a Major",
     function(choice){
         var MajorSkill = choice.skill;
@@ -284,7 +291,7 @@ document.getElementById("btnMasters").addEventListener("click",function(){
                         log(person.Masters(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                },choice); 
+                },choice,preferredMinor); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -302,11 +309,18 @@ document.getElementById("btnMasters").addEventListener("click",function(){
                         log(person.Masters(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                },choice); 
+                },choice,preferredMinor); 
         }
-    });
+    },undefined,preferredMajor);
 });
 document.getElementById("btnProfessors").addEventListener("click",function(){
+    var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
+    if(majors.length > 0){
+        preferredMajor = majors[majors.length-1];
+    }
+    if(minors.length > 0){
+        preferredMinor = minors[minors.length-1];
+    }
     pickSkill("C", "Please choose a Major",
     function(choice){
         var MajorSkill = choice.skill;
@@ -330,7 +344,7 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
                         log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
                         
                     }
-                },choice); 
+                },choice,preferredMinor); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -348,9 +362,9 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
                         log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
                         
                     }
-                },choice); 
+                },choice,preferredMinor); 
         }
-    });
+    },undefined,preferredMajor);
 });
 function newCharacter(){
     clear();
