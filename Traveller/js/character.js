@@ -172,14 +172,20 @@ export function createCharacter(roller, species){
     }
     function Apprenticeship(skill,knowledge){
         var newLine = "_";
-        var result = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,2,0);
-        var remarks = "Apprenticeship: " + result.remarks + newLine;
-        if(result.success){
-            gainSkillOrKnowledge(skill,knowledge,true);
-            gainSkillOrKnowledge(skill,knowledge,true);
-            gainSkillOrKnowledge(skill,knowledge,true);
-            remarks += gainSkillOrKnowledge(skill,knowledge,true);
+        var remarks = "";
+        if(age > species.getFirstYearOfStage(3)){
+            remarks += "Character ineligible for apprenticeship due to having passed the age of apprenticeship ("+species.getFirstYearOfStage(3)+").";
+        }else{
+            var result = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,2,0);
+            remarks = "Apprenticeship: " + result.remarks + newLine;
+            if(result.success){
+                gainSkillOrKnowledge(skill,knowledge,true);
+                gainSkillOrKnowledge(skill,knowledge,true);
+                gainSkillOrKnowledge(skill,knowledge,true);
+                remarks += gainSkillOrKnowledge(skill,knowledge,true);
+            }
         }
+        
         return remarks;
     }
     
@@ -198,16 +204,9 @@ export function createCharacter(roller, species){
         return ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, "Navy", log);
     }
     function ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, branch, log){
-        var newLine = "_";
-        var result = BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 6, 8, false);
-        var remarks = result.remarks + newLine;;
-        if(result.success){
-            remarks += "Earned " + branch + " commission.";
-            awards.push(branch + " Officer1");
-        }
-        return remarks;
+        return branch + " Academy:_" + BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 6, 8, false, log, branch);
     }
-    function BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, MinStartEdu, MinEndEdu, offerOTC, log){
+    function BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, MinStartEdu, MinEndEdu, offerOTC, log, commissionOnSuccess){
         var newLine = "_";
         var remarks = "", notFlunked = false;
         if(characteristics[4].name != ENUM_CHARACTERISTICS.INS){
@@ -281,9 +280,9 @@ export function createCharacter(roller, species){
                         }
                         if(offerOTC){
                             var options = [];
+                            options.push("None");
                             if(awards.indexOf("Army Officer1") === -1){ options.push("OTC");}
                             if(awards.indexOf("Navy Officer1") === -1){ options.push("NOTC");}
-                            options.push("None");
                             pickOption(options,"Do you wish to join OTC (Army) or NOTC (Navy)?",
                             function(choice){
                                 var otc = false, notc = false, further_remarks = "";
@@ -318,10 +317,10 @@ export function createCharacter(roller, species){
                                             navyCommission = true;
                                             otc_skill_list = StarshipSkills;
                                         }
-                                        choice = pickOption(otc_skill_list,"Please choose a " + (otc ? "Soldier" : "Starship") + " skill.",function(new_skill){
+                                        pickOption(otc_skill_list,"Please choose a " + (otc ? "Soldier" : "Starship") + " skill.",function(new_skill){
                                             var even_further_remarks = "";
                                             if(KnowledgeSpecialties[new_skill]){
-                                                choice = pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
+                                                pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
                                                     even_further_remarks += gainSkillOrKnowledge(new_skill,new_knowledge,true) + newLine;
                                                     log(even_further_remarks);
                                                 });
@@ -332,7 +331,15 @@ export function createCharacter(roller, species){
                                             }
                                         });
                                     }
-                                    if(armyCommission){ awards.push("Army Officer1");}else if(navyCommission){ awards.push("Navy Officer1");}
+                                    if(armyCommission){ 
+                                        awards.push("Army Officer1");
+                                        further_remarks += "Earned Army commission (Army Officer1).";
+                                    }else if(navyCommission){ 
+                                        pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
+                                            awards.push(service_choice + " Officer1");
+                                            log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                        });
+                                    }
                                     log(further_remarks);
                                 }else{
                                     further_remarks += "Declined to volunteer for OTC/NOTC.";
@@ -341,12 +348,16 @@ export function createCharacter(roller, species){
                             });
                             
                         }
-                        if(armyCommission){
-                            awards.push("Army Officer1");
-                            remarks += "Earned Army commission from OTC." + newLine;;
-                        }else if(navyCommission){
-                            awards.push("Navy Officer1");
-                            remarks += "Earned Navy commission from OTC." + newLine;;
+                        if(commissionOnSuccess){
+                            if(commissionOnSuccess === "Army"){
+                                    awards.push("Army Officer1");
+                                    remarks += "Earned Army commission (Army Officer1).";
+                            }else if(commissionOnSuccess === "Navy"){ 
+                                pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
+                                    awards.push(service_choice + " Officer1");
+                                    log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                });
+                            }
                         }
                     }
                     
@@ -533,7 +544,7 @@ export function createCharacter(roller, species){
                     remarks += advanceAge(1) + newLine;
                 }
                 if(notFlunked){
-                    majors.push({skill:MajorSkill,knowledge:MajorKnowledge});
+                    majors.push({skill:MajorSkill,knowledge:undefined});
                     var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Honors program? " + honorsResult.remarks + newLine;
                     if(honorsResult.success){
@@ -557,6 +568,8 @@ export function createCharacter(roller, species){
                         }
                     }
                 }
+            }else{
+                remarks += advanceAge(1) + newLine;
             }
         }
         return remarks;
@@ -597,7 +610,7 @@ export function createCharacter(roller, species){
                     remarks += advanceAge(1) + newLine;
                 }
                 if(notFlunked){
-                    majors.push({skill:MajorSkill,knowledge:MajorKnowledge});
+                    majors.push({skill:MajorSkill,knowledge:undefined});
                     var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Honors program? " + honorsResult.remarks + newLine;
                     if(honorsResult.success){
@@ -621,6 +634,8 @@ export function createCharacter(roller, species){
                         }
                     }
                 }
+            }else{
+                remarks += advanceAge(1) + newLine;
             }
         }
         return remarks;

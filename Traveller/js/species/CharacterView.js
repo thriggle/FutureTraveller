@@ -49,6 +49,38 @@ document.getElementById("btnTradeSchool").addEventListener("click",function(){
         }
     });
 });
+document.getElementById("btnMedicalSchool").addEventListener("click",function(){
+    pickSkill("Medical", "Please choose a major for Medical School",
+    function(choice){
+        var selectedSkill = choice.skill;
+        var selectedKnowledge = choice.knowledge;
+        if(selectedKnowledge === "undefined"){ selectedKnowledge = undefined;}
+        if(selectedSkill === ENUM_SKILLS.Language){
+            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                log(person.MedicalSchool(selectedSkill, lang));
+                redraw();
+            });
+        }else{
+            log(person.MedicalSchool(selectedSkill,selectedKnowledge));
+        }
+    });
+});
+document.getElementById("btnLawSchool").addEventListener("click",function(){
+    pickSkill("Law", "Please choose a major for Law School",
+    function(choice){
+        var selectedSkill = choice.skill;
+        var selectedKnowledge = choice.knowledge;
+        if(selectedKnowledge === "undefined"){ selectedKnowledge = undefined;}
+        if(selectedSkill === ENUM_SKILLS.Language){
+            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                log(person.LawSchool(selectedSkill, lang));
+                redraw();
+            });
+        }else{
+            log(person.LawSchool(selectedSkill,selectedKnowledge));
+        }
+    });
+});
 document.getElementById("btnCollege").addEventListener("click",function(){
     pickSkill("C", "Please choose a Major",
     function(choice){
@@ -88,6 +120,96 @@ document.getElementById("btnCollege").addEventListener("click",function(){
                         });
                     }else{
                         log(person.College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
+                        
+                    }
+                },choice); 
+        }
+    });
+});
+document.getElementById("btnNavalAcademy").addEventListener("click",function(){
+    pickSkill("N", "Please choose a Major for Navy Academy",
+    function(choice){
+        var MajorSkill = choice.skill;
+        var MajorKnowledge = choice.knowledge;
+        if(MajorKnowledge === "undefined"){ MajorKnowledge = undefined;}
+        if(MajorSkill === ENUM_SKILLS.Language){
+            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                MajorKnowledge = lang;
+                pickSkill("N", "Please choose a Minor",
+                function(minorChoice){
+                    var MinorSkill = minorChoice.skill;
+                    var MinorKnowledge = minorChoice.knowledge;
+                    if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
+                    if(MinorSkill === ENUM_SKILLS.Language){
+                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                            MinorKnowledge = lang;
+                            log(person.NavalAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
+                        });
+                    }else{
+                        log(person.NavalAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
+                        
+                    }
+                },choice); 
+            });
+        }else{
+            pickSkill("N", "Please choose a Minor",
+                function(minorChoice){
+                    var MinorSkill = minorChoice.skill;
+                    var MinorKnowledge = minorChoice.knowledge;
+                    if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
+                    if(MinorSkill === ENUM_SKILLS.Language){
+                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                            MinorKnowledge = lang;
+                            log(person.NavalAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
+                            
+                        });
+                    }else{
+                        log(person.NavalAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
+                        
+                    }
+                },choice); 
+        }
+    });
+});
+document.getElementById("btnMilitaryAcademy").addEventListener("click",function(){
+    pickSkill("A", "Please choose a Major for Military Academy",
+    function(choice){
+        var MajorSkill = choice.skill;
+        var MajorKnowledge = choice.knowledge;
+        if(MajorKnowledge === "undefined"){ MajorKnowledge = undefined;}
+        if(MajorSkill === ENUM_SKILLS.Language){
+            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                MajorKnowledge = lang;
+                pickSkill("A", "Please choose a Minor",
+                function(minorChoice){
+                    var MinorSkill = minorChoice.skill;
+                    var MinorKnowledge = minorChoice.knowledge;
+                    if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
+                    if(MinorSkill === ENUM_SKILLS.Language){
+                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                            MinorKnowledge = lang;
+                            log(person.MilitaryAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
+                        });
+                    }else{
+                        log(person.MilitaryAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
+                        
+                    }
+                },choice); 
+            });
+        }else{
+            pickSkill("A", "Please choose a Minor",
+                function(minorChoice){
+                    var MinorSkill = minorChoice.skill;
+                    var MinorKnowledge = minorChoice.knowledge;
+                    if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
+                    if(MinorSkill === ENUM_SKILLS.Language){
+                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                            MinorKnowledge = lang;
+                            log(person.MilitaryAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
+                            
+                        });
+                    }else{
+                        log(person.MilitaryAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
                 },choice); 
