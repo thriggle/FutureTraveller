@@ -546,7 +546,7 @@ export function createCharacter(roller, species){
                     if(passResult.success){                          
                         if(secondGain){
                             remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
-                            addMajor(MinorSkill,MinorKnowledge);
+                            addMinor(MinorSkill,MinorKnowledge);
                         }
                         secondGain = !secondGain;
                         addMajor(MajorSkill,MajorKnowledge);
@@ -617,7 +617,7 @@ export function createCharacter(roller, species){
                     if(passResult.success){                          
                         if(secondGain){
                             remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
-                            addMajor(MinorSkill,MinorKnowledge);
+                            addMinor(MinorSkill,MinorKnowledge);
                         }
                         secondGain = !secondGain;
                         addMajor(MajorSkill,MajorKnowledge);
@@ -713,7 +713,7 @@ export function createCharacter(roller, species){
                     if(honorsResult.success){
                         remarks += "Attained Honors Doctor" + newLine;; awards.push("Honors Doctor");
                     }else{
-                        remarks += "Attained Doctor" + newLine;; awards.push("Doctor");
+                        remarks += "Attained Doctor" + newLine; awards.push("Doctor");
                     }
                     if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
                         if(characteristics[4].value < 10){
@@ -1156,6 +1156,12 @@ export function createCharacter(roller, species){
     function getAwards(){
         return awards;
     }
+    function getMajors(){
+        return majors;
+    }
+    function getMinors(){
+        return minors;
+    }
     function getMajorsLabels(){
         return getDegreeLabels("major");
     }
@@ -1182,7 +1188,7 @@ export function createCharacter(roller, species){
         skills:skills, getGenetics:getGenetics, species:species,
         setAge:setAge, getAge:getAge, getnativeLanguage:getNativeLanguage, setNativeLanguage:setNativeLanguage, 
         setForcedGrowthClone:setForcedGrowthClone, rollStatsFromGenes:rollStatsFromGenes,
-        getAwards:getAwards, getMajorsLabels:getMajorsLabels, getMinorsLabels:getMinorsLabels,
+        getAwards:getAwards, getMajorsLabels:getMajorsLabels, getMinorsLabels:getMinorsLabels, getMajors:getMajors, getMinors:getMinors,
         checkCharacteristic:checkCharacteristic, checkCSK:checkCSK,
         gainKnowledge:gainKnowledge, gainSkill:gainSkill, gainLanguage:gainLanguage,
         gainSkillOrKnowledge: gainSkillOrKnowledge, gainSkillsFromHomeworldTradeCodes:gainSkillsFromHomeworldTradeCodes,
