@@ -3,6 +3,7 @@ import { human } from "./species/human.js";
 import { ENUM_CHARACTERISTICS } from "./species/species.js";
 import {CLASS_SPECIES} from "./species/species.js";
 import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills, Knowledges as KnowledgeSpecialties } from "./species/skills.js";
+import { getDialog, dialogCallback, pickOption, pickSkill } from "./species/dialog.js";
 export function createCharacter(roller, species){
     if(typeof roller === "undefined"){
         roller = getRollerFromSeed();
@@ -182,22 +183,21 @@ export function createCharacter(roller, species){
         return remarks;
     }
     
-    function College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge){
-        var result = "College:_"+BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 5, 8, true);
-        
+    function College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
+        var result = "College:_"+BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 5, 8, true, log);    
         return result;
     }
-    function University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge){
-        var result = "University:_" +BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 7, 9, true);
+    function University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
+        var result = "University:_" +BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 7, 9, true, log);
         return result;
     }
-    function MilitaryAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge){
-        return ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, "Army");
+    function MilitaryAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
+        return ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, "Army", log);
     }
-    function NavalAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge){
-        return ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, "Navy");
+    function NavalAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
+        return ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, "Navy", log);
     }
-    function ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, branch){
+    function ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, branch, log){
         var newLine = "_";
         var result = BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 6, 8, false);
         var remarks = result.remarks + newLine;;
@@ -207,7 +207,7 @@ export function createCharacter(roller, species){
         }
         return remarks;
     }
-    function BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, MinStartEdu, MinEndEdu, offerOTC){
+    function BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, MinStartEdu, MinEndEdu, offerOTC, log){
         var newLine = "_";
         var remarks = "", notFlunked = false;
         if(characteristics[4].name != ENUM_CHARACTERISTICS.INS){
@@ -231,57 +231,7 @@ export function createCharacter(roller, species){
                 }
                 if(applyResult.success){
                     var armyCommission = false, navyCommission = false;
-                    if(offerOTC){
-                        var choice = "invalid";
-                        while(!(choice === "OTC" || choice === "NOTC" || choice === "")){
-                            choice = prompt("Do you wish to join OTC (Army) or NOTC (Navy)? Enter 'OTC' or 'NOTC' if you'd like to apply.");
-                        }
-                        if(choice === "OTC" || choice === "NOTC"){
-                            remarks += "Volunteered for " + choice +": ";
-                            var otcResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                            remarks += otcResult.remarks + newLine;
-                            if(!otcResult.success){
-                                var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
-                                remarks += otcWaiverResult.remarks + newLine;
-                                otcResult.success = otcWaiverResult.success;
-                                if(otcResult.success){
-                                    if(choice === "OTC"){
-                                        armyCommission = true;
-                                    }else{
-                                        navyCommission = true;
-                                    }
-                                }
-                            }else{
-                                var linebreak = `
-`
-                                if(choice === "OTC"){
-                                    armyCommission = true;
-                                    
-                                    while(SoldierSkills.indexOf(choice) == -1){
-                                        choice = prompt("Please choose a Soldier skill from this list: " + linebreak + SoldierSkills.join(linebreak));
-                                    }
-                                }else if(choice === "NOTC"){
-                                    navyCommission = true;
-                                    
-                                    while(StarshipSkills.indexOf(choice) == -1){
-                                        choice = prompt("Please choose a Ship skill from this list: " + linebreak + StarshipSkills.join(linebreak));
-                                    }
-                                }
-                                if(KnowledgeSpecialties[choice]){
-                                    var otcKnowledge = "invalid";
-                                    while(KnowledgeSpecialties[choice].indexOf(otcKnowledge) === -1){
-                                        otcKnowledge = prompt("Please choose a " + choice + " knowledge from this list: " + linebreak + KnowledgeSpecialties[choice].join(linebreak));
-                                    }
-                                    remarks += gainSkillOrKnowledge(choice,otcKnowledge,true) + newLine;
-                                }else{
-                                    remarks += gainSkillOrKnowledge(choice,undefined,true) + newLine;
-                                }
-                            }
-                        }else{
-                            remarks += "Declined to volunteer for OTC/NOTC." + newLine;
-                        }
-                        
-                    }
+
                     notFlunked = true;
                     var secondGain = false;
                     for(var i = 1; i <= 4 && notFlunked; i++){
@@ -328,6 +278,68 @@ export function createCharacter(roller, species){
                             }else{
                                 remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1)+". " + newLine;;
                             }
+                        }
+                        if(offerOTC){
+                            var options = [];
+                            if(awards.indexOf("Army Officer1") === -1){ options.push("OTC");}
+                            if(awards.indexOf("Navy Officer1") === -1){ options.push("NOTC");}
+                            options.push("None");
+                            pickOption(options,"Do you wish to join OTC (Army) or NOTC (Navy)?",
+                            function(choice){
+                                var otc = false, notc = false, further_remarks = "";
+                                switch(choice){
+                                    case "OTC": otc = true; break;
+                                    case "NOTC":  notc = true; break;
+                                    case "None":
+                                    default:
+                                    break;
+                                }
+                                if(otc || notc){
+                                    further_remarks += "Volunteered for " + choice +": ";
+                                    var otcResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                                    further_remarks += otcResult.remarks + newLine;
+                                    if(!otcResult.success){
+                                        var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
+                                        further_remarks += otcWaiverResult.remarks + newLine;
+                                        otcResult.success = otcWaiverResult.success;
+                                        if(otcResult.success){
+                                            if(choice === "OTC"){
+                                                armyCommission = true;
+                                            }else{
+                                                navyCommission = true;
+                                            }
+                                        }
+                                    }else{
+                                        var otc_skill_list = []
+                                        if(otc){
+                                            armyCommission = true;
+                                            otc_skill_list = SoldierSkills;
+                                        }else if(notc){
+                                            navyCommission = true;
+                                            otc_skill_list = StarshipSkills;
+                                        }
+                                        choice = pickOption(otc_skill_list,"Please choose a " + (otc ? "Soldier" : "Starship") + " skill.",function(new_skill){
+                                            var even_further_remarks = "";
+                                            if(KnowledgeSpecialties[new_skill]){
+                                                choice = pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
+                                                    even_further_remarks += gainSkillOrKnowledge(new_skill,new_knowledge,true) + newLine;
+                                                    log(even_further_remarks);
+                                                });
+                                            }else{
+                                                even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true) + newLine;
+                                           
+                                                log(even_further_remarks);
+                                            }
+                                        });
+                                    }
+                                    if(armyCommission){ awards.push("Army Officer1");}else if(navyCommission){ awards.push("Navy Officer1");}
+                                    log(further_remarks);
+                                }else{
+                                    further_remarks += "Declined to volunteer for OTC/NOTC.";
+                                    log(further_remarks);
+                                }
+                            });
+                            
                         }
                         if(armyCommission){
                             awards.push("Army Officer1");
