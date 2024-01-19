@@ -415,15 +415,20 @@ export function createCharacter(roller, species){
                         }else{
                             remarks += "Attained BA" + newLine;; awards.push("BA");
                         }
-                        if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
-                            if(characteristics[4].value < MinEndEdu){
-                                characteristics[4].value = MinEndEdu;
-                                remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value +". " + newLine;;
-                            }else{
-                                remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1)+". " + newLine;;
-                            }
-                        }
+                        
                         if(offerOTC){
+                            var finalStatBoost = function(){
+                                var remarks = "";
+                                if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
+                                    if(characteristics[4].value < MinEndEdu){
+                                        characteristics[4].value = MinEndEdu;
+                                        remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value +". " + newLine;;
+                                    }else{
+                                        remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1)+". " + newLine;;
+                                    }
+                                }
+                                log(remarks);
+                            };
                             var options = [];
                             options.push("None");
                             if(awards.indexOf("Army Officer1") === -1){ options.push("OTC");}
@@ -441,6 +446,7 @@ export function createCharacter(roller, species){
                                 if(otc || notc){
                                     further_remarks += "Volunteered for " + choice +": ";
                                     var otcResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                                    finalStatBoost();
                                     further_remarks += otcResult.remarks + newLine;
                                     if(!otcResult.success){
                                         var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
@@ -495,9 +501,19 @@ export function createCharacter(roller, species){
                                 }else{
                                     further_remarks += "Declined to volunteer for OTC/NOTC.";
                                     log(further_remarks);
+                                    finalStatBoost();
                                 }
                             });
                             
+                        }else{
+                            if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
+                                if(characteristics[4].value < MinEndEdu){
+                                    characteristics[4].value = MinEndEdu;
+                                    remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value +". " + newLine;;
+                                }else{
+                                    remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1)+". " + newLine;;
+                                }
+                            }
                         }
                         if(commissionOnSuccess){
                             if(commissionOnSuccess === "Army"){
