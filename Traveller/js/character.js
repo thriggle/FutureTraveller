@@ -687,7 +687,7 @@ export function createCharacter(roller, species){
                     remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
                     if(passResult.success){                          
                         remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
-                        addMajor(MajorSkill,MajorKnowledge);
+                        addMajor(MajorSkill);
                     }else{
                         var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
                         remarks += passWaiverResult.remarks + newLine;
@@ -700,7 +700,7 @@ export function createCharacter(roller, species){
                     remarks += advanceAge(1) + newLine;
                 }
                 if(notFlunked){
-                    addMajor(MajorSkill,MajorKnowledge);
+                    addMajor(MajorSkill);
                     var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Honors program? " + honorsResult.remarks + newLine;
                     if(honorsResult.success){
@@ -753,7 +753,7 @@ export function createCharacter(roller, species){
                     var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
                     if(passResult.success){                
-                        addMajor(MajorSkill,MajorKnowledge);          
+                        addMajor(MajorSkill);          
                         remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
                     }else{
                         var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
@@ -767,7 +767,7 @@ export function createCharacter(roller, species){
                     remarks += advanceAge(1) + newLine;
                 }
                 if(notFlunked){
-                    addMajor(MajorSkill,MajorKnowledge);
+                    addMajor(MajorSkill);
                     var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Honors program? " + honorsResult.remarks + newLine;
                     if(honorsResult.success){
