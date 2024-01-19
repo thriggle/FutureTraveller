@@ -205,17 +205,17 @@ export function createCharacter(roller, species){
     function gainSkillWithPromptForCategory(prompt,skillCategory,callback){
         switch(skillCategory.toUpperCase()){
             case "ART": 
-            pickOption(ArtSkills,prompt + " Choose an Art skill.",function(x){proceed(x);});
+            pickOption(ArtSkills,prompt + " Choose an Art skill.",function(x){proceed(x);},true);
             break;
             case "TRADE": 
-            pickOption(TradeSkills,prompt + " Choose a skilled Trade.",function(x){proceed(x);});
+            pickOption(TradeSkills,prompt + " Choose a skilled Trade.",function(x){proceed(x);},true);
             break;
             case "SHIP":
                 case "STARSHIP": 
-                pickOption(StarshipSkillsSkills,prompt + " Choose a Starship Skill.",function(x){proceed(x);});
+                pickOption(StarshipSkillsSkills,prompt + " Choose a Starship Skill.",function(x){proceed(x);},true);
                 break;
                 case "SOLDIER": 
-                pickOption(SoldierSkillsSkills,prompt + " Choose a Soldier Skill.",function(x){proceed(x);});
+                pickOption(SoldierSkillsSkills,prompt + " Choose a Soldier Skill.",function(x){proceed(x);},true);
             break;
         }
         function proceed(chosenSkill){
@@ -224,7 +224,7 @@ export function createCharacter(roller, species){
     }
     function gainSkillWithPromptForKnowledge(prompt,skill,callback){
         if(KnowledgeSpecialties[skill]){
-            pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){proceed(x);})
+            pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){proceed(x);},true)
         }else{proceed(undefined);}
         function proceed(chosenKnowledge){
             callback(prompt + " " + gainSkillOrKnowledge(skill,chosenKnowledge,false));
@@ -436,6 +436,7 @@ export function createCharacter(roller, species){
                             pickOption(options,"Do you wish to join OTC (Army) or NOTC (Navy)?",
                             function(choice){
                                 var otc = false, notc = false, further_remarks = "";
+                                if(choice === false){ choice = "None";}
                                 switch(choice){
                                     case "OTC": otc = true; break;
                                     case "NOTC":  notc = true; break;
@@ -468,7 +469,8 @@ export function createCharacter(roller, species){
                                             navyCommission = true;
                                             otc_skill_list = StarshipSkills;
                                         }
-                                        pickOption(otc_skill_list,"Please choose a " + (otc ? "Soldier" : "Starship") + " skill.",function(new_skill){
+                                        pickOption(otc_skill_list,"Please choose a " + (otc ? "Soldier" : "Starship") + " skill.",
+                                        function(new_skill){
                                             var even_further_remarks = "";
                                             if(KnowledgeSpecialties[new_skill]){
                                                 pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
@@ -490,7 +492,7 @@ export function createCharacter(roller, species){
                                                 even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true) + newLine;
                                                 log(even_further_remarks);
                                             }
-                                        });
+                                        },true);
                                     }
                                     if(armyCommission){ 
                                         awards.push("Army Officer1");
@@ -503,7 +505,7 @@ export function createCharacter(roller, species){
                                     log(further_remarks);
                                     finalStatBoost();
                                 }
-                            });
+                            },true);
                             
                         }else{
                             if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
@@ -1074,8 +1076,16 @@ export function createCharacter(roller, species){
                     break;
             }
         }
-        characteristics[index].value += amount;
-        return (amount > 0 ? "Increased " : "Decreased ")+ characteristics[index].name + " by " + amount;
+        var max = (species == human) ? 15 : species.Characteristics[index].nD*6+6;
+        if(characteristics[index].value < max){
+            characteristics[index].value += amount;
+        }else{ amount = 0;}
+        if(characteristics[index].value > max){
+            amount = characteristics[index].value - max;
+            characteristics[index].value = max;
+        }
+        
+        return (amount >= 0 ? "Increased " : "Decreased ")+ characteristics[index].name + " by " + amount;
     }
     function decreaseCharacteristic(characteristic, amount){
         if(typeof amount == "undefined"){ amount = 1;}
