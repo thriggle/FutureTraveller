@@ -1,9 +1,15 @@
 import { clearElement } from "./character_renderer.js";
 
 export var dialogCallback = () => {};
-export function pickOption(choices,prompt,callback){
+export function pickOption(choices,prompt,callback,noCancel){
+    
     var pickerDialog = getDialog();
     var dialog = pickerDialog.dialog, selector = pickerDialog.selector, dialogText = pickerDialog.dialogText;
+    if(noCancel){
+        document.getElementById("cancelDlgBtn").setAttribute("disabled","disabled");
+    }else{
+        document.getElementById("cancelDlgBtn").removeAttribute("disabled");
+    }
     clearElement(selector); 
     clearElement(dialogText);
     dialogText.insertAdjacentHTML("beforeend","<span>"+prompt+"</span>");
@@ -33,6 +39,7 @@ export function getDialog(){
 }
 export function pickSkill(category, prompt, callback, excludedChoice, preferredChoice){
     var pickerDialog = getDialog();
+    document.getElementById("cancelDlgBtn").removeAttribute("disabled");
     var dialog = pickerDialog.dialog, selector = pickerDialog.selector, dialogText = pickerDialog.dialogText;
     var skills = [];
     switch(category){
