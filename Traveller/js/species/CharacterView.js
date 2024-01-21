@@ -385,7 +385,7 @@ function newCharacter(){
     );
     log(person.setNativeLanguage(document.getElementById("slctNativeLanguage").value));
     log(person.advanceAge(human.getFirstYearOfStage(3)));
-    log(person.gainSkillsFromHomeworldTradeCodes(document.getElementById("txtHomeworldTradeCodes").value, log));
+    log(person.gainSkillsFromHomeworldTradeCodes(document.getElementById("txtHomeworldTradeCodes").value, log)());
     renderCharacter(person, document.body);
     enableControls();
 }

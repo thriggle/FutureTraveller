@@ -160,48 +160,63 @@ export function createCharacter(roller, species){
             skills[skill].Knowledge[knowledge] = 1;
         }
     }
-    function gainSkillsFromHomeworldTradeCodes(codes, callback){
-        var codeArray = codes.split(" ");
-        for(var i = 0, len = codeArray.length; i < len; i++){
-            var code = codeArray[i];
-            var note = code + " trade code on homeworld provides a skill.";
+    function gainSkillsFromHomeworldTradeCodes(codes, callback, index, notes){
+        var codeArray = typeof codes == "string" ? codes.split(" ") : codes;
+        if(typeof index === "undefined"){ index = 0;}
+        if(typeof notes === "undefined"){ notes = "";}
+        if(index === codeArray.length || codeArray.length === 0 || (codeArray.length == 1 && codeArray[0] == "")){
+            return function(){
+                callback(notes);
+            };
+        }else{
+            var promptfunc = () => {};
+            var code = codeArray[index];
+            var skill = "";
+            var note = "Gained skill from the " + code + " trade code on homeworld (";
             switch(code){
-                case "Ag": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Animals,callback); break;
-                case "As": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.ZeroG,callback); break;
-                case "Co": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
-                case "Cp": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Admin,callback); break;
-                case "Cs": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Bureaucrat,callback); break;
-                case "Cx": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Language,callback); break;
-                case "Da": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Fighter,callback); break;
-                case "De": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Survival,callback); break;
-                case "Ds": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.VaccSuit,callback); gainSkillWithPromptForKnowledge(ENUM_SKILLS.ZeroG,callback);break;
-                case "Fa": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Animals,callback); break;
-                case "Fl": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
-                case "Fr": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
-                case "Ga": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Trader,callback); break;
-                case "He": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
-                case "Hi": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Streetwise,callback); break;
-                case "Ho": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HostileEnviron,callback); break;
-                case "Ic": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.VaccSuit,callback); break;
-                case "In": gainSkillWithPromptForCategory(note,"TRADE",callback); break;
-                case "Lo": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Flyer,callback); break;
-                case "Na": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Survey,callback); break;
-                case "Ni": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Driver,callback); break;
-                case "Oc": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.HighG,callback); break;
-                case "Pa": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Trader,callback); break;
-                case "Pi": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.JOT,callback); break;
-                case "Po": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Steward,callback); break;
-                case "Pr": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Craftsman,callback); break;
-                case "Ri": gainSkillWithPromptForCategory(note,"ART",callback); break;
-                case "Tr": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Survival,callback); break;
-                case "Tu": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Survival,callback); break;
-                case "Tu": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Driver,callback); break;
-                case "Va": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.VaccSuit,callback); break;
-                case "Wa": gainSkillWithPromptForKnowledge(note,ENUM_SKILLS.Seafarer,callback); break;
+                case "Ag": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Animals; note += skill; break;
+                case "As": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.ZeroG; note += skill; break;
+                case "Co": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Cp": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Admin; note += skill; break;
+                case "Cs": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Bureaucrat; note += skill; break;
+                case "Cx": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Language; note += skill; break;
+                case "Da": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Fighter; note += skill; break;
+                case "De": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
+                case "Ds": promptfunc = gainSkillWithPromptForKnowledge; skill = [ENUM_SKILLS.VaccSuit,ENUM_SKILLS.ZeroG]; note+=skill; break;
+                case "Fa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Animals; note += skill; break;
+                case "Fl": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Fr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Ga": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Trader; note += skill; break;
+                case "He": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Hi": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Streetwise; note += skill; break;
+                case "Ho": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Ic": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.VaccSuit; note += skill; break;
+                case "In": promptfunc = gainSkillWithPromptForCategory; skill = "TRADE"; note += "a skilled trade"; break;
+                case "Lo": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Flyer; note += skill; break;
+                case "Na": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survey; note += skill; break;
+                case "Ni": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
+                case "Oc": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HighG; note += skill; break;
+                case "Pa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Trader; note += skill; break;
+                case "Pi": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.JOT; note += skill; break;
+                case "Po": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Steward; note += skill; break;
+                case "Pr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Craftsman; note += skill; break;
+                case "Ri": promptfunc = gainSkillWithPromptForCategory; skill = "ART"; note += "an art skill";break;
+                case "Tr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
+                case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
+                case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
+                case "Va": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.VaccSuit; note += skill; break;
+                case "Wa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Seafarer; note += skill; break;
                 default: break; 
+            }
+            note += ").<br/>";
+            notes += note;
+            var nextMethod = gainSkillsFromHomeworldTradeCodes(codeArray, callback, index + 1, notes);
+            return function(){
+                notes += promptfunc(note, skill, nextMethod);
             }
         }
     }
+
     function gainSkillWithPromptForCategory(prompt,skillCategory,callback){
         switch(skillCategory.toUpperCase()){
             case "ART": 
@@ -223,12 +238,21 @@ export function createCharacter(roller, species){
         }
     }
     function gainSkillWithPromptForKnowledge(prompt,skill,callback){
-        if(KnowledgeSpecialties[skill]){
-            pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){proceed(x);},true)
-        }else{proceed(undefined);}
-        function proceed(chosenKnowledge){
-            callback(prompt + " " + gainSkillOrKnowledge(skill,chosenKnowledge,false));
+        if(typeof skill !== "string" && skill.length == 2){
+            
+                gainSkillWithPromptForKnowledge(prompt,skill[0],function(){
+                    gainSkillWithPromptForKnowledge(prompt,skill[1],callback);
+                })
+            
+        }else{
+            if(KnowledgeSpecialties[skill]){
+                pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){proceed(x);},true)
+            }else{proceed(undefined);}
+            function proceed(chosenKnowledge){
+                callback(prompt + " " + gainSkillOrKnowledge(skill,chosenKnowledge,false));
+            }
         }
+        
     }
     function ED5(){
         var remarks = "";
