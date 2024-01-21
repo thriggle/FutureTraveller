@@ -101,6 +101,10 @@ export function createCharacter(roller, species){
             characteristics[i].value = gene_characteristics[i].value
             characteristics[i].name = gene_characteristics[i].name
         }
+        skills[MasterSkills.Language].Knowledge[nativeLanguage] = characteristics[3].value;
+        if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.EDU && characteristics[4].value > characteristics[3].value){
+            skills[MasterSkills.Language].Knowledge[nativeLanguage] = characteristics[4].value;
+        }
         edu_waivers = 0;//characteristics[5].value;
     }
     function addMajor(skill,knowledge){
