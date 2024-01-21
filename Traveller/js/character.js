@@ -166,6 +166,7 @@ export function createCharacter(roller, species){
     }
     function gainSkillsFromHomeworldTradeCodes(codes, callback, index, notes){
         var codeArray = typeof codes == "string" ? codes.split(" ") : codes;
+        if(codes == "" && typeof index == "undefined"){ notes = "No skills received from homeworld."}
         if(typeof index === "undefined"){ index = 0;}
         if(typeof notes === "undefined"){ notes = "";}
         if(index === codeArray.length || codeArray.length === 0 || (codeArray.length == 1 && codeArray[0] == "")){
@@ -176,7 +177,7 @@ export function createCharacter(roller, species){
             var promptfunc = () => {};
             var code = codeArray[index];
             var skill = "";
-            var note = "Gained skill from the " + code + " trade code on homeworld (";
+            var note = "Gained ";
             switch(code){
                 case "Ag": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Animals; note += skill; break;
                 case "As": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.ZeroG; note += skill; break;
@@ -186,7 +187,7 @@ export function createCharacter(roller, species){
                 case "Cx": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Language; note += skill; break;
                 case "Da": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Fighter; note += skill; break;
                 case "De": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
-                case "Ds": promptfunc = gainSkillWithPromptForKnowledge; skill = [ENUM_SKILLS.VaccSuit,ENUM_SKILLS.ZeroG]; note+=skill; break;
+                case "Ds": promptfunc = gainSkillWithPromptForKnowledge; skill = [ENUM_SKILLS.VaccSuit,ENUM_SKILLS.ZeroG]; note+=skill.join(", "); break;
                 case "Fa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Animals; note += skill; break;
                 case "Fl": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
                 case "Fr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
@@ -210,13 +211,14 @@ export function createCharacter(roller, species){
                 case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
                 case "Va": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.VaccSuit; note += skill; break;
                 case "Wa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Seafarer; note += skill; break;
-                default: break; 
+                default: note += "no skills"; promptfunc = (n,s,next,ns)=>{ next(); }; break; 
             }
-            note += ").<br/>";
+            note += " from the '" + code + "' trade code on homeworld.<br/>";
             notes += note;
             var nextMethod = gainSkillsFromHomeworldTradeCodes(codeArray, callback, index + 1, notes);
             return function(){
-                notes += promptfunc(note, skill, nextMethod);
+                var text = promptfunc(note, skill, nextMethod, notes);
+                notes += text;
             }
         }
     }
@@ -243,17 +245,17 @@ export function createCharacter(roller, species){
     }
     function gainSkillWithPromptForKnowledge(prompt,skill,callback){
         if(typeof skill !== "string" && skill.length == 2){
-            
-                gainSkillWithPromptForKnowledge(prompt,skill[0],function(){
+                gainSkillWithPromptForKnowledge(prompt,skill[0],function(x){
                     gainSkillWithPromptForKnowledge(prompt,skill[1],callback);
-                })
+                });
             
         }else{
             if(KnowledgeSpecialties[skill]){
-                pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){proceed(x);},true)
+                pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){ proceed(x); },true)
             }else{proceed(undefined);}
             function proceed(chosenKnowledge){
-                callback(prompt + " " + gainSkillOrKnowledge(skill,chosenKnowledge,false));
+                var remarks = gainSkillOrKnowledge(skill,chosenKnowledge,false);
+                callback(prompt + " " + remarks);
             }
         }
         
