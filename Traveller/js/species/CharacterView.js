@@ -80,6 +80,13 @@ document.getElementById("btnLawSchool").addEventListener("click",function(){
     });
 });
 document.getElementById("btnCollege").addEventListener("click",function(){
+    var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
+    if(majors.length > 0){
+        preferredMajor = majors[majors.length-1];
+    }
+    if(minors.length > 0){
+        preferredMinor = minors[minors.length-1];
+    }
     pickSkill("C", "Please choose a Major",
     function(choice){
         var MajorSkill = choice.skill;
@@ -102,7 +109,7 @@ document.getElementById("btnCollege").addEventListener("click",function(){
                         log(person.College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                },choice); 
+                },choice, preferredMinor); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -120,9 +127,9 @@ document.getElementById("btnCollege").addEventListener("click",function(){
                         log(person.College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                },choice); 
+                },choice, preferredMinor); 
         }
-    });
+    },undefined, preferredMajor);
 });
 document.getElementById("btnNavalAcademy").addEventListener("click",function(){
     pickSkill("N", "Please choose a Major for Navy Academy",
@@ -215,6 +222,13 @@ document.getElementById("btnMilitaryAcademy").addEventListener("click",function(
     });
 });
 document.getElementById("btnUniversity").addEventListener("click",function(){
+    var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
+    if(majors.length > 0){
+        preferredMajor = majors[majors.length-1];
+    }
+    if(minors.length > 0){
+        preferredMinor = minors[minors.length-1];
+    }
     pickSkill("C", "Please choose a Major",
     function(choice){
         var MajorSkill = choice.skill;
@@ -238,7 +252,7 @@ document.getElementById("btnUniversity").addEventListener("click",function(){
                         log(person.University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                },choice); 
+                },choice, preferredMinor); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -256,9 +270,9 @@ document.getElementById("btnUniversity").addEventListener("click",function(){
                         log(person.University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                },choice); 
+                },choice, preferredMinor); 
         }
-    });
+    },undefined, preferredMajor);
 });
 document.getElementById("btnMasters").addEventListener("click",function(){
     var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
@@ -369,8 +383,7 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
 function newCharacter(){
     clear();
     person = createCharacter(roller, human);
-    var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").getAttribute("checked");
-    if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
+    var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     var genes = [
         document.getElementById("slctGeneticC1").value,
         document.getElementById("slctGeneticC2").value,
@@ -380,6 +393,7 @@ function newCharacter(){
     ]
     
     person.rollStatsFromGenes(genes);
+    if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
     log("Initial UPP: "+ person.characteristics[0].value + "," +  person.characteristics[1].value + "," + person.characteristics[2].value + "," + 
     person.characteristics[3].value + "," + person.characteristics[4].value + "," + person.characteristics[5].value
     );
