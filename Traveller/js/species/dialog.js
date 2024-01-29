@@ -354,7 +354,7 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
         break;
         }
     var hasExcludedChoice = typeof excludedChoice !== "undefined",
-        hasPrefferredChoice = typeof preferredChoice !== "undefined";
+        hasPreferredChoice = typeof preferredChoice !== "undefined";
     if(hasExcludedChoice){
         for(var i = 0, len = skills.length; i < len; i++){
             var skill = skills[i];
@@ -374,7 +374,7 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
         option.innerHTML = skills[i].name;
         option.setAttribute("data-skill",skills[i].skill);
         option.setAttribute("data-knowledge",skills[i].knowledge);
-        if(hasPrefferredChoice && preferredChoice.skill == skills[i].skill){
+        if(hasPreferredChoice && preferredChoice.skill == skills[i].skill){
             if(skills[i].knowledge == preferredChoice.knowledge){
                 option.setAttribute("selected","selected");
             }

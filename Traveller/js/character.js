@@ -905,16 +905,16 @@ export function createCharacter(roller, species){
                     }else if( skill === ENUM_SKILLS.Science){ // if we have reached the cap and it's a science, gain a specialty instead
                         var spec_counter = 0;
                         var specialty_name = knowledge;
-                        while(skill[skill].Knowledge[specialty_name] && skill[skill].Knowledge[specialty_name] === 6){
+                        while(skills[skill].Knowledge[specialty_name] && skills[skill].Knowledge[specialty_name] === 6){
                             spec_counter += 1;
-                            specialty_name = knowledge + " specialty " + spec_counter;
+                            specialty_name = knowledge + " Specialty " + spec_counter;
                         }
-                        if(skill[skill].Knowledge[specialty_name]){
-                            skill[skill].Knowledge[specialty_name] += 1;
-                            remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
+                        if(skills[skill].Knowledge[specialty_name]){
+                            skills[skill].Knowledge[specialty_name] += 1;
+                            remarks += "Gained " + skill + "("+specialty_name + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
                         }else{
-                            skill[skill].Knowledge[specialty_name] = 1;
-                            remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
+                            skills[skill].Knowledge[specialty_name] = 1;
+                            remarks += "Gained " + skill + "("+specialty_name + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
                         }
                     }
                 }else{
