@@ -14,6 +14,7 @@ export function createCharacter(roller, species){
     var majors = [], minors = [];
     var nativeLanguage = "Anglic";
     var languageReceipts = 0; var edu_waivers = 0; var awards = [];
+    var sanity = 0;
    var defaultSkills = [
         MasterSkills.Actor, MasterSkills.Artist, MasterSkills.Athlete, 
         MasterSkills.Author, MasterSkills.Comms, MasterSkills.Computer, 
@@ -42,7 +43,8 @@ export function createCharacter(roller, species){
             roller.d6(species.Characteristics[2].nD + gender.Characteristics[2].nD + caste.Characteristics[2].nD),
             roller.d6(species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD),
             roller.d6(species.Characteristics[4].nD + gender.Characteristics[4].nD + caste.Characteristics[4].nD),
-            roller.d6(species.Characteristics[5].nD + gender.Characteristics[5].nD + caste.Characteristics[5].nD)
+            roller.d6(species.Characteristics[5].nD + gender.Characteristics[5].nD + caste.Characteristics[5].nD),
+            roller.d6(2) // sanity
         ];
         var characteristics = [
             {name:species.Characteristics[0].name,value:statRolls[0].result + gender.Characteristics[0].Mod + caste.Characteristics[0].Mod},
@@ -57,6 +59,7 @@ export function createCharacter(roller, species){
             statRolls[2].rolls[0],
             statRolls[3].rolls[0],
         ];
+        sanity = statRolls[6].result;
         languageReceipts = 0;
         if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.INS){ genetics.push(statRolls[4].rolls[0]);}
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = characteristics[3].value;
@@ -1253,6 +1256,6 @@ export function createCharacter(roller, species){
         Apprenticeship:Apprenticeship, ED5:ED5, TradeSchool:TradeSchool, 
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
-        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,
+        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity
     }
 }
