@@ -419,6 +419,7 @@ export function createCharacter(roller, species){
                 remarks += "Trade School Application: ";
                 var applyResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,2,0);
                 remarks +=  applyResult.remarks + newLine;
+                
                 if(! applyResult.success){ 
                     var applyWaiverResult = promptEducationWaiver("Failed Trade School application.");
                     remarks += applyWaiverResult.remarks + newLine;
@@ -429,6 +430,7 @@ export function createCharacter(roller, species){
                     var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
                     var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
                     remarks += "Trade School Pass/Fail: " + passResult.remarks + newLine;
+                    record("Trade School Pass/Fail: " + passResult.remarks);
                     if(passResult.success){
                         gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended trade school.");
                         remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended trade school.") + newLine;
@@ -441,6 +443,47 @@ export function createCharacter(roller, species){
             }
         }else{
             remarks = "Character is ineligible for Trade School due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.EDU+". ";
+        }
+        return remarks;
+    }
+    function TrainingCourse(MajorSkill,MajorKnowledge){
+        var newLine = "_";
+        var remarks = "Training Course: " + newLine;
+        if(characteristics[4].name != ENUM_CHARACTERISTICS.INS){
+            var tryTradeSchool = true;
+            if((characteristics[4].value < 5 && characteristics[4].name === ENUM_CHARACTERISTICS.TRA) || 
+                (characteristics[4].value/2 < 5 && characteristics[4].name === ENUM_CHARACTERISTICS.EDU)){
+                tryTradeSchool = false;
+                var waiverResult = promptEducationWaiver("Insufficient TRA to attend Training Course.");
+                //history.push(waiverResult.remarks);
+                remarks += waiverResult.remarks + newLine;
+                tryTradeSchool = waiverResult.success;
+            }
+            if(tryTradeSchool){
+                remarks += "Training Course Application: ";
+                var applyResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,2,0);
+                remarks +=  applyResult.remarks + newLine;
+                if(! applyResult.success){ 
+                    var applyWaiverResult = promptEducationWaiver("Failed Training Course application.");
+                    remarks += applyWaiverResult.remarks + newLine;
+                    applyResult.success = applyWaiverResult.success;
+                }
+                if(applyResult.success){
+                    var passResult = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,2,0);
+                    remarks += "Training Course Pass/Fail: " + passResult.remarks + newLine;
+                    record("Training Course Pass/Fail: " + passResult.remarks);
+                    if(passResult.success){
+                        gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended Training Course.");
+                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended Training Course.") + newLine;
+                        addMajor(MajorSkill,MajorKnowledge);
+                    }
+                    remarks += advanceAge(1);
+                }else{
+                    remarks += advanceAge(1);
+                }
+            }
+        }else{
+            remarks = "Character is ineligible for Training Course due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.TRA+". ";
         }
         return remarks;
     }
@@ -1314,7 +1357,7 @@ export function createCharacter(roller, species){
         gainSkillOrKnowledge: gainSkillOrKnowledge, gainSkillsFromHomeworldTradeCodes:gainSkillsFromHomeworldTradeCodes,
         gainCharacteristic:gainCharacteristic, decreaseCharacteristic:decreaseCharacteristic,
         advanceAge:advanceAge, promptEducationWaiver:promptEducationWaiver,
-        Apprenticeship:Apprenticeship, ED5:ED5, TradeSchool:TradeSchool, 
+        Apprenticeship:Apprenticeship, ED5:ED5, TradeSchool:TradeSchool, TrainingCourse,
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory

@@ -79,6 +79,23 @@ document.getElementById("btnTradeSchool").addEventListener("click",function(){
         }
     });
 });
+
+document.getElementById("btnTrainingCourse").addEventListener("click",function(){
+    pickSkill("S", "Please choose a skill for your Training Course",
+    function(choice){
+        var selectedSkill = choice.skill;
+        var selectedKnowledge = choice.knowledge;
+        if(selectedKnowledge === "undefined"){ selectedKnowledge = undefined;}
+        if(selectedSkill === ENUM_SKILLS.Language){
+            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                log(person.TrainingCourse(selectedSkill, lang));
+                redraw();
+            });
+        }else{
+            log(person.TrainingCourse(selectedSkill,selectedKnowledge));
+        }
+    });
+});
 document.getElementById("btnMedicalSchool").addEventListener("click",function(){
     pickSkill("Medical", "Please choose a major for Medical School",
     function(choice){
@@ -460,6 +477,7 @@ function log(msg){
         }
         redraw();
     }
+    console.log(msg);
 }
 function clear(){
     var historyRecipients = document.querySelectorAll("[data-history]");
