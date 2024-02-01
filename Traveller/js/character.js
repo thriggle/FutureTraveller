@@ -69,6 +69,23 @@ export function createCharacter(roller, species){
         edu_waivers = 0; //characteristics[5].value-edu_waivers; 
         return {statRolls, characteristics, genetics}
     }
+    function initStats(stats, geneticValues){
+       characteristics = [
+            {name:species.Characteristics[0].name,value:stats[0]},
+            {name:species.Characteristics[1].name,value:stats[1]},
+            {name:species.Characteristics[2].name,value:stats[2]},
+            {name:species.Characteristics[3].name,value:stats[3]},
+            {name:species.Characteristics[4].name,value:stats[4]},
+            {name:species.Characteristics[5].name,value:stats[5]}
+        ];
+        sanity = roller.d6(2).result;
+        languageReceipts = 0;
+        edu_waivers = 0;
+        genetics = geneticValues;
+    }
+    function getCharacteristics(){
+        return characteristics;
+    }
     function record(message){
         history.push("Age " + age+ ": " + message);
     }
@@ -374,8 +391,8 @@ export function createCharacter(roller, species){
                remarks += "failed. ";
             }
             remarks += result.remarks;
-           record(remarks);
         }
+        record(remarks);
         
         return remarks;
     }
@@ -494,7 +511,7 @@ export function createCharacter(roller, species){
             remarks += "Character ineligible for apprenticeship due to having passed the age of apprenticeship ("+species.getFirstYearOfStage(3)+").";
         }else{
             var result = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,2,0);
-            remarks = "Apprenticeship: " + result.remarks + newLine;
+            remarks = "Apprenticeship: " + result.remarks;
             if(result.success){
                 gainSkillOrKnowledge(skill,knowledge,true);
                 gainSkillOrKnowledge(skill,knowledge,true);
@@ -1360,6 +1377,6 @@ export function createCharacter(roller, species){
         Apprenticeship:Apprenticeship, ED5:ED5, TradeSchool:TradeSchool, TrainingCourse,
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
-        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory
+        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics
     }
 }

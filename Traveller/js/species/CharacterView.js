@@ -444,8 +444,27 @@ function newCharacter(){
             document.getElementById("slctGeneticC5").value,
         ];
         person.rollStatsFromGenes(genes);
+        person.characteristics = person.getCharacteristics();
     }else if(document.getElementById("rdoAttributesCustom").checked){
         // TODO
+        var attributes = [
+            +(document.getElementById("txtCustomC1").value) + +(document.getElementById("txtCustomC1b").value),
+            +(document.getElementById("txtCustomC2").value) + +(document.getElementById("txtCustomC2b").value),
+            +(document.getElementById("txtCustomC3").value) + +(document.getElementById("txtCustomC3b").value),
+            +(document.getElementById("txtCustomC4").value) + +(document.getElementById("txtCustomC4b").value),
+            +(document.getElementById("txtCustomC5").value) + +(document.getElementById("txtCustomC5b").value),
+            +(document.getElementById("txtCustomC6").value) + +(document.getElementById("txtCustomC6b").value),
+        ];
+        var genetics = [
+            +(document.getElementById("txtCustomC1").value),
+            +(document.getElementById("txtCustomC2").value),
+            +(document.getElementById("txtCustomC3").value),
+            +(document.getElementById("txtCustomC4").value),
+            +(document.getElementById("txtCustomC5").value),
+            +(document.getElementById("txtCustomC6").value),
+        ];
+        person.initStats(attributes, genetics);
+        person.characteristics = person.getCharacteristics();
     }
     
     if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
