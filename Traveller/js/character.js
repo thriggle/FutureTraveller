@@ -81,7 +81,8 @@ export function createCharacter(roller, species){
         sanity = roller.d6(2).result;
         languageReceipts = 0;
         edu_waivers = 0;
-        genetics = geneticValues;
+        genetics = geneticValues.slice(0,4);
+        if(species.Characteristics[4].name === ENUM_CHARACTERISTICS.INS){ genetics.push(geneticValues[4]);}
     }
     function getCharacteristics(){
         return characteristics;

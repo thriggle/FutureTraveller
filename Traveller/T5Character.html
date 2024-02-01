@@ -126,7 +126,7 @@
         #rdoAttributesCustom:checked ~ #divAttributeValues{ display:flex; flex-direction: row; flex-wrap: wrap;}
         #divGeneticDice,#divAttributeValues{display:none;}
         #divAttributeValues label, #divGeneticDice label{flex:50%; font-family: 'Courier New', Courier, monospace;}
-        #divAttributeValues input{width:2em;}
+        #divAttributeValues input{width:1.5rem;}
         [data-tier='2']{
             background-color:#dfdfdf;
         }
@@ -174,8 +174,8 @@
                     </fieldset>
                 <fieldset>
                     <legend>Attributes</legend>
-                    <label for="rdoAttributesNatural"> <input type="radio" checked="checked" name="rdoAttributes" id="rdoAttributesNatural" value="Natural">Random</label>
-                    <input type="radio" name="rdoAttributes" id="rdoAttributesClone" value="Clone"><label for="rdoAttributesClone">Predefined Genetics</label>
+                    <label for="rdoAttributesNatural"> <input type="radio" checked="checked" name="rdoAttributes" id="rdoAttributesNatural" value="Natural">Random</label><br/>
+                    <input type="radio" name="rdoAttributes" id="rdoAttributesClone" value="Clone"><label for="rdoAttributesClone">Predefined Genetics</label><br/>
                      <input type="radio" name="rdoAttributes" id="rdoAttributesCustom" value="Custom"><label for="rdoAttributesCustom">Custom</label>
                      <div id="divGeneticDice">
                         <label class="genetics">C1:<select id="slctGeneticC1">
