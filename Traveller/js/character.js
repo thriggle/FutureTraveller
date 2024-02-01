@@ -680,7 +680,7 @@ export function createCharacter(roller, species){
                                                 var even_further_remarks = "";
                                                 if(KnowledgeSpecialties[new_skill]){
                                                     pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
-                                                        log(gainSkillOrKnowledge(new_skill,new_knowledge,true));
+                                                        log(gainSkillOrKnowledge(new_skill,new_knowledge,true, "("+choice + ")"));
                                                         if(navyCommission){ 
                                                             pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
                                                             awards.push(service_choice + " Officer1");
@@ -697,7 +697,7 @@ export function createCharacter(roller, species){
                                                         log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
                                                         },true);
                                                     }
-                                                    even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true) + newLine;
+                                                    even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true,"("+choice +")") + newLine;
                                                     log(even_further_remarks);
                                                 }
                                             },true);
