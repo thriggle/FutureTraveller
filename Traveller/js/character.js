@@ -11,7 +11,7 @@ export function createCharacter(roller, species){
     if(typeof species === "undefined"){
         species = human;
     }
-    var majors = [], minors = [];
+    var majors = [], minors = [], history = [];
     var nativeLanguage = "Anglic";
     var languageReceipts = 0; var edu_waivers = 0; var awards = [];
     var sanity = 0;
@@ -69,6 +69,9 @@ export function createCharacter(roller, species){
         edu_waivers = 0; //characteristics[5].value-edu_waivers; 
         return {statRolls, characteristics, genetics}
     }
+    function record(message){
+        history.push("Age " + age+ ": " + message);
+    }
     function rollStatsFromGenes(genes){
         var gene_statRolls = [];
         genetics = [];
@@ -125,6 +128,7 @@ export function createCharacter(roller, species){
         }
         if(!hasAlready){
             majors.push({skill:skill,knowledge:knowledge});
+           record("Gained " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Major.")
         }
     }
     function addMinor(skill,knowledge){
@@ -142,12 +146,16 @@ export function createCharacter(roller, species){
         }
         if(!hasAlready){
             minors.push({skill:skill,knowledge:knowledge});
+           record("Gained " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Minor.")
         }
     }
     function gainSkill(skill){
         if(typeof skills[skill] != "undefined"){
             if(skills[skill].Skill >= 0){
-                skills[skill].Skill += 1;
+                if(skills[skill].Skill = 15){
+                }else{
+                    skills[skill].Skill += 1;
+                }
             }else{
                 skills[skill].Skill = 1;
             }
@@ -157,7 +165,7 @@ export function createCharacter(roller, species){
     }
     function gainKnowledge(skill,knowledge){
         if(typeof skills[skill] != "undefined"){
-            if(skills[skill].Knowledge[knowledge] >= 0){
+            if(skills[skill].Knowledge[knowledge] >= 0 ){
                 skills[skill].Knowledge[knowledge] += 1;
             }else{
                 skills[skill].Knowledge[knowledge] = 1;
@@ -167,711 +175,8 @@ export function createCharacter(roller, species){
             skills[skill].Knowledge[knowledge] = 1;
         }
     }
-    function gainSkillsFromHomeworldTradeCodes(codes, callback, index, notes){
-        var codeArray = typeof codes == "string" ? codes.split(" ") : codes;
-        if(codes == "" && typeof index == "undefined"){ notes = "No skills received from homeworld."}
-        if(typeof index === "undefined"){ index = 0;}
-        if(typeof notes === "undefined"){ notes = "";}
-        if(index === codeArray.length || codeArray.length === 0 || (codeArray.length == 1 && codeArray[0] == "")){
-            return function(){
-                callback(notes);
-            };
-        }else{
-            var promptfunc = () => {};
-            var code = codeArray[index];
-            var skill = "";
-            var note = "Gained ";
-            switch(code){
-                case "Ag": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Animals; note += skill; break;
-                case "As": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.ZeroG; note += skill; break;
-                case "Co": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
-                case "Cp": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Admin; note += skill; break;
-                case "Cs": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Bureaucrat; note += skill; break;
-                case "Cx": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Language; note += skill; break;
-                case "Da": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Fighter; note += skill; break;
-                case "De": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
-                case "Ds": promptfunc = gainSkillWithPromptForKnowledge; skill = [ENUM_SKILLS.VaccSuit,ENUM_SKILLS.ZeroG]; note+=skill.join(", "); break;
-                case "Fa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Animals; note += skill; break;
-                case "Fl": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
-                case "Fr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
-                case "Ga": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Trader; note += skill; break;
-                case "He": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
-                case "Hi": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Streetwise; note += skill; break;
-                case "Ho": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
-                case "Ic": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.VaccSuit; note += skill; break;
-                case "In": promptfunc = gainSkillWithPromptForCategory; skill = "TRADE"; note += "a skilled trade"; break;
-                case "Lo": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Flyer; note += skill; break;
-                case "Na": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survey; note += skill; break;
-                case "Ni": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
-                case "Oc": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HighG; note += skill; break;
-                case "Pa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Trader; note += skill; break;
-                case "Pi": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.JOT; note += skill; break;
-                case "Po": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Steward; note += skill; break;
-                case "Pr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Craftsman; note += skill; break;
-                case "Ri": promptfunc = gainSkillWithPromptForCategory; skill = "ART"; note += "an art skill";break;
-                case "Tr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
-                case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
-                case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
-                case "Va": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.VaccSuit; note += skill; break;
-                case "Wa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Seafarer; note += skill; break;
-                default: note += "no skills"; promptfunc = (n,s,next,ns)=>{ next(); }; break; 
-            }
-            note += " from the '" + code + "' trade code on homeworld.<br/>";
-            notes += note;
-            var nextMethod = gainSkillsFromHomeworldTradeCodes(codeArray, callback, index + 1, notes);
-            return function(){
-                var text = promptfunc(note, skill, nextMethod, notes);
-                notes += text;
-            }
-        }
-    }
-
-    function gainSkillWithPromptForCategory(prompt,skillCategory,callback){
-        switch(skillCategory.toUpperCase()){
-            case "ART": 
-            pickOption(ArtSkills,prompt + " Choose an Art skill.",function(x){proceed(x);},true);
-            break;
-            case "TRADE": 
-            pickOption(TradeSkills,prompt + " Choose a skilled Trade.",function(x){proceed(x);},true);
-            break;
-            case "SHIP":
-                case "STARSHIP": 
-                pickOption(StarshipSkillsSkills,prompt + " Choose a Starship Skill.",function(x){proceed(x);},true);
-                break;
-                case "SOLDIER": 
-                pickOption(SoldierSkillsSkills,prompt + " Choose a Soldier Skill.",function(x){proceed(x);},true);
-            break;
-        }
-        function proceed(chosenSkill){
-            gainSkillWithPromptForKnowledge(prompt,chosenSkill,callback);
-        }
-    }
-    function gainSkillWithPromptForKnowledge(prompt,skill,callback){
-        if(typeof skill !== "string" && skill.length == 2){
-                gainSkillWithPromptForKnowledge(prompt,skill[0],function(x){
-                    gainSkillWithPromptForKnowledge(prompt,skill[1],callback);
-                });
-            
-        }else{
-            if(KnowledgeSpecialties[skill]){
-                pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){ proceed(x); },true)
-            }else{proceed(undefined);}
-            function proceed(chosenKnowledge){
-                var remarks = gainSkillOrKnowledge(skill,chosenKnowledge,false);
-                callback(prompt + " " + remarks);
-            }
-        }
-        
-    }
-    function ED5(){
-        var remarks = "";
-        if(characteristics[4].name != ENUM_CHARACTERISTICS.EDU){
-            remarks += "Character is ineligible for the ED5 program due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.EDU+". ";
-        }else if(characteristics[4].value >= 5){
-            remarks += "Character is ineligible for the ED5 program due to having Education 5+.";
-        }else{
-            remarks += "ED5 Program to raise Edu from " + characteristics[4].value + " ";
-            var result = checkCharacteristic(ENUM_CHARACTERISTICS.INT,2,0);
-            if(result.success){ 
-                characteristics[4].value = 5; 
-                remarks += "to 5 succeeded! ";
-            }else{
-               remarks += "failed. ";
-            }
-            remarks += result.remarks;
-        }
-        return remarks;
-    }
-    function promptEducationWaiver(note){
-        if(typeof note === "undefined"){ note = "";}else{ note += " "}
-        var remarks = "";
-        var success = false;
-        if(characteristics[5].value - edu_waivers >= 2){
-            var useWaiver = confirm(note + "Do you want to try to use an education waiver? (Current waiver value="+(characteristics[5].value - edu_waivers)+")");
-            if(useWaiver){
-                var result = check(characteristics[5].value - edu_waivers,2,0,"Education Waiver vs " + (characteristics[5].value - edu_waivers))
-                edu_waivers += 1;
-                success = result.success;
-                remarks += result.remarks;
-            }else{
-                success = false;
-                remarks = " Declined to try using an education waiver. ";
-            }
-        }else{
-            success = false;
-            remarks = " No education waivers available. ";
-        }
-        
-        return {success:success,remarks:note + " " + remarks};
-    }
-    function TradeSchool(MajorSkill,MajorKnowledge){
-        var newLine = "_";
-        var remarks = "Trade School: " + newLine;
-        if(characteristics[4].name != ENUM_CHARACTERISTICS.INS){
-            var tryTradeSchool = true;
-            if(characteristics[4].value < 5 || characteristics[4].name === ENUM_CHARACTERISTICS.TRA){
-                tryTradeSchool = false;
-                var waiverResult = promptEducationWaiver("Insufficient EDU to attend Trade School.");
-                remarks += waiverResult.remarks + newLine;
-                tryTradeSchool = waiverResult.success;
-            }
-            if(tryTradeSchool){
-                remarks += "Trade School Application: ";
-                var applyResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,2,0);
-                remarks +=  applyResult.remarks + newLine;
-                if(! applyResult.success){ 
-                    var applyWaiverResult = promptEducationWaiver("Failed Trade School application.");
-                    remarks += applyWaiverResult.remarks + newLine;
-                    applyResult.success = applyWaiverResult.success;
-                }
-                if(applyResult.success){
-                    var intScore = characteristics[3].value;
-                    var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
-                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                    remarks += "Trade School Pass/Fail: " + passResult.remarks + newLine;
-                    if(passResult.success){
-                        gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true);
-                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
-                        addMajor(MajorSkill,MajorKnowledge);
-                    }
-                    remarks += advanceAge(1);
-                }else{
-                    remarks += advanceAge(1);
-                }
-            }
-        }else{
-            remarks = "Character is ineligible for Trade School due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.EDU+". ";
-        }
-        return remarks;
-    }
-    function Apprenticeship(skill,knowledge){
-        var newLine = "_";
-        var remarks = "";
-        if(age > species.getFirstYearOfStage(3)){
-            remarks += "Character ineligible for apprenticeship due to having passed the age of apprenticeship ("+species.getFirstYearOfStage(3)+").";
-        }else{
-            var result = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,2,0);
-            remarks = "Apprenticeship: " + result.remarks + newLine;
-            if(result.success){
-                gainSkillOrKnowledge(skill,knowledge,true);
-                gainSkillOrKnowledge(skill,knowledge,true);
-                gainSkillOrKnowledge(skill,knowledge,true);
-                remarks += gainSkillOrKnowledge(skill,knowledge,true);
-            }
-        }
-        
-        return remarks;
-    }
-    
-    function College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
-        var result = "College:_"+BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 5, 8, true, log);    
-        return result;
-    }
-    function University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
-        var result = "University:_" +BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 7, 9, true, log);
-        return result;
-    }
-    function MilitaryAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
-        return ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, "Army", log);
-    }
-    function NavalAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
-        return ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, "Navy", log);
-    }
-    function ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, branch, log){
-        return branch + " Academy:_" + BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 6, 8, false, log, branch);
-    }
-    function BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, MinStartEdu, MinEndEdu, offerOTC, log, commissionOnSuccess){
-        var newLine = "_";
-        var remarks = "", notFlunked = false;
-        if(characteristics[4].name != ENUM_CHARACTERISTICS.INS){
-            var tryBAProgram = true;
-            if(characteristics[4].value < MinStartEdu || characteristics[4].name === ENUM_CHARACTERISTICS.TRA){
-                tryBAProgram = false;
-                var waiverResult = promptEducationWaiver("Insufficient EDU to attend BA program.");
-                remarks += waiverResult.remarks + newLine;
-                tryBAProgram = waiverResult.success;
-            }
-            if(tryBAProgram){
-                remarks += "BA Program Application: ";
-                var intScore = characteristics[3].value;
-                var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
-                var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                remarks +=  applyResult.remarks + newLine;
-                if(! applyResult.success){ 
-                    var applyWaiverResult = promptEducationWaiver("Failed program application.");
-                    remarks += applyWaiverResult.remarks + newLine;
-                    applyResult.success = applyWaiverResult.success;
-                }
-                if(applyResult.success){
-                    var armyCommission = false, navyCommission = false;
-
-                    notFlunked = true;
-                    var secondGain = false;
-                    for(var i = 1; i <= 4 && notFlunked; i++){
-                        var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                        remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
-                        if(passResult.success){                          
-                            if(secondGain){
-                                addMinor(MinorSkill,MinorKnowledge);
-                                remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
-                            }
-                            secondGain = !secondGain;
-                            addMajor(MajorSkill,MajorKnowledge);
-                            remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
-                        }else{
-                            var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
-                            remarks += passWaiverResult.remarks + newLine;
-                            if(passWaiverResult.success){
-                                notFlunked = true;
-                            }else{ 
-                                notFlunked = false;
-                            }
-                        }
-                        remarks += advanceAge(1) + newLine;
-                    }
-                    if(notFlunked){
-                        
-                        addMajor(MajorSkill,MajorKnowledge);
-                        addMinor(MinorSkill,MinorKnowledge);
-                        
-                        var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                        remarks += "Honors program? " + honorsResult.remarks + newLine;
-                        if(honorsResult.success){
-                            remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
-                        }else{
-                            var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors BA.");
-                            remarks += honorsWaiverResult.remarks + newLine;
-                            honorsResult.success = honorsWaiverResult.success;
-                        }
-                        if(honorsResult.success){
-                            remarks += "Attained Honors BA" + newLine;; awards.push("Honors BA");
-                        }else{
-                            remarks += "Attained BA" + newLine;; awards.push("BA");
-                        }
-                        
-                        if(offerOTC){
-                            var finalStatBoost = function(){
-                                var remarks = "";
-                                if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
-                                    if(characteristics[4].value < MinEndEdu){
-                                        characteristics[4].value = MinEndEdu;
-                                        remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value +". " + newLine;;
-                                    }else{
-                                        remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1)+". " + newLine;;
-                                    }
-                                }
-                                log(remarks);
-                            };
-                            var options = [];
-                            options.push("None");
-                            if(awards.indexOf("Army Officer1") === -1){ options.push("OTC");}
-                            if(awards.indexOf("Navy Officer1") === -1){ options.push("NOTC");}
-                            pickOption(options,"Do you wish to join OTC (Army) or NOTC (Navy)?",
-                            function(choice){
-                                var otc = false, notc = false, further_remarks = "";
-                                if(choice === false){ choice = "None";}
-                                switch(choice){
-                                    case "OTC": otc = true; break;
-                                    case "NOTC":  notc = true; break;
-                                    case "None":
-                                    default:
-                                    break;
-                                }
-                                if(otc || notc){
-                                    further_remarks += "Volunteered for " + choice +": ";
-                                    var otcResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                                    finalStatBoost();
-                                    further_remarks += otcResult.remarks + newLine;
-                                    if(!otcResult.success){
-                                        var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
-                                        further_remarks += otcWaiverResult.remarks + newLine;
-                                        otcResult.success = otcWaiverResult.success;
-                                        if(otcResult.success){
-                                            if(choice === "OTC"){
-                                                armyCommission = true;
-                                            }else{
-                                                navyCommission = true;
-                                            }
-                                        }
-                                    }else{
-                                        var otc_skill_list = []
-                                        if(otc){
-                                            armyCommission = true;
-                                            otc_skill_list = SoldierSkills;
-                                        }else if(notc){
-                                            navyCommission = true;
-                                            otc_skill_list = StarshipSkills;
-                                        }
-                                        pickOption(otc_skill_list,"Please choose a " + (otc ? "Soldier" : "Starship") + " skill.",
-                                        function(new_skill){
-                                            var even_further_remarks = "";
-                                            if(KnowledgeSpecialties[new_skill]){
-                                                pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
-                                                    log(gainSkillOrKnowledge(new_skill,new_knowledge,true));
-                                                    if(navyCommission){ 
-                                                        pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
-                                                        awards.push(service_choice + " Officer1");
-                                                        log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                                        },true);
-                                                    }
-                                                },true);
-                                            }else{
-                                                if(navyCommission){ 
-                                                    pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
-                                                    awards.push(service_choice + " Officer1");
-                                                    log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                                    },true);
-                                                }
-                                                even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true) + newLine;
-                                                log(even_further_remarks);
-                                            }
-                                        },true);
-                                    }
-                                    if(armyCommission){ 
-                                        awards.push("Army Officer1");
-                                        further_remarks += "Earned Army commission (Army Officer1).";
-                                    }
-                                    
-                                    log(further_remarks);
-                                }else{
-                                    further_remarks += "Declined to volunteer for OTC/NOTC.";
-                                    log(further_remarks);
-                                    finalStatBoost();
-                                }
-                            },true);
-                            
-                        }else{
-                            if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
-                                if(characteristics[4].value < MinEndEdu){
-                                    characteristics[4].value = MinEndEdu;
-                                    remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value +". " + newLine;;
-                                }else{
-                                    remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1)+". " + newLine;;
-                                }
-                            }
-                        }
-                        if(commissionOnSuccess){
-                            if(commissionOnSuccess === "Army"){
-                                    awards.push("Army Officer1");
-                                    remarks += "Earned Army commission (Army Officer1).";
-                            }else if(commissionOnSuccess === "Navy"){ 
-                                pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
-                                    awards.push(service_choice + " Officer1");
-                                    log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                });
-                            }
-                        }
-                    }
-                    
-                }else{
-                    remarks += advanceAge(1);
-                }
-            }
-        }else{
-            remarks = "Character is ineligible for higher education due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.EDU+". ";
-        }
-        return remarks;
-    }
-    function Masters(MajorSkill,MajorKnowledge,MinorSkill,MinorKnowledge){
-        var remarks = "", newLine = "_", notFlunked = false;
-        var hasBA = awards.indexOf("BA") >= 0 || awards.indexOf("Honors BA") >= 0;
-        if(!hasBA){
-            remarks += "Character is ineligible for MA program without having earned a BA.";
-        }else{
-            remarks += "MA Program Application: ";
-            var intScore = characteristics[3].value;
-            var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
-            var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-            remarks +=  applyResult.remarks + newLine;
-            if(! applyResult.success){ 
-                var applyWaiverResult = promptEducationWaiver("Failed program application.");
-                remarks += applyWaiverResult.remarks + newLine;
-                applyResult.success = applyWaiverResult.success;
-            }
-            if(applyResult.success){
-                notFlunked = true;
-                var secondGain = false;
-                for(var i = 1; i <= 2 && notFlunked; i++){
-                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                    remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
-                    if(passResult.success){                          
-                        if(secondGain){
-                            remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
-                            addMinor(MinorSkill,MinorKnowledge);
-                        }
-                        secondGain = !secondGain;
-                        addMajor(MajorSkill,MajorKnowledge);
-                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
-                    }else{
-                        var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
-                        remarks += passWaiverResult.remarks + newLine;
-                        if(passWaiverResult.success){
-                            notFlunked = true;
-                        }else{ 
-                            notFlunked = false;
-                        }
-                    }
-                    remarks += advanceAge(1) + newLine;
-                }
-                if(notFlunked){
-                    addMajor(MajorSkill, MajorKnowledge);
-                    addMinor(MinorSkill,MinorKnowledge);
-                    var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                    remarks += "Honors program? " + honorsResult.remarks + newLine;
-                    if(honorsResult.success){
-                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
-                    }else{
-                        var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors MA.");
-                        remarks += honorsWaiverResult.remarks + newLine;
-                        honorsResult.success = honorsWaiverResult.success;
-                    }
-                    if(honorsResult.success){
-                        remarks += "Attained Honors MA" + newLine;; awards.push("Honors MA");
-                    }else{
-                        remarks += "Attained MA" + newLine;; awards.push("MA");
-                    }
-                    if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
-                        if(characteristics[4].value < 9){
-                            characteristics[4].value = 9;
-                            remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value;
-                        }else{
-                            remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1);
-                        }
-                    }
-                }
-            }
-        }
-        return remarks;
-    }
-    function Professors(MajorSkill,MajorKnowledge,MinorSkill,MinorKnowledge){
-        var remarks = "", newLine = "_", notFlunked = false;
-        var hasBA = awards.indexOf("MA") >= 0 || awards.indexOf("Honors MA") >= 0;
-        if(!hasBA){
-            remarks += "Character is ineligible for Professor program without having earned an MA.";
-        }else{
-            remarks += "Professor Program Application: ";
-            var intScore = characteristics[3].value;
-            var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
-            var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-            remarks +=  applyResult.remarks + newLine;
-            if(! applyResult.success){ 
-                var applyWaiverResult = promptEducationWaiver("Failed program application.");
-                remarks += applyWaiverResult.remarks + newLine;
-                applyResult.success = applyWaiverResult.success;
-            }
-            if(applyResult.success){
-                notFlunked = true;
-                var secondGain = false;
-                for(var i = 1; i <= 2 && notFlunked; i++){
-                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                    remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
-                    if(passResult.success){                          
-                        if(secondGain){
-                            remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
-                            addMinor(MinorSkill,MinorKnowledge);
-                        }
-                        secondGain = !secondGain;
-                        addMajor(MajorSkill,MajorKnowledge);
-                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
-                    }else{
-                        var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
-                        remarks += passWaiverResult.remarks + newLine;
-                        if(passWaiverResult.success){
-                            notFlunked = true;
-                        }else{ 
-                            notFlunked = false;
-                        }
-                    }
-                    remarks += advanceAge(1) + newLine;
-                }
-                if(notFlunked){
-                    addMajor(MajorSkill,MajorKnowledge);
-                    addMinor(MinorSkill,MinorKnowledge);
-                    var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                    remarks += "Honors program? " + honorsResult.remarks + newLine;
-                    if(honorsResult.success){
-                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
-                    }else{
-                        var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors Professorship.");
-                        remarks += honorsWaiverResult.remarks + newLine;
-                        honorsResult.success = honorsWaiverResult.success;
-                    }
-                    if(honorsResult.success){
-                        remarks += "Attained Honors Professorship" + newLine;; awards.push("Honors Professor");
-                    }else{
-                        remarks += "Attained Professorship" + newLine;; awards.push("Professor");
-                    }
-                    if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
-                        if(characteristics[4].value < 12){
-                            characteristics[4].value = 12;
-                            remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value;
-                        }else{
-                            remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1);
-                        }
-                    }
-                }
-            }
-        }
-        return remarks;
-    }
-    function MedicalSchool(MajorSkill){
-        if(typeof MajorSkill === "undefined"){ MajorSkill = ENUM_SKILLS.Medic}
-        var remarks = "", newLine = "_", notFlunked = false;
-        var hasBA = awards.indexOf("Honors BA") >= 0;
-        if(!hasBA){
-            remarks += "Character is ineligible for Medical School program without having earned an Honors BA.";
-        }else{
-            remarks += "Medical School Program Application: ";
-            var intScore = characteristics[3].value;
-            var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
-            var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-            remarks +=  applyResult.remarks + newLine;
-            if(! applyResult.success){ 
-                var applyWaiverResult = promptEducationWaiver("Failed program application.");
-                remarks += applyWaiverResult.remarks + newLine;
-                applyResult.success = applyWaiverResult.success;
-            }
-            if(applyResult.success){
-                notFlunked = true;
-                for(var i = 1; i <= 4 && notFlunked; i++){
-                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                    remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
-                    if(passResult.success){                          
-                        remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
-                        addMajor(MajorSkill);
-                    }else{
-                        var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
-                        remarks += passWaiverResult.remarks + newLine;
-                        if(passWaiverResult.success){
-                            notFlunked = true;
-                        }else{ 
-                            notFlunked = false;
-                        }
-                    }
-                    remarks += advanceAge(1) + newLine;
-                }
-                if(notFlunked){
-                    addMajor(MajorSkill);
-                    var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                    remarks += "Honors program? " + honorsResult.remarks + newLine;
-                    if(honorsResult.success){
-                        remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
-                    }else{
-                        var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors Doctor degree.");
-                        remarks += honorsWaiverResult.remarks + newLine;
-                        honorsResult.success = honorsWaiverResult.success;
-                    }
-                    if(honorsResult.success){
-                        remarks += "Attained Honors Doctor" + newLine;; awards.push("Honors Doctor");
-                    }else{
-                        remarks += "Attained Doctor" + newLine; awards.push("Doctor");
-                    }
-                    if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
-                        if(characteristics[4].value < 10){
-                            characteristics[4].value = 10;
-                            remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value;
-                        }else{
-                            remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1);
-                        }
-                    }
-                }
-            }else{
-                remarks += advanceAge(1) + newLine;
-            }
-        }
-        return remarks;
-    }
-    function LawSchool(MajorSkill){
-        if(typeof MajorSkill === "undefined"){ MajorSkill = ENUM_SKILLS.Advocate}
-        var remarks = "", newLine = "_", notFlunked = false;
-        var hasBA = awards.indexOf("Honors BA") >= 0;
-        if(!hasBA){
-            remarks += "Character is ineligible for Law School program without having earned an Honors BA.";
-        }else{
-            remarks += "Law School Program Application: ";
-            var intScore = characteristics[3].value;
-            var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
-            var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-            remarks +=  applyResult.remarks + newLine;
-            if(! applyResult.success){ 
-                var applyWaiverResult = promptEducationWaiver("Failed program application.");
-                remarks += applyWaiverResult.remarks + newLine;
-                applyResult.success = applyWaiverResult.success;
-            }
-            if(applyResult.success){
-                notFlunked = true;
-                for(var i = 1; i <= 2 && notFlunked; i++){
-                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                    remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
-                    if(passResult.success){                
-                        addMajor(MajorSkill);          
-                        remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
-                    }else{
-                        var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
-                        remarks += passWaiverResult.remarks + newLine;
-                        if(passWaiverResult.success){
-                            notFlunked = true;
-                        }else{ 
-                            notFlunked = false;
-                        }
-                    }
-                    remarks += advanceAge(1) + newLine;
-                }
-                if(notFlunked){
-                    addMajor(MajorSkill);
-                    var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                    remarks += "Honors program? " + honorsResult.remarks + newLine;
-                    if(honorsResult.success){
-                        remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
-                    }else{
-                        var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors Attorney degree.");
-                        remarks += honorsWaiverResult.remarks + newLine;
-                        honorsResult.success = honorsWaiverResult.success;
-                    }
-                    if(honorsResult.success){
-                        remarks += "Attained Honors Attorney" + newLine;; awards.push("Honors Attorney");
-                    }else{
-                        remarks += "Attained Attorney" + newLine;; awards.push("Attorney");
-                    }
-                    if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
-                        if(characteristics[4].value < 10){
-                            characteristics[4].value = 10;
-                            remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value;
-                        }else{
-                            remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1);
-                        }
-                    }
-                }
-            }else{
-                remarks += advanceAge(1) + newLine;
-            }
-        }
-        return remarks;
-    }
-    function gainLanguage(language,isEducation){
-        var remarks = "";
-        if(isEducation){
-            if(skills[ENUM_SKILLS.Language].Knowledge[language]){
-                skills[ENUM_SKILLS.Language].Knowledge[language] += 2;
-                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
-            }else{
-                skills[ENUM_SKILLS.Language].Knowledge[language] = 2;
-                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
-            }
-        }else{
-            languageReceipts += 1;
-            if(skills[ENUM_SKILLS.Language].Knowledge[language]){
-                skills[ENUM_SKILLS.Language].Knowledge[language] +=1;
-                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
-            }else{
-                skills[ENUM_SKILLS.Language].Knowledge[language] = skills[ENUM_SKILLS.Language].Knowledge[nativeLanguage]-languageReceipts;
-                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
-            }
-        }
-        return remarks;
-    }
-    function gainSkillOrKnowledge(skill,knowledge,isEducation){
-        var remarks = "";
+    function gainSkillOrKnowledge(skill,knowledge,isEducation,premark){
+        var remarks = (typeof premark == "undefined" ? "" : (premark + " "));
         if(typeof knowledge == "undefined"){ // if no knowledge specified, just increase skill
             if(typeof skills[skill] != "undefined"){
                 if(skills[skill].Skill >= 0){
@@ -954,9 +259,756 @@ export function createCharacter(roller, species){
                 }
             }
         }
+       record(remarks);
+        return remarks;
+    }
+    function gainSkillsFromHomeworldTradeCodes(codes, callback, index, notes){
+        var codeArray = typeof codes == "string" ? codes.split(" ") : codes;
+        if(codes == "" && typeof index == "undefined"){ notes = "No skills received from homeworld.";record(notes);}
+        if(typeof index === "undefined"){ index = 0;}
+        if(typeof notes === "undefined"){ notes = "";}
+        if(index === codeArray.length || codeArray.length === 0 || (codeArray.length == 1 && codeArray[0] == "")){
+            return function(){
+                callback(notes);
+            };
+        }else{
+            var promptfunc = () => {};
+            var code = codeArray[index];
+            var skill = "";
+            var note = "Gained ";
+            switch(code){
+                case "Ag": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Animals; note += skill; break;
+                case "As": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.ZeroG; note += skill; break;
+                case "Co": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Cp": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Admin; note += skill; break;
+                case "Cs": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Bureaucrat; note += skill; break;
+                case "Cx": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Language; note += skill; break;
+                case "Da": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Fighter; note += skill; break;
+                case "De": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
+                case "Ds": promptfunc = gainSkillWithPromptForKnowledge; skill = [ENUM_SKILLS.VaccSuit,ENUM_SKILLS.ZeroG]; note+=skill.join(", "); break;
+                case "Fa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Animals; note += skill; break;
+                case "Fl": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Fr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Ga": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Trader; note += skill; break;
+                case "He": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Hi": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Streetwise; note += skill; break;
+                case "Ho": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HostileEnviron; note += skill; break;
+                case "Ic": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.VaccSuit; note += skill; break;
+                case "In": promptfunc = gainSkillWithPromptForCategory; skill = "TRADE"; note += "a skilled trade"; break;
+                case "Lo": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Flyer; note += skill; break;
+                case "Na": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survey; note += skill; break;
+                case "Ni": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
+                case "Oc": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.HighG; note += skill; break;
+                case "Pa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Trader; note += skill; break;
+                case "Pi": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.JOT; note += skill; break;
+                case "Po": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Steward; note += skill; break;
+                case "Pr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Craftsman; note += skill; break;
+                case "Ri": promptfunc = gainSkillWithPromptForCategory; skill = "ART"; note += "an art skill";break;
+                case "Tr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
+                case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
+                case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
+                case "Va": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.VaccSuit; note += skill; break;
+                case "Wa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Seafarer; note += skill; break;
+                default: note += "no skills"; promptfunc = (n,s,next,ns)=>{ next(); }; break; 
+            }
+            note += " from the '" + code + "' trade code on homeworld.";
+            notes += note + "<br/>";
+            var nextMethod = gainSkillsFromHomeworldTradeCodes(codeArray, callback, index + 1, notes);
+            return function(){
+                var text = promptfunc(note, skill, nextMethod, notes);
+                notes += text;
+            }
+        }
+    }
+
+    function gainSkillWithPromptForCategory(prompt,skillCategory,callback){
+        switch(skillCategory.toUpperCase()){
+            case "ART": 
+            pickOption(ArtSkills,prompt + " Choose an Art skill.",function(x){proceed(x);},true);
+            break;
+            case "TRADE": 
+            pickOption(TradeSkills,prompt + " Choose a skilled Trade.",function(x){proceed(x);},true);
+            break;
+            case "SHIP":
+                case "STARSHIP": 
+                pickOption(StarshipSkillsSkills,prompt + " Choose a Starship Skill.",function(x){proceed(x);},true);
+                break;
+                case "SOLDIER": 
+                pickOption(SoldierSkillsSkills,prompt + " Choose a Soldier Skill.",function(x){proceed(x);},true);
+            break;
+        }
+        function proceed(chosenSkill){
+            gainSkillWithPromptForKnowledge(prompt,chosenSkill,callback);
+        }
+    }
+    function gainSkillWithPromptForKnowledge(prompt,skill,callback){
+        if(typeof skill !== "string" && skill.length == 2){
+                gainSkillWithPromptForKnowledge(prompt,skill[0],function(x){
+                    gainSkillWithPromptForKnowledge(prompt,skill[1],callback);
+                });
+            
+        }else{
+            if(KnowledgeSpecialties[skill]){
+                pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){ proceed(x); },true)
+            }else{proceed(undefined);}
+            function proceed(chosenKnowledge){
+                var remarks = gainSkillOrKnowledge(skill,chosenKnowledge,false, prompt);
+                callback(prompt + " " + remarks);
+            }
+        }
+        
+    }
+    function ED5(){
+        var remarks = "";
+        if(characteristics[4].name != ENUM_CHARACTERISTICS.EDU){
+            remarks += "Character is ineligible for the ED5 program due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.EDU+". ";
+        }else if(characteristics[4].value >= 5){
+            remarks += "Character is ineligible for the ED5 program due to having Education 5+.";
+        }else{
+            remarks += "ED5 Program to raise Edu from " + characteristics[4].value + " ";
+            var result = checkCharacteristic(ENUM_CHARACTERISTICS.INT,2,0);
+            if(result.success){ 
+                characteristics[4].value = 5; 
+                remarks += "to 5 succeeded! ";
+            }else{
+               remarks += "failed. ";
+            }
+            remarks += result.remarks;
+           record(remarks);
+        }
         
         return remarks;
     }
+    function promptEducationWaiver(note){
+        if(typeof note === "undefined"){ note = "";}else{ note += " "}
+        var remarks = "";
+        var success = false;
+        if(characteristics[5].value - edu_waivers >= 2){
+            var useWaiver = confirm(note + "Do you want to try to use an education waiver? (Current waiver value="+(characteristics[5].value - edu_waivers)+")");
+            if(useWaiver){
+                var result = check(characteristics[5].value - edu_waivers,2,0,"Education Waiver vs " + (characteristics[5].value - edu_waivers))
+                edu_waivers += 1;
+                success = result.success;
+                remarks += result.remarks;
+               record(note + remarks);
+            }else{
+                success = false;
+                remarks = " Declined to try using an education waiver. ";
+               record(note + remarks);
+            }
+        }else{
+            success = false;
+            remarks = " No education waivers available. ";
+        }
+        
+        return {success:success,remarks:note + " " + remarks};
+    }
+    function TradeSchool(MajorSkill,MajorKnowledge){
+        var newLine = "_";
+        var remarks = "Trade School: " + newLine;
+        if(characteristics[4].name != ENUM_CHARACTERISTICS.INS){
+            var tryTradeSchool = true;
+            if(characteristics[4].value < 5 || characteristics[4].name === ENUM_CHARACTERISTICS.TRA){
+                tryTradeSchool = false;
+                var waiverResult = promptEducationWaiver("Insufficient EDU to attend Trade School.");
+                //history.push(waiverResult.remarks);
+                remarks += waiverResult.remarks + newLine;
+                tryTradeSchool = waiverResult.success;
+            }
+            if(tryTradeSchool){
+                remarks += "Trade School Application: ";
+                var applyResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,2,0);
+                remarks +=  applyResult.remarks + newLine;
+                if(! applyResult.success){ 
+                    var applyWaiverResult = promptEducationWaiver("Failed Trade School application.");
+                    remarks += applyWaiverResult.remarks + newLine;
+                    applyResult.success = applyWaiverResult.success;
+                }
+                if(applyResult.success){
+                    var intScore = characteristics[3].value;
+                    var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
+                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                    remarks += "Trade School Pass/Fail: " + passResult.remarks + newLine;
+                    if(passResult.success){
+                        gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended trade school.");
+                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended trade school.") + newLine;
+                        addMajor(MajorSkill,MajorKnowledge);
+                    }
+                    remarks += advanceAge(1);
+                }else{
+                    remarks += advanceAge(1);
+                }
+            }
+        }else{
+            remarks = "Character is ineligible for Trade School due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.EDU+". ";
+        }
+        return remarks;
+    }
+    function Apprenticeship(skill,knowledge){
+        var newLine = "_";
+        var remarks = "";
+        if(age > species.getFirstYearOfStage(3)){
+            remarks += "Character ineligible for apprenticeship due to having passed the age of apprenticeship ("+species.getFirstYearOfStage(3)+").";
+        }else{
+            var result = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,2,0);
+            remarks = "Apprenticeship: " + result.remarks + newLine;
+            if(result.success){
+                gainSkillOrKnowledge(skill,knowledge,true);
+                gainSkillOrKnowledge(skill,knowledge,true);
+                gainSkillOrKnowledge(skill,knowledge,true);
+                remarks += gainSkillOrKnowledge(skill,knowledge,true);
+            }
+        }
+       record(remarks);
+        return remarks;
+    }
+    
+    function College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
+        var result = "College:_"+BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 5, 8, true, log, false, "College");    
+        return result;
+    }
+    function University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
+        var result = "University:_" +BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 7, 9, true, log, false, "University");
+        return result;
+    }
+    function MilitaryAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
+        return ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, "Army", log);
+    }
+    function NavalAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
+        return ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, "Navy", log);
+    }
+    function ServiceAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, branch, log){
+        return branch + " Academy:_" + BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 6, 8, false, log, branch, "Academy");
+    }
+    function BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, MinStartEdu, MinEndEdu, offerOTC, log, commissionOnSuccess, programName){
+        var newLine = "_";
+        var remarks = "", notFlunked = false;
+        if(characteristics[4].name != ENUM_CHARACTERISTICS.INS){
+            var tryBAProgram = true;
+            if(characteristics[4].value < MinStartEdu || characteristics[4].name === ENUM_CHARACTERISTICS.TRA){
+                tryBAProgram = false;
+                var waiverResult = promptEducationWaiver("Insufficient EDU to attend "+programName+" program.");
+                remarks += waiverResult.remarks + newLine;
+                tryBAProgram = waiverResult.success;
+            }
+            if(tryBAProgram){
+                remarks += "BA Program Application: ";
+                var intScore = characteristics[3].value;
+                var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
+                var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                record(programName + " Application: " + applyResult.remarks);
+                remarks +=  applyResult.remarks + newLine;
+                if(! applyResult.success){ 
+                    var applyWaiverResult = promptEducationWaiver("Failed program application.");
+                    remarks += applyWaiverResult.remarks + newLine;
+                    applyResult.success = applyWaiverResult.success;
+                }
+                if(applyResult.success){
+                   record("Admitted to " + programName + " BA program.");
+                    var armyCommission = false, navyCommission = false;
+
+                    notFlunked = true;
+                    var secondGain = false;
+                    for(var i = 1; i <= 4 && notFlunked; i++){
+                        var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                        remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
+                       record(programName + " Year " + i +" Pass/Fail: " + passResult.remarks);
+                        if(passResult.success){                          
+                            if(secondGain){
+                                addMinor(MinorSkill,MinorKnowledge);
+                                remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true,"(Minor)") + newLine;
+                            }
+                            secondGain = !secondGain;
+                            addMajor(MajorSkill,MajorKnowledge);
+                            remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"(Major)") + newLine;
+                        }else{
+                            var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
+                            remarks += passWaiverResult.remarks + newLine;
+                            if(passWaiverResult.success){
+                                notFlunked = true;
+                            }else{ 
+                                notFlunked = false;
+                            }
+                        }
+                        remarks += advanceAge(1) + newLine;
+                    }
+                    if(notFlunked){
+                        
+                        addMajor(MajorSkill,MajorKnowledge);
+                        addMinor(MinorSkill,MinorKnowledge);
+                        
+                        var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                        remarks += "Honors program? " + honorsResult.remarks + newLine;
+                        if(honorsResult.success){
+                            remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Graduated with Honors.") + newLine;
+                        }else{
+                            var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors BA.");
+                            remarks += honorsWaiverResult.remarks + newLine;
+                            honorsResult.success = honorsWaiverResult.success;
+                        }
+                        if(honorsResult.success){
+                            remarks += "Attained Honors BA" + newLine; awards.push("Honors BA");
+                        }else{
+                            remarks += "Attained BA" + newLine; awards.push("BA");
+                        }
+                        var finalStatBoost = function(){
+                            var remarks = "";
+                            if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
+                                if(characteristics[4].value < MinEndEdu){
+                                    characteristics[4].value = MinEndEdu;
+                                    remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value +". " + newLine;
+                                   record("Graduated from " + programName + " program. " + ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value)
+                                }else{
+                                    remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1)+". " + newLine;
+                                }
+                            }
+                            log(remarks);
+                        };
+                        if(offerOTC){
+                            
+                            var options = [];
+                            options.push("None");
+                            if(awards.indexOf("Army Officer1") === -1){ options.push("OTC");}
+                            if(awards.indexOf("Navy Officer1") === -1){ options.push("NOTC");}
+                            pickOption(options,"Do you wish to join OTC (Army) or NOTC (Navy)?",
+                            function(choice){
+                                var otc = false, notc = false, further_remarks = "";
+                                if(choice === false){ choice = "None";}
+                                switch(choice){
+                                    case "OTC": otc = true; break;
+                                    case "NOTC":  notc = true; break;
+                                    case "None":
+                                    default:
+                                    break;
+                                }
+                                if(otc || notc){
+                                    further_remarks += "Volunteered for " + choice +": ";
+                                    var otcResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                                   record("Volunteered for " + choice+". " + otcResult.remarks);
+                                    further_remarks += otcResult.remarks + newLine;
+                                    if(!otcResult.success){
+                                        var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
+                                        further_remarks += otcWaiverResult.remarks + newLine;
+                                        otcResult.success = otcWaiverResult.success;
+                                        if(otcResult.success){
+                                            if(choice === "OTC"){
+                                                armyCommission = true;
+                                            }else{
+                                                navyCommission = true;
+                                            }
+                                        }
+                                    }else{
+                                        var otc_skill_list = []
+                                        if(otc){
+                                            armyCommission = true;
+                                            otc_skill_list = SoldierSkills;
+                                        }else if(notc){
+                                            navyCommission = true;
+                                            otc_skill_list = StarshipSkills;
+                                        }
+                                        pickOption(otc_skill_list,"Please choose a " + (otc ? "Soldier" : "Starship") + " skill.",
+                                        function(new_skill){
+                                            var even_further_remarks = "";
+                                            if(KnowledgeSpecialties[new_skill]){
+                                                pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
+                                                    log(gainSkillOrKnowledge(new_skill,new_knowledge,true));
+                                                    if(navyCommission){ 
+                                                        pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
+                                                        awards.push(service_choice + " Officer1");
+                                                       record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                        log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                        },true);
+                                                    }
+                                                },true);
+                                            }else{
+                                                if(navyCommission){ 
+                                                    pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
+                                                    awards.push(service_choice + " Officer1");
+                                                   record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).")
+                                                    log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                    },true);
+                                                }
+                                                even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true) + newLine;
+                                                log(even_further_remarks);
+                                            }
+                                        },true);
+                                    }
+                                    if(armyCommission){ 
+                                        awards.push("Army Officer1");
+                                        further_remarks += "Earned Army commission (Army Officer1).";
+                                       record("Earned Army commission (Army Officer1).");
+                                    }else if(navyCommission){ 
+                                        pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
+                                        awards.push(service_choice + " Officer1");
+                                       record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).")
+                                        log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                        },true);
+                                    }
+                                    
+                                    log(further_remarks);
+                                }else{
+                                    further_remarks += "Declined to volunteer for OTC/NOTC.";
+                                    log(further_remarks);
+                                }
+                                finalStatBoost();
+                            },true);
+                            
+                        }else{
+                            finalStatBoost();
+                        }
+                        if(commissionOnSuccess){
+                            if(commissionOnSuccess === "Army"){
+                                    awards.push("Army Officer1");
+                                    remarks += "Earned Army commission (Army Officer1).";
+                                    record("Earned Army commission (Army Officer1).");
+                            }else if(commissionOnSuccess === "Navy"){ 
+                                pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
+                                    awards.push(service_choice + " Officer1");
+                                    record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                    log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                });
+                            }
+                        }
+                    }
+                    
+                }else{
+                    remarks += advanceAge(1);
+                }
+            }
+        }else{
+            remarks = "Character is ineligible for higher education due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.EDU+". ";
+            record(remarks);
+        }
+        return remarks;
+    }
+    function Masters(MajorSkill,MajorKnowledge,MinorSkill,MinorKnowledge){
+        var remarks = "", newLine = "_", notFlunked = false;
+        var hasBA = awards.indexOf("BA") >= 0 || awards.indexOf("Honors BA") >= 0;
+        if(!hasBA){
+            remarks += "Character is ineligible for MA program without having earned a BA.";
+        }else{
+            remarks += "MA Program Application: ";
+            var intScore = characteristics[3].value;
+            var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
+            var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+            record("Masters program application: " + applyResult.remarks);
+            remarks +=  applyResult.remarks + newLine;
+            if(! applyResult.success){ 
+                var applyWaiverResult = promptEducationWaiver("Failed program application.");
+                remarks += applyWaiverResult.remarks + newLine;
+                applyResult.success = applyWaiverResult.success;
+            }
+            if(applyResult.success){
+                record("Admitted to Masters program.");
+                notFlunked = true;
+                var secondGain = false;
+                for(var i = 1; i <= 2 && notFlunked; i++){
+                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                    remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
+                    if(passResult.success){                          
+                        if(secondGain){
+                            remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
+                            addMinor(MinorSkill,MinorKnowledge);
+                        }
+                        secondGain = !secondGain;
+                        addMajor(MajorSkill,MajorKnowledge);
+                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
+                    }else{
+                        var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
+                        remarks += passWaiverResult.remarks + newLine;
+                        if(passWaiverResult.success){
+                            notFlunked = true;
+                        }else{ 
+                            notFlunked = false;
+                        }
+                    }
+                    remarks += advanceAge(1) + newLine;
+                }
+                if(notFlunked){
+                    addMajor(MajorSkill, MajorKnowledge);
+                    addMinor(MinorSkill,MinorKnowledge);
+                    var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                    remarks += "Honors program? " + honorsResult.remarks + newLine;
+                    if(honorsResult.success){
+                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Graduated with Honors.") + newLine;
+                    }else{
+                        var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors MA.");
+                        remarks += honorsWaiverResult.remarks + newLine;
+                        honorsResult.success = honorsWaiverResult.success;
+                    }
+                    if(honorsResult.success){
+                        remarks += "Attained Honors MA" + newLine;; awards.push("Honors MA");
+                    }else{
+                        remarks += "Attained MA" + newLine;; awards.push("MA");
+                    }
+                    if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
+                        if(characteristics[4].value < 9){
+                            characteristics[4].value = 9;
+                            remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value;
+                        }else{
+                            remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1);
+                        }
+                    }
+                }
+            }
+        }
+        return remarks;
+    }
+    function Professors(MajorSkill,MajorKnowledge,MinorSkill,MinorKnowledge){
+        var remarks = "", newLine = "_", notFlunked = false;
+        var hasBA = awards.indexOf("MA") >= 0 || awards.indexOf("Honors MA") >= 0;
+        if(!hasBA){
+            remarks += "Character is ineligible for Professor program without having earned an MA.";
+        }else{
+            remarks += "Professor Program Application: ";
+            var intScore = characteristics[3].value;
+            var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
+            var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+            record("Professor Application: " + applyResult.remarks);
+            remarks +=  applyResult.remarks + newLine;
+            if(! applyResult.success){ 
+                var applyWaiverResult = promptEducationWaiver("Failed program application.");
+                remarks += applyWaiverResult.remarks + newLine;
+                applyResult.success = applyWaiverResult.success;
+            }
+            if(applyResult.success){
+                record("Admitted to Professors program.");
+                notFlunked = true;
+                var secondGain = false;
+                for(var i = 1; i <= 2 && notFlunked; i++){
+                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                    remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
+                    if(passResult.success){                          
+                        if(secondGain){
+                            remarks += gainSkillOrKnowledge(MinorSkill,MinorKnowledge,true) + newLine;
+                            addMinor(MinorSkill,MinorKnowledge);
+                        }
+                        secondGain = !secondGain;
+                        addMajor(MajorSkill,MajorKnowledge);
+                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true) + newLine;
+                    }else{
+                        var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
+                        remarks += passWaiverResult.remarks + newLine;
+                        if(passWaiverResult.success){
+                            notFlunked = true;
+                        }else{ 
+                            notFlunked = false;
+                        }
+                    }
+                    remarks += advanceAge(1) + newLine;
+                }
+                if(notFlunked){
+                    addMajor(MajorSkill,MajorKnowledge);
+                    addMinor(MinorSkill,MinorKnowledge);
+                    var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                    remarks += "Honors program? " + honorsResult.remarks + newLine;
+                    if(honorsResult.success){
+                        remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Graduated with Honors.") + newLine;
+                    }else{
+                        var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors Professorship.");
+                        remarks += honorsWaiverResult.remarks + newLine;
+                        honorsResult.success = honorsWaiverResult.success;
+                    }
+                    if(honorsResult.success){
+                        remarks += "Attained Honors Professorship" + newLine;; awards.push("Honors Professor");
+                    }else{
+                        remarks += "Attained Professorship" + newLine;; awards.push("Professor");
+                    }
+                    if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
+                        if(characteristics[4].value < 12){
+                            characteristics[4].value = 12;
+                            remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value;
+                        }else{
+                            remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1);
+                        }
+                    }
+                }
+            }
+        }
+        return remarks;
+    }
+    function MedicalSchool(MajorSkill){
+        if(typeof MajorSkill === "undefined"){ MajorSkill = ENUM_SKILLS.Medic}
+        var remarks = "", newLine = "_", notFlunked = false;
+        var qualifies = true;
+        var hasBA = awards.indexOf("Honors BA") >= 0;
+        if(!hasBA){
+            qualifies = false;
+            if(awards.indexOf("BA") >= 0){
+                var qualifyWaiverResult = promptEducationWaiver("Character does not have an Honors BA.");
+                remarks += qualifyWaiverResult.remarks + newLine;
+                qualifies = qualifyWaiverResult.success;
+            }else{
+                remarks += "Character is ineligible for Medical School program without having earned an Honors BA.";
+            }
+        }
+        if(qualifies){
+            remarks += "Medical School Program Application: ";
+            var intScore = characteristics[3].value;
+            var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
+            var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+            remarks +=  applyResult.remarks + newLine;
+            record("Med School Application: " + applyResult.remarks);
+            if(! applyResult.success){ 
+                var applyWaiverResult = promptEducationWaiver("Failed program application.");
+                remarks += applyWaiverResult.remarks + newLine;
+                applyResult.success = applyWaiverResult.success;
+            }
+            if(applyResult.success){
+                record("Admitted to Medical School.");
+                notFlunked = true;
+                for(var i = 1; i <= 4 && notFlunked; i++){
+                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                    remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
+                    record("Med School Year " + i +" Pass/Fail: " + passResult.remarks);
+                    if(passResult.success){                          
+                        remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
+                        addMajor(MajorSkill);
+                    }else{
+                        var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
+                        remarks += passWaiverResult.remarks + newLine;
+                        if(passWaiverResult.success){
+                            notFlunked = true;
+                        }else{ 
+                            notFlunked = false;
+                        }
+                    }
+                    remarks += advanceAge(1) + newLine;
+                }
+                if(notFlunked){
+                    addMajor(MajorSkill);
+                    var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                    remarks += "Honors program? " + honorsResult.remarks + newLine;
+                    if(honorsResult.success){
+                        remarks += gainSkillOrKnowledge(MajorSkill,undefined,true,"Graduated with Honors.") + newLine;
+                    }else{
+                        var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors Doctor degree.");
+                        remarks += honorsWaiverResult.remarks + newLine;
+                        honorsResult.success = honorsWaiverResult.success;
+                    }
+                    if(honorsResult.success){
+                        remarks += "Attained Honors Doctor" + newLine;; awards.push("Honors Doctor");
+                    }else{
+                        remarks += "Attained Doctor" + newLine; awards.push("Doctor");
+                    }
+                    if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
+                        if(characteristics[4].value < 10){
+                            characteristics[4].value = 10;
+                            remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value;
+                        }else{
+                            remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1);
+                        }
+                    }
+                }
+            }else{
+                remarks += advanceAge(1) + newLine;
+            }
+        }
+        return remarks;
+    }
+    function LawSchool(MajorSkill){
+        if(typeof MajorSkill === "undefined"){ MajorSkill = ENUM_SKILLS.Advocate}
+        var remarks = "", newLine = "_", notFlunked = false;
+        var qualifies = true;
+        var hasBA = awards.indexOf("Honors BA") >= 0;
+        if(!hasBA){
+            qualifies = false;
+            if(awards.indexOf("BA") >= 0){
+                var qualifyWaiverResult = promptEducationWaiver("Character does not have an Honors BA.");
+                remarks += qualifyWaiverResult.remarks + newLine;
+                qualifies = qualifyWaiverResult.success;
+            }else{
+                remarks += "Character is ineligible for Law School program without having earned an Honors BA.";
+            }
+        }
+        if(qualifies){
+            remarks += "Law School Program Application: ";
+            var intScore = characteristics[3].value;
+            var eduScore = characteristics[4].value; if(characteristics[4].name == ENUM_CHARACTERISTICS.TRA){ eduScore = eduScore/2;}
+            var applyResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+            remarks +=  applyResult.remarks + newLine;
+            record("Law School Application: " + applyResult.remarks);
+            if(! applyResult.success){ 
+                var applyWaiverResult = promptEducationWaiver("Failed program application.");
+                remarks += applyWaiverResult.remarks + newLine;
+                applyResult.success = applyWaiverResult.success;
+            }
+            if(applyResult.success){
+                notFlunked = true;
+                record("Admitted to Law School.");
+                for(var i = 1; i <= 2 && notFlunked; i++){
+                    var passResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                    remarks += "Year " + i +" Pass/Fail: " + passResult.remarks + newLine;
+                    record("Law School Year " + i +" Pass/Fail: " + passResult.remarks);
+                    if(passResult.success){                
+                        addMajor(MajorSkill);          
+                        remarks += gainSkillOrKnowledge(MajorSkill,undefined,true) + newLine;
+                    }else{
+                        var passWaiverResult = promptEducationWaiver("Failed to pass year " + i+".");
+                        remarks += passWaiverResult.remarks + newLine;
+                        if(passWaiverResult.success){
+                            notFlunked = true;
+                        }else{ 
+                            notFlunked = false;
+                        }
+                    }
+                    remarks += advanceAge(1) + newLine;
+                }
+                if(notFlunked){
+                    addMajor(MajorSkill);
+                    var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                    remarks += "Honors program? " + honorsResult.remarks + newLine;
+                    if(honorsResult.success){
+                        remarks += gainSkillOrKnowledge(MajorSkill,undefined,true,"Graduated with Honors.") + newLine;
+                    }else{
+                        var honorsWaiverResult = promptEducationWaiver("Failed to achieve Honors Attorney degree.");
+                        remarks += honorsWaiverResult.remarks + newLine;
+                        honorsResult.success = honorsWaiverResult.success;
+                    }
+                    if(honorsResult.success){
+                        remarks += "Attained Honors Attorney" + newLine;; awards.push("Honors Attorney");
+                    }else{
+                        remarks += "Attained Attorney" + newLine;; awards.push("Attorney");
+                    }
+                    if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU){
+                        if(characteristics[4].value < 10){
+                            characteristics[4].value = 10;
+                            remarks += ENUM_CHARACTERISTICS.EDU + " increased to " + characteristics[4].value;
+                        }else{
+                            remarks += gainCharacteristic(ENUM_CHARACTERISTICS.EDU,1);
+                        }
+                    }
+                }
+            }else{
+                remarks += advanceAge(1) + newLine;
+            }
+        }
+        return remarks;
+    }
+    function gainLanguage(language,isEducation){
+        var remarks = "";
+        if(isEducation){
+            if(skills[ENUM_SKILLS.Language].Knowledge[language]){
+                skills[ENUM_SKILLS.Language].Knowledge[language] += 2;
+                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+            }else{
+                skills[ENUM_SKILLS.Language].Knowledge[language] = 2;
+                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+            }
+        }else{
+            languageReceipts += 1;
+            if(skills[ENUM_SKILLS.Language].Knowledge[language]){
+                skills[ENUM_SKILLS.Language].Knowledge[language] +=1;
+                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+            }else{
+                skills[ENUM_SKILLS.Language].Knowledge[language] = skills[ENUM_SKILLS.Language].Knowledge[nativeLanguage]-languageReceipts;
+                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+            }
+        }
+        record(remarks);
+        return remarks;
+    }
+    
     function setAge(newAge){age = newAge;}
     function getAge(){return age;}
     function getGenetics(){ return genetics; }
@@ -966,7 +1018,9 @@ export function createCharacter(roller, species){
         delete skills[ENUM_SKILLS.Language].Knowledge[nativeLanguage];
         nativeLanguage = newLanguage;
         skills[ENUM_SKILLS.Language].Knowledge[nativeLanguage] = nativeLanguageValue;
-        return "Native language = " +newLanguage;
+        var message = "Native language = " +newLanguage;
+       record(message);
+        return message;
     }
     function setForcedGrowthClone(isClone){isForcedGrowthClone = isClone;}
     function check(target,difficulty,mods,remarks){
@@ -1118,7 +1172,9 @@ export function createCharacter(roller, species){
             characteristics[index].value = max;
         }
         
-        return (amount >= 0 ? "Increased " : "Decreased ")+ characteristics[index].name + " by " + amount;
+        var message =  (amount >= 0 ? "Increased " : "Decreased ")+ characteristics[index].name + " by " + amount;  
+       record(message);
+        return message;
     }
     function decreaseCharacteristic(characteristic, amount){
         if(typeof amount == "undefined"){ amount = 1;}
@@ -1192,6 +1248,7 @@ export function createCharacter(roller, species){
         }
         if(numReducedToZero >= 3){ remarks += "Extremely major illness. Requires 4 months rest and recuperation. If 2nd time receiving this event, character has died." ;}
         else if(numReducedToZero === 2){ remarks += "Major illness. Requires 4 weeks rest and recuperation.";}
+       record(remarks);
         return remarks;
     }
     function advanceAge(numYears){
@@ -1203,12 +1260,13 @@ export function createCharacter(roller, species){
             age += 1;
             if(age >= peakStart){
                 if((age - peakStart) % 4 === 0){
-                    remarks += "<br/>"+agingCheck();
+                    remarks += agingCheck();
                 }
             }
         }
         
         prefix += " to " + age + ". ";
+        record(prefix + remarks);
         setAge(age);
         return prefix + remarks; 
     }
@@ -1241,6 +1299,9 @@ export function createCharacter(roller, species){
         }
         return labels;
     }
+    function getHistory(){
+        return history;
+    }
     return {
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, characteristics:characteristics,
@@ -1256,6 +1317,6 @@ export function createCharacter(roller, species){
         Apprenticeship:Apprenticeship, ED5:ED5, TradeSchool:TradeSchool, 
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
-        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity
+        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory
     }
 }

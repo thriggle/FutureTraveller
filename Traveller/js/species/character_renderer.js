@@ -1,14 +1,32 @@
 export function renderCharacter(character,element){
+    console.log(character.getHistory());
     injectHTML("[data-ageblock]",ageBlock);
     injectHTML("[data-statblock]",statBlock)
     injectHTML("[data-skillblock]",skillBlock);
     injectHTML("[data-awards]",awards);
+    injectHTML("[data-history]",history);
     function injectHTML(selector,htmlfunc){
         var elements = document.querySelectorAll(selector);
         for(var i = 0, len = elements.length; i < len; i++){
             clearElement(elements[i]);
             htmlfunc(character,elements[i]);
         }
+    }
+}
+function history(character, element){
+    var events = character.getHistory();
+    var lastAge = "Age 0";
+    for(var i = 0, len = events.length; i < len; i++){
+        var eventSplit = events[i].match(/(Age \d*):(.*)/);
+        var age = eventSplit[1];
+        var isNewAge = false;
+        if(age != lastAge){
+            console.log(age);
+            console.log(lastAge);
+            lastAge = age;
+            isNewAge = true;
+        }
+        element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");
     }
 }
 export function clearElement(el) {

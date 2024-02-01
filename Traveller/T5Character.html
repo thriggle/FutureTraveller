@@ -63,12 +63,7 @@
             margin-block-start:0rem;
             margin-block-end:0rem;
         }
-        [data-history]{
-            border:1px solid black;
-            padding-left:1rem;
-            background-color:#dfdfdf;
-            color:black;
-        }
+        
         input[type='button']{
             padding:0.3rem;
             border-radius:0.2rem;
@@ -87,6 +82,37 @@
         nav.menu{
             display:block;
         }
+        [data-history]{
+            display:table;
+            
+            width:100%;
+            border:1px solid black;
+            background-color:#dfdfdf;
+            color:black;
+            text-align: left;
+        }
+        .event{
+            display:table-row;
+            width:100%;
+            border-bottom:1px solid black;
+            text-align: left;
+        }
+        .event.newage{
+            background-color:white;
+        }
+        .event_text, .event_age, .event_index{ 
+            display:table-cell;
+        }
+        .event_text{
+            padding-left:1rem;
+        }
+        .event_age{
+            width:3rem;
+        }
+        .event_index{
+            width:2rem;
+            text-align:center;
+        }
         nav.menu ul{ margin:0px; }
         nav.menu li{display:inline-block;font-family: Bahnschrift; user-select: none; }
         nav.menu li a{cursor:pointer; text-decoration: none; color:white; background-color:black; display:inline-block; 
@@ -101,6 +127,9 @@
         #divGeneticDice,#divAttributeValues{display:none;}
         #divAttributeValues label{flex:50%; font-family: 'Courier New', Courier, monospace;}
         #divAttributeValues input{width:2em;}
+        [data-tier='2']{
+            background-color:#dfdfdf;
+        }
     </style>
     <script src="./js/species/CharacterView.js" type="module"></script>
     <nav class="menu">
@@ -212,6 +241,7 @@
         </div>
         </fieldset>
         <fieldset data-tier="2" data-nav="education">
+            <fieldset>
             <legend>Education</legend>
             <div>
                 <input type="button" data-educationbtn value="Apprenticeship" id="btnApprenticeship"/>
@@ -228,6 +258,7 @@
                 <input type="button" data-educationbtn value="Medical School" id="btnMedicalSchool"/>
                 <input type="button" data-educationbtn value="Law School" id="btnLawSchool"/>
             </div>
+        </fieldset>
         </fieldset>
         <fieldset data-tier="2" data-nav="career">
             (Career options under development)
@@ -259,8 +290,11 @@
 
         </div>
     </div>
-    <div  data-nav="history" data-tier="1" data-history>
-        &nbsp;
+    <div  data-nav="history" data-tier="1" >
+        <div data-history>
+            &nbsp;
+        </div>
+       
     </div>
     <div data-tier="1" data-nav="sheet">
 
