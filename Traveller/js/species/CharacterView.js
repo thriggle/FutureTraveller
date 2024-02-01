@@ -10,6 +10,38 @@ import { dialogCallback, getDialog, pickOption, pickSkill } from "./dialog.js";
 var roller = getRollerFromSeed(), person;
 //document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
 newCharacter(); 
+var collapserHandles = document.querySelectorAll("fieldset legend");
+for (var i = 0, len = collapserHandles.length; i < len; i++) {
+    var handle = collapserHandles[i];
+    handle.addEventListener("click", function (e) {
+        var parent = e.target.parentElement;
+        if (parent.classList.contains("collapsed")) {
+            parent.classList.remove("collapsed");
+        } else {
+            parent.classList.add("collapsed");
+        }
+    });
+}
+var menus = document.querySelectorAll("nav.menu ul li a");
+for(var i = 0, len = menus.length; i < len; i++){
+    var node = menus[i];
+    node.addEventListener("click",onNavigate);
+}
+function onNavigate(e){
+    var target = e.target.getAttribute("target");
+    if(target){
+        var tier =e.target.getAttribute("data-tier");
+        var tierselector = "";
+        if(tier){
+            tierselector = "[data-tier='"+tier+"']";
+        }
+        var current = document.querySelector("nav.menu ul li a.selected"+tierselector);
+        current.classList.remove(current.className);
+        e.target.classList.add("selected");
+        document.querySelector("[data-nav='"+current.getAttribute("target")+"']"+tierselector).style.display = "none";
+        document.querySelector("[data-nav='"+target+"']"+tierselector).style.display = "block";
+    }
+}
 document.getElementById("btnReset").addEventListener("click",newCharacter);
 document.getElementById("btnRandomHWTCs").addEventListener("click",function(){
     document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
@@ -44,6 +76,23 @@ document.getElementById("btnTradeSchool").addEventListener("click",function(){
             });
         }else{
             log(person.TradeSchool(selectedSkill,selectedKnowledge));
+        }
+    });
+});
+
+document.getElementById("btnTrainingCourse").addEventListener("click",function(){
+    pickSkill("S", "Please choose a skill for your Training Course",
+    function(choice){
+        var selectedSkill = choice.skill;
+        var selectedKnowledge = choice.knowledge;
+        if(selectedKnowledge === "undefined"){ selectedKnowledge = undefined;}
+        if(selectedSkill === ENUM_SKILLS.Language){
+            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                log(person.TrainingCourse(selectedSkill, lang));
+                redraw();
+            });
+        }else{
+            log(person.TrainingCourse(selectedSkill,selectedKnowledge));
         }
     });
 });
@@ -384,15 +433,21 @@ function newCharacter(){
     clear();
     person = createCharacter(roller, human);
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
-    var genes = [
-        document.getElementById("slctGeneticC1").value,
-        document.getElementById("slctGeneticC2").value,
-        document.getElementById("slctGeneticC3").value,
-        document.getElementById("slctGeneticC4").value,
-        document.getElementById("slctGeneticC5").value,
-    ]
+    if(document.getElementById("rdoAttributesNatural").checked){
+        person.rollStatsFromGenes(["Random","Random","Random","Random"]);
+    }else if(document.getElementById("rdoAttributesClone").checked){
+        var genes = [
+            document.getElementById("slctGeneticC1").value,
+            document.getElementById("slctGeneticC2").value,
+            document.getElementById("slctGeneticC3").value,
+            document.getElementById("slctGeneticC4").value,
+            document.getElementById("slctGeneticC5").value,
+        ];
+        person.rollStatsFromGenes(genes);
+    }else if(document.getElementById("rdoAttributesCustom").checked){
+        // TODO
+    }
     
-    person.rollStatsFromGenes(genes);
     if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
     log("Initial UPP: "+ person.characteristics[0].value + "," +  person.characteristics[1].value + "," + person.characteristics[2].value + "," + 
     person.characteristics[3].value + "," + person.characteristics[4].value + "," + person.characteristics[5].value
@@ -402,6 +457,7 @@ function newCharacter(){
     log(person.gainSkillsFromHomeworldTradeCodes(document.getElementById("txtHomeworldTradeCodes").value, log)());
     renderCharacter(person, document.body);
     enableControls();
+    console.log(person);
 }
 function enableControls(){
     var buttons = document.querySelectorAll("[data-educationbtn]");
@@ -415,13 +471,20 @@ function redraw(){
 
 function log(msg){
     if(typeof msg !== "undefined"){
-
-        document.getElementById("history").insertAdjacentHTML("beforeend","<div>"+msg.replace(/\_/g,"<br/>")+"<hr/></div>");
+        var historyRecipients = document.querySelectorAll("[data-history]");
+        for(var i = 0, len = historyRecipients.length; i < len; i++){
+            historyRecipients[i].insertAdjacentHTML("beforeend","<div>"+msg.replace(/\_/g,"<br/>")+"<hr/></div>");
+        }
         redraw();
     }
+    console.log(msg);
 }
 function clear(){
-    clearElement(document.getElementById("history"));
+    var historyRecipients = document.querySelectorAll("[data-history]");
+    for(var i = 0, len = historyRecipients.length; i < len; i++){
+        clearElement(historyRecipients[i]);     
+    }
+
 }
 function getRandomTradeCodes() {
     var classifications1 = [
