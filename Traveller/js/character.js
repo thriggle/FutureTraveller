@@ -72,6 +72,7 @@ export function createCharacter(roller, species){
             nativeLanguageSkill = characteristics[4].value;
         }
         nativeLanguageSkill += skills[MasterSkills.Language].Knowledge[nativeLanguage];
+        nativeLanguageSkill = Math.min(nativeLanguageSkill,15);
         return nativeLanguageSkill;
     }
     function initStats(stats, geneticValues){
@@ -1083,7 +1084,7 @@ export function createCharacter(roller, species){
                 }
             }
         }
-        record(remarks);
+        //record(remarks);
         return remarks;
     }
     
