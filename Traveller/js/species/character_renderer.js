@@ -1,3 +1,6 @@
+import { ENUM_SKILLS } from "./skills.js";
+import { ENUM_CHARACTERISTICS } from "./species.js";
+
 export function renderCharacter(character,element){
     console.log(character.getHistory());
     injectHTML("[data-ageblock]",ageBlock);
@@ -62,6 +65,7 @@ function statBlock(character,element){
 function skillBlock(character,element){
     var statHTML = "<ul>";
     var skills = Object.keys(character.skills).sort();
+    var nativeLanguage = character.getNativeLanguage(), nativeLanguageLevel = character.getNativeLanguageLevel()
     for(var i = 0, len = skills.length; i < len; i++){
         var skill = skills[i];
         statHTML += "<li> "+ skill +": " + (character.skills[skill].Skill >= 0 ? character.skills[skill].Skill : "n/a")
@@ -70,7 +74,11 @@ function skillBlock(character,element){
             var knowledges = Object.keys(character.skills[skill].Knowledge).sort();
             for(var j = 0, jlen = knowledges.length; j < jlen; j++){
                 var k = knowledges[j];
-                statHTML += "<li> "+ k +": " + (character.skills[skill].Knowledge[k] )
+                if(skill == ENUM_SKILLS.Language && k === nativeLanguage){
+                    statHTML += "<li> "+ k +": " + nativeLanguageLevel;
+                }else{
+                    statHTML += "<li> "+ k +": " + (character.skills[skill].Knowledge[k] );
+                }
             }
             statHTML += "</ul>";
         }

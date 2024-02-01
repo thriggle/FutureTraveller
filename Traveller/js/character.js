@@ -62,12 +62,17 @@ export function createCharacter(roller, species){
         sanity = statRolls[6].result;
         languageReceipts = 0;
         if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.INS){ genetics.push(statRolls[4].rolls[0]);}
-        skills[MasterSkills.Language].Knowledge[nativeLanguage] = characteristics[3].value;
-        if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.EDU && characteristics[4].value > characteristics[3].value){
-            skills[MasterSkills.Language].Knowledge[nativeLanguage] = characteristics[4].value;
-        }
+        skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         edu_waivers = 0; //characteristics[5].value-edu_waivers; 
         return {statRolls, characteristics, genetics}
+    }
+    function getNativeLanguageLevel(){
+        var nativeLanguageSkill = characteristics[3].value;
+        if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.EDU && characteristics[4].value > characteristics[3].value){
+            nativeLanguageSkill = characteristics[4].value;
+        }
+        nativeLanguageSkill += skills[MasterSkills.Language].Knowledge[nativeLanguage];
+        return nativeLanguageSkill;
     }
     function initStats(stats, geneticValues){
        characteristics = [
@@ -81,7 +86,9 @@ export function createCharacter(roller, species){
         sanity = roller.d6(2).result;
         languageReceipts = 0;
         edu_waivers = 0;
-        genetics = geneticValues;
+        genetics = geneticValues.slice(0,4);
+        skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
+        if(species.Characteristics[4].name === ENUM_CHARACTERISTICS.INS){ genetics.push(geneticValues[4]);}
     }
     function getCharacteristics(){
         return characteristics;
@@ -124,10 +131,7 @@ export function createCharacter(roller, species){
             characteristics[i].value = gene_characteristics[i].value
             characteristics[i].name = gene_characteristics[i].name
         }
-        skills[MasterSkills.Language].Knowledge[nativeLanguage] = characteristics[3].value;
-        if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.EDU && characteristics[4].value > characteristics[3].value){
-            skills[MasterSkills.Language].Knowledge[nativeLanguage] = characteristics[4].value;
-        }
+        skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         edu_waivers = 0;//characteristics[5].value;
     }
     function addMajor(skill,knowledge){
@@ -194,6 +198,11 @@ export function createCharacter(roller, species){
     }
     function gainSkillOrKnowledge(skill,knowledge,isEducation,premark){
         var remarks = (typeof premark == "undefined" ? "" : (premark + " "));
+        if(typeof skill !== "undefined" && skill == ENUM_SKILLS.Language){
+            remarks += gainLanguage(knowledge, isEducation);
+        }else{
+
+        
         if(typeof knowledge == "undefined"){ // if no knowledge specified, just increase skill
             if(typeof skills[skill] != "undefined"){
                 if(skills[skill].Skill >= 0){
@@ -276,6 +285,7 @@ export function createCharacter(roller, species){
                 }
             }
         }
+    }
        record(remarks);
         return remarks;
     }
@@ -337,7 +347,6 @@ export function createCharacter(roller, species){
             }
         }
     }
-
     function gainSkillWithPromptForCategory(prompt,skillCategory,callback){
         switch(skillCategory.toUpperCase()){
             case "ART": 
@@ -522,7 +531,6 @@ export function createCharacter(roller, species){
         }
         return remarks;
     }
-    
     function College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log){
         var result = "College:_"+BAProgram(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, 5, 8, true, log, false, "College");    
         return result;
@@ -644,7 +652,7 @@ export function createCharacter(roller, species){
                                 if(otc || notc){
                                     further_remarks += "Volunteered for " + choice +": ";
                                     var otcResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
-                                   record("Volunteered for " + choice+". " + otcResult.remarks);
+                                    record("Volunteered for " + choice+". " + otcResult.remarks);
                                     further_remarks += otcResult.remarks + newLine;
                                     if(!otcResult.success){
                                         var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
@@ -667,42 +675,36 @@ export function createCharacter(roller, species){
                                             otc_skill_list = StarshipSkills;
                                         }
                                         pickOption(otc_skill_list,"Please choose a " + (otc ? "Soldier" : "Starship") + " skill.",
-                                        function(new_skill){
-                                            var even_further_remarks = "";
-                                            if(KnowledgeSpecialties[new_skill]){
-                                                pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
-                                                    log(gainSkillOrKnowledge(new_skill,new_knowledge,true));
+                                            function(new_skill){
+                                                var even_further_remarks = "";
+                                                if(KnowledgeSpecialties[new_skill]){
+                                                    pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
+                                                        log(gainSkillOrKnowledge(new_skill,new_knowledge,true));
+                                                        if(navyCommission){ 
+                                                            pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
+                                                            awards.push(service_choice + " Officer1");
+                                                        record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                            log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                            },true);
+                                                        }
+                                                    },true);
+                                                }else{
                                                     if(navyCommission){ 
                                                         pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
                                                         awards.push(service_choice + " Officer1");
-                                                       record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                    record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).")
                                                         log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
                                                         },true);
                                                     }
-                                                },true);
-                                            }else{
-                                                if(navyCommission){ 
-                                                    pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
-                                                    awards.push(service_choice + " Officer1");
-                                                   record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).")
-                                                    log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                                    },true);
+                                                    even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true) + newLine;
+                                                    log(even_further_remarks);
                                                 }
-                                                even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true) + newLine;
-                                                log(even_further_remarks);
-                                            }
-                                        },true);
+                                            },true);
                                     }
                                     if(armyCommission){ 
                                         awards.push("Army Officer1");
                                         further_remarks += "Earned Army commission (Army Officer1).";
                                        record("Earned Army commission (Army Officer1).");
-                                    }else if(navyCommission){ 
-                                        pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
-                                        awards.push(service_choice + " Officer1");
-                                       record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).")
-                                        log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                        },true);
                                     }
                                     
                                     log(further_remarks);
@@ -1049,20 +1051,36 @@ export function createCharacter(roller, species){
         var remarks = "";
         if(isEducation){
             if(skills[ENUM_SKILLS.Language].Knowledge[language]){
-                skills[ENUM_SKILLS.Language].Knowledge[language] += 2;
-                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                var currentLevel = skills[ENUM_SKILLS.Language].Knowledge[language];
+                if(language === getNativeLanguage()){
+                    currentLevel = getNativeLanguageLevel();
+                }
+                if(currentLevel < 14){
+                    skills[ENUM_SKILLS.Language].Knowledge[language] += 2;
+                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                }else if(currentLevel == 14){
+                    skills[ENUM_SKILLS.Language].Knowledge[language] += 1;
+                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                }else if(currentLevel == 15){
+                    remarks = "Language(" + language + ") cannot be increased further."
+                }
             }else{
                 skills[ENUM_SKILLS.Language].Knowledge[language] = 2;
                 remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
             }
         }else{
-            languageReceipts += 1;
-            if(skills[ENUM_SKILLS.Language].Knowledge[language]){
-                skills[ENUM_SKILLS.Language].Knowledge[language] +=1;
-                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+            if(language === nativeLanguage){
+                remarks += "Cannot increase native language except through education.";
             }else{
-                skills[ENUM_SKILLS.Language].Knowledge[language] = skills[ENUM_SKILLS.Language].Knowledge[nativeLanguage]-languageReceipts;
-                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                var nativeLanguageLevel = getNativeLanguageLevel();
+                languageReceipts += 1;
+                if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language] < nativeLanguageLevel){
+                    skills[ENUM_SKILLS.Language].Knowledge[language] +=1;
+                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                }else{
+                    skills[ENUM_SKILLS.Language].Knowledge[language] = nativeLanguageLevel-languageReceipts;
+                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                }
             }
         }
         record(remarks);
@@ -1366,7 +1384,7 @@ export function createCharacter(roller, species){
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, characteristics:characteristics,
         skills:skills, getGenetics:getGenetics, species:species,
-        setAge:setAge, getAge:getAge, getnativeLanguage:getNativeLanguage, setNativeLanguage:setNativeLanguage, 
+        setAge:setAge, getAge:getAge, getNativeLanguage:getNativeLanguage, setNativeLanguage:setNativeLanguage, getNativeLanguageLevel,
         setForcedGrowthClone:setForcedGrowthClone, rollStatsFromGenes:rollStatsFromGenes,
         getAwards:getAwards, getMajorsLabels:getMajorsLabels, getMinorsLabels:getMinorsLabels, getMajors:getMajors, getMinors:getMinors,
         checkCharacteristic:checkCharacteristic, checkCSK:checkCSK,
