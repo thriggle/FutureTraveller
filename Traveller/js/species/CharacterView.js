@@ -150,7 +150,10 @@ document.getElementById("btnCollege").addEventListener("click",function(){
                     var MinorKnowledge = minorChoice.knowledge;
                     if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
                     if(MinorSkill === ENUM_SKILLS.Language){
-                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                        var languages = Knowledges[ENUM_SKILLS.Language].slice();
+                        var majorLangIndex = languages.indexOf(MajorKnowledge);
+                        languages.splice(majorLangIndex,1);
+                        pickOption(languages, "Choose a language.", (lang)=>{
                             MinorKnowledge = lang;
                             log(person.College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         });
@@ -158,7 +161,7 @@ document.getElementById("btnCollege").addEventListener("click",function(){
                         log(person.College(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                },choice, preferredMinor); 
+                },undefined, preferredMinor); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
