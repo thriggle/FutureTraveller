@@ -303,7 +303,7 @@ export function createCharacter(roller, species){
             var promptfunc = () => {};
             var code = codeArray[index];
             var skill = "";
-            var note = "Gained ";
+            var note = code + " trade code on homeworld provides ";
             switch(code){
                 case "Ag": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Animals; note += skill; break;
                 case "As": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.ZeroG; note += skill; break;
@@ -337,9 +337,9 @@ export function createCharacter(roller, species){
                 case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
                 case "Va": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.VaccSuit; note += skill; break;
                 case "Wa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Seafarer; note += skill; break;
-                default: note += "no skills"; promptfunc = (n,s,next,ns)=>{ next(); }; break; 
+                default: note += "no skills"; promptfunc = (n,s,next,ns)=>{ record(n); next(); }; break; 
             }
-            note += " from the '" + code + "' trade code on homeworld.";
+            note += ".";
             notes += note + "<br/>";
             var nextMethod = gainSkillsFromHomeworldTradeCodes(codeArray, callback, index + 1, notes);
             return function(){
