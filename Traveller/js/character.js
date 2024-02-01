@@ -512,14 +512,14 @@ export function createCharacter(roller, species){
         }else{
             var result = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,2,0);
             remarks = "Apprenticeship: " + result.remarks;
+            record(remarks);
             if(result.success){
-                gainSkillOrKnowledge(skill,knowledge,true);
-                gainSkillOrKnowledge(skill,knowledge,true);
-                gainSkillOrKnowledge(skill,knowledge,true);
-                remarks += gainSkillOrKnowledge(skill,knowledge,true);
+                gainSkillOrKnowledge(skill,knowledge,true,"Apprenticeship.");
+                gainSkillOrKnowledge(skill,knowledge,true,"Apprenticeship.");
+                gainSkillOrKnowledge(skill,knowledge,true,"Apprenticeship.");
+                remarks += gainSkillOrKnowledge(skill,knowledge,true,"Apprenticeship.");
             }
         }
-       record(remarks);
         return remarks;
     }
     
