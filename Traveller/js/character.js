@@ -210,6 +210,8 @@ export function createCharacter(roller, species){
                     if(skills[skill].Skill < 15){
                         skills[skill].Skill += 1;
                         remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
+                    }else{
+                        remarks += skill+" was not increased as it is already at maximum level.";
                     }
                 }else{
                     skills[skill].Skill = 1;
@@ -251,6 +253,8 @@ export function createCharacter(roller, species){
                             skills[skill].Knowledge[specialty_name] = 1;
                             remarks += "Gained " + skill + "("+specialty_name + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
                         }
+                    }else{
+                        remarks += knowledge+" was not increased as it is already at maximum level.";
                     }
                 }else{
                     skills[skill].Knowledge[knowledge] = 1; // if we don't have the knowledge, gain a rank
@@ -281,7 +285,7 @@ export function createCharacter(roller, species){
                         skills[skill].Knowledge[knowledge] += 1;
                         remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
                     }else{
-                        remarks += "Could not increase knowledge."
+                        remarks += knowledge+" was not increased as it is already at maximum level.";
                     }
                 }
             }
@@ -749,6 +753,7 @@ export function createCharacter(roller, species){
         var hasBA = awards.indexOf("BA") >= 0 || awards.indexOf("Honors BA") >= 0;
         if(!hasBA){
             remarks += "Character is ineligible for MA program without having earned a BA.";
+            record(remarks);
         }else{
             remarks += "MA Program Application: ";
             var intScore = characteristics[3].value;
@@ -822,6 +827,7 @@ export function createCharacter(roller, species){
         var hasBA = awards.indexOf("MA") >= 0 || awards.indexOf("Honors MA") >= 0;
         if(!hasBA){
             remarks += "Character is ineligible for Professor program without having earned an MA.";
+            record(remarks);
         }else{
             remarks += "Professor Program Application: ";
             var intScore = characteristics[3].value;
@@ -904,6 +910,7 @@ export function createCharacter(roller, species){
             }else{
                 remarks += "Character is ineligible for Medical School program without having earned an Honors BA.";
             }
+            record(remarks);
         }
         if(qualifies){
             remarks += "Medical School Program Application: ";
@@ -983,6 +990,7 @@ export function createCharacter(roller, species){
             }else{
                 remarks += "Character is ineligible for Law School program without having earned an Honors BA.";
             }
+            record(remarks);
         }
         if(qualifies){
             remarks += "Law School Program Application: ";
@@ -1062,7 +1070,7 @@ export function createCharacter(roller, species){
                 }else if(currentLevel == 14){
                     skills[ENUM_SKILLS.Language].Knowledge[language] += 1;
                     remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
-                }else if(currentLevel == 15){
+                }else if(currentLevel >= 15){
                     remarks = "Language(" + language + ") cannot be increased further."
                 }
             }else{
@@ -1327,7 +1335,7 @@ export function createCharacter(roller, species){
         }
         if(numReducedToZero >= 3){ remarks += "Extremely major illness. Requires 4 months rest and recuperation. If 2nd time receiving this event, character has died." ;}
         else if(numReducedToZero === 2){ remarks += "Major illness. Requires 4 weeks rest and recuperation.";}
-       record(remarks);
+       //record(remarks);
         return remarks;
     }
     function advanceAge(numYears){
