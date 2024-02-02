@@ -1,9 +1,10 @@
 import { getRollerFromSeed } from "./rnd.js";
-import { human } from "./species/human.js";
-import { ENUM_CHARACTERISTICS } from "./species/species.js";
-import {CLASS_SPECIES} from "./species/species.js";
-import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills, Knowledges as KnowledgeSpecialties, ArtSkills, TradeSkills } from "./species/skills.js";
-import { getDialog, dialogCallback, pickOption, pickSkill } from "./species/dialog.js";
+import { human } from "./character/human.js";
+import { ENUM_CHARACTERISTICS } from "./character/species.js";
+import {CLASS_SPECIES} from "./character/species.js";
+import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills, Knowledges as KnowledgeSpecialties, ArtSkills, TradeSkills } from "./character/skills.js";
+import { getDialog, dialogCallback, pickOption, pickSkill } from "./character/dialog.js";
+import { ENUM_CAREERS, getCCs, citizenLifeJob, CareerSkillTables } from "./character/careers.js";
 export function createCharacter(roller, species){
     if(typeof roller === "undefined"){
         roller = getRollerFromSeed();
@@ -35,6 +36,8 @@ export function createCharacter(roller, species){
     var caste = species.Castes[casteKey];
     var age = 0, isForcedGrowthClone = false;
     var statRollResults = rollStats();
+    var careers = [], CCs = [];
+    var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined
     var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
     function rollStats(){
         var statRolls = [
@@ -66,15 +69,7 @@ export function createCharacter(roller, species){
         edu_waivers = 0; //characteristics[5].value-edu_waivers; 
         return {statRolls, characteristics, genetics}
     }
-    function getNativeLanguageLevel(){
-        var nativeLanguageSkill = characteristics[3].value;
-        if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.EDU && characteristics[4].value > characteristics[3].value){
-            nativeLanguageSkill = characteristics[4].value;
-        }
-        nativeLanguageSkill += skills[MasterSkills.Language].Knowledge[nativeLanguage];
-        nativeLanguageSkill = Math.min(nativeLanguageSkill,15);
-        return nativeLanguageSkill;
-    }
+    
     function initStats(stats, geneticValues){
        characteristics = [
             {name:species.Characteristics[0].name,value:stats[0]},
@@ -202,8 +197,6 @@ export function createCharacter(roller, species){
         if(typeof skill !== "undefined" && skill == ENUM_SKILLS.Language){
             remarks += gainLanguage(knowledge, isEducation);
         }else{
-
-        
         if(typeof knowledge == "undefined"){ // if no knowledge specified, just increase skill
             if(typeof skills[skill] != "undefined"){
                 if(skills[skill].Skill >= 0){
@@ -388,6 +381,56 @@ export function createCharacter(roller, species){
             }
         }
         
+    }
+    function gainLanguage(language,isEducation){
+        var remarks = "";
+        if(isEducation){
+            if(skills[ENUM_SKILLS.Language].Knowledge[language]){
+                var currentLevel = skills[ENUM_SKILLS.Language].Knowledge[language];
+                if(language === getNativeLanguage()){
+                    currentLevel = getNativeLanguageLevel();
+                }
+                if(currentLevel < 14){
+                    skills[ENUM_SKILLS.Language].Knowledge[language] += 2;
+                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                }else if(currentLevel == 14){
+                    skills[ENUM_SKILLS.Language].Knowledge[language] += 1;
+                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                }else if(currentLevel >= 15){
+                    remarks = "Language(" + language + ") cannot be increased further."
+                }
+            }else{
+                skills[ENUM_SKILLS.Language].Knowledge[language] = 2;
+                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+            }
+        }else{
+            if(language === nativeLanguage){
+                remarks += "Cannot increase native language except through education.";
+            }else{
+                var nativeLanguageLevel = getNativeLanguageLevel();
+                languageReceipts += 1;
+                if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language] < nativeLanguageLevel){
+                    skills[ENUM_SKILLS.Language].Knowledge[language] +=1;
+                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                }else if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language]>= nativeLanguageLevel){
+                    remarks = "Language("+language+") cannot be increased further.";
+                }else{
+                    skills[ENUM_SKILLS.Language].Knowledge[language] = nativeLanguageLevel-languageReceipts;
+                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                }
+            }
+        }
+        //record(remarks);
+        return remarks;
+    }
+    function getNativeLanguageLevel(){
+        var nativeLanguageSkill = characteristics[3].value;
+        if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.EDU && characteristics[4].value > characteristics[3].value){
+            nativeLanguageSkill = characteristics[4].value;
+        }
+        nativeLanguageSkill += skills[MasterSkills.Language].Knowledge[nativeLanguage];
+        nativeLanguageSkill = Math.min(nativeLanguageSkill,15);
+        return nativeLanguageSkill;
     }
     function ED5(){
         var remarks = "";
@@ -1056,46 +1099,310 @@ export function createCharacter(roller, species){
         }
         return remarks;
     }
-    function gainLanguage(language,isEducation){
-        var remarks = "";
-        if(isEducation){
-            if(skills[ENUM_SKILLS.Language].Knowledge[language]){
-                var currentLevel = skills[ENUM_SKILLS.Language].Knowledge[language];
-                if(language === getNativeLanguage()){
-                    currentLevel = getNativeLanguageLevel();
-                }
-                if(currentLevel < 14){
-                    skills[ENUM_SKILLS.Language].Knowledge[language] += 2;
-                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
-                }else if(currentLevel == 14){
-                    skills[ENUM_SKILLS.Language].Knowledge[language] += 1;
-                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
-                }else if(currentLevel >= 15){
-                    remarks = "Language(" + language + ") cannot be increased further."
-                }
-            }else{
-                skills[ENUM_SKILLS.Language].Knowledge[language] = 2;
-                remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
-            }
+    
+    function resolveCareer(career,callback){
+        switch(career){
+            case ENUM_CAREERS.Craftsman: resolveCraftsman(career,callback); break;
+            case ENUM_CAREERS.Scholar: resolveScholar(career,callback); break;
+            case ENUM_CAREERS.Entertainer: resolveEntertainer(career,callback); break;
+            case ENUM_CAREERS.Citizen: resolveCitizen(career,callback); break;
+            case ENUM_CAREERS.Scout: resolveScout(career,callback); break;
+            case ENUM_CAREERS.Merchant: resolveMerchant(career,callback); break;
+            case ENUM_CAREERS.Spacer: resolveSpacer(career,callback); break;
+            case ENUM_CAREERS.Soldier: resolveSoldier(career,callback); break;
+            case ENUM_CAREERS.Agent: resolveAgent(career,callback); break;
+            case ENUM_CAREERS.Rogue: resolveRogue(career,callback); break;
+            case ENUM_CAREERS.Noble: resolveNoble(career,callback); break;
+            case ENUM_CAREERS.Marine: resolveMarine(career,callback); break;
+            case ENUM_CAREERS.Functionary: resolveFunctionary(career,callback); break;
+        }
+    }
+    function gainCitizenLifeSkills(isJob, skill, knowledge, updateFunc, callback){
+        if(isJob){
+            job.skill = skill;
+            job.knowledge = knowledge;
+            lastCitLifeReceipt = "Job";
         }else{
-            if(language === nativeLanguage){
-                remarks += "Cannot increase native language except through education.";
+            hobby.skill = skill;
+            hobby.knowledge = knowledge;
+            lastCitLifeReceipt = "Hobby";
+        }
+        if(typeof skill === "undefined"){
+            record("No skills acquired from useless " + lastCitLifeReceipt);
+            updateFunc();
+        }else{
+            if(typeof knowledge === "undefined" && KnowledgeSpecialties[skill]){
+                pickOption(KnowledgeSpecialties[skill],"Choose a "+skill+" specialty",(k)=>{
+                    var remark = "(Citizen Life "+lastCitLifeReceipt +")";
+                    gainSkillOrKnowledge(skill,k,false,remark);
+                    gainSkillOrKnowledge(skill,k,false,remark);
+                    if(isJob){
+                        gainSkillOrKnowledge(skill,k,false,remark);
+                        gainSkillOrKnowledge(skill,k,false,remark);
+                    }
+                    updateFunc();
+                    callback();
+                },true);
             }else{
-                var nativeLanguageLevel = getNativeLanguageLevel();
-                languageReceipts += 1;
-                if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language] < nativeLanguageLevel){
-                    skills[ENUM_SKILLS.Language].Knowledge[language] +=1;
-                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
-                }else{
-                    skills[ENUM_SKILLS.Language].Knowledge[language] = nativeLanguageLevel-languageReceipts;
-                    remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
+                var remark = "(Citizen Life "+lastCitLifeReceipt +")";
+                gainSkillOrKnowledge(skill,knowledge,false,remark);
+                gainSkillOrKnowledge(skill,knowledge,false,remark);
+                if(isJob){
+                    gainSkillOrKnowledge(skill,knowledge,false,remark);
+                    gainSkillOrKnowledge(skill,knowledge,false,remark);
                 }
+                callback();
+                updateFunc();
             }
         }
-        //record(remarks);
-        return remarks;
     }
-    
+    function gainTermSkills(num,career,updateFunc,callback){
+        var tables = CareerSkillTables[career];
+        if(num > 0){
+            num -=1;
+            function nextSteps(n){
+                updateFunc();
+                setTimeout(()=>{gainTermSkills(n,career,updateFunc,callback);},0);
+            };
+            pickOption(tables.Tables,"Choose a skill table ("+(num+1)+" picks remaining):",(table)=>{
+                var newSkill = tables[table][roller.d6().result-1];
+                if(table === "Personal"){
+                    var index = +(newSkill.substring(1))-1;
+                    gainCharacteristic(index,1);
+                    nextSteps(num);
+                }else if(newSkill === "Major"){
+                    if(majors.length > 0){
+                        var choices = removeDuplicates(majors.map(getDegreeLabel));
+                        pickOption(choices,"You can increase a Major",(choice)=>{
+                            var skill, knowledge;
+                            for(var i = 0, len = choices.length; i < len; i++){
+                                if(choices[i].label == choice){
+                                    skill = choices[i].skill, knowledge = choices[i].knowledge;
+                                    break;
+                                }
+                            }
+                            gainSkillOrKnowledge(skill,knowledge,false);
+                            nextSteps(num);
+                        },true);
+                    }else{
+                        record("Academic: You do not have a major; no skill increased.");
+                        nextSteps(num);
+                    }
+                }else if(newSkill === "Minor"){
+                    if(minors.length > 0){
+                        var choices = removeDuplicates(minors.map(getDegreeLabel));
+                        pickOption(choices,"You can increase a Minor",(choice)=>{
+                            var skill, knowledge;
+                            for(var i = 0, len = choices.length; i < len; i++){
+                                if(choices[i].label == choice){
+                                    skill = choices[i].skill, knowledge = choices[i].knowledge;
+                                    break;
+                                }
+                            }
+                            gainSkillOrKnowledge(skill,knowledge,false);
+                            nextSteps(num);
+                        },true);
+                    }else{
+                        record("Academic: You do not have a minor; no skill increased.");
+                        nextSteps(num);
+                    }
+                }else if(newSkill === "One Trade"){
+                    record("Would gain "+newSkill+" from " + table + " here.");
+                    gainSkillWithPromptForCategory("One Trade: ","TRADE",()=>{nextSteps(num)})
+                }else if(newSkill === "One Art"){
+                    record("Would gain "+newSkill+" from " + table + " here.");
+                    gainSkillWithPromptForCategory("One Art: ","ART",()=>{nextSteps(num)})
+                }else if(newSkill === "One Science"){
+                    record("Would gain "+newSkill+" from " + table + " here.");
+                    pickOption(Knowledges[ENUM_SKILLS.Science],"Choose a science knowledge",(choice)=>{
+                        gainSkillOrKnowledge(ENUM_SKILLS.Science,choice,false);
+                        nextSteps(num);
+                    },true);
+                }else if(newSkill === "Soldier Skill"){
+                    record("Would gain "+newSkill+" from " + table + " here.");
+                    gainSkillWithPromptForCategory("Soldier Skill: ","SOLDIER",()=>{nextSteps(num)})
+                }else if(newSkill === "Starship Skill"){
+                    record("Would gain "+newSkill+" from " + table + " here.");
+                    gainSkillWithPromptForCategory("Starship Skill: ","SHIP",()=>{nextSteps(num)})
+                }else if(newSkill === "Any Knowledge"){
+                    record("Would gain "+newSkill+" from " + table + " here.");
+                    nextSteps(num);
+                }else if(newSkill === "Capital"){ // noble
+                    // world knowledge of world of highest held noble land grant, value = 1D
+                    record("Would gain "+newSkill+" from " + table + " here.");
+                    nextSteps(num);
+                }else if(newSkill === "Any Skill"){ // functionary
+                    // any skill from citizen life skills and knowledges
+                    record("Would gain "+newSkill+" from " + table + " here.");
+                    nextSteps(num);
+                }else{
+                    gainSkillOrKnowledge(newSkill,undefined,false);
+                    nextSteps(num);
+                }                
+                
+            },true);
+        }else{
+            updateFunc();
+            setTimeout(callback,0);
+        }
+    }
+    function promptContinue(career,updateFunc){
+        var tryContinue = confirm("Do you want to continue in the "+career+" career?");
+        if(tryContinue){
+            switch(career){
+                case ENUM_CAREERS.Citizen:
+                    var continueResult = roller.d6(2);
+                    record("Continue as Citizen: [" + continueResult.rolls.join(",") + "] < 10 ? " + (continueResult.result <= 10 ? "PASS":"FAIL"));
+                    if(continueResult.result <= 10){
+                        updateFunc();
+                        resolveCitizen(career,updateFunc);
+                    }else{
+                        record("Would muster out here.")
+                        updateFunc();
+                    }
+                break;
+            }
+        }else{
+            record("Would muster out here.");
+            updateFunc();
+        }        
+    }
+    function resolveCitizen(career,updateFunc){
+        careers.push(career);
+        var termNumber = careers.length;
+        if(termNumber > 1 && careers[termNumber-2] !== career){
+            record("Cannot transfer to Citizen career from another career.")
+            updateFunc();
+        }else{
+            if(termNumber == 1  || CCs.length == 0){
+                CCs = getCCs(career);
+            }
+            var nextSteps = function(){
+                advanceAge(4);
+                updateFunc();
+                gainTermSkills(4,ENUM_CAREERS.Citizen,updateFunc,()=>{updateFunc(); promptContinue(ENUM_CAREERS.Citizen,updateFunc);});
+            };
+            pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                CCs.splice(CCs.indexOf(selectedCC),1);
+                record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                updateFunc();
+                var ccIndex = +(selectedCC.substring(1))-1;
+                var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                var citLifeResult = checkCharacteristic(selectedCC,numDice,0,"Citizen Life vs "+selectedCC);
+                record(citLifeResult.remarks);
+                updateFunc();
+                if(citLifeResult.success){
+                    if(typeof job.skill == "undefined" || typeof hobby.skill == "undefined"){ // gain job-4 or hobby-2
+                        
+                        if(majors.length > 0){
+                            // chance to select job/hobby
+                            var getDegreeLabel = (x,i,ar)=>{return x.label;};
+                            var chooseJobResult = checkCharacteristic(ENUM_CHARACTERISTICS.EDU,species.Characteristics[4].nD + gender.Characteristics[4].nD + caste.Characteristics[4].nD,0,"Select a job vs EDU");
+                            record(chooseJobResult.remarks); updateFunc();
+                            if(chooseJobResult.success){
+                                var choices = removeDuplicates(majors.map(getDegreeLabel).concat(minors.map(getDegreeLabel)));
+                                choices.push("Roll Randomly");
+                                var isJob = typeof job.skill == "undefined";
+                                pickOption(choices,"You may choose a "+(isJob ? "job" : "hobby")+" from your majors and minors.",function(chosenJob){
+                                    var skill = "", knowledge = "";
+                                    if(chosenJob == "Roll Randomly"){
+                                        var randomJob = citizenLifeJob(roller);
+                                        record("Roll for Citizen Skill/Knowledge: " + randomJob.rolls);
+                                        updateFunc();
+                                        skill = randomJob.job.skill, knowledge = randomJob.job.knowledge;
+                                    }else{
+                                        var degrees = majors.concat(minors);
+                                        for(var i = 0, len = degrees.length; i < len; i++){
+                                            if(degrees[i].label == chosenJob){
+                                                skill = degrees[i].skill, knowledge = degrees[i].knowledge;
+                                                break;
+                                                
+                                            }
+                                        }
+                                    }
+                                    gainCitizenLifeSkills(isJob,skill,knowledge,updateFunc,nextSteps);
+                                    
+                                },true);
+                            }else{
+                                // roll randomly for job/hobby
+                                var skill = "", knowledge = "";
+                                var isJob = typeof job.skill == "undefined";
+                                var randomJob = citizenLifeJob(roller);
+                                record("Roll for Citizen Skill/Knowledge: " + randomJob.rolls);
+                                updateFunc();
+                                skill = randomJob.job.skill, knowledge = randomJob.job.knowledge;
+                                gainCitizenLifeSkills(isJob,skill,knowledge,updateFunc,nextSteps);
+                            }
+                        }else{
+                            // roll randomly for job/hobby
+                            var skill = "", knowledge = "";
+                            var isJob = typeof job.skill == "undefined";
+                            var randomJob = citizenLifeJob(roller);
+                            record("Roll for Citizen Skill/Knowledge: " + randomJob.rolls);
+                            updateFunc();
+                            skill = randomJob.job.skill, knowledge = randomJob.job.knowledge;
+                            gainCitizenLifeSkills(isJob,skill,knowledge,updateFunc,nextSteps);
+                        }
+                    }else{ // increase job/hobby by 1
+                        if(lastCitLifeReceipt == "Job"){
+                            lastCitLifeReceipt = "Hobby";
+                            if(typeof hobby.skill === "undefined"){
+                                record("No skills acquired from useless hobby");
+                                nextSteps();
+                            }else{
+                                if(typeof hobby.knowledge === "undefined" && KnowledgeSpecialties[hobby.skill]){
+                                    pickOption(KnowledgeSpecialties[hobby.skill],"Choose a "+hobby.skill+" specialty",(k)=>{
+                                        var remark = "(Citizen Life "+lastCitLifeReceipt +")";
+                                        gainSkillOrKnowledge(hobby.skill,k,false,remark);
+                                        nextSteps();
+                                    },true);
+                                }else{
+                                    var remark = "(Citizen Life "+lastCitLifeReceipt +")";
+                                    gainSkillOrKnowledge(hobby.skill,hobby.knowledge,false, remark);
+                                    nextSteps();
+                                }
+                            }
+                        }else{
+                            lastCitLifeReceipt = "Job";
+                            if(typeof job.skill === "undefined"){
+                                record("No skills acquired from useless job");
+                                nextSteps();
+                            }else{
+                                if(typeof job.knowledge === "undefined" && KnowledgeSpecialties[job.skill]){
+                                    pickOption(KnowledgeSpecialties[job.skill],"Choose a "+job.skill+" specialty",(k)=>{
+                                        var remark = "(Citizen Life "+lastCitLifeReceipt +")";
+                                        gainSkillOrKnowledge(job.skill,k,false,remark);
+                                        updateFunc();
+                                        nextSteps();
+                                    },true);
+                                }else{
+                                    var remark = "(Citizen Life "+lastCitLifeReceipt +")";
+                                    gainSkillOrKnowledge(job.skill,job.knowledge,false,remark);
+                                    updateFunc();
+                                    nextSteps();
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    nextSteps();
+                }
+                
+            });
+        }
+    }
+    function removeDuplicates(arr){
+        arr.sort();
+        var i = 0;
+        while(i < arr.length){
+            if(i > 0 && arr[i] == arr[i-1]){
+                arr.splice(i,1);
+            }else{
+                i+=1;
+            }
+        }
+        return arr;
+    }
     function setAge(newAge){age = newAge;}
     function getAge(){return age;}
     function getGenetics(){ return genetics; }
@@ -1127,8 +1434,24 @@ export function createCharacter(roller, species){
         if(typeof characteristic === "number" && characteristic <= 6 && characteristic >= 1){ target = characteristics[characteristic-1].value;}
         else if(typeof characteristic === "string"){ 
             switch(characteristic){
+                case "C1":
                 case ENUM_CHARACTERISTICS.STR: 
                     target = characteristics[0].value; 
+                    break;
+                case "C2":
+                    target = characteristics[1].value; 
+                    break;
+                case "C3":
+                    target = characteristics[2].value; 
+                    break;
+                case "C4":
+                    target = characteristics[3].value; 
+                    break;
+                case "C5":
+                    target = characteristics[4].value; 
+                    break;
+                case "C6":
+                    target = characteristics[5].value; 
                     break;
                 case ENUM_CHARACTERISTICS.DEX: 
                     target = characteristics[1].name === ENUM_CHARACTERISTICS.DEX ? characteristics[1].value : characteristics[1].value/2; 
@@ -1378,11 +1701,14 @@ export function createCharacter(roller, species){
         else if(majorOrMinor === "minor"){ degrees = minors; }
         var labels = [];
         for(var i = 0, len = degrees.length; i < len; i++){
+            var label = "";
             if(typeof degrees[i].knowledge == "undefined"){
-                labels.push(degrees[i].skill);
+                label = degrees[i].skill;
             }else{
-                labels.push(degrees[i].skill+"("+degrees[i].knowledge+")");
+                label = degrees[i].skill+"("+degrees[i].knowledge+")";
             }
+            degrees[i].label = label;
+            labels.push(label);
         }
         return labels;
     }
@@ -1404,6 +1730,7 @@ export function createCharacter(roller, species){
         Apprenticeship:Apprenticeship, ED5:ED5, TradeSchool:TradeSchool, TrainingCourse,
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
-        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics
+        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics,
+        resolveCareer
     }
 }
