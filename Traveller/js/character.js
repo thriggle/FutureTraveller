@@ -210,6 +210,8 @@ export function createCharacter(roller, species){
                     if(skills[skill].Skill < 15){
                         skills[skill].Skill += 1;
                         remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
+                    }else{
+                        remarks += skill+" was not increased as it is already at maximum level.";
                     }
                 }else{
                     skills[skill].Skill = 1;
@@ -251,6 +253,8 @@ export function createCharacter(roller, species){
                             skills[skill].Knowledge[specialty_name] = 1;
                             remarks += "Gained " + skill + "("+specialty_name + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
                         }
+                    }else{
+                        remarks += knowledge+" was not increased as it is already at maximum level.";
                     }
                 }else{
                     skills[skill].Knowledge[knowledge] = 1; // if we don't have the knowledge, gain a rank
@@ -281,7 +285,7 @@ export function createCharacter(roller, species){
                         skills[skill].Knowledge[knowledge] += 1;
                         remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
                     }else{
-                        remarks += "Could not increase knowledge."
+                        remarks += knowledge+" was not increased as it is already at maximum level.";
                     }
                 }
             }
