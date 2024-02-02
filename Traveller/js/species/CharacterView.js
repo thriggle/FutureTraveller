@@ -198,7 +198,10 @@ document.getElementById("btnNavalAcademy").addEventListener("click",function(){
                     var MinorKnowledge = minorChoice.knowledge;
                     if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
                     if(MinorSkill === ENUM_SKILLS.Language){
-                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                        var languages = Knowledges[ENUM_SKILLS.Language].slice();
+                        var majorLangIndex = languages.indexOf(MajorKnowledge);
+                        languages.splice(majorLangIndex,1);
+                        pickOption(languages, "Choose a language.", (lang)=>{
                             MinorKnowledge = lang;
                             log(person.NavalAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         });
@@ -243,7 +246,10 @@ document.getElementById("btnMilitaryAcademy").addEventListener("click",function(
                     var MinorKnowledge = minorChoice.knowledge;
                     if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
                     if(MinorSkill === ENUM_SKILLS.Language){
-                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                        var languages = Knowledges[ENUM_SKILLS.Language].slice();
+                        var majorLangIndex = languages.indexOf(MajorKnowledge);
+                        languages.splice(majorLangIndex,1);
+                        pickOption(languages, "Choose a language.", (lang)=>{
                             MinorKnowledge = lang;
                             log(person.MilitaryAcademy(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         });
@@ -295,7 +301,10 @@ document.getElementById("btnUniversity").addEventListener("click",function(){
                     var MinorKnowledge = minorChoice.knowledge;
                     if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
                     if(MinorSkill === ENUM_SKILLS.Language){
-                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                        var languages = Knowledges[ENUM_SKILLS.Language].slice();
+                        var majorLangIndex = languages.indexOf(MajorKnowledge);
+                        languages.splice(majorLangIndex,1);
+                        pickOption(languages, "Choose a language.", (lang)=>{
                             MinorKnowledge = lang;
                             log(person.University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                             
@@ -304,7 +313,7 @@ document.getElementById("btnUniversity").addEventListener("click",function(){
                         log(person.University(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                },choice, preferredMinor); 
+                },undefined, preferredMinor); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -348,7 +357,10 @@ document.getElementById("btnMasters").addEventListener("click",function(){
                     var MinorKnowledge = minorChoice.knowledge;
                     if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
                     if(MinorSkill === ENUM_SKILLS.Language){
-                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                        var languages = Knowledges[ENUM_SKILLS.Language].slice();
+                        var majorLangIndex = languages.indexOf(MajorKnowledge);
+                        languages.splice(majorLangIndex,1);
+                        pickOption(languages, "Choose a language.", (lang)=>{
                             MinorKnowledge = lang;
                             log(person.Masters(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                             
@@ -357,7 +369,7 @@ document.getElementById("btnMasters").addEventListener("click",function(){
                         log(person.Masters(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge, log));
                         
                     }
-                },choice,preferredMinor); 
+                },undefined,preferredMinor); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
@@ -401,7 +413,10 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
                     var MinorKnowledge = minorChoice.knowledge;
                     if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
                     if(MinorSkill === ENUM_SKILLS.Language){
-                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                        var languages = Knowledges[ENUM_SKILLS.Language].slice();
+                        var majorLangIndex = languages.indexOf(MajorKnowledge);
+                        languages.splice(majorLangIndex,1);
+                        pickOption(languages, "Choose a language.", (lang)=>{
                             MinorKnowledge = lang;
                             log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
                             
@@ -410,7 +425,7 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
                         log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
                         
                     }
-                },choice,preferredMinor); 
+                },undefined,preferredMinor); 
             });
         }else{
             pickSkill("C", "Please choose a Minor",
