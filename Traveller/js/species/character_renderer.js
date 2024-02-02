@@ -38,12 +38,19 @@ export function clearElement(el) {
     }
 }
 function awards(character,element){
-    element.insertAdjacentHTML("beforeend","<div>" + character.getAwards().join(", ") + "<div>");
+    var awards = character.getAwards();
+    element.insertAdjacentHTML("beforeend","<div>" + awards.join(", ") + "<div>");
     var majors = character.getMajorsLabels();
+    if(awards.length > 0 && majors.length > 0){
+        element.insertAdjacentHTML("beforeend","<hr/>");
+    }
     if(majors.length > 0){
         element.insertAdjacentHTML("beforeend","<div> Majors: " + majors.join(", ") + "<div>");
     }
     var minors = character.getMinorsLabels();
+    if(majors.length > 0 && minors.length > 0){
+        element.insertAdjacentHTML("beforeend","<hr/>");
+    }
     if(minors.length > 0){
         element.insertAdjacentHTML("beforeend","<div> Minors: " + minors.join(", ") + "<div>");
     }
