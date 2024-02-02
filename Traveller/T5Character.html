@@ -133,7 +133,7 @@
             background-color:#dfdfdf;
         }
     </style>
-    <script src="./js/species/CharacterView.js" type="module"></script>
+    <script src="./js/character/CharacterView.js" type="module"></script>
     <nav class="menu">
         <ul>
             <li><a data-tier="1" target="create" class="selected">Create a Character</a></li>
@@ -156,7 +156,7 @@
                 <div style="flex:2">
                     <fieldset>
                         <legend>Origin</legend>
-                        Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
+                        <label for="slctNativeLanguage">Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
                             <option value="!kee">!kee</option>
                             <option selected="selected" value="Anglic">Anglic</option>
                             <option value="Vilani">Vilani</option>
@@ -168,11 +168,11 @@
                             <option value="Tezapet">Tezapet</option>
                             <option value="Trokh">Trokh</option>
                             <option value="Zdetl">Zdetl</option>             
-                        </select><br/>
-                        Homeworld Trade Codes: <input type="text" style="width:5rem;" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" /><input type="button" id="btnRandomHWTCs" value="Random HW"><br/>
-                        Species: <select name="slctSpecies" id="slctSpecies">
+                        </select></label><br/>
+                        <label for="txtHomeworldTradeCodes">Homeworld Trade Codes: <input type="text" style="width:5rem;" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" /></label><input type="button" id="btnRandomHWTCs" value="Random HW"><br/>
+                        <label for="slctSpecies">Species: <select name="slctSpecies" id="slctSpecies">
                             <option value="human">Humaniti</option>
-                        </select>
+                        </select></label>
                     </fieldset>
                 <fieldset>
                     <legend>Attributes</legend>
@@ -265,10 +265,23 @@
         </fieldset>
         <fieldset data-tier="2" data-nav="career">
             (Career options under development)
+            <input type="button" disabled="disabled" id="btnCraftsman" value="Craftsman"/>
+            <input type="button" disabled="disabled" id="btnScholar" value="Scholar"/>
+            <input type="button" disabled="disabled" id="btnEntertainer" value="Entertainer"/>
+            <input type="button"  value="Citizen" id="btnCitizen" />
+            <input type="button" disabled="disabled" value="Scout" id="btnScout" />
+            <input type="button" disabled="disabled" value="Merchant" id="btnMerchant" />
+            <input type="button" disabled="disabled" value="Spacer" id="btnSpacer" />
+            <input type="button" disabled="disabled" value="Soldier" id="btnSoldier" />
+            <input type="button" disabled="disabled" value="Agent" id="btnAgent" />
+            <input type="button" disabled="disabled" value="Rogue" id="btnRogue" />
+            <input type="button" disabled="disabled" value="Noble" id="btnNoble" />
+            <input type="button" disabled="disabled" value="Marine" id="btnMarine" />
+            <input type="button" disabled="disabled" value="Functionary" id="btnFunctionary" />
         </fieldset>
         <div style="display:flex;">
-
-            <fieldset>
+            <div style="flex-shrink:2; flex:4;" >
+            <fieldset style="display:flex; flex-direction:row; flex-wrap:wrap;">
                 <legend>Character Sheet</legend>
                 <fieldset>
                     <legend>Stats</legend>
@@ -276,15 +289,15 @@
                 </fieldset>
                 <fieldset>
                     <legend>Skills</legend>
-                    <div data-skillblock></div>
+                    <div data-skillblock style="white-space: nowrap;"></div>
                 </fieldset>
                 <fieldset>
                     <legend>Awards</legend>
-                    <div data-awards=""></div>
+                    <div data-awards="" style="white-space: nowrap;"></div>
                 </fieldset>
             </fieldset>
-
-            <fieldset>
+            </div>
+            <fieldset style="flex-shrink:1; flex:5;">
                 <legend>History</legend>
                 <div data-history style="display:flex; flex-direction: column-reverse;">
                     &nbsp;
