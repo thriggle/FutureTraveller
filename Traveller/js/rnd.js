@@ -3,6 +3,9 @@ export function getRollerFromSeed(seed){
         seed = (Math.random()*1000000).toString();
     }
     var MathRandom = pseudoRandomNumberGenerator(seed);
+    function random(){
+        return MathRandom();
+    }
     function d6(num){
         if(typeof num == "undefined"){
             num = 1;
@@ -44,7 +47,8 @@ export function getRollerFromSeed(seed){
         d6:d6,
         flux:flux,
         posFlux:posFlux,
-        negFlux:negFlux
+        negFlux:negFlux,
+        random
     }
 }
 function pseudoRandomNumberGenerator(word){

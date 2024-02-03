@@ -713,7 +713,7 @@ export function createCharacter(roller, species){
                             var options = [];
                             options.push("None");
                             if(awards.indexOf("Army Officer1") === -1){ options.push("OTC");}
-                            if(awards.indexOf("Navy Officer1") === -1){ options.push("NOTC");}
+                            if(awards.indexOf("Navy Officer1") === -1 || awards.indexOf("Marine Officer1")){ options.push("NOTC");}
                             pickOption(options,"Do you wish to join OTC (Army) or NOTC (Navy)?",
                             function(choice){
                                 var otc = false, notc = false, further_remarks = "";
@@ -759,6 +759,7 @@ export function createCharacter(roller, species){
                                                         if(navyCommission){ 
                                                             pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
                                                             awards.push(service_choice + " Officer1");
+                                                            awards.push(service_choice + " Reserves");
                                                         record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
                                                             log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
                                                             },true);
@@ -768,6 +769,7 @@ export function createCharacter(roller, species){
                                                     if(navyCommission){ 
                                                         pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
                                                         awards.push(service_choice + " Officer1");
+                                                        awards.push(service_choice + " Reserves");
                                                     record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).")
                                                         log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
                                                         },true);
@@ -779,6 +781,7 @@ export function createCharacter(roller, species){
                                     }
                                     if(armyCommission){ 
                                         awards.push("Army Officer1");
+                                        awards.push("Army Reserves");
                                         further_remarks += "Earned Army commission (Army Officer1).";
                                        record("Earned Army commission (Army Officer1).");
                                     }
@@ -797,11 +800,13 @@ export function createCharacter(roller, species){
                         if(commissionOnSuccess){
                             if(commissionOnSuccess === "Army"){
                                     awards.push("Army Officer1");
+                                    awards.push("Army Reserves");
                                     remarks += "Earned Army commission (Army Officer1).";
                                     record("Earned Army commission (Army Officer1).");
                             }else if(commissionOnSuccess === "Navy"){ 
                                 pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
                                     awards.push(service_choice + " Officer1");
+                                    awards.push(service_choice + " Reserves");
                                     record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
                                     log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
                                 });
@@ -1303,32 +1308,79 @@ export function createCharacter(roller, species){
                     record("Continue as Citizen: [" + continueResult.rolls.join(",") + "] < 10 ? " + (continueResult.result <= 10 ? "PASS":"FAIL"));
                     if(continueResult.result <= 10){
                         updateFunc();
-                        resolveCitizen(career,updateFunc);
+                        if(continueResult.result === 2){
+                            if(species.getLifeStageFromAge(age) < 9 && 
+                                (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 )
+                            ){
+                                var reserves = [];
+                                for(var i = 0, len = awards.length; i < len; i++){
+                                    var award = awards[i];
+                                    if(award === "Army Reserves"){
+                                        reserves.push(ENUM_CAREERS.Soldier);
+                                    }else if(award === "Navy Reserves"){
+                                        reserves.push(ENUM_CAREERS.Spacer);
+                                    }else if(award === "Marine Reserves"){
+                                        reserves.push(ENUM_CAREERS.Marine);
+                                    }
+                                }
+                                var reserve = reserves[(roller.random() * reserves.length) >>> 0];
+                                record("Called up by the " + reserve+ "!");
+                                updateFunc();
+                                musterOut(career,
+                                    updateFunc,
+                                    ()=>{
+                                        updateFunc();
+                                        resolveCareer(reserve,updateFunc);
+                                    });
+                            }
+                        }else{
+                            resolveCareer(career,updateFunc,);
+                        }
                     }else{
-                        record("Would muster out here.")
+                        record("Failed Continue roll. Begin adventuring.")
                         updateFunc();
+                        musterOut(career,updateFunc);
                     }
                 break;
             }
         }else{
             record("Would muster out here.");
             updateFunc();
+            musterOut(career,updateFunc);
         }        
     }
+    function musterOut(career, updateFunc, callback){
+        careers[careers.length-1].active = false;
+        if(typeof callback === "undefined"){ callback = ()=>{};}
+
+        // 
+        updateFunc();
+        callback();
+    }
     function resolveCitizen(career,updateFunc){
-        careers.push(career);
-        var termNumber = careers.length;
-        if(termNumber > 1 && careers[termNumber-2] !== career){
+        var priorCareers = careers.length;
+        if(priorCareers > 0 && careers[priorCareers - 1].career !== career){
             record("Cannot transfer to Citizen career from another career.")
             updateFunc();
         }else{
-            if(termNumber == 1  || CCs.length == 0){
+            if(priorCareers == 0 || careers[priorCareers - 1].active == false){
+                careers.push({career:career,terms:1,active:true});
+                CCs = getCCs(career);
+            }else{
+                careers[careers.length-1].terms += 1;
+            }
+            updateFunc();
+            var termNumber = careers[careers.length-1].terms
+            if(CCs.length == 0){
                 CCs = getCCs(career);
             }
             var nextSteps = function(){
                 advanceAge(4);
                 updateFunc();
-                gainTermSkills(4,ENUM_CAREERS.Citizen,updateFunc,()=>{updateFunc(); promptContinue(ENUM_CAREERS.Citizen,updateFunc);});
+                gainTermSkills(4,ENUM_CAREERS.Citizen,updateFunc,()=>{
+                    updateFunc(); 
+                    promptContinue(ENUM_CAREERS.Citizen,updateFunc);
+                });
             };
             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                 CCs.splice(CCs.indexOf(selectedCC),1);
@@ -1764,6 +1816,9 @@ export function createCharacter(roller, species){
     function getHistory(){
         return history;
     }
+    function getCareers(){
+        return careers;
+    }
     return {
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, characteristics:characteristics,
@@ -1780,6 +1835,6 @@ export function createCharacter(roller, species){
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics,
-        resolveCareer
+        resolveCareer, getCareers
     }
 }

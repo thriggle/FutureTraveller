@@ -8,12 +8,19 @@ export function renderCharacter(character,element){
     injectHTML("[data-skillblock]",skillBlock);
     injectHTML("[data-awards]",awards);
     injectHTML("[data-history]",history);
+    injectHTML("[data-careers]",careers);
     function injectHTML(selector,htmlfunc){
         var elements = document.querySelectorAll(selector);
         for(var i = 0, len = elements.length; i < len; i++){
             clearElement(elements[i]);
             htmlfunc(character,elements[i]);
         }
+    }
+}
+function careers(character,element){
+    var careers = character.getCareers();
+    for(var i =0, len = careers.length; i < len; i++){
+        element.insertAdjacentHTML("beforeend","<div>"+careers[i].career+", " + careers[i].terms + " terms</div>");
     }
 }
 function history(character, element){
