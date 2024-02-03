@@ -85,6 +85,9 @@ export function createCharacter(roller, species){
         genetics = geneticValues.slice(0,4);
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         if(species.Characteristics[4].name === ENUM_CHARACTERISTICS.INS){ genetics.push(geneticValues[4]);}
+        record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
+            characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
+        );
     }
     function getCharacteristics(){
         return characteristics;
@@ -129,6 +132,9 @@ export function createCharacter(roller, species){
         }
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         edu_waivers = 0;//characteristics[5].value;
+        record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
+            characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
+        );
     }
     function addMajor(skill,knowledge){
         var hasAlready = false;
@@ -1170,7 +1176,7 @@ export function createCharacter(roller, species){
                 var note = "("+table + ": " + newSkill+")";
                 if(table === "Personal"){
                     var index = +(newSkill.substring(1))-1;
-                    gainCharacteristic(index,1);
+                    gainCharacteristic(index,1,note);
                     nextSteps(num);
                 }else if(newSkill === "Major"){
                     if(majors.length > 0){
@@ -1539,7 +1545,7 @@ export function createCharacter(roller, species){
         }
         return check(target,difficulty,mods,remarks);
     }
-    function gainCharacteristic(characteristic, amount){
+    function gainCharacteristic(characteristic, amount, premark){
         if(typeof amount == "undefined"){ amount = 1;}
         var index = 0;
         if(typeof characteristic === "number" && characteristic <= 6 && characteristic >= 1){ index = characteristic-1; }
@@ -1599,6 +1605,7 @@ export function createCharacter(roller, species){
         }
         
         var message =  (amount >= 0 ? "Increased " : "Decreased ")+ characteristics[index].name + " by " + amount;  
+        if(typeof premark !== "undefined"){ message = premark + " " + message; }
        record(message);
         return message;
     }
