@@ -203,7 +203,7 @@ export function createCharacter(roller, species){
         if(typeof skill !== "undefined" && skill == ENUM_SKILLS.Language){
             remarks += gainLanguage(knowledge, isEducation);
         }else{
-        if(typeof knowledge == "undefined"){ // if no knowledge specified, just increase skill
+        if(typeof knowledge == "undefined" || knowledge == "undefined"){ // if no knowledge specified, just increase skill
             if(typeof skills[skill] != "undefined"){
                 if(skills[skill].Skill >= 0){
                     if(skills[skill].Skill < 15){
@@ -266,23 +266,24 @@ export function createCharacter(roller, species){
                     var level = skills[skill].Knowledge[key];
                     kcount += level;
                 }
-                if(kcount >= 2 && skills[skill].Skill < 15){
-                    // increase skill
-                    if(skills[skill].Skill <= 0){ 
-                        skills[skill].Skill = 1;
-                        remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
-                    }else{
-                        skills[skill].Skill += 1;
-                        remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
-                    }
+                
+                // increase knowledge
+                if(typeof skills[skill].Knowledge[knowledge] == "undefined"){
+                    skills[skill].Knowledge[knowledge] = 1;
+                    remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
+                }else if(skills[skill].Knowledge[knowledge] < 6){
+                    skills[skill].Knowledge[knowledge] += 1;
+                    remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
                 }else{
-                    // increase knowledge
-                    if(typeof skills[skill].Knowledge[knowledge] == "undefined"){
-                        skills[skill].Knowledge[knowledge] = 1;
-                        remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
-                    }else if(skills[skill].Knowledge[knowledge] < 6){
-                        skills[skill].Knowledge[knowledge] += 1;
-                        remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
+                    if(kcount >= 2 && skills[skill].Skill < 15){
+                        // increase skill
+                        if(skills[skill].Skill <= 0){ 
+                            skills[skill].Skill = 1;
+                            remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
+                        }else{
+                            skills[skill].Skill += 1;
+                            remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
+                        }
                     }else{
                         remarks += knowledge+" was not increased as it is already at maximum level.";
                     }
@@ -371,6 +372,23 @@ export function createCharacter(roller, species){
             gainSkillWithPromptForKnowledge(prompt,chosenSkill,callback);
         }
     }
+    function canGainBaseSkill(skill){
+        var canIncrease = false;
+        if(typeof skills[skill] == "undefined"){
+            canIncrease = false;
+        }else{
+            var kcount = 0;
+            var ks = skills[skill].Knowledge;
+            for(var key in ks){
+                var level = skills[skill].Knowledge[key];
+                kcount += level;
+            }
+            if(kcount >= 2 && skills[skill].Skill < 15){
+                canIncrease = true;
+            }
+        }
+        return canIncrease
+    }
     function gainSkillWithPromptForKnowledge(prompt,skill,callback){
         if(typeof skill !== "string" && skill.length == 2){
                 gainSkillWithPromptForKnowledge(prompt,skill[0],function(x){
@@ -379,7 +397,11 @@ export function createCharacter(roller, species){
             
         }else{
             if(KnowledgeSpecialties[skill]){
-                pickOption(KnowledgeSpecialties[skill],prompt + " Choose a specialized "+skill+" knowledge.",function(x){ proceed(x); },true)
+                var specialties = KnowledgeSpecialties[skill];
+                if(canGainBaseSkill(skill)){
+                    specialties = ["<!>Increase " + skill + " skill"].concat(specialties);
+                }
+                pickOption(specialties,prompt + " Choose a specialized "+skill+" knowledge.",function(x){ proceed(x); },true)
             }else{proceed(undefined);}
             function proceed(chosenKnowledge){
                 var remarks = gainSkillOrKnowledge(skill,chosenKnowledge,false, prompt);
@@ -1162,6 +1184,7 @@ export function createCharacter(roller, species){
             }
         }
     }
+    
     function gainTermSkills(num,career,updateFunc,callback){
         var tables = CareerSkillTables[career];
         if(num > 0){
@@ -1202,8 +1225,7 @@ export function createCharacter(roller, species){
                         var getDegreeLabel = (x,i,ar)=>{return x.label;};
                         var choices = removeDuplicates(minors.map(getDegreeLabel));
                         pickOption(choices,"You can increase a Minor",(choice)=>{
-                            var skill, knowledge;
-                            
+                            var skill, knowledge;                           
                             for(var i = 0, len = minors.length; i < len; i++){
                                 if(minors[i].label == choice){
                                     skill = minors[i].skill, knowledge = minors[i].knowledge;
@@ -1251,17 +1273,18 @@ export function createCharacter(roller, species){
                     record("Would gain "+newSkill+" from " + table + " here.");
                     nextSteps(num);
                 }else{
-                    if(KnowledgeSpecialties[newSkill]){
-                        (function(num){
-                            pickOption(KnowledgeSpecialties[newSkill],"Choose a "+newSkill+" knowledge.",(k)=>{
-                                gainSkillOrKnowledge(newSkill,k,false,note);
-                                nextSteps(num);
-                            },true);
-                        })(num);
-                    }else{
-                        gainSkillOrKnowledge(newSkill,undefined,false,note);
-                        nextSteps(num);
-                    }
+                    gainSkillWithPromptForKnowledge(note,newSkill,()=>{nextSteps(num);});
+                    // if(KnowledgeSpecialties[newSkill]){
+                    //     (function(num){
+                    //         pickOption(KnowledgeSpecialties[newSkill],"Choose a "+newSkill+" knowledge.",(k)=>{
+                    //             gainSkillOrKnowledge(newSkill,k,false,note);
+                    //             nextSteps(num);
+                    //         },true);
+                    //     })(num);
+                    // }else{
+                    //     gainSkillOrKnowledge(newSkill,undefined,false,note);
+                    //     nextSteps(num);
+                    // }
                     
                 }                
                 

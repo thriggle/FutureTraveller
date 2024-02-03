@@ -15,8 +15,14 @@ export function pickOption(choices,prompt,callback,noCancel){
     dialogText.insertAdjacentHTML("beforeend","<span>"+prompt+"</span>");
     for(var i = 0, len = choices.length; i < len; i++){
         var option = selector.appendChild(document.createElement("option"));
-        option.value = choices[i];
-        option.innerHTML = choices[i];
+        var val = choices[i];
+        if(val.indexOf("<!>") === 0){
+            option.innerHTML = val.substring(3);
+            option.value = "undefined";
+        }else{
+            option.value = val;
+            option.innerHTML = val;
+        }
     }
     dialogCallback = function(){ callback(selector.value); };
     dialog.showModal();
