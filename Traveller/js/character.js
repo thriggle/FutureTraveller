@@ -1166,6 +1166,8 @@ export function createCharacter(roller, species){
             };
             pickOption(tables.Tables,"Choose a skill table ("+(num+1)+" picks remaining):",(table)=>{
                 var newSkill = tables[table][roller.d6().result-1];
+                //record(table + ": " + newSkill); updateFunc();
+                var note = "("+table + ": " + newSkill+")";
                 if(table === "Personal"){
                     var index = +(newSkill.substring(1))-1;
                     gainCharacteristic(index,1);
@@ -1181,7 +1183,7 @@ export function createCharacter(roller, species){
                                     break;
                                 }
                             }
-                            gainSkillOrKnowledge(skill,knowledge,false);
+                            gainSkillOrKnowledge(skill,knowledge,false,note);
                             nextSteps(num);
                         },true);
                     }else{
@@ -1199,7 +1201,7 @@ export function createCharacter(roller, species){
                                     break;
                                 }
                             }
-                            gainSkillOrKnowledge(skill,knowledge,false);
+                            gainSkillOrKnowledge(skill,knowledge,false,note);
                             nextSteps(num);
                         },true);
                     }else{
@@ -1207,23 +1209,27 @@ export function createCharacter(roller, species){
                         nextSteps(num);
                     }
                 }else if(newSkill === "One Trade"){
-                    record("Would gain "+newSkill+" from " + table + " here.");
-                    gainSkillWithPromptForCategory("One Trade: ","TRADE",()=>{nextSteps(num)})
+                    (function(num){
+                        gainSkillWithPromptForCategory(note,"TRADE",()=>{nextSteps(num);});
+                    })(num);
                 }else if(newSkill === "One Art"){
-                    record("Would gain "+newSkill+" from " + table + " here.");
-                    gainSkillWithPromptForCategory("One Art: ","ART",()=>{nextSteps(num)})
+                    (function(num){
+                        gainSkillWithPromptForCategory(note,"ART",()=>{nextSteps(num);});
+                    })(num);
                 }else if(newSkill === "One Science"){
-                    record("Would gain "+newSkill+" from " + table + " here.");
-                    pickOption(Knowledges[ENUM_SKILLS.Science],"Choose a science knowledge",(choice)=>{
-                        gainSkillOrKnowledge(ENUM_SKILLS.Science,choice,false);
+                    (function(num){
+                    pickOption(KnowledgeSpecialties[ENUM_SKILLS.Science],"Choose a science knowledge",(choice)=>{
+                        gainSkillOrKnowledge(ENUM_SKILLS.Science,choice,false,note);
                         nextSteps(num);
-                    },true);
+                    },true);})(num);
                 }else if(newSkill === "Soldier Skill"){
-                    record("Would gain "+newSkill+" from " + table + " here.");
-                    gainSkillWithPromptForCategory("Soldier Skill: ","SOLDIER",()=>{nextSteps(num)})
+                    (function(num){
+                        gainSkillWithPromptForCategory(note,"SOLDIER",()=>{nextSteps(num);});
+                    })(num);
                 }else if(newSkill === "Starship Skill"){
-                    record("Would gain "+newSkill+" from " + table + " here.");
-                    gainSkillWithPromptForCategory("Starship Skill: ","SHIP",()=>{nextSteps(num)})
+                    (function(num){
+                    gainSkillWithPromptForCategory(note,"SHIP",()=>{nextSteps(num);});
+                    })(num);
                 }else if(newSkill === "Any Knowledge"){
                     record("Would gain "+newSkill+" from " + table + " here.");
                     nextSteps(num);
@@ -1236,8 +1242,18 @@ export function createCharacter(roller, species){
                     record("Would gain "+newSkill+" from " + table + " here.");
                     nextSteps(num);
                 }else{
-                    gainSkillOrKnowledge(newSkill,undefined,false);
-                    nextSteps(num);
+                    if(KnowledgeSpecialties[newSkill]){
+                        (function(num){
+                            pickOption(KnowledgeSpecialties[newSkill],"Choose a "+newSkill+" knowledge.",(k)=>{
+                                gainSkillOrKnowledge(newSkill,k,false,note);
+                                nextSteps(num);
+                            },true);
+                        })(num);
+                    }else{
+                        gainSkillOrKnowledge(newSkill,undefined,false,note);
+                        nextSteps(num);
+                    }
+                    
                 }                
                 
             },true);

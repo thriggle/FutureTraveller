@@ -223,8 +223,8 @@ export var CareerSkillTables = {
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
         "Travel":["Seafarer","Navigator","Hostile Environ","Flyer","Driver","Vacc Suit"],
         "General":["Admin","Broker","Computer","Animals","Bureaucrat","Trader"],
-        "Business":["Diplomat","Sensors","Trader","Teacher","Fighter","Streetwise"],
-        "Vocation":["Survey","Flyer","Language","Starship Skill","Engineer","Comms"],
-        "Avocation":["One Art","One Science","Seafarer","Athlete","Medic","One Trade"]
+        "Business":["Advocate","Broker","Trader","Liaison","Counsellor","Teacher"],
+        "Vocation":["One Art","One Science","One Trade","Driver","Bureaucrat","Computer"],
+        "Avocation":["One Art","One Science","JOT","Athlete","Medic","One Trade"]
     }
 }
