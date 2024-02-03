@@ -1180,12 +1180,13 @@ export function createCharacter(roller, species){
                     nextSteps(num);
                 }else if(newSkill === "Major"){
                     if(majors.length > 0){
+                        var getDegreeLabel = (x,i,ar)=>{return x.label;};
                         var choices = removeDuplicates(majors.map(getDegreeLabel));
                         pickOption(choices,"You can increase a Major",(choice)=>{
                             var skill, knowledge;
-                            for(var i = 0, len = choices.length; i < len; i++){
-                                if(choices[i].label == choice){
-                                    skill = choices[i].skill, knowledge = choices[i].knowledge;
+                            for(var i = 0, len = majors.length; i < len; i++){
+                                if(majors[i].label == choice){
+                                    skill = majors[i].skill, knowledge = majors[i].knowledge;
                                     break;
                                 }
                             }
@@ -1198,12 +1199,14 @@ export function createCharacter(roller, species){
                     }
                 }else if(newSkill === "Minor"){
                     if(minors.length > 0){
+                        var getDegreeLabel = (x,i,ar)=>{return x.label;};
                         var choices = removeDuplicates(minors.map(getDegreeLabel));
                         pickOption(choices,"You can increase a Minor",(choice)=>{
                             var skill, knowledge;
-                            for(var i = 0, len = choices.length; i < len; i++){
-                                if(choices[i].label == choice){
-                                    skill = choices[i].skill, knowledge = choices[i].knowledge;
+                            
+                            for(var i = 0, len = minors.length; i < len; i++){
+                                if(minors[i].label == choice){
+                                    skill = minors[i].skill, knowledge = minors[i].knowledge;
                                     break;
                                 }
                             }
