@@ -46,7 +46,7 @@ export function clearElement(el) {
 }
 function awards(character,element){
     var awards = character.getAwards();
-    element.insertAdjacentHTML("beforeend","<div>" + awards.join(", ") + "<div>");
+    element.insertAdjacentHTML("beforeend","<div>" + awards.map((val,i,arr)=>{return "<span class=\"award\" >"+val + (i==arr.length-1?" ":", ")+"</span>"}).join("") + "<div>");
     var majors = character.getMajorsLabels();
     if(awards.length > 0 && majors.length > 0){
         element.insertAdjacentHTML("beforeend","<hr/>");
