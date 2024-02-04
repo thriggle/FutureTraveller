@@ -1316,25 +1316,27 @@ export function createCharacter(roller, species){
                                 for(var i = 0, len = awards.length; i < len; i++){
                                     var award = awards[i];
                                     if(award === "Army Reserves"){
-                                        reserves.push(ENUM_CAREERS.Soldier);
+                                        reserves.push({career:ENUM_CAREERS.Soldier,reserves:award});
                                     }else if(award === "Navy Reserves"){
-                                        reserves.push(ENUM_CAREERS.Spacer);
+                                        reserves.push({career:ENUM_CAREERS.Spacer,reserves:award});
                                     }else if(award === "Marine Reserves"){
-                                        reserves.push(ENUM_CAREERS.Marine);
+                                        reserves.push({career:ENUM_CAREERS.Marine,reserves:award});
                                     }
                                 }
                                 var reserve = reserves[(roller.random() * reserves.length) >>> 0];
-                                record("Called up by the " + reserve+ "!");
+                                record("Called up by the " + reserve.reserves+ "!");
                                 updateFunc();
                                 musterOut(career,
                                     updateFunc,
                                     ()=>{
                                         updateFunc();
-                                        resolveCareer(reserve,updateFunc);
+                                        resolveCareer(reserve.career,updateFunc);
                                     });
+                            }else{
+                                resolveCareer(career,updateFunc);
                             }
                         }else{
-                            resolveCareer(career,updateFunc,);
+                            resolveCareer(career,updateFunc);
                         }
                     }else{
                         record("Failed Continue roll. Begin adventuring.")
@@ -1363,15 +1365,7 @@ export function createCharacter(roller, species){
             record("Cannot transfer to Citizen career from another career.")
             updateFunc();
         }else{
-            if(priorCareers == 0 || careers[priorCareers - 1].active == false){
-                careers.push({career:career,terms:1,active:true});
-                CCs = getCCs(career);
-            }else{
-                careers[careers.length-1].terms += 1;
-            }
-            updateFunc();
-            var termNumber = careers[careers.length-1].terms
-            if(CCs.length == 0){
+            if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
                 CCs = getCCs(career);
             }
             var nextSteps = function(){
@@ -1383,6 +1377,13 @@ export function createCharacter(roller, species){
                 });
             };
             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                if(priorCareers == 0 || careers[priorCareers - 1].active == false){
+                    careers.push({career:career,terms:1,active:true});
+                }else{
+                    careers[careers.length-1].terms += 1;
+                }
+                updateFunc();
+                var termNumber = careers[careers.length-1].terms;
                 CCs.splice(CCs.indexOf(selectedCC),1);
                 record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                 updateFunc();
@@ -1488,7 +1489,7 @@ export function createCharacter(roller, species){
                     nextSteps();
                 }
                 
-            });
+            },true);
         }
     }
     function removeDuplicates(arr){
