@@ -548,6 +548,7 @@ export function createCharacter(roller, species){
             }
         }else{
             remarks = "Character is ineligible for Trade School due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.EDU+". ";
+            record(remarks);
         }
         return remarks;
     }
@@ -589,6 +590,7 @@ export function createCharacter(roller, species){
             }
         }else{
             remarks = "Character is ineligible for Training Course due to having " + characteristics[4].name + " instead of " + ENUM_CHARACTERISTICS.TRA+". ";
+            record(remarks);
         }
         return remarks;
     }
@@ -597,6 +599,7 @@ export function createCharacter(roller, species){
         var remarks = "";
         if(age > species.getFirstYearOfStage(3)){
             remarks += "Character ineligible for apprenticeship due to having passed the age of apprenticeship ("+species.getFirstYearOfStage(3)+").";
+            record(remarks);
         }else{
             var result = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,2,0);
             remarks = "Apprenticeship: " + result.remarks;

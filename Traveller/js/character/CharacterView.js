@@ -460,6 +460,9 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
 function newCharacter(){
     clear();
     person = createCharacter(roller, human);
+    if(document.getElementById("txtName").value){
+        person.setName(document.getElementById("txtName").value);
+    }
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if(document.getElementById("rdoAttributesNatural").checked){
         person.rollStatsFromGenes(["Random","Random","Random","Random"]);
