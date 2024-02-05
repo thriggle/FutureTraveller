@@ -28,17 +28,55 @@ export function pickOption(choices,prompt,callback,noCancel){
     dialog.showModal();
 }
 export function getDialog(){
+    var pos1 = 0, yDiff = 0;
+    var startY;
     var existingDialog = document.getElementById("dialog"), existingSelector = document.getElementById("slctDialog"), dialogText = document.getElementById("txtDialog");
     if(existingDialog){
         return {dialog:existingDialog,selector:existingSelector,dialogText:dialogText}
     }else{
-        var dialog = document.body.appendChild(document.createElement("dialog")); dialog.id = "dialog";
+        var dialog = document.body.appendChild(document.createElement("dialog")); dialog.id = "dialog"; dialog.style.position = "absolute"; dialog.style.top = "0px";
+        var dialogHandle = dialog.appendChild(document.createElement("div"));
+        dialogHandle.style.cursor = "move"; dialogHandle.style.backgroundColor = "black"; dialogHandle.style.borderTop = "1rem solid black"; dialogHandle.style.marginTop="0px";
         var dialogText = dialog.appendChild(document.createElement("div")); dialogText.id = "txtDialog";
         var selector = dialog.appendChild(document.createElement("select")); selector.id = "slctDialog";
         var dlgBtn = dialog.appendChild(document.createElement("input")); dlgBtn.setAttribute("type","button"); dlgBtn.setAttribute("value","OK"); dlgBtn.id = "dlgBtn";
         var cancelDlgBtn = dialog.appendChild(document.createElement("input")); cancelDlgBtn.setAttribute("type","button"); cancelDlgBtn.setAttribute("value","Cancel"); cancelDlgBtn.id = "cancelDlgBtn";
-        dlgBtn.addEventListener("click",() =>{ dialog.close(selector.value); dialogCallback(selector.value); });
-        cancelDlgBtn.addEventListener("click",function(){ dialog.close(false); });
+        dlgBtn.addEventListener("click",() =>{ dialog.style.top = "0px"; dialog.close(selector.value); dialogCallback(selector.value); });
+        cancelDlgBtn.addEventListener("click",function(){ dialog.style.top = "0px"; dialog.close(false); });
+        dialogHandle.onmousedown = dragMouseDown;
+        dialogHandle.ontouchstart = dragMouseDown;
+        var baseOffsetTop = undefined;
+        startY = dialog.getBoundingClientRect().top;
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            if(typeof baseOffsetTop == "undefined"){
+                baseOffsetTop = dialog.getBoundingClientRect().top;
+            }
+            startY = dialog.getBoundingClientRect().top; 
+            pos1 = e.clientY || e.targetTouches[0].pageY;
+            document.onmouseup = closeDragElement;
+            // call a function whenever the cursor moves:
+            document.onmousemove = elementDrag;
+            document.ontouchmove = elementDrag;
+            document.ontouchend = closeDragElement;
+          }
+          function elementDrag(e) {
+            e = e || window.event;
+            var newY = e.clientY || e.targetTouches[0].pageY;
+            // calculate the new cursor position:
+            yDiff = pos1 - newY;
+            // set the element's new position:
+            var newPos =  dialog.getBoundingClientRect().top - baseOffsetTop - yDiff >> 0;
+            dialog.style.top = newPos + "px";
+          }
+          function closeDragElement() {
+            dialog.style.top = "0px";
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchmove = null;
+            document.ontouchend = null;
+          }
         return {dialog:dialog,selector:selector,dialogText:dialogText}
     }
     
