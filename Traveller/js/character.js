@@ -1307,14 +1307,15 @@ export function createCharacter(roller, species){
     }
     function promptContinue(career,updateFunc){
         //var switchCareer = confirm("Do you want to switch from "+career+" to a different career?");
-        pickOption(["Continue with this career","Change careers"],"Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
-            var switchCareer = switchCareerChoice === "Change careers";
+        pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch to "+career+" to a different career?",(switchCareerChoice)=>{
+            var switchCareer = switchCareerChoice === "Switch to a new career";
             if(!switchCareer){
                 // steps to try continuing
                 var continueResult = roller.d6(2);
                 if(continueResult.result === 2){
                     if(species.getLifeStageFromAge(age) < 9 && 
-                        (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 )
+                        (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 ) &&
+                        [ENUM_CAREERS.Soldier,ENUM_CAREERS.Spacer,ENUM_CAREERS.Marine].indexOf(career) == -1
                     ){
                         var reserves = [];
                         for(var i = 0, len = awards.length; i < len; i++){
@@ -1351,7 +1352,7 @@ export function createCharacter(roller, species){
                         break;
                     }
                     if(passedContinueRoll){
-                        pickOption(["Continue with this career","Muster out and start adventuring"],"Do you want to serve another term in this career or start adventuring?",(choice)=>{
+                        pickOption(["Continue with this career","Start adventuring"],"Continue Roll was successful. <br/> Do wish to continue this career or start adventuring?",(choice)=>{
                             if(choice === "Continue with this career"){
                                 resolveCareer(career,updateFunc);
                             }else{

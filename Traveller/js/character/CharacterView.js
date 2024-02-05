@@ -462,6 +462,8 @@ function newCharacter(){
     person = createCharacter(roller, human);
     if(document.getElementById("txtName").value){
         person.setName(document.getElementById("txtName").value);
+    }else{
+        person.setName(nameGenerator.getRandomName("human"));
     }
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if(document.getElementById("rdoAttributesNatural").checked){
