@@ -159,20 +159,7 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
         }
         return currentText.replace(/\s+/g," ");
     }
-    function addCaps(text) {
-        var capitalizedString = "";
-        var lastCharacter = null, currCharacter = " ";
-        for (var i = 0, len = text.length; i < len; i++) {
-            lastCharacter = currCharacter;
-            currCharacter = text[i];
-            if (lastCharacter === " " || lastCharacter === "-") {
-                capitalizedString += currCharacter.toUpperCase();
-            } else {
-                capitalizedString += currCharacter;
-            }
-        }
-        return capitalizedString;
-    }
+    
     function unpackStringTemplate(template) {
         var bracketDepth = 0;
         var phraseArray = [];
@@ -344,4 +331,18 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
         }
         return weightedPatterns;
     }
+}
+export function addCaps(text) {
+    var capitalizedString = "";
+    var lastCharacter = null, currCharacter = " ";
+    for (var i = 0, len = text.length; i < len; i++) {
+        lastCharacter = currCharacter;
+        currCharacter = text[i];
+        if (lastCharacter === " " || lastCharacter === "-") {
+            capitalizedString += currCharacter.toUpperCase();
+        } else {
+            capitalizedString += currCharacter;
+        }
+    }
+    return capitalizedString;
 }

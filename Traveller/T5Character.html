@@ -138,6 +138,7 @@
         #slctDialog{ margin-left:1rem;}
         #slctDialog,#dlgBtn,#cancelDlgBtn{ margin-bottom:1rem;}
         #cancelDlgBtn{ margin-right:1rem;}
+        [data-name]{font-weight: bold; margin-right: 1rem;}
     </style>
     <script src="./js/character/CharacterView.js" type="module"></script>
     <nav class="menu">
@@ -162,6 +163,7 @@
                 <div style="flex:2">
                     <fieldset>
                         <legend>Origin</legend>
+                        <label for="txtName">Name: <input type="text" id="txtName" /><button id="btnRandomName">roll</button><button id="btnApplyName">apply</button> </label><br/>
                         <label for="slctNativeLanguage">Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
                             <option value="!kee">!kee</option>
                             <option selected="selected" value="Anglic">Anglic</option>
@@ -289,6 +291,7 @@
             <div style="flex-shrink:2; flex:4;" >
             <fieldset style="display:flex; flex-direction:row; flex-wrap:wrap;">
                 <legend>Character Sheet</legend>
+                <label for="">Name: <span data-name></span></label>&nbsp;<label for="">Age: </label><span data-ageblock=""></span> <br/>
                 <fieldset>
                     <legend>Stats</legend>
                     <div data-statblock="" style="white-space: nowrap;"></div>
@@ -324,7 +327,7 @@
     </div>
     <div data-tier="1" data-nav="sheet">
 
-            <label for="">Age: </label><span data-ageblock=""></span><br/>
+        <label for="">Name: <span data-name></span></label>&nbsp;<label for="">Age: </label><span data-ageblock=""></span> <br/>
             
             <fieldset>
                 <legend>Stats</legend>

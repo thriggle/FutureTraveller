@@ -5,13 +5,16 @@ import {CLASS_SPECIES} from "./character/species.js";
 import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills, Knowledges as KnowledgeSpecialties, ArtSkills, TradeSkills } from "./character/skills.js";
 import { getDialog, dialogCallback, pickOption, pickSkill } from "./character/dialog.js";
 import { ENUM_CAREERS, getCCs, citizenLifeJob, CareerSkillTables } from "./character/careers.js";
+
 export function createCharacter(roller, species){
     if(typeof roller === "undefined"){
         roller = getRollerFromSeed();
     }
+    
     if(typeof species === "undefined"){
         species = human;
     }
+    var name = "J. Doe";
     var majors = [], minors = [], history = [];
     var nativeLanguage = "Anglic";
     var languageReceipts = 0; var edu_waivers = 0; var awards = [];
@@ -1533,6 +1536,8 @@ export function createCharacter(roller, species){
         return message;
     }
     function setForcedGrowthClone(isClone){isForcedGrowthClone = isClone;}
+    function setName(newName){ name = newName; }
+    function getName(){ return name; }
     function check(target,difficulty,mods,remarks){
         target += mods;
         var result = 0, rolls = [];
@@ -1851,6 +1856,6 @@ export function createCharacter(roller, species){
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics,
-        resolveCareer, getCareers
+        resolveCareer, getCareers, getName, setName
     }
 }

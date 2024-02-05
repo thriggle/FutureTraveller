@@ -6,9 +6,11 @@ import { ENUM_CHARACTERISTICS } from "./species.js";
 import { renderCharacter, clearElement } from "./character_renderer.js";
 import { dialogCallback, getDialog, pickOption, pickSkill } from "./dialog.js";
 import { ENUM_CAREERS } from "./careers.js";
-
-
+import { NameGenerator, addCaps } from "../NameGeneratorModule.js";
+import { getNames } from "../names.js";
+var nameGenerator;
 var roller = getRollerFromSeed(), person;
+NameGenerator(getNames(),(generator)=>{ nameGenerator = generator;},undefined,roller.random,true);
 //document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
 newCharacter(); 
 var collapserHandles = document.querySelectorAll("fieldset legend");
@@ -43,6 +45,13 @@ function onNavigate(e){
         document.querySelector("[data-nav='"+target+"']"+tierselector).style.display = "block";
     }
 }
+document.getElementById("btnRandomName").addEventListener("click",()=>{
+    document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human"));
+});
+document.getElementById("btnApplyName").addEventListener("click",()=>{
+    person.setName(document.getElementById("txtName").value);
+    redraw();
+});
 document.getElementById("btnReset").addEventListener("click",newCharacter);
 document.getElementById("btnRandomHWTCs").addEventListener("click",function(){
     document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
