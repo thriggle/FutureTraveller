@@ -10,6 +10,7 @@ export function renderCharacter(character,element){
     injectHTML("[data-awards]",awards);
     injectHTML("[data-history]",history);
     injectHTML("[data-careers]",careers);
+    injectHTML("[data-credits]",renderCredits);
     function injectHTML(selector,htmlfunc){
         var elements = document.querySelectorAll(selector);
         for(var i = 0, len = elements.length; i < len; i++){
@@ -26,6 +27,9 @@ function careers(character,element){
 }
 function renderName(character,element){
     element.insertAdjacentHTML("beforeend","<span>"+ character.getName() + "</span>");
+}
+function renderCredits(character,element){
+    element.insertAdjacentHTML("beforeend","<span>Cr"+ character.getCredits() + "</span>");
 }
 function history(character, element){
     var events = character.getHistory();
