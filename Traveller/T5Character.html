@@ -133,6 +133,13 @@
         [data-tier='2']{
             background-color:#dfdfdf;
         }
+        #dialog{ padding:0px;}
+        #txtDialog{ padding:1rem;}
+        #slctDialog{ margin-left:1rem;}
+        #slctDialog,#dlgBtn,#cancelDlgBtn{ margin-bottom:1rem;}
+        #cancelDlgBtn{ margin-right:1rem;}
+        [data-name],[data-ageblock]{font-weight: bold; margin-right: 0.5rem;}
+        [data-credits]{font-weight: bold;}
     </style>
     <script src="./js/character/CharacterView.js" type="module"></script>
     <nav class="menu">
@@ -157,6 +164,7 @@
                 <div style="flex:2">
                     <fieldset>
                         <legend>Origin</legend>
+                        <label for="txtName">Name: <input type="text" id="txtName" /><button id="btnRandomName">roll</button><button id="btnApplyName">apply</button> </label><br/>
                         <label for="slctNativeLanguage">Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
                             <option value="!kee">!kee</option>
                             <option selected="selected" value="Anglic">Anglic</option>
@@ -282,8 +290,12 @@
         </fieldset>
         <div style="display:flex;">
             <div style="flex-shrink:2; flex:4;" >
+                
             <fieldset style="display:flex; flex-direction:row; flex-wrap:wrap;">
                 <legend>Character Sheet</legend>
+                <div style="width:100%;">
+                    <label for="" style="white-space:nowrap">Name: <span data-name></span></label> <label style="white-space:nowrap" for="">Age: <span data-ageblock=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
+                </div>
                 <fieldset>
                     <legend>Stats</legend>
                     <div data-statblock="" style="white-space: nowrap;"></div>
@@ -319,7 +331,9 @@
     </div>
     <div data-tier="1" data-nav="sheet">
 
-            <label for="">Age: </label><span data-ageblock=""></span><br/>
+        <div>
+            <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span data-ageblock=""></span> 
+        </div>
             
             <fieldset>
                 <legend>Stats</legend>
@@ -331,7 +345,8 @@
             </fieldset>
             <fieldset>
                 <legend>Awards</legend>
-                <div data-awards=""></div>
+                <div data-awards=""></div> 
+                <div data-credits=""></div> 
             </fieldset>
             <fieldset>
                 <legend>Careers</legend>

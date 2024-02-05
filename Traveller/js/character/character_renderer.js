@@ -3,12 +3,14 @@ import { ENUM_CHARACTERISTICS } from "./species.js";
 
 export function renderCharacter(character,element){
     console.log(character.getHistory());
+    injectHTML("[data-name]",renderName);
     injectHTML("[data-ageblock]",ageBlock);
     injectHTML("[data-statblock]",statBlock)
     injectHTML("[data-skillblock]",skillBlock);
     injectHTML("[data-awards]",awards);
     injectHTML("[data-history]",history);
     injectHTML("[data-careers]",careers);
+    injectHTML("[data-credits]",renderCredits);
     function injectHTML(selector,htmlfunc){
         var elements = document.querySelectorAll(selector);
         for(var i = 0, len = elements.length; i < len; i++){
@@ -22,6 +24,12 @@ function careers(character,element){
     for(var i =0, len = careers.length; i < len; i++){
         element.insertAdjacentHTML("beforeend","<div>"+careers[i].career+", " + careers[i].terms + " terms</div>");
     }
+}
+function renderName(character,element){
+    element.insertAdjacentHTML("beforeend","<span>"+ character.getName() + "</span>");
+}
+function renderCredits(character,element){
+    element.insertAdjacentHTML("beforeend","<span>Cr"+ character.getCredits() + "</span>");
 }
 function history(character, element){
     var events = character.getHistory();

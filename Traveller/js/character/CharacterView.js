@@ -6,9 +6,11 @@ import { ENUM_CHARACTERISTICS } from "./species.js";
 import { renderCharacter, clearElement } from "./character_renderer.js";
 import { dialogCallback, getDialog, pickOption, pickSkill } from "./dialog.js";
 import { ENUM_CAREERS } from "./careers.js";
-
-
+import { NameGenerator, addCaps } from "../NameGeneratorModule.js";
+import { getNames } from "../names.js";
+var nameGenerator;
 var roller = getRollerFromSeed(), person;
+NameGenerator(getNames(),(generator)=>{ nameGenerator = generator;},undefined,roller.random,true);
 //document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
 newCharacter(); 
 var collapserHandles = document.querySelectorAll("fieldset legend");
@@ -43,6 +45,13 @@ function onNavigate(e){
         document.querySelector("[data-nav='"+target+"']"+tierselector).style.display = "block";
     }
 }
+document.getElementById("btnRandomName").addEventListener("click",()=>{
+    document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human"));
+});
+document.getElementById("btnApplyName").addEventListener("click",()=>{
+    person.setName(document.getElementById("txtName").value);
+    redraw();
+});
 document.getElementById("btnReset").addEventListener("click",newCharacter);
 document.getElementById("btnRandomHWTCs").addEventListener("click",function(){
     document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
@@ -451,6 +460,11 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
 function newCharacter(){
     clear();
     person = createCharacter(roller, human);
+    if(document.getElementById("txtName").value){
+        person.setName(document.getElementById("txtName").value);
+    }else{
+        person.setName(nameGenerator.getRandomName("human"));
+    }
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if(document.getElementById("rdoAttributesNatural").checked){
         person.rollStatsFromGenes(["Random","Random","Random","Random"]);
@@ -507,6 +521,7 @@ function redraw(){
     renderCharacter(person, document.body);
 }
 document.getElementById("btnCitizen").addEventListener("click",function(){
+    document.getElementById("btnCitizen").setAttribute("disabled","disabled");
     person.resolveCareer(ENUM_CAREERS.Citizen,redraw);
 });
 function log(msg){
