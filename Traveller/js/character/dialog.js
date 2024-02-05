@@ -16,7 +16,7 @@ export function pickOption(choices,prompt,callback,noCancel){
     for(var i = 0, len = choices.length; i < len; i++){
         var option = selector.appendChild(document.createElement("option"));
         var val = choices[i];
-        if(val.indexOf("<!>") === 0){
+        if(val.toString().indexOf("<!>") === 0){
             option.innerHTML = val.substring(3);
             option.value = "undefined";
         }else{

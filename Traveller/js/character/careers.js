@@ -228,3 +228,33 @@ export var CareerSkillTables = {
         "Avocation":["One Art","One Science","JOT","Athlete","Medic","One Trade"]
     }
 }
+export var CareerBenefitTables = {
+    "Citizen":{
+        "Money":[
+            {label:"Low Psg",type:"award"},
+            {label:"Low Psg",type:"award"},
+            {label:"Mid Psg",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"Cr 15,000",type:"money",amount:15000},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 25,000",type:"money",amount:25000},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 35,000",type:"money",amount:35000},
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"Cr 50,000",type:"money",amount:50000},
+        ],
+        "Benefits":[
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"C3 +1",type:"characteristic",characteristic:"C3"},
+            {label:"Int +1",type:"characteristic",characteristic:"C4"},
+            {label:"Soc +1",type:"characteristic",characteristic:"Soc"},
+            {label:"TAS Fellow",type:"award"},
+            {label:"Ship Share",type:"share",amount:1}            
+        ]
+    }
+};

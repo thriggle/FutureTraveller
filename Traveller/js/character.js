@@ -4,7 +4,7 @@ import { ENUM_CHARACTERISTICS } from "./character/species.js";
 import {CLASS_SPECIES} from "./character/species.js";
 import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills, Knowledges as KnowledgeSpecialties, ArtSkills, TradeSkills } from "./character/skills.js";
 import { getDialog, dialogCallback, pickOption, pickSkill } from "./character/dialog.js";
-import { ENUM_CAREERS, getCCs, citizenLifeJob, CareerSkillTables } from "./character/careers.js";
+import { ENUM_CAREERS, getCCs, citizenLifeJob, CareerSkillTables, CareerBenefitTables } from "./character/careers.js";
 
 export function createCharacter(roller, species){
     if(typeof roller === "undefined"){
@@ -40,6 +40,7 @@ export function createCharacter(roller, species){
     var age = 0, isForcedGrowthClone = false;
     var statRollResults = rollStats();
     var careers = [], CCs = [];
+    var fame = 0, credits = 0;
     var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined
     var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
     function rollStats(){
@@ -70,6 +71,8 @@ export function createCharacter(roller, species){
         if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.INS){ genetics.push(statRolls[4].rolls[0]);}
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         edu_waivers = 0; //characteristics[5].value-edu_waivers; 
+        fame = 0; credits = 0;
+        careers = [], CCs = [];
         return {statRolls, characteristics, genetics}
     }
     
@@ -91,6 +94,8 @@ export function createCharacter(roller, species){
         record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
             characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
         );
+        credits = 0; fame = 0;
+        careers = [], CCs = [];
     }
     function getCharacteristics(){
         return characteristics;
@@ -138,6 +143,8 @@ export function createCharacter(roller, species){
         record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
             characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
         );
+        credits = 0, fame = 0;
+        careers = [], CCs = [];
     }
     function addMajor(skill,knowledge){
         var hasAlready = false;
@@ -1310,7 +1317,6 @@ export function createCharacter(roller, species){
         pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch to "+career+" to a different career?",(switchCareerChoice)=>{
             var switchCareer = switchCareerChoice === "Switch to a new career";
             if(!switchCareer){
-                // steps to try continuing
                 var continueResult = roller.d6(2);
                 if(continueResult.result === 2){
                     if(species.getLifeStageFromAge(age) < 9 && 
@@ -1352,34 +1358,179 @@ export function createCharacter(roller, species){
                         break;
                     }
                     if(passedContinueRoll){
-                        pickOption(["Continue with this career","Start adventuring"],"Continue Roll was successful. <br/> Do wish to continue this career or start adventuring?",(choice)=>{
+                        pickOption(["Continue with this career","Muster Out"],"Continue Roll was successful. <br/> Do wish to continue this career or start adventuring?",(choice)=>{
                             if(choice === "Continue with this career"){
                                 resolveCareer(career,updateFunc);
                             }else{
                                 record("Chose to muster out and begin adventuring.");
                                 updateFunc();
-                                musterOut(career,updateFunc);
+                                musterOut(updateFunc);
                             }
                         },true);
                     }else{
                         record("Failed Continue roll. Begin adventuring.")
                         updateFunc();
-                        musterOut(career,updateFunc);
+                        musterOut(updateFunc);
                     }
                 }
             }else{
-                musterOut(career,updateFunc);
+                careers[careers.length-1].active = false;
+                record("Concluded "+career+" career to pursue other opportunities.");
+                updateFunc();
+                //musterOut(career,updateFunc);
             }
         },true);               
     }
-    function musterOut(career, updateFunc, callback){
-        record("Mustered out of " + career + " career.");
-        careers[careers.length-1].active = false;
+    function musterOut(updateFunc, callback){
         if(typeof callback === "undefined"){ callback = ()=>{};}
-
-        // 
         updateFunc();
-        callback();
+        var totalRolls = 0, priorCareer = false, priorCareerDM = 0;
+        for(var i = careers.length-1; i >= 0; i--){
+            var career = careers[i];
+            var numRolls = career.terms;
+            career.numRolls = numRolls;
+            
+            if(career.career === ENUM_CAREERS.Functionary){
+                priorCareer = career.priorCareer;
+                priorCareerDM = career.terms;
+            }else if(priorCareer === career.career){
+                career.benefitDM = priorCareerDM;
+                priorCareer = false; priorCareerDM = 0;
+            }else{
+                career.benefitDM = 0;
+            }
+            if(career.awards && career.awards.length > 0){
+                if(career.awards.indexOf("Disabled") >= 0){
+                    career.numRolls *= 2;
+                }
+                for(var j = 0, jlen = career.awards.length; j<jlen; j++){
+                    var award = career.awards[j];
+                    if(award.indexOf("Commendation") === 0 || award === "MCG" || award === "SEH"){
+                        career.numRolls += 1;
+                    }
+                }
+            }
+            totalRolls += career.numRolls;
+        }
+        if(fame >= 19){ careers[careers.length-1].numRolls += 1; totalRolls += 1;}
+
+        record("Total benefit rolls: " + totalRolls);
+        updateFunc();
+
+        var careerIndex = 0;
+        var musterContinue = function(){
+            careerIndex += 1;
+            if(careerIndex < careers.length){
+                updateFunc();
+                musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
+            }else{
+                record("Ready to begin adventuring!");
+                updateFunc();
+                callback();
+            }
+        };
+        musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
+    }
+    function musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback){
+        if(rollsRemaining > 0){
+            rollsRemaining -= 1;
+            var career = careers[careerIndex];
+            switch(career.career){
+                case ENUM_CAREERS.Citizen:
+                    updateFunc();
+                    pickOption(["Money","Benefits"],"Choose a table for Citizen benefits.<br/>("+(rollsRemaining+1)+" rolls remaining)",(choice)=>{
+                        switch(choice){
+                            case "Money": 
+                            var maxMod = career.terms + career.benefitDM;
+                            var roll = roller.d6().result; var rollChoices = []
+                            for(var i = 0; i <= maxMod; i++){
+                                var sum = roll + i;
+                                if(sum > 11){   
+                                    sum = 11; 
+                                    rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
+                                    break;
+                                }else{
+                                    rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
+                                }
+                            }
+                            if(rollChoices.length > 0){
+                                pickOption(rollChoices,"Roll='"+roll+"' choose a monetary benefit.",(rollChoice)=>{
+                                    var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")));
+                                    var chosenBenefit = CareerBenefitTables[career.career]["Money"][choiceIndex];
+                                    switch(chosenBenefit.type){
+                                        case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
+                                        case "money": credits += (chosenBenefit.amount); record("Gained " + chosenBenefit.label); break;
+                                    }
+                                    updateFunc();
+                                    musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                                },true);
+                            }else{
+                                var chosenBenefit = CareerBenefitTables[career.career]["Money"][roll];
+                                switch(chosenBenefit.type){
+                                    case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
+                                    case "money": credits += (chosenBenefit.amount); record("Gained " + chosenBenefit.label); break;
+                                }
+                                updateFunc();
+                                    musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                            }
+                            break;
+                            case "Benefits":
+                                var maxMod = career.terms + career.benefitDM;
+                                var roll = roller.d6().result; var rollChoices = []
+                                for(var i = 0; i <= maxMod; i++){
+                                    var sum = roll + i;
+                                    if(sum > 11){   
+                                        sum = 11; 
+                                        rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
+                                        break;
+                                    }else{
+                                        rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
+                                    }
+                                }
+                                if(rollChoices.length > 0){
+                                    pickOption(rollChoices,"Roll='"+roll+"' choose a benefit.",(rollChoice)=>{
+                                        var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")));
+                                        var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][choiceIndex];
+                                        switch(chosenBenefit.type){
+                                            case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
+                                            case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
+                                        }
+                                        updateFunc();
+                                        musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                                    },true);
+                                }else{
+                                    record("Benefit roll="+roll);
+                                    var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][roll];
+                                    switch(chosenBenefit.type){
+                                        case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
+                                        case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
+                                    }
+                                    updateFunc();
+                                        musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                                } 
+                            break;
+                        }
+                    },true);
+                break;
+            }
+            
+        }else{
+            callback();
+        }
+    }
+    function musterOutStatBonus(stat){
+        switch(stat){
+            case "C1": gainCharacteristic(1,1,"Mustering Out: "); break;
+            case "C2": gainCharacteristic(2,1,"Mustering Out: "); break;
+            case "C3": gainCharacteristic(3,1,"Mustering Out: "); break;break;
+            case "C4": gainCharacteristic(4,1,"Mustering Out: "); break;break;
+            case "C5": gainCharacteristic(5,1,"Mustering Out: "); break;break;
+            case "C6": gainCharacteristic(6,1,"Mustering Out: "); break;break;
+            case "Soc": 
+            if(species.Characteristics[5].name == ENUM_CHARACTERISTICS.SOC){ gainCharacteristic(ENUM_CHARACTERISTICS.SOC,1,"Mustering Out: ");}
+            else{ record("Character does not have Social Standing so the Soc increase benefit was lost.");}
+             break;
+        }
     }
     function resolveCitizen(career,updateFunc){
         var priorCareers = careers.length;
