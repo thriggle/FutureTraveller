@@ -521,6 +521,7 @@ function redraw(){
     renderCharacter(person, document.body);
 }
 document.getElementById("btnCitizen").addEventListener("click",function(){
+    document.getElementById("btnCitizen").setAttribute("disabled","disabled");
     person.resolveCareer(ENUM_CAREERS.Citizen,redraw);
 });
 function log(msg){
