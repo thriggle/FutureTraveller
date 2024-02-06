@@ -1314,7 +1314,7 @@ export function createCharacter(roller, species){
     }
     function promptContinue(career,updateFunc){
         //var switchCareer = confirm("Do you want to switch from "+career+" to a different career?");
-        pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch to "+career+" to a different career?",(switchCareerChoice)=>{
+        pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
             var switchCareer = switchCareerChoice === "Switch to a new career";
             if(!switchCareer){
                 var continueResult = roller.d6(2);
@@ -1575,6 +1575,15 @@ export function createCharacter(roller, species){
                             record(chooseJobResult.remarks); updateFunc();
                             if(chooseJobResult.success){
                                 var choices = removeDuplicates(majors.map(getDegreeLabel).concat(minors.map(getDegreeLabel)));
+                                var indexToRemove = -1;
+                                if(job && typeof job.label !== "undefined"){
+                                        for(var i = 0, len = choices.length; i < len; i++){
+                                        if(choices[i] == job.label){
+                                            indexToRemove = i;
+                                        }
+                                    }
+                                }
+                                if(indexToRemove >= 0){ choices.splice(indexToRemove,1);}
                                 choices.push("Roll Randomly");
                                 var isJob = typeof job.skill == "undefined";
                                 pickOption(choices,"You may choose a "+(isJob ? "job" : "hobby")+" from your majors and minors.",function(chosenJob){
@@ -1585,10 +1594,12 @@ export function createCharacter(roller, species){
                                         updateFunc();
                                         skill = randomJob.job.skill, knowledge = randomJob.job.knowledge;
                                     }else{
+                                        job.label = chosenJob;
                                         var degrees = majors.concat(minors);
                                         for(var i = 0, len = degrees.length; i < len; i++){
                                             if(degrees[i].label == chosenJob){
                                                 skill = degrees[i].skill, knowledge = degrees[i].knowledge;
+                                                
                                                 break;
                                                 
                                             }
