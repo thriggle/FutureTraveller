@@ -463,7 +463,7 @@ function newCharacter(){
     if(document.getElementById("txtName").value){
         person.setName(document.getElementById("txtName").value);
     }else{
-        person.setName(nameGenerator.getRandomName("human"));
+        person.setName(addCaps(nameGenerator.getRandomName("human")));
     }
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if(document.getElementById("rdoAttributesNatural").checked){

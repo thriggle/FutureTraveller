@@ -8,7 +8,7 @@ export function renderCharacter(character,element){
     injectHTML("[data-statblock]",statBlock)
     injectHTML("[data-skillblock]",skillBlock);
     injectHTML("[data-awards]",awards);
-    injectHTML("[data-history]",history);
+    history(character,document.querySelectorAll("[data-history]"));
     injectHTML("[data-careers]",careers);
     injectHTML("[data-credits]",renderCredits);
     function injectHTML(selector,htmlfunc){
@@ -31,20 +31,35 @@ function renderName(character,element){
 function renderCredits(character,element){
     element.insertAdjacentHTML("beforeend","<span>Cr"+ character.getCredits() + "</span>");
 }
-function history(character, element){
+function history(character, elements){
     var events = character.getHistory();
-    var lastAge = "Age 0";
-    for(var i = 0, len = events.length; i < len; i++){
-        var eventSplit = events[i].match(/(Age \d*):(.*)/);
-        var age = eventSplit[1];
-        var isNewAge = false;
-        if(age != lastAge){
-            console.log(age);
-            console.log(lastAge);
-            lastAge = age;
-            isNewAge = true;
-        }
-        element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");
+    for(var j = 0, jlen = elements.length; j < jlen; j++){
+        var element = elements[j];
+  
+            
+                clearElement(element);
+                // clear history and start over
+                var lastAge = "Age 0";
+                for(var i = 0, len = events.length; i < len; i++){
+                    var eventSplit = events[i].match(/(Age \d*):(.*)/);
+                    var age = eventSplit[1];
+                    var isNewAge = false;
+                    if(age != lastAge){
+                        console.log(age);
+                        console.log(lastAge);
+                        lastAge = age;
+                        isNewAge = true;
+                    }
+                    var eventText = eventSplit[2];
+                    var isGain = eventText.indexOf("Gained ") >= 0;
+                    var isPass = eventText.indexOf("? PASS") >= 0;
+                    var isFail = eventText.indexOf("? FAIL") >= 0;
+                    var isLoss = eventText.indexOf(" reduced to ") >= 0;
+                    var isAging = eventText.indexOf("Aging check") >= 0;
+                    element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+(isGain ? " Gain" : "")+(isPass ? " Pass" : "")+(isFail ? " Fail" : "")+(isLoss ? " Loss" : "")+(isAging ? " Aging" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");  
+                }
+            
+        
     }
 }
 export function clearElement(el) {

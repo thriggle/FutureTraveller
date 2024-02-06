@@ -41,7 +41,7 @@ export function createCharacter(roller, species){
     var statRollResults = rollStats();
     var careers = [], CCs = [];
     var fame = 0, credits = 0;
-    var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined
+    var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
     var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
     function rollStats(){
         var statRolls = [
@@ -70,6 +70,7 @@ export function createCharacter(roller, species){
         languageReceipts = 0;
         if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.INS){ genetics.push(statRolls[4].rolls[0]);}
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
+        job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
         edu_waivers = 0; //characteristics[5].value-edu_waivers; 
         fame = 0; credits = 0;
         careers = [], CCs = [];
@@ -94,6 +95,7 @@ export function createCharacter(roller, species){
         record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
             characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
         );
+        job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
         credits = 0; fame = 0;
         careers = [], CCs = [];
     }
@@ -143,6 +145,7 @@ export function createCharacter(roller, species){
         record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
             characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
         );
+        job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
         credits = 0, fame = 0;
         careers = [], CCs = [];
     }
@@ -161,7 +164,7 @@ export function createCharacter(roller, species){
         }
         if(!hasAlready){
             majors.push({skill:skill,knowledge:knowledge});
-           record("Gained " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Major.")
+           record("Acquired " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Major.")
         }
     }
     function addMinor(skill,knowledge){
@@ -179,7 +182,7 @@ export function createCharacter(roller, species){
         }
         if(!hasAlready){
             minors.push({skill:skill,knowledge:knowledge});
-           record("Gained " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Minor.")
+           record("Acquired " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Minor.")
         }
     }
     function gainSkill(skill){
