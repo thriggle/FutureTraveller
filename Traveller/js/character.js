@@ -164,7 +164,7 @@ export function createCharacter(roller, species){
         }
         if(!hasAlready){
             majors.push({skill:skill,knowledge:knowledge});
-           record("Gained " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Major.")
+           record("Acquired " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Major.")
         }
     }
     function addMinor(skill,knowledge){
@@ -182,7 +182,7 @@ export function createCharacter(roller, species){
         }
         if(!hasAlready){
             minors.push({skill:skill,knowledge:knowledge});
-           record("Gained " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Minor.")
+           record("Acquired " + skill + (typeof knowledge == "undefined" ? "" : " ("+ knowledge+")") + " as a Minor.")
         }
     }
     function gainSkill(skill){
