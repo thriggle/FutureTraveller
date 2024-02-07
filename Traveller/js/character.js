@@ -2188,6 +2188,7 @@ export function createCharacter(roller, species){
                         rollForBranch(()=>{
                             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                 CC = selectedCC;
+                                CCs.splice(CCs.indexOf(selectedCC),1);
                                 // proceed with R&R, +4 years of skills, promotion/commission
                                 advanceAndGetSkills(4);
                             },true);
@@ -2210,6 +2211,7 @@ export function createCharacter(roller, species){
                                     rollForBranch(()=>{
                                         pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                             CC = selectedCC;
+                                            CCs.splice(CCs.indexOf(selectedCC),1);
                                             // proceed with R&R, +4 years of skills, promotion/commission
                                             advanceAndGetSkills(4);
                                         },true);
@@ -2228,6 +2230,7 @@ export function createCharacter(roller, species){
             careers[careers.length-1].terms += 1;
             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                 CC = selectedCC;
+                CCs.splice(CCs.indexOf(selectedCC),1);
                 // proceed with R&R, +4 years of skills, promotion/commission
                 advanceAndGetSkills(4);
                 
