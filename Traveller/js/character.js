@@ -2121,6 +2121,7 @@ export function createCharacter(roller, species){
                  pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                     CC = selectedCC;
                     CCs.splice(CCs.indexOf(selectedCC),1);
+                    var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                     // prompt for Flight School
                     pickOption(["Attend Flight School","No, don't bother"],"Do you wish to attend flight school?",(choice)=>{
                         var attendingFlightSchool = false;
@@ -2188,7 +2189,7 @@ export function createCharacter(roller, species){
                         rollForBranch(()=>{
                             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                 CC = selectedCC;
-                                CCs.splice(CCs.indexOf(selectedCC),1);
+                                CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                 // proceed with R&R, +4 years of skills, promotion/commission
                                 advanceAndGetSkills(4);
                             },true);
@@ -2211,7 +2212,7 @@ export function createCharacter(roller, species){
                                     rollForBranch(()=>{
                                         pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                             CC = selectedCC;
-                                            CCs.splice(CCs.indexOf(selectedCC),1);
+                                            CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                             // proceed with R&R, +4 years of skills, promotion/commission
                                             advanceAndGetSkills(4);
                                         },true);
@@ -2230,7 +2231,7 @@ export function createCharacter(roller, species){
             careers[careers.length-1].terms += 1;
             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                 CC = selectedCC;
-                CCs.splice(CCs.indexOf(selectedCC),1);
+                CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                 // proceed with R&R, +4 years of skills, promotion/commission
                 advanceAndGetSkills(4);
                 
