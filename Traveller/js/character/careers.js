@@ -236,6 +236,26 @@ export var CareerSkillTables = {
         "Siege":["Computer","Strategy","Counsellor","Gunner","Gunner","Sensors"],
         "Mission":["Diplomat","Admin","Language","Starship Skill","Liaison","Comms"],
         "Technical":["One Art","One Science","Athlete","Medic","Zero-G","One Trade"]
+    },
+    "Soldier":{
+        "Tables":["Personal","Base","Combat","Peacekeeper","Occupation","Mission","Technical"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Base":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Combat":["Fighter","Vacc Suit","Fighter","Stealth","Leader","Tactics"],
+        "Peacekeeper":["Admin","Fighter","Hostile Environ","Animals","Liaison","Navigation"],
+        "Occupation":["Fighter","Vacc Suit","Driver","Stealth","Heavy Wpns","Sensors"],
+        "Mission":["Soldier Skill","Liaison","Language","Soldier Skill","Computer","Tactics"],
+        "Technical":["One Art","One Science","Explosives","Medic","Seafarer","One Trade"]
+    },
+    "Marine":{
+        "Tables":["Personal","Garrison","Combat","Peacekeeper","Occupation","Mission","Technical"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Garrison":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Combat":["Fighter","Fighter","Soldier Skill","Soldier Skill","Leader","Tactics"],
+        "Peacekeeper":["Vacc Suit","Fighter","Hostile Environ","Stealth","Leader","Tactics"],
+        "Occupation":["Fighter","Fighter","Flyer","Stealth","Leader","Heavy Weapons"],
+        "Mission":["Soldier Skill","Survival","Language","Gunner","Leader","Fighter"],
+        "Technical":["One Art","One Science","Explosives","Medic","Seafarer","One Trade"]
     }
 }
 export var ServiceBranchMods = {
@@ -244,6 +264,23 @@ export var ServiceBranchMods = {
         "Engineer":0,
         "Gunnery":1,
         "Flight":2,
+        "Technical":0,
+        "Medical":0
+    },
+    "Soldier" : {
+        "Infantry":1,
+        "Artillery":1,
+        "Cavalry":1,
+        "Protected":2,
+        "Technical":0,
+        "Medical":0
+    },
+    "Marine" : {
+        "Infantry":1,
+        "Artillery":1,
+        "Cavalry":1,
+        "Protected":2,
+        "Commando":2,
         "Technical":0,
         "Medical":0
     }
@@ -303,6 +340,59 @@ export var CareerBenefitTables = {
             {label:"Ship Share",type:"award"},
             {label:"Life Insur",type:"award"},
             {label:"Knighthood",type:"award"},
+        ]
+    },
+    "Soldier":{
+        "Money":[
+            {label:"Low Psg",type:"award"},
+            {label:"Mid Psg",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"Cr 50,000",type:"money",amount:50000},
+            {label:"Retirex2",type:"award"},
+            {label:"Retirex2",type:"award"},
+            {label:"Cr 60,000",type:"money",amount:60000},
+        ], 
+        "Benefits":[
+            {label:"Forbidden K",type:"knowledge"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"Int +1",type:"characteristic",characteristic:"C4"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"C3 +1",type:"characteristic",characteristic:"C3"},
+            {label:"Life Insur",type:"award"},
+            {label:"TAS Fellow",type:"award"},
+            {label:"Knighthood",type:"award"},
+        ]
+    },
+    "Marine":{
+        "Money":[
+            {label:"Low Psg",type:"award"},
+            {label:"Mid Psg",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"Cr 50,000",type:"money",amount:50000},
+            {label:"Retirex2",type:"award"},
+            {label:"Retirex2",type:"award"},
+            {label:"Cr 60,000",type:"money",amount:60000},
+        ], 
+        "Benefits":[
+            {label:"Forbidden K",type:"knowledge"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"Int +1",type:"characteristic",characteristic:"C4"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"Life Insur",type:"award"},
+            {label:"Ship Share",type:"award"},
+            {label:"Directorate",type:"award"},
+            {label:"Knighthood",type:"award"},
+
         ]
     }
 };
