@@ -1396,7 +1396,7 @@ export function createCharacter(roller, species){
                     }
                 },true);
         }else{        
-            pickOption(continueChoices,"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
+            pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
                 var switchCareer = switchCareerChoice === "Switch to a new career";
                 if(!switchCareer){
                     var continueResult = roller.d6(2);
