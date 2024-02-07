@@ -1448,8 +1448,8 @@ export function createCharacter(roller, species){
                             var roll = roller.d6().result; var rollChoices = []
                             for(var i = 0; i <= maxMod; i++){
                                 var sum = roll + i;
-                                if(sum > 11){   
-                                    sum = 11; 
+                                if(sum > 10){   
+                                    sum = 10; 
                                     rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                                     break;
                                 }else{
