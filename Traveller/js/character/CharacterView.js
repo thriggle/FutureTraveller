@@ -457,6 +457,9 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
         }
     },undefined,preferredMajor);
 });
+document.getElementById("btnMusterOut").addEventListener("click",function(){
+    person.musterOut(redraw);
+});
 function newCharacter(){
     clear();
     person = createCharacter(roller, human);
@@ -516,8 +519,15 @@ function enableControls(){
     for(var i = 0, len = buttons.length; i < len; i++){
         buttons[i].removeAttribute("disabled");
     }
+    
+}
+function validateQualifications(){
+    var qual = person.getQualifications();
+    if(qual.Citizen){ document.getElementById("btnCitizen").removeAttribute("disabled"); }else{ document.getElementById("btnCitizen").setAttribute("disabled","");}
+    if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
 }
 function redraw(){
+    validateQualifications();
     renderCharacter(person, document.body);
 }
 document.getElementById("btnCitizen").addEventListener("click",function(){

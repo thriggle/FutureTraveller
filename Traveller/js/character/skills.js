@@ -109,7 +109,7 @@ export var SoldierSkills = [
 
 export var Knowledges = {}
 Knowledges[ENUM_SKILLS.Animals] = ["Rider","Teamster","Trainer"];
-Knowledges[ENUM_SKILLS.Driver] = ["ACV","Grav","Legged","Mole","Tracked","Wheeled"];
+Knowledges[ENUM_SKILLS.Driver] = ["Automotive","ACV","Grav","Legged","Mole","Tracked","Wheeled"];
 Knowledges[ENUM_SKILLS.Engineer] = ["Jump Drives","Life Support","Maneuver Drive","Power Systems"];
 Knowledges[ENUM_SKILLS.Fighter] = ["Battle Dress","Beams","Blades","Exotics","Slug Throwers","Sprays","Unarmed"];
 Knowledges[ENUM_SKILLS.Flyer] = ["Aeronautics","Flapper","Grav","LTA","Rotor","Winged"];
