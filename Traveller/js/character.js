@@ -1889,7 +1889,7 @@ export function createCharacter(roller, species){
                         if(caution < 0){ penalty += caution;}
                         penalty += roller.flux().result;
                         if(penalty < 0){
-                            decreaseCharacteristic(CC,-penalty,"Injury!");
+                            decreaseCharacteristic(ccIndex,-penalty,"Injury!");
                             if(characteristics[ccIndex].value <= 0){ characteristics[ccIndex].value = 1;}
                             updateFunc();
                             careers[careers.length-1].awards.push("Wound Badge");
@@ -2105,6 +2105,7 @@ export function createCharacter(roller, species){
                  updateFunc();
                  pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                     CC = selectedCC;
+                    CCs.splice(CCs.indexOf(selectedCC),1);
                     // prompt for Flight School
                     pickOption(["Attend Flight School","No, don't bother"],"Do you wish to attend flight school?",(choice)=>{
                         var attendingFlightSchool = false;
