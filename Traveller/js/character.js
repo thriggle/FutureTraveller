@@ -1381,78 +1381,93 @@ export function createCharacter(roller, species){
         }
     }
     function promptContinue(career,updateFunc){
-        //var switchCareer = confirm("Do you want to switch from "+career+" to a different career?");
-        pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
-            var switchCareer = switchCareerChoice === "Switch to a new career";
-            if(!switchCareer){
-                var continueResult = roller.d6(2);
-                if(continueResult.result === 2){
-                    if(species.getLifeStageFromAge(age) < 9 && 
-                        (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 ) &&
-                        [ENUM_CAREERS.Soldier,ENUM_CAREERS.Spacer,ENUM_CAREERS.Marine].indexOf(career) == -1
-                    ){
-                        var reserves = [];
-                        for(var i = 0, len = awards.length; i < len; i++){
-                            var award = awards[i];
-                            if(award === "Army Reserves"){
-                                reserves.push({career:ENUM_CAREERS.Soldier,reserves:award});
-                            }else if(award === "Navy Reserves"){
-                                reserves.push({career:ENUM_CAREERS.Spacer,reserves:award});
-                            }else if(award === "Marine Reserves"){
-                                reserves.push({career:ENUM_CAREERS.Marine,reserves:award});
-                            }
-                        }
-                        var reserve = reserves[(roller.random() * reserves.length) >>> 0];
-                        record("Called up by the " + reserve.reserves+ "!");
+        if(careers[careers.length-1].awards && careers[careers.length-1].awards.indexOf("Disabled") >= 0){ 
+            careers[careers.length-1].active = false;
+                record("Forced to leave "+career+" career due to injuries sustained.");
+                updateFunc();
+                pickOption(["Pursue other opportunities","Muster Out"],"You are forced to leave this career due to your injuries. <br/> Do wish to muster out and start adventuring or pursue other opportunities first?",(choice)=>{
+                    if(choice === "Pursue other opportunities"){
+                        careers[careers.length-1].active = false;
                         updateFunc();
-                        musterOut(career,
-                            updateFunc,
-                            ()=>{
-                                updateFunc();
-                                resolveCareer(reserve.career,updateFunc);
-                            });
                     }else{
-                        record("Continuation is mandatory for this term.");
-                        updateFunc();
-                        resolveCareer(career,updateFunc);
-                    }
-                }else{
-                    var passedContinueRoll = false;          
-                    switch(career){
-                        case ENUM_CAREERS.Citizen:
-                            passedContinueRoll = continueResult.result <= 10
-                            record("Continue as Citizen: [" + continueResult.rolls.join(",") + "] < 10 ? " + (passedContinueRoll ? "PASS":"FAIL"));
-                            updateFunc();
-                        break;
-                        case ENUM_CAREERS.Spacer:
-                            passedContinueRoll = continueResult.result <= characteristics[0].value;
-                            record("Continue as Spacer: [" + continueResult.rolls.join(",") + "] < Str ("+characteristics[0].value+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
-                            updateFunc();
-                            break;
-                    }
-                    if(passedContinueRoll){
-                        pickOption(["Continue with this career","Muster Out"],"Continue Roll was successful. <br/> Do wish to continue this career or start adventuring?",(choice)=>{
-                            if(choice === "Continue with this career"){
-                                resolveCareer(career,updateFunc);
-                            }else{
-                                record("Chose to muster out and begin adventuring.");
-                                updateFunc();
-                                musterOut(updateFunc);
-                            }
-                        },true);
-                    }else{
-                        record("Failed Continue roll. Begin adventuring.")
+                        record("Chose to muster out and begin adventuring.");
                         updateFunc();
                         musterOut(updateFunc);
                     }
+                },true);
+        }else{        
+            pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
+                var switchCareer = switchCareerChoice === "Switch to a new career";
+                if(!switchCareer){
+                    var continueResult = roller.d6(2);
+                    if(continueResult.result === 2){
+                        if(species.getLifeStageFromAge(age) < 9 && 
+                            (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 ) &&
+                            [ENUM_CAREERS.Soldier,ENUM_CAREERS.Spacer,ENUM_CAREERS.Marine].indexOf(career) == -1
+                        ){
+                            var reserves = [];
+                            for(var i = 0, len = awards.length; i < len; i++){
+                                var award = awards[i];
+                                if(award === "Army Reserves"){
+                                    reserves.push({career:ENUM_CAREERS.Soldier,reserves:award});
+                                }else if(award === "Navy Reserves"){
+                                    reserves.push({career:ENUM_CAREERS.Spacer,reserves:award});
+                                }else if(award === "Marine Reserves"){
+                                    reserves.push({career:ENUM_CAREERS.Marine,reserves:award});
+                                }
+                            }
+                            var reserve = reserves[(roller.random() * reserves.length) >>> 0];
+                            record("Called up by the " + reserve.reserves+ "!");
+                            updateFunc();
+                            musterOut(career,
+                                updateFunc,
+                                ()=>{
+                                    updateFunc();
+                                    resolveCareer(reserve.career,updateFunc);
+                                });
+                        }else{
+                            record("Continuation is mandatory for this term.");
+                            updateFunc();
+                            resolveCareer(career,updateFunc);
+                        }
+                    }else{
+                        var passedContinueRoll = false;          
+                        switch(career){
+                            case ENUM_CAREERS.Citizen:
+                                passedContinueRoll = continueResult.result <= 10
+                                record("Continue as Citizen: [" + continueResult.rolls.join(",") + "] < 10 ? " + (passedContinueRoll ? "PASS":"FAIL"));
+                                updateFunc();
+                            break;
+                            case ENUM_CAREERS.Spacer:
+                                passedContinueRoll = continueResult.result <= characteristics[0].value;
+                                record("Continue as Spacer: [" + continueResult.rolls.join(",") + "] < Str ("+characteristics[0].value+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
+                                updateFunc();
+                                break;
+                        }
+                        if(passedContinueRoll){
+                            pickOption(["Continue with this career","Muster Out"],"Continue Roll was successful. <br/> Do wish to continue this career or start adventuring?",(choice)=>{
+                                if(choice === "Continue with this career"){
+                                    resolveCareer(career,updateFunc);
+                                }else{
+                                    record("Chose to muster out and begin adventuring.");
+                                    updateFunc();
+                                    musterOut(updateFunc);
+                                }
+                            },true);
+                        }else{
+                            record("Failed Continue roll. Begin adventuring.")
+                            updateFunc();
+                            musterOut(updateFunc);
+                        }
+                    }
+                }else{
+                    careers[careers.length-1].active = false;
+                    record("Concluded "+career+" career to pursue other opportunities.");
+                    updateFunc();
+                    //musterOut(career,updateFunc);
                 }
-            }else{
-                careers[careers.length-1].active = false;
-                record("Concluded "+career+" career to pursue other opportunities.");
-                updateFunc();
-                //musterOut(career,updateFunc);
-            }
-        },true);               
+            },true);    
+        }           
     }
     function musterOut(updateFunc, callback){
         musteredOut = true;
@@ -2106,6 +2121,7 @@ export function createCharacter(roller, species){
                  pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                     CC = selectedCC;
                     CCs.splice(CCs.indexOf(selectedCC),1);
+                    var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                     // prompt for Flight School
                     pickOption(["Attend Flight School","No, don't bother"],"Do you wish to attend flight school?",(choice)=>{
                         var attendingFlightSchool = false;
@@ -2173,6 +2189,7 @@ export function createCharacter(roller, species){
                         rollForBranch(()=>{
                             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                 CC = selectedCC;
+                                CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                 // proceed with R&R, +4 years of skills, promotion/commission
                                 advanceAndGetSkills(4);
                             },true);
@@ -2195,6 +2212,7 @@ export function createCharacter(roller, species){
                                     rollForBranch(()=>{
                                         pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                             CC = selectedCC;
+                                            CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                             // proceed with R&R, +4 years of skills, promotion/commission
                                             advanceAndGetSkills(4);
                                         },true);
@@ -2213,6 +2231,7 @@ export function createCharacter(roller, species){
             careers[careers.length-1].terms += 1;
             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                 CC = selectedCC;
+                CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                 // proceed with R&R, +4 years of skills, promotion/commission
                 advanceAndGetSkills(4);
                 

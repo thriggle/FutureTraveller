@@ -1,3 +1,4 @@
+import { ENUM_CAREERS } from "./careers.js";
 import { ENUM_SKILLS } from "./skills.js";
 import { ENUM_CHARACTERISTICS } from "./species.js";
 
@@ -22,7 +23,20 @@ export function renderCharacter(character,element){
 function careers(character,element){
     var careers = character.getCareers();
     for(var i =0, len = careers.length; i < len; i++){
-        element.insertAdjacentHTML("beforeend","<div>"+careers[i].career+", " + careers[i].terms + " terms</div>");
+        var rank = "";
+        if(careers[i].rank){
+            switch(careers[i].career){
+                case ENUM_CAREERS.Spacer: 
+                rank = (careers[i].rank.officer>0 ? "O"+careers[i].rank.officer : ("R"+careers[i].rank.enlisted));
+                rank = "-"+rank;
+                break;
+            }
+        }
+        var awards = "";
+        if(careers[i].awards && careers[i].awards.length > 0){
+            awards = "<ul style=\"font-size:smaller\"><li>" + careers[i].awards.join("</li><li>") + "</li></ul>";
+        }
+        element.insertAdjacentHTML("beforeend","<div>"+careers[i].career+rank+", " + careers[i].terms + " terms"+awards+"</div>");
     }
 }
 function renderName(character,element){
