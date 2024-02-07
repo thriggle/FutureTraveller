@@ -1219,7 +1219,7 @@ export function createCharacter(roller, species){
                 //record(table + ": " + newSkill); updateFunc();
                 var note = "("+table + ": " + newSkill+")";
                 if(table === "Personal"){
-                    var index = +(newSkill.substring(1))-1;
+                    var index = +(newSkill.substring(1));
                     gainCharacteristic(index,1,note);
                     nextSteps(num);
                 }else if(newSkill === "Major"){
@@ -1525,10 +1525,10 @@ export function createCharacter(roller, species){
         switch(stat){
             case "C1": gainCharacteristic(1,1,"Mustering Out: "); break;
             case "C2": gainCharacteristic(2,1,"Mustering Out: "); break;
-            case "C3": gainCharacteristic(3,1,"Mustering Out: "); break;break;
-            case "C4": gainCharacteristic(4,1,"Mustering Out: "); break;break;
-            case "C5": gainCharacteristic(5,1,"Mustering Out: "); break;break;
-            case "C6": gainCharacteristic(6,1,"Mustering Out: "); break;break;
+            case "C3": gainCharacteristic(3,1,"Mustering Out: "); break;
+            case "C4": gainCharacteristic(4,1,"Mustering Out: "); break;
+            case "C5": gainCharacteristic(5,1,"Mustering Out: "); break;
+            case "C6": gainCharacteristic(6,1,"Mustering Out: "); break;
             case "Soc": 
             if(species.Characteristics[5].name == ENUM_CHARACTERISTICS.SOC){ gainCharacteristic(ENUM_CHARACTERISTICS.SOC,1,"Mustering Out: ");}
             else{ record("Character does not have Social Standing so the Soc increase benefit was lost.");}
