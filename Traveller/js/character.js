@@ -19,6 +19,7 @@ export function createCharacter(roller, species){
     var nativeLanguage = "Anglic";
     var languageReceipts = 0; var edu_waivers = 0; var awards = [];
     var sanity = 0;
+    var musteredOut = false;
    var defaultSkills = [
         MasterSkills.Actor, MasterSkills.Artist, MasterSkills.Athlete, 
         MasterSkills.Author, MasterSkills.Comms, MasterSkills.Computer, 
@@ -72,7 +73,7 @@ export function createCharacter(roller, species){
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
         edu_waivers = 0; //characteristics[5].value-edu_waivers; 
-        fame = 0; credits = 0;
+        fame = 0; credits = 0; musteredOut = false;
         careers = [], CCs = [];
         return {statRolls, characteristics, genetics}
     }
@@ -96,7 +97,7 @@ export function createCharacter(roller, species){
             characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
         );
         job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
-        credits = 0; fame = 0;
+        credits = 0; fame = 0; musteredOut = false;
         careers = [], CCs = [];
     }
     function getCharacteristics(){
@@ -532,9 +533,9 @@ export function createCharacter(roller, species){
             }
             if(tryTradeSchool){
                 remarks += "Trade School Application: ";
-                var applyResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,2,0);
+                var applyResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,2,0,"Trade School Application 2D vs Intellect ("+characteristics[3].value+")");
                 remarks +=  applyResult.remarks + newLine;
-                
+                record(applyResult.remarks);
                 if(! applyResult.success){ 
                     var applyWaiverResult = promptEducationWaiver("Failed Trade School application.");
                     remarks += applyWaiverResult.remarks + newLine;
@@ -1385,6 +1386,7 @@ export function createCharacter(roller, species){
         },true);               
     }
     function musterOut(updateFunc, callback){
+        musteredOut = true;
         if(typeof callback === "undefined"){ callback = ()=>{};}
         updateFunc();
         var totalRolls = 0, priorCareer = false, priorCareerDM = 0;
@@ -1881,6 +1883,12 @@ export function createCharacter(roller, species){
         if(typeof amount == "undefined"){ amount = 1;}
         return gainCharacteristic(characteristic,-amount);
     }
+    function getQualifications(){
+        var q = {};
+        q.MusterOut = (careers.length > 0 && musteredOut == false);
+        q.Citizen = careers.length == 0;
+        return q;
+    }
     function checkCSK(characteristic, skill, knowledge, difficulty,mods,remarks){
         if(typeof remarks === "undefined"){ remarks = "";}else{ remarks += " "}
         var skillLevel = 0;
@@ -2028,6 +2036,6 @@ export function createCharacter(roller, species){
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics,
-        resolveCareer, getCareers, getName, setName, getCredits
+        resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut
     }
 }
