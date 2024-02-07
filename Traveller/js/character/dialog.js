@@ -250,7 +250,7 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
                 {name:"Gunner(Bay Weapons)",skill:"Gunner",knowledge:"Bay Weapons"},
                 {name:"Gunner(Ortillery)",skill:"Gunner",knowledge:"Ortillery"},
                 {name:"Gunner(Screens)",skill:"Gunner",knowledge:"Screens"},
-                {name:"Gunner(Screens)",skill:"Gunner",knowledge:"Screens"},
+                {name:"Gunner(Spines)",skill:"Gunner",knowledge:"Screens"},
                 {name:"Gunner(Turrets)",skill:"Gunner",knowledge:"Turrets"},
 
                 {name:"Heavy Weapons(WMD)",skill:"Heavy Weapons",knowledge:"WMD"},
