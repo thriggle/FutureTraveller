@@ -261,51 +261,51 @@ export var CareerSkillTables = {
         "Tables":["Personal","Academic","Travel","General","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Travel":[],
-        "General":[],
-        "Business":[],
-        "Vocation":[],
-        "Avocation":[]
+        "Travel":["Seafarer","Navigation","Hostile Environ","Flyer","Driver","Vacc Suit"],
+        "General":["Animals","Comms","Computer","Designer","Designer","Designer"],
+        "Business":["Liaison","Comms","Bureaucrat","Diplomat","Leader","Trader"],
+        "Vocation":["Naval Architect","One Art","New Trade","New Trade", "One Trade","One Trade"],
+        "Avocation":["Animals","One Art","One Science","Athlete","Medic","One Trade"]
     },
     "Scholar":{ // Career 02
         "Tables":["Personal","Academic","Travel","General","Conflict","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Travel":[],
-        "General":[],
-        "Conflict":[],
-        "Vocation":[],
-        "Avocation":[]
+        "Travel":["Seafarer","Navigation","Hostile Environ","Flyer","Driver","Vacc Suit"],
+        "General":["Survey","Astrogation","Hostile Environ","Survival","Animals","Bureaucrat"],
+        "Conflict":["Fighter","Fighter","Stealth","Flyer","Gunner","Sensors"],
+        "Vocation":["Admin","Language","One Science","Comms","Starship Skill","Bureaucrat"],
+        "Avocation":["Seafarer","One Art","One Science","Athlete","Medic","One Trade"]
     },
     "Entertainer":{ // Career 03
         "Tables":["Personal","Academic","Travel","General","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Travel":[],
-        "General":[],
-        "Business":[],
-        "Vocation":[],
-        "Avocation":[]
+        "Travel":["Zero-G","Vacc Suit","Pilot","Astrogator","Sensors","Starship Skill"],
+        "General":["Survey","Survival","Hostile Environ","Animals","Bureaucrat","Navigation"],
+        "Business":["Broker","Trader","Advocate","Liaison","Diplomat","Bureaucrat"],
+        "Vocation":["Broker","One Art","Language","Admin","One Art","Bureaucrat"],
+        "Avocation":["one Art","One Art","One Trade","Athlete","Medic","One Trade"]
     },
     "Scout":{ // Career 05
         "Tables":["Personal","Academic","Courier","Exploration","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Courier":[],
-        "Exploration":[],
-        "Business":[],
-        "Vocation":[],
-        "Avocation":[]
+        "Courier":["Comms","Language","Computer","JOT","Gunner","Starship Skills"],
+        "Exploration":["Survey","Survival","Hostile Environ","Animals","Vacc Suit","Navigation"],
+        "Business":["Diplomat","Sensors","Trader","Teacher","Fighter","Streetwise"],
+        "Vocation":["Survey","Flyer","Language","Starship Skill","Engineer","Comms"],
+        "Avocation":["One Art","One Science","Seafarer","Athlete","Medic","One Trade"]
     },
     "Merchant":{ // Career 06
         "Tables":["Personal","Academic","Space Travel","Trade","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Space Travel":[],
-        "Trade":[],
-        "Business":[],
-        "Vocation":[],
-        "Avocation":[]
+        "Space Travel":["Astrogator","Pilot","Medic","Sensors","Steward","Gunner"],
+        "Trade":["Broker","Trader","Diplomat","Admin","Steward","Trader"],
+        "Business":["Computer","Trader","Driver","Advocae","Steward","Comms"],
+        "Vocation":["Broker","Admin","Language","Starship Skill","JOT","Vacc Siot"],
+        "Avocation":["One Art","One Science","Computer","Comms","Medic","One Trade"]
     },
     "Agent":{ // Career 09
         "Tables":["Personal","Academic","Travel","Mission","Conflict","Vocation","Avocation"],
