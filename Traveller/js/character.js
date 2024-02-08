@@ -1572,7 +1572,7 @@ export function createCharacter(roller, species){
                             for(var i = 0; i <= maxMod; i++){
                                 var sum = roll + i;
                                 if(sum > 10){   
-                                    sum = 10; 
+                                    sum = 11; 
                                     rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                                     break;
                                 }else{
@@ -1606,7 +1606,7 @@ export function createCharacter(roller, species){
                                 for(var i = 0; i <= maxMod; i++){
                                     var sum = roll + i;
                                     if(sum > 10){   
-                                        sum = 10; 
+                                        sum = 11; 
                                         rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                                         break;
                                     }else{
@@ -1647,8 +1647,8 @@ export function createCharacter(roller, species){
                             var roll = roller.d6().result; var rollChoices = []
                             for(var i = 0; i <= maxMod; i++){
                                 var sum = roll + i;
-                                if(sum > 10){   
-                                    sum = 10; 
+                                if(sum > 11){   
+                                    sum = 11; 
                                     rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                                     break;
                                 }else{
@@ -1681,8 +1681,8 @@ export function createCharacter(roller, species){
                                 var roll = roller.d6().result; var rollChoices = []
                                 for(var i = 0; i <= maxMod; i++){
                                     var sum = roll + i;
-                                    if(sum > 10){   
-                                        sum = 10; 
+                                    if(sum > 11){   
+                                        sum = 11; 
                                         rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                                         break;
                                     }else{
@@ -1931,7 +1931,7 @@ export function createCharacter(roller, species){
                         termSkillTable.table.push(opResult.operation);
                     }
                 }
-                if(careers[careers.length-1].branch == "Technical" || careers[careers.length-1].branch === "Medical" && termSkillTable.table.indexOf("Technical") == -1){
+                if(( careers[careers.length-1].branch == "Technical" || careers[careers.length-1].branch === "Medical" ) && termSkillTable.table.indexOf("Technical") == -1){
                     termSkillTable.table.push("Technical");
                 }
                 termSkillTables.push(termSkillTable);
