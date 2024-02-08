@@ -217,7 +217,7 @@ export function citizenLifeJob(roller){
     return {rolls:[roll1.result,roll2.result,roll3.result],job:job};
 }
 export var CareerSkillTables = {
-    "Citizen" : {
+    "Citizen" : { // Career 04
         "Tables":["Personal","Academic","Travel","General","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
@@ -227,7 +227,7 @@ export var CareerSkillTables = {
         "Vocation":["One Art","One Science","One Trade","Driver","Bureaucrat","Computer"],
         "Avocation":["One Art","One Science","JOT","Athlete","Medic","One Trade"]
     },
-    "Spacer":{
+    "Spacer":{ // Career 07
         "Tables":["Personal","Shore Duty","Battle","Patrol/Strike","Siege","Mission","Technical"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Shore Duty":["Major","Major","Minor","Minor","One Trade","One Trade"],
@@ -237,7 +237,7 @@ export var CareerSkillTables = {
         "Mission":["Diplomat","Admin","Language","Starship Skill","Liaison","Comms"],
         "Technical":["One Art","One Science","Athlete","Medic","Zero-G","One Trade"]
     },
-    "Soldier":{
+    "Soldier":{ // Career 08
         "Tables":["Personal","Base","Combat","Peacekeeper","Occupation","Mission","Technical"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Base":["Major","Major","Minor","Minor","One Trade","One Trade"],
@@ -247,7 +247,7 @@ export var CareerSkillTables = {
         "Mission":["Soldier Skill","Liaison","Language","Soldier Skill","Computer","Tactics"],
         "Technical":["One Art","One Science","Explosives","Medic","Seafarer","One Trade"]
     },
-    "Marine":{
+    "Marine":{ // Career 12
         "Tables":["Personal","Garrison","Combat","Peacekeeper","Occupation","Mission","Technical"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Garrison":["Major","Major","Minor","Minor","One Trade","One Trade"],
@@ -256,6 +256,96 @@ export var CareerSkillTables = {
         "Occupation":["Fighter","Fighter","Flyer","Stealth","Leader","Heavy Weapons"],
         "Mission":["Soldier Skill","Survival","Language","Gunner","Leader","Fighter"],
         "Technical":["One Art","One Science","Explosives","Medic","Seafarer","One Trade"]
+    },
+    "Craftsman":{ // Career 01
+        "Tables":["Personal","Academic","Travel","General","Business","Vocation","Avocation"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Travel":[],
+        "General":[],
+        "Business":[],
+        "Vocation":[],
+        "Avocation":[]
+    },
+    "Scholar":{ // Career 02
+        "Tables":["Personal","Academic","Travel","General","Conflict","Vocation","Avocation"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Travel":[],
+        "General":[],
+        "Conflict":[],
+        "Vocation":[],
+        "Avocation":[]
+    },
+    "Entertainer":{ // Career 03
+        "Tables":["Personal","Academic","Travel","General","Business","Vocation","Avocation"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Travel":[],
+        "General":[],
+        "Business":[],
+        "Vocation":[],
+        "Avocation":[]
+    },
+    "Scout":{ // Career 05
+        "Tables":["Personal","Academic","Courier","Exploration","Business","Vocation","Avocation"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Courier":[],
+        "Exploration":[],
+        "Business":[],
+        "Vocation":[],
+        "Avocation":[]
+    },
+    "Merchant":{ // Career 06
+        "Tables":["Personal","Academic","Space Travel","Trade","Business","Vocation","Avocation"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Space Travel":[],
+        "Trade":[],
+        "Business":[],
+        "Vocation":[],
+        "Avocation":[]
+    },
+    "Agent":{ // Career 09
+        "Tables":["Personal","Academic","Travel","Mission","Conflict","Vocation","Avocation"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Travel":[],
+        "Mission":[],
+        "Conflict":[],
+        "Vocation":[],
+        "Avocation":[]
+    },
+    "Rogue":{ // Career 10
+        "Tables":["Personal","Academic","World Travel","Space Travel","Business","Vocation","Avocation"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "World Travel":[],
+        "Space Travel":[],
+        "Business":[],
+        "Vocation":[],
+        "Avocation":[]
+    },
+    "Noble":{ // Career 11
+        "Tables":["Personal","Academic","Travel","General","Political","Vocation","Avocation"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Travel":[],
+        "General":[],
+        "Political":[],
+        "Vocation":[],
+        "Avocation":[]
+    },
+    "Functionary":{ // Career 13
+        "Tables":["Personal","Academic","World Travel","General","Business","Vocation","Avocation"],
+        "Personal":["C1","C2","C3","C4","C5","C6"],
+        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "World Travel":[],
+        "General":[],
+        "Business":[],
+        "Vocation":[],
+        "Avocation":[]
     }
 }
 export var ServiceBranchMods = {
