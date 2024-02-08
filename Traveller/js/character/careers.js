@@ -342,7 +342,7 @@ export var CareerBenefitTables = {
             {label:"Int +1",type:"characteristic",characteristic:"C4"},
             {label:"Ship Share",type:"award"},
             {label:"Life Insur",type:"award"},
-            {label:"Knighthood",type:"award"},
+            {label:"Knighthood",type:"award"}
         ]
     },
     "Soldier":{
@@ -370,7 +370,7 @@ export var CareerBenefitTables = {
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
             {label:"Life Insur",type:"award"},
             {label:"TAS Fellow",type:"award"},
-            {label:"Knighthood",type:"award"},
+            {label:"Knighthood",type:"award"}
         ]
     },
     "Marine":{
@@ -397,8 +397,8 @@ export var CareerBenefitTables = {
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"Life Insur",type:"award"},
             {label:"Ship Share",type:"award"},
-            {label:"Directorate",type:"award"},
-            {label:"Knighthood",type:"award"},
+            {label:"Directorship",type:"award"},
+            {label:"Knighthood",type:"award"}
         ]
     },
     "Scouts":{
@@ -427,7 +427,7 @@ export var CareerBenefitTables = {
             {label:"Ship Share",type:"award"},
             {label:"Life Insur",type:"award"},
             {label:"TAS Fellow",type:"award"},
-            {label:"Fame +2",type:"fame"}, //not sure what type to use.
+            {label:"Fame +2",type:"fame",amount:2}, //not sure what type to use.
             {label:"Knighthood",type:"award"},
         ]
     },
@@ -472,7 +472,217 @@ export var CareerBenefitTables = {
             {label:"Proxy (2D)",type:"proxy",value:"2D"},
             {label:"Proxy (2D)",type:"proxy",value:"2D"},
             {label:"Proxy (2D)",type:"proxy",value:"2D"},
-            {label:"Proxy (2D)",type:"proxy",value:"2D"},
+            {label:"Proxy (2D)",type:"proxy",value:"2D"}
+        ]
+    },
+    "Craftsman":{
+        "Money":[
+            {label:"Low Psg",type:"award"},
+            {label:"Low Psg",type:"award"},
+            {label:"Mid Psg",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"Cr 15,000",type:"money",amount:30000},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 25,000",type:"money",amount:25000},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 35,000",type:"money",amount:35000},
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"Cr 50,000",type:"money",amount:50000},
+            {label:"Cr 60,000",type:"money",amount:60000},
+        ], 
+        "Benefits":[
+            {label:"Forbidden K",type:"knowledge"},
+            {label:"Forbidden K",type:"knowledge"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"C3 +1",type:"characteristic",characteristic:"C3"},
+            {label:"Int +1",type:"characteristic",characteristic:"C4"},
+            {label:"Ship Share",type:"award"},
+            {label:"TAS Fellow",type:"award"},
+            {label:"Directorship",type:"award"},
+            {label:"TAS Life",type:"award"}
+        ]
+    },
+    "Scholar":{
+        "Money":[
+            {label:"Low Psg",type:"award"},
+            {label:"Low Psg",type:"award"},
+            {label:"Mid Psg",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"Cr 15,000",type:"money",amount:30000},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 25,000",type:"money",amount:25000},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 35,000",type:"money",amount:35000},
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"Cr 50,000",type:"money",amount:50000},
+            {label:"Cr 60,000",type:"money",amount:60000},
+        ], 
+        "Benefits":[
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"Edu +1",type:"characteristic",characteristic:"C5"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"C3 +1",type:"characteristic",characteristic:"C3"},
+            {label:"Int +1",type:"characteristic",characteristic:"C4"},
+            {label:"Fame +1",type:"fame",amount:1},
+            {label:"Ship Share",type:"award"},
+            {label:"TAS Fellow",type:"award"},
+            {label:"TAS Fellow",type:"award"}
+        ]
+    },
+    "Entertainer":{
+        "Money":[
+            {label:"Low Psg",type:"award"},
+            {label:"Low Psg",type:"award"},
+            {label:"Mid Psg",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"Cr 15,000",type:"money",amount:15000},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 25,000",type:"money",amount:25000},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 35,000",type:"money",amount:35000},
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"Cr 50,000",type:"money",amount:50000},
+            {label:"Cr 400,000",type:"money",amount:400000},
+        ], 
+        "Benefits":[
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"Edu +1",type:"characteristic",characteristic:"C5"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"C3 +1",type:"characteristic",characteristic:"C3"},
+            {label:"Int +1",type:"characteristic",characteristic:"C4"},
+            {label:"Fame +1",type:"fame",amount:1},
+            {label:"Ship Share",type:"award"},
+            {label:"TAS Fellow",type:"award"},
+            {label:"Knighthood",type:"award"}
+        ]
+    },
+    "Merchant":{
+        "Money":[
+            {label:"Cr 40,000",type:"award"},
+            {label:"StarPass",type:"award"},
+            {label:"StarPass",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 25,000",type:"money",amount:25000},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 35,000",type:"money",amount:35000},
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"Cr 50,000",type:"money",amount:50000},
+            {label:"Cr 90,000",type:"money",amount:90000},
+        ], 
+        "Benefits":[
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"C3 +1",type:"characteristic",characteristic:"C3"},
+            {label:"Life Insur",type:"award"},
+            {label:"Ship Share",type:"award"},
+            {label:"Knighthood",type:"award"},
+            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"award"},
+            {label:"Knighthood",type:"award"}
+        ]
+    },
+    "Agent":{
+        "Money":[
+            {label:"Low Psg",type:"award"},
+            {label:"Low Psg",type:"award"},
+            {label:"Mid Psg",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"Cr 15,000",type:"money",amount:15000},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 25,000",type:"money",amount:25000},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 35,000",type:"money",amount:35000},
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"Cr 80,000",type:"money",amount:80000},
+            {label:"Cr 90,000",type:"money",amount:90000},
+        ], 
+        "Benefits":[
+            {label:"Ship Share",type:"award"},
+            {label:"Forbidden K",type:"knowledge"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"C3 +1",type:"characteristic",characteristic:"C3"},
+            {label:"Ship Share",type:"award"},
+            {label:"Life Insur",type:"award"},
+            {label:"TAS Fellow",type:"award"},
+            {label:"Fame +2",type:"fame",amount:2},
+            {label:"Knighthood",type:"award"}
+        ]
+    },
+    "Rogue":{
+        "Money":[
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"StarPass",type:"award"},
+            {label:"StarPass",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"High Psg",type:"award"},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 25,000",type:"money",amount:25000},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 35,000",type:"money",amount:35000},
+            {label:"Cr 40,000",type:"money",amount:40000},
+            {label:"Cr 50,000",type:"money",amount:50000},
+            {label:"Cr 90,000",type:"money",amount:90000},
+        ], 
+        "Benefits":[
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"C3 +1",type:"characteristic",characteristic:"C3"},
+            {label:"Life Insur",type:"award"},
+            {label:"Ship Share",type:"award"},
+            {label:"Knighthood",type:"award"}
+            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"award"},
+            {label:"Knighthood",type:"award"}
+        ]
+    },
+    "Functionary":{
+        "Money":[
+            {label:"Cr 5,000",type:"money",amount:5000},
+            {label:"Cr 10,000",type:"money",amount:10000},
+            {label:"Cr 15,000",type:"money",amount:15000},
+            {label:"Cr 20,000",type:"money",amount:20000},
+            {label:"High Psg",type:"award"},
+            {label:"StarPass",type:"award"},
+            {label:"Cr 25,000",type:"money",amount:25000},
+            {label:"Cr 30,000",type:"money",amount:30000},
+            {label:"Cr 35,000",type:"money",amount:35000},
+            {label:"Pension x2",type:"award"},
+            {label:"Pension x2",type:"award"},
+            {label:"Pension x2",type:"award"},
+        ], 
+        "Benefits":[
+            {label:"Forbidden K",type:"knowledge"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"Wafer Jack",type:"award"},
+            {label:"Str +1",type:"characteristic",characteristic:"C1"},
+            {label:"C2 +1",type:"characteristic",characteristic:"C2"},
+            {label:"C3 +1",type:"characteristic",characteristic:"C3"},
+            {label:"Int +1",type:"characteristic",characteristic:"C4"},
+            {label:"Life Insur",type:"award"},
+            {label:"TAS Fellow",type:"award"},
+            {label:"Knighthood",type:"award"}
+            {label:"Directorship",type:"award"},
+            {label:"Knighthood",type:"award"}
         ]
     }
 };
