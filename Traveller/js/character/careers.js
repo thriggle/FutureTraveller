@@ -311,41 +311,41 @@ export var CareerSkillTables = {
         "Tables":["Personal","Academic","Travel","Mission","Conflict","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Travel":[],
-        "Mission":[],
-        "Conflict":[],
-        "Vocation":[],
-        "Avocation":[]
+        "Travel":["Zero-G","Vacc Suit","Pilot","Starhip Skill","Gunner","Sensors"],
+        "Mission":["Survey","Survival","Hostile Environ","Animals","Bureaucrat","Navigation"],
+        "Conflict":["Fighter","Soldier Skill","Flyer","Stealth","Gunner","Streetwise"],
+        "Vocation":["Any Knowledge","Admin","Language","Starhip Skill","Forensics","Comms"],
+        "Avocation":["One Art","One Science","Athlete","Medic","Seafarer","One Trade"]
     },
     "Rogue":{ // Career 10
         "Tables":["Personal","Academic","World Travel","Space Travel","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "World Travel":[],
-        "Space Travel":[],
-        "Business":[],
-        "Vocation":[],
-        "Avocation":[]
+        "World Travel":["Driver","Flyer","Hostile Environ","High-G","Vacc Suit","Navigation"],
+        "Space Travel":["Starhip Skill","Pilot","Engineer","Zero-G","Vacc Suit","Astrogator"],
+        "Business":["Trader","Broker","Computer","JOT","Teacher","Fighter"],
+        "Vocation":["Advocate","Counsellor","Language","Leader","Streetwise","Comms"],
+        "Avocation":["One Art","One Science","Athlete","Soldier Skill","Starship Skill","One Trade"]
     },
     "Noble":{ // Career 11
-        "Tables":["Personal","Academic","Travel","General","Political","Vocation","Avocation"],
+        "Tables":["Personal","Academic","Travel","General","Political","Vocation","Technical"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Travel":[],
-        "General":[],
-        "Political":[],
-        "Vocation":[],
-        "Avocation":[]
+        "Travel":["Driver","Flyer","Pilot","Starship Skill","High-G","Zero-G"],
+        "General":["Advocate","Counsellor","Bureaucrat","Liaison","Leader","Leader"],
+        "Political":["Liaison","Strategy","Tactics","Diplomat","Advocate","Leader"],
+        "Vocation":["Capital","Admin","Language","Starship Skill","Bureaucrat","Comms"],
+        "Technical":["One Art","One Science","Athlete","Soldier Skill","Starship Skill","One Trade"]
     },
     "Functionary":{ // Career 13
         "Tables":["Personal","Academic","World Travel","General","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "World Travel":[],
-        "General":[],
-        "Business":[],
-        "Vocation":[],
-        "Avocation":[]
+        "World Travel":["High-G","Vacc Suit","Driver","Flyer","Navigation","Seafarer"],
+        "General":["One Trade","One Art","One Science","Any Skill","Bureaucrat","Leader"],
+        "Business":["Advocate","Broker","Trader","Teacher","One Trade","Driver"],
+        "Vocation":["Advocate","Comms","Language","Admin","Bureaucrat","Comms"],
+        "Avocation":["One Art","One Science","Athlete","Designer","Seafarer","One Trade"]
     }
 }
 export var ServiceBranchMods = {
