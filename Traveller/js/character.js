@@ -1208,20 +1208,23 @@ export function createCharacter(roller, species){
     }
     function gainTermSchoolSkills(career,schools,updateFunc,callback){
         var commandCollege = false, ANMSchool = false;
+        var commandIndex = -1, anmSchoolIndex = -1;
         if(careers[careers.length-1].schools && careers[careers.length-1].schools.length > 0){
             for(var i = 0, len = careers[careers.length-1].schools.length; i < len; i++){
-                var school = careers[careers.length-1].schools[i];
+                var school = careers[careers.length-1].schools[i].school;
                 if(school == "Upcoming Command College" && num == 0){
-                    careers[careers.length-1].schools[i] = "Command College";
+                    careers[careers.length-1].schools[i].school = "Command College";
                 }else if(school == "Command College"){
                     commandCollege = true;
+                    commandIndex = i;
                 }else if(school == "ANM School"){
                     ANMSchool = true;
+                    anmSchoolIndex = i;
                 }
             }
         }
         if(commandCollege){
-            schools.splice(careers[careers.length-1].schools.indexOf("Command College"),1);
+            schools.splice(commandIndex,1);
             var schoolType = "";
             if(career == ENUM_CAREERS.Spacer){
                 schoolType = "N"
@@ -1247,7 +1250,8 @@ export function createCharacter(roller, species){
                     gainTermSchoolSkills(careers,schools,updateFunc,callback);
                 }
         }else if(ANMSchool){
-            schools.splice(careers[careers.length-1].schools.indexOf("ANM School"),1);
+            var skillAcquisitionIndex = careers[careers.length-1].schools[anmSchoolIndex].term;
+            schools.splice(anmSchoolIndex,1);
             var schoolType = "";
             if(career == ENUM_CAREERS.Spacer){
                 schoolType = "N"
@@ -1261,8 +1265,10 @@ export function createCharacter(roller, species){
                 updateFunc();
                 if(ANMSchoolResult.success){
                     pickSkill(schoolType,"ANM School provides a skill",(sk1)=>{
-                        gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
-                        gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
+                        if(typeof careers[careers.length-1].skillsToGain == "undefined"){ careers[careers.length-1].skillsToGain = []; }
+                        careers[careers.length-1].skillsToGain.push({receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex});
+                        //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
+                        //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
                         updateFunc();
                         gainTermSchoolSkills(careers,schools,updateFunc,callback);
                     })
@@ -1285,6 +1291,12 @@ export function createCharacter(roller, species){
                 for(var i = 0, len = tableHeaders.length; i < len; i++){
                     tables.Tables.push(tableHeaders[i]);
                     tables[tableHeaders[i]] = CareerSkillTables[career][tableHeaders[i]];
+                }
+            }
+            if(typeof currentTablesObject.schooling !== "undefined"){
+                //{receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex}
+                for(var r = 0, numReceipts = currentTablesObject.schooling.receipts; r < numReceipts; r++){
+                    gainSkillOrKnowledge(currentTablesObject.schooling.skill,currentTablesObject.schooling.knowledge,true,currentTablesObject.schooling.note);
                 }
             }
 
@@ -1907,7 +1919,7 @@ export function createCharacter(roller, species){
                 var opResult = rollForOperation();
                 var termSkillTable = {table:["Personal"],age:true,note:opResult.operation + " during Year " + (i+1)}; 
                 if(opResult.operation === "ANM School"){
-                    careers[careers.length-1].schools.push("ANM School");
+                    careers[careers.length-1].schools.push({school:"ANM School",term:i});
                     termSkillTable.table.push("Shore Duty");
                     termSkillTable.table.push("Technical");
                 }else{
@@ -1917,7 +1929,7 @@ export function createCharacter(roller, species){
                         termSkillTable.table.push(opResult.operation);
                     }
                 }
-                if(careers[careers.length-1].branch == "Technical" || careers[careers.length-1].branch === "Medical"){
+                if(careers[careers.length-1].branch == "Technical" || careers[careers.length-1].branch === "Medical" && termSkillTable.table.indexOf("Technical") == -1){
                     termSkillTable.table.push("Technical");
                 }
                 termSkillTables.push(termSkillTable);
@@ -1930,6 +1942,14 @@ export function createCharacter(roller, species){
             var ccValue = characteristics[ccIndex].value;
 
             gainTermSchoolSkills(careers[careers.length-1].career,careers[careers.length-1].schools,updateFunc,()=>{
+                if(typeof careers[careers.length-1].skillsToGain !== "undefined"){
+                    for(var i = 0, len = careers[careers.length-1].skillsToGain.length; i < len; i++){
+                        var skillToGain = careers[careers.length-1].skillsToGain[i];
+                        var termInWhichToGainSkill = skillToGain.termIndex;
+                        termSkillTables[termInWhichToGainSkill].schooling = skillToGain;                        
+                    }
+                    //{receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex}
+                }
                 pickOption([9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9],
                     "Select caution(+) or bravery mod.<br/>" +
                     "Target " + CC + "=" + ccValue + "<br/>Branch:+"+branchMod + " Operation:+" + maxOperationMod+
@@ -2246,7 +2266,7 @@ export function createCharacter(roller, species){
                     pickOption(["Retry","Try something else"],"Failed to begin Spacer career. Do you wish to retry?",(retryOption)=>{
                         if(retryOption === "Retry"){
                             var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
-                            var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,numDice,0,"Attempt to join Spacers vs Intellect");
+                            var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,numDice,0,"Retry attempt to begin Spacer vs Intellect");
                             record(beginRoll.remarks);
                             updateFunc();
                             if(beginRoll.success){
