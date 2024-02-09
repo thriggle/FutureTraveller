@@ -1912,30 +1912,30 @@ export function createCharacter(roller, species){
             record(remark);
             return{operation,mod,remark};
         };
-        var advanceAndGetSkills = function(){
-            var numYears = 4;
+        var advanceAndGetSkills = function(numYears){
+            if(typeof numYears === "undefined"){numYears = 4;}
             var maxOperationMod = 0;
             
             var termSkillTables = [];
+            var allOperationsEncountered = ["Personal"];
             for(var i = 0, len = numYears; i < len; i++){
                 var opResult = rollForOperation();
+                var operationHeading = opResult.operation;
+                if(operationHeading == "Strike" || operationHeading == "Patrol"){
+                    operationHeading = "Patrol/Strike";
+                }
+                if(allOperationsEncountered.indexOf(operationHeading) === -1){
+                    allOperationsEncountered.push(operationHeading);
+                }
                 var termSkillTable = {table:["Personal"],age:true,note:opResult.operation + " during Year " + (i+1)}; 
-                if(opResult.operation === "ANM School"){
-                    careers[careers.length-1].schools.push({school:"ANM School",term:i});
-                    termSkillTable.table.push("Shore Duty");
-                    termSkillTable.table.push("Technical");
-                }else{
-                    if(opResult.operation == "Strike" || opResult.operation == "Patrol"){
-                        termSkillTable.table.push("Patrol/Strike");
-                    }else{
-                        termSkillTable.table.push(opResult.operation);
-                    }
-                }
-                if(( careers[careers.length-1].branch == "Technical" || careers[careers.length-1].branch === "Medical" ) && termSkillTable.table.indexOf("Technical") == -1){
-                    termSkillTable.table.push("Technical");
-                }
                 termSkillTables.push(termSkillTable);
                 if(opResult.mod > maxOperationMod){ maxOperationMod = opResult.mod; }
+            }
+            if(( careers[careers.length-1].branch == "Technical" || careers[careers.length-1].branch === "Medical" ) && termSkillTable.table.indexOf("Technical") == -1){
+                allOperationsEncountered.push("Technical");
+            }
+            for(var i = 0, len = termSkillTables.length; i < len; i++){
+                termSkillTables[i].table = allOperationsEncountered.slice();
             }
             updateFunc();
             var branchMod = ServiceBranchMods[career][careers[careers.length-1].branch];
@@ -1950,7 +1950,7 @@ export function createCharacter(roller, species){
                         var termInWhichToGainSkill = skillToGain.termIndex;
                         termSkillTables[termInWhichToGainSkill].schooling = skillToGain;                        
                     }
-                    //{receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex}
+                    
                 }
                 pickOption([9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9],
                     "Select caution(+) or bravery mod.<br/>" +
@@ -2075,7 +2075,7 @@ export function createCharacter(roller, species){
                             var ratingRoll = checkCharacteristic("C2",undefined,promoMod,"Roll for enlisted promotion");
                             record(ratingRoll.remarks); updateFunc();
                             if(ratingRoll.success){
-                                rollForBranch(()=>{
+                                    careers[careers.length-1].freeBranchSelection = true;     
                                     termSkillTables.push({age:false,note:"Bonus skill from promotion"});
                                     careers[careers.length-1].rank.enlisted += 1;
                                     // gain enlisted skill here
@@ -2101,7 +2101,6 @@ export function createCharacter(roller, species){
                                             promptContinue(ENUM_CAREERS.Spacer,updateFunc);
                                         });
                                     }
-                                },true);
                                
                             }else{
                                 
@@ -2118,27 +2117,58 @@ export function createCharacter(roller, species){
         var rollForBranch = function(callback,keepExisting){
             var firstTime = typeof keepExisting == "undefined" || keepExisting == false;
             // pick branch
+            
             var chooseBranchRoll = checkCharacteristic(ENUM_CHARACTERISTICS.SOC,2,0,"Choose naval branch vs Soc");
             record(chooseBranchRoll.remarks);
             updateFunc();
             if(chooseBranchRoll.success){
-                pickOption(["Line","Engineer","Gunnery","Flight","Technical","Medical"],firstTime ? "You may choose a naval branch for your service." : "You may change to a different branch if desired.",(choice)=>{
-                    careers[careers.length-1].branch = choice;
-                    record("Joined " + choice + " branch");
-                    updateFunc();
-                    if(choice == "Technical"){
-                        gainSkillWithPromptForCategory("Technical branch provides a skill.","Trade",()=>{
+                var options = ["Line","Engineer","Gunnery","Flight","Technical","Medical"];
+                if(!firstTime){
+                    pickOption(["Stay in " + careers[careers.length-1].branch + " branch","Switch branches"],"Thanks to your promotion, you may switch to a different branch if desired.",(decision)=>{
+                        if(decision === "Switch branches"){
+                            options.splice(options.indexOf(careers[careers.length-1].branch),1);
+                            pickOption(options, "Choose a new naval branch for your service.",(choice)=>{
+                                record("Joined " + choice + " branch");
+                                updateFunc();
+                                if(choice == "Technical"){
+                                    gainSkillWithPromptForCategory("Technical branch provides a skill.","Trade",()=>{
+                                        updateFunc();
+                                        callback();
+                                    });
+                                }else if(choice == "Medical"){
+                                    gainSkillOrKnowledge(ENUM_SKILLS.Medic,undefined,false,"Medical branch provides a skill.");
+                                    updateFunc();
+                                    callback();
+                                }else{
+                                    callback();
+                                }
+                            },true);
+                        }else{
+                            record("Declined opportunity to change branches.");
+                            callback();
+                        }
+                    },true);
+                    
+                }else{
+                    pickOption(options, "You may choose a naval branch for your service.",(choice)=>{
+                        careers[careers.length-1].branch = choice;
+                        record("Joined " + choice + " branch");
+                        updateFunc();
+                        if(choice == "Technical"){
+                            gainSkillWithPromptForCategory("Technical branch provides a skill.","Trade",()=>{
+                                updateFunc();
+                                callback();
+                            });
+                        }else if(choice == "Medical"){
+                            gainSkillOrKnowledge(ENUM_SKILLS.Medic,undefined,false,"Medical branch provides a skill.");
                             updateFunc();
                             callback();
-                        });
-                    }else if(choice == "Medical"){
-                        gainSkillOrKnowledge(ENUM_SKILLS.Medic,undefined,false,"Medical branch provides a skill.");
-                        updateFunc();
-                        callback();
-                    }else{
-                        callback();
-                    }
-                },true,(firstTime ? undefined : careers[careers.length-1].branch));
+                        }else{
+                            callback();
+                        }
+                    },true);
+                }
+                
             }else{
                 if(typeof keepExisting == "undefined" || keepExisting == false){
                     // roll for branch
@@ -2218,34 +2248,31 @@ export function createCharacter(roller, species){
                                             updateFunc();
                                             gainSkillWithPromptForKnowledge("Passed flight school",ENUM_SKILLS.Pilot,()=>{
                                                 updateFunc();
-                                                // advance age by one year
-                                                advanceAge(1);
-                                                updateFunc();
                                                 // set branch = flight
                                                 careers[careers.length-1].branch = "Flight";
-                                                // proceed with R&R, +3 years of skills,
+                                                advanceAge(1); updateFunc();
                                                 advanceAndGetSkills(3);
                                             });
                                         });
                                     });
-                                }else{
+                                }else{ // failed flight school
                                     updateFunc();
-                                    // advance age by one year
-                                    advanceAge(1);
-                                    updateFunc();
-                                    // proceed with R&R, +3 years of skills,
-                                    advanceAndGetSkills(3)
+                                    rollForBranch(()=>{
+                                        // proceed with R&R, +3 years of operations, promotion/commission
+                                        advanceAge(1); updateFunc();
+                                        advanceAndGetSkills(3);
+                                    });
                                 }
                             }else{
                                 rollForBranch(()=>{
                                     // proceed with R&R, +4 years of skills, promotion/commission
-                                    advanceAndGetSkills(4);
+                                    advanceAndGetSkills();
                                 });
                             }
                         }else{
                             rollForBranch(()=>{
                                 // proceed with R&R, +4 years of skills, promotion/commission
-                                advanceAndGetSkills(4);
+                                advanceAndGetSkills();
                             });
                         }
                     },true);
@@ -2302,14 +2329,28 @@ export function createCharacter(roller, species){
                 }                
             }
         }else{
-            careers[careers.length-1].terms += 1;
-            pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
-                CC = selectedCC;
-                CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
-                // proceed with R&R, +4 years of skills, promotion/commission
-                advanceAndGetSkills();
-                
-            },true);
+            if(careers[careers.length-1].freeBranchSelection){
+                careers[careers.length-1].freeBranchSelection = false;
+                rollForBranch(()=>{
+                    careers[careers.length-1].terms += 1;
+                    pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                        CC = selectedCC;
+                        CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                        // proceed with R&R, +4 years of skills, promotion/commission
+                        advanceAndGetSkills();
+                        
+                    },true);
+                },true);
+            }else{
+                careers[careers.length-1].terms += 1;
+                pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                    CC = selectedCC;
+                    CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                    // proceed with R&R, +4 years of skills, promotion/commission
+                    advanceAndGetSkills();
+                    
+                },true);
+            }
         }
     }
     function removeDuplicates(arr){
