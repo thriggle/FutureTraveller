@@ -1923,8 +1923,10 @@ export function createCharacter(roller, species){
                 var operationHeading = opResult.operation;
                 if(operationHeading == "Strike" || operationHeading == "Patrol"){
                     operationHeading = "Patrol/Strike";
+                }else if(operationHeading === "ANM School"){
+                    careers[careers.length-1].schools.push({school:"ANM School",term:i});
                 }
-                if(allOperationsEncountered.indexOf(operationHeading) === -1){
+                if(allOperationsEncountered.indexOf(operationHeading) === -1 && typeof CareerSkillTables[career][operationHeading] !== "undefined"){
                     allOperationsEncountered.push(operationHeading);
                 }
                 var termSkillTable = {table:["Personal"],age:true,note:opResult.operation + " during Year " + (i+1)}; 
@@ -1952,8 +1954,12 @@ export function createCharacter(roller, species){
                     }
                     
                 }
+                var defaultValue = 0;
+                if(ccValue+totalMod > 12){
+                    defaultValue = ccValue + totalMod - 12;
+                }
                 pickOption([9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9],
-                    "Select caution(+) or bravery mod.<br/>" +
+                    "Select caution(+) or bravery(-) mod.<br/>" +
                     "Target " + CC + "=" + ccValue + "<br/>Branch:+"+branchMod + " Operation:+" + maxOperationMod+
                     "<br/>Risk: Roll <= "+(ccValue-totalMod) + " + Mod<br/>Reward: Roll <= "+(ccValue+totalMod)+" - Mod",
                     (selectedMod)=>{
@@ -2111,7 +2117,7 @@ export function createCharacter(roller, species){
                             }
                         }
                     }
-                },true,0);
+                },true,defaultValue);
             });
         };
         var rollForBranch = function(callback,keepExisting){
