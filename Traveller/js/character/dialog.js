@@ -1,7 +1,7 @@
 import { clearElement } from "./character_renderer.js";
 
 export var dialogCallback = () => {};
-export function pickOption(choices,prompt,callback,noCancel){
+export function pickOption(choices,prompt,callback,noCancel,defaultSelection){
     
     var pickerDialog = getDialog();
     var dialog = pickerDialog.dialog, selector = pickerDialog.selector, dialogText = pickerDialog.dialogText;
@@ -23,6 +23,9 @@ export function pickOption(choices,prompt,callback,noCancel){
             option.value = val;
             option.innerHTML = val;
         }
+    }
+    if(typeof defaultSelection !== "undefined"){
+        selector.value = defaultSelection;
     }
     dialogCallback = function(){ callback(selector.value); };
     dialog.showModal();

@@ -1206,86 +1206,123 @@ export function createCharacter(roller, species){
             }
         }
     }
-    
-    function gainTermSkills(num,career,updateFunc,callback){
-        var tables = CareerSkillTables[career];
-        if(num > 0){
-            num -=1;
-            function nextSteps(n){
-                updateFunc();
-                setTimeout(()=>{gainTermSkills(n,career,updateFunc,callback);},0);
-            };
-            var commandCollege = false, ANMSchool = false;
-            if(careers[careers.length-1].schools && careers[careers.length-1].schools.length > 0){
-                for(var i = 0, len = careers[careers.length-1].schools.length; i < len; i++){
-                    var school = careers[careers.length-1].schools[i];
-                    if(school == "Upcoming Command College" && num == 0){
-                        careers[careers.length-1].schools[i] = "Command College";
-                    }else if(school == "Command College"){
-                        commandCollege = true;
-                    }else if(school == "ANM School"){
-                        ANMSchool = true;
-                    }
+    function gainTermSchoolSkills(career,updateFunc,callback){
+        var commandCollege = false, ANMSchool = false;
+        var commandIndex = -1, anmSchoolIndices = [];
+        if(careers[careers.length-1].schools && careers[careers.length-1].schools.length > 0){
+            for(var i = 0, len = careers[careers.length-1].schools.length; i < len; i++){
+                var school = careers[careers.length-1].schools[i].school;
+                if(school == "Upcoming Command College" && num == 0){
+                    careers[careers.length-1].schools[i].school = "Command College";
+                }else if(school == "Command College"){
+                    commandCollege = true;
+                    commandIndex = i;
+                }else if(school == "ANM School"){
+                    ANMSchool = true;
+                    anmSchoolIndices.push(i);
                 }
             }
-            if(commandCollege){
-                careers[careers.length-1].schools.splice(careers[careers.length-1].schools.indexOf("Command College"),1);
-                var schoolType = "";
-                if(career == ENUM_CAREERS.Spacer){
-                    schoolType = "N"
-                }else if(career == ENUM_CAREERS.Soldier){
-                    schoolType = "A";
-                }else if(career == ENUM_CAREERS.Marine){
-                    schoolType = "M";
-                }
-                var commandCollegeAttendance = checkCharacteristic(characteristics[3].value > characteristics[4].value ? "C4" : "C5",undefined,0,"Command College");
-                    record(commandCollegeAttendance.remarks);
-                    updateFunc();
-                    if(commandCollegeAttendance.success){
-                        pickSkill(schoolType,"Command College provides two skills. (1 of 2)",(sk1)=>{
-                            gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"Command College");
+        }
+        if(commandCollege){
+            careers[careers.length-1].schools.splice(commandIndex,1);
+            var schoolType = "";
+            if(career == ENUM_CAREERS.Spacer){
+                schoolType = "N"
+            }else if(career == ENUM_CAREERS.Soldier){
+                schoolType = "A";
+            }else if(career == ENUM_CAREERS.Marine){
+                schoolType = "M";
+            }
+            var commandCollegeAttendance = checkCharacteristic(characteristics[3].value > characteristics[4].value ? "C4" : "C5",undefined,0,"Command College");
+                record(commandCollegeAttendance.remarks);
+                updateFunc();
+                if(commandCollegeAttendance.success){
+                    pickSkill(schoolType,"Command College provides two skills. (1 of 2)",(sk1)=>{
+                        gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"Command College");
+                        updateFunc();
+                        pickSkill(schoolType,"Command College provides two skills. (2 of 2)",(sk2)=>{
+                            gainSkillOrKnowledge(sk2.skill,sk2.knowledge,true,"Command College");
                             updateFunc();
-                            pickSkill(schoolType,"Command College provides two skills. (2 of 2)",(sk2)=>{
-                                gainSkillOrKnowledge(sk2.skill,sk2.knowledge,true,"Command College");
-                                updateFunc();
-                                nextSteps(num);
-                            });
-                        })
-                    }else{
-                        nextSteps(num);
-                    }
-            }else if(ANMSchool){
-                careers[careers.length-1].schools.splice(careers[careers.length-1].schools.indexOf("ANM School"),1);
-                var schoolType = "";
-                if(career == ENUM_CAREERS.Spacer){
-                    schoolType = "N"
-                }else if(career == ENUM_CAREERS.Soldier){
-                    schoolType = "A";
-                }else if(career == ENUM_CAREERS.Marine){
-                    schoolType = "M";
+                            gainTermSchoolSkills(career,updateFunc,callback);
+                        });
+                    })
+                }else{
+                    gainTermSchoolSkills(career,updateFunc,callback);
                 }
-                var ANMSchoolResult = checkCharacteristic(characteristics[1].value > characteristics[2].value ? "C2" : "C3",undefined,0,"ANM School");
-                    record(ANMSchoolResult.remarks);
+        }else if(ANMSchool){
+            var anmSchoolIndex = anmSchoolIndices[0];
+            var skillAcquisitionIndex = careers[careers.length-1].schools[anmSchoolIndex].term;
+            careers[careers.length-1].schools.splice(anmSchoolIndex,1);
+            var schoolType = "";
+            if(career == ENUM_CAREERS.Spacer){
+                schoolType = "N"
+            }else if(career == ENUM_CAREERS.Soldier){
+                schoolType = "A";
+            }else if(career == ENUM_CAREERS.Marine){
+                schoolType = "M";
+            }
+            var ANMSchoolResult = checkCharacteristic(characteristics[1].value > characteristics[2].value ? "C2" : "C3",undefined,0,"ANM School");
+                record(ANMSchoolResult.remarks);
+                updateFunc();
+                if(ANMSchoolResult.success){
+                    pickSkill(schoolType,"ANM School provides a skill",(sk1)=>{
+                        if(typeof careers[careers.length-1].skillsToGain == "undefined"){ careers[careers.length-1].skillsToGain = []; }
+                        careers[careers.length-1].skillsToGain.push({receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex});
+                        //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
+                        //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
+                        updateFunc();
+                        gainTermSchoolSkills(career,updateFunc,callback);
+                    })
+                }else{
+                    gainTermSchoolSkills(career,updateFunc,callback);
+                }
+        }else{
+            callback();
+        }
+    }
+    function gainTermSkills(tablesPerTerm,career,updateFunc,callback){
+        if(tablesPerTerm.length > 0){
+            var currentTablesObject = tablesPerTerm[0];
+            var tables = CareerSkillTables[career]
+            if(typeof currentTablesObject.table != "undefined"){
+                var tableHeaders = currentTablesObject.table;
+                tables = {
+                    "Tables":[]
+                };
+                for(var i = 0, len = tableHeaders.length; i < len; i++){
+                    tables.Tables.push(tableHeaders[i]);
+                    tables[tableHeaders[i]] = CareerSkillTables[career][tableHeaders[i]];
+                }
+            }
+            if(typeof currentTablesObject.schooling !== "undefined"){
+                //{receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex}
+                for(var r = 0, numReceipts = currentTablesObject.schooling.receipts; r < numReceipts; r++){
+                    gainSkillOrKnowledge(currentTablesObject.schooling.skill,currentTablesObject.schooling.knowledge,true,currentTablesObject.schooling.note);
+                }
+                currentTablesObject.schooling = [];
+            }
+
+            var note = "Choose a skill table";
+            if(typeof currentTablesObject.note !== "undefined"){ note = "" + currentTablesObject.note + ": " + note;}
+            note += " ("+(tablesPerTerm.length)+" picks remaining)"; 
+                var getOlder = typeof currentTablesObject.age !== "undefined" && currentTablesObject.age;
+                tablesPerTerm.splice(0,1);
+                function nextSteps(n,addYear){
                     updateFunc();
-                    if(ANMSchoolResult.success){
-                        pickSkill(schoolType,"ANM School provides a skill",(sk1)=>{
-                            gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
-                            gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
-                            updateFunc();
-                            nextSteps(num);
-                        })
-                    }else{
-                        nextSteps(num);
+                    if(addYear){
+                        advanceAge(1);
                     }
-            }else{
-                pickOption(tables.Tables,"Choose a skill table ("+(num+1)+" picks remaining):",(table)=>{
+                    setTimeout(()=>{gainTermSkills(n,career,updateFunc,callback);},0);
+                };
+            
+                pickOption(tables.Tables,note,(table)=>{
                     var newSkill = tables[table][roller.d6().result-1];
                     //record(table + ": " + newSkill); updateFunc();
                     var note = "("+table + ": " + newSkill+")";
                     if(table === "Personal"){
                         var index = +(newSkill.substring(1));
                         gainCharacteristic(index,1,note);
-                        nextSteps(num);
+                        nextSteps(tablesPerTerm,getOlder);
                     }else if(newSkill === "Major"){
                         if(majors.length > 0){
                             var getDegreeLabel = (x,i,ar)=>{return x.label;};
@@ -1299,11 +1336,11 @@ export function createCharacter(roller, species){
                                     }
                                 }
                                 gainSkillOrKnowledge(skill,knowledge,false,note);
-                                nextSteps(num);
+                                nextSteps(tablesPerTerm,getOlder);
                             },true);
                         }else{
                             record("Academic: You do not have a major; no skill increased.");
-                            nextSteps(num);
+                            nextSteps(tablesPerTerm,getOlder);
                         }
                     }else if(newSkill === "Minor"){
                         if(minors.length > 0){
@@ -1318,47 +1355,49 @@ export function createCharacter(roller, species){
                                     }
                                 }
                                 gainSkillOrKnowledge(skill,knowledge,false,note);
-                                nextSteps(num);
+                                nextSteps(tablesPerTerm,getOlder);
                             },true);
                         }else{
                             record("Academic: You do not have a minor; no skill increased.");
-                            nextSteps(num);
+                            nextSteps(tablesPerTerm,getOlder);
                         }
                     }else if(newSkill === "One Trade"){
-                        (function(num){
-                            gainSkillWithPromptForCategory(note,"TRADE",()=>{nextSteps(num);});
-                        })(num);
+                        (function(tablesPerTerm,getOlder){
+                            gainSkillWithPromptForCategory(note,"TRADE",()=>{nextSteps(tablesPerTerm,getOlder);});
+                        })(tablesPerTerm,getOlder);
                     }else if(newSkill === "One Art"){
-                        (function(num){
-                            gainSkillWithPromptForCategory(note,"ART",()=>{nextSteps(num);});
-                        })(num);
+                        (function(tablesPerTerm,getOlder){
+                            gainSkillWithPromptForCategory(note,"ART",()=>{nextSteps(tablesPerTerm,getOlder);});
+                        })(tablesPerTerm,getOlder);
                     }else if(newSkill === "One Science"){
-                        (function(num){
+                        (function(tablesPerTerm,getOlder){
                         pickOption(KnowledgeSpecialties[ENUM_SKILLS.Science],"Choose a science knowledge",(choice)=>{
                             gainSkillOrKnowledge(ENUM_SKILLS.Science,choice,false,note);
-                            nextSteps(num);
-                        },true);})(num);
+                            nextSteps(tablesPerTerm,getOlder);
+                        },true);})(tablesPerTerm,getOlder);
                     }else if(newSkill === "Soldier Skill"){
-                        (function(num){
-                            gainSkillWithPromptForCategory(note,"SOLDIER",()=>{nextSteps(num);});
-                        })(num);
+                        (function(tablesPerTerm,getOlder){
+                            gainSkillWithPromptForCategory(note,"SOLDIER",()=>{nextSteps(tablesPerTerm,getOlder);});
+                        })(tablesPerTerm,getOlder);
                     }else if(newSkill === "Starship Skill"){
-                        (function(num){
-                        gainSkillWithPromptForCategory(note,"SHIP",()=>{nextSteps(num);});
-                        })(num);
+                        (function(tablesPerTerm,getOlder){
+                        gainSkillWithPromptForCategory(note,"SHIP",()=>{nextSteps(tablesPerTerm,getOlder);});
+                        })(tablesPerTerm,getOlder);
                     }else if(newSkill === "Any Knowledge"){
                         record("Would gain "+newSkill+" from " + table + " here.");
-                        nextSteps(num);
+                        nextSteps(tablesPerTerm,getOlder);
                     }else if(newSkill === "Capital"){ // noble
+                        // TODO
                         // world knowledge of world of highest held noble land grant, value = 1D
-                        record("Would gain "+newSkill+" from " + table + " here.");
-                        nextSteps(num);
+                        record("Would gain "+newSkill+" world knowledge from " + table + " here.");
+                        nextSteps(tablesPerTerm,getOlder);
                     }else if(newSkill === "Any Skill"){ // functionary
+                        // TODO
                         // any skill from citizen life skills and knowledges
-                        record("Would gain "+newSkill+" from " + table + " here.");
-                        nextSteps(num);
+                        record("Would gain "+newSkill+" (from citizen life table) from " + table + " here.");
+                        nextSteps(tablesPerTerm,getOlder);
                     }else{
-                        gainSkillWithPromptForKnowledge(note,newSkill,()=>{nextSteps(num);});
+                        gainSkillWithPromptForKnowledge(note,newSkill,()=>{nextSteps(tablesPerTerm,getOlder);});
                         // if(KnowledgeSpecialties[newSkill]){
                         //     (function(num){
                         //         pickOption(KnowledgeSpecialties[newSkill],"Choose a "+newSkill+" knowledge.",(k)=>{
@@ -1374,7 +1413,7 @@ export function createCharacter(roller, species){
                     }                
                     
                 },true);
-            }
+            
         }else{
             updateFunc();
             setTimeout(callback,0);
@@ -1494,7 +1533,7 @@ export function createCharacter(roller, species){
                 }
                 for(var j = 0, jlen = career.awards.length; j<jlen; j++){
                     var award = career.awards[j];
-                    if(award.indexOf("Commendation") === 0 || award === "MCG" || award === "SEH"){
+                    if(award.indexOf("Commendation") === 0 || award === "MCG" || award === "SEH" || award === "*SEH*"){
                         career.numRolls += 1;
                     }
                 }
@@ -1535,7 +1574,7 @@ export function createCharacter(roller, species){
                             for(var i = 0; i <= maxMod; i++){
                                 var sum = roll + i;
                                 if(sum > 10){   
-                                    sum = 10; 
+                                    sum = 11; 
                                     rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                                     break;
                                 }else{
@@ -1569,7 +1608,7 @@ export function createCharacter(roller, species){
                                 for(var i = 0; i <= maxMod; i++){
                                     var sum = roll + i;
                                     if(sum > 10){   
-                                        sum = 10; 
+                                        sum = 11; 
                                         rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                                         break;
                                     }else{
@@ -1610,8 +1649,8 @@ export function createCharacter(roller, species){
                             var roll = roller.d6().result; var rollChoices = []
                             for(var i = 0; i <= maxMod; i++){
                                 var sum = roll + i;
-                                if(sum > 10){   
-                                    sum = 10; 
+                                if(sum > 11){   
+                                    sum = 11; 
                                     rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                                     break;
                                 }else{
@@ -1644,8 +1683,8 @@ export function createCharacter(roller, species){
                                 var roll = roller.d6().result; var rollChoices = []
                                 for(var i = 0; i <= maxMod; i++){
                                     var sum = roll + i;
-                                    if(sum > 10){   
-                                        sum = 10; 
+                                    if(sum > 11){   
+                                        sum = 11; 
                                         rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                                         break;
                                     }else{
@@ -1707,9 +1746,15 @@ export function createCharacter(roller, species){
                 CCs = getCCs(career);
             }
             var nextSteps = function(){
-                advanceAge(4);
+                //advanceAge(4);
                 updateFunc();
-                gainTermSkills(4,ENUM_CAREERS.Citizen,updateFunc,()=>{
+                var termSkillTables = [
+                    {age:true},
+                    {age:true},
+                    {age:true},
+                    {age:true},
+                ];
+                gainTermSkills(termSkillTables,ENUM_CAREERS.Citizen,updateFunc,()=>{
                     updateFunc(); 
                     promptContinue(ENUM_CAREERS.Citizen,updateFunc);
                 });
@@ -1870,238 +1915,305 @@ export function createCharacter(roller, species){
             return{operation,mod,remark};
         };
         var advanceAndGetSkills = function(numYears){
-            var numSkills = numYears;
+            if(typeof numYears === "undefined"){numYears = 4;}
             var maxOperationMod = 0;
             
+            var termSkillTables = [];
+            var allOperationsEncountered = ["Personal"];
             for(var i = 0, len = numYears; i < len; i++){
                 var opResult = rollForOperation();
-                if(opResult.operation === "ANM School"){
-                    careers[careers.length-1].schools.push("ANM School");
+                var operationHeading = opResult.operation;
+                if(operationHeading == "Strike" || operationHeading == "Patrol"){
+                    operationHeading = "Patrol/Strike";
+                }else if(operationHeading === "ANM School"){
+                    careers[careers.length-1].schools.push({school:"ANM School",term:i});
                 }
+                if(allOperationsEncountered.indexOf(operationHeading) === -1 && typeof CareerSkillTables[career][operationHeading] !== "undefined"){
+                    allOperationsEncountered.push(operationHeading);
+                }
+                var termSkillTable = {table:["Personal"],age:true,note:opResult.operation + " during Year " + (i+1)}; 
+                termSkillTables.push(termSkillTable);
                 if(opResult.mod > maxOperationMod){ maxOperationMod = opResult.mod; }
             }
-            
+            if(( careers[careers.length-1].branch == "Technical" || careers[careers.length-1].branch === "Medical" ) && termSkillTable.table.indexOf("Technical") == -1){
+                allOperationsEncountered.push("Technical");
+            }
+            for(var i = 0, len = termSkillTables.length; i < len; i++){
+                termSkillTables[i].table = allOperationsEncountered.slice();
+            }
             updateFunc();
             var branchMod = ServiceBranchMods[career][careers[careers.length-1].branch];
             var totalMod = maxOperationMod + branchMod;
             var ccIndex = +(CC.substring(1))-1;
             var ccValue = characteristics[ccIndex].value;
-            pickOption([9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9],
-                "Select +caution or -bravery mod.<br/>" +
-                "Target: " + CC + "=" + ccValue + ", Other Mods: Branch="+branchMod + " + Operation=" + maxOperationMod+
-                "<br/>Risk: Roll <= "+(ccValue-totalMod) + " + Mod; Reward: Roll <= "+(ccValue+totalMod)+" - Mod",
-                (selectedMod)=>{
-                    var caution = +(selectedMod);
-                    var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
-                    var riskResult = checkCharacteristic(CC,numDice,-totalMod+caution,"Risk Roll");
-                    record(riskResult.remarks);
-                    updateFunc();
-                    if(riskResult.success){
-                        careers[careers.length-1].awards.push("Campaign Ribbon");
-                        
-                    }else{
-                        var penalty = -totalMod;
-                        if(caution < 0){ penalty += caution;}
-                        penalty += roller.flux().result;
-                        if(penalty < 0){
-                            decreaseCharacteristic(ccIndex,-penalty,"Injury!");
-                            if(characteristics[ccIndex].value <= 0){ characteristics[ccIndex].value = 1;}
-                            updateFunc();
-                            careers[careers.length-1].awards.push("Wound Badge");
-                            if(penalty <= -4){
-                                careers[careers.length-1].awards.push("Disabled");
+
+            gainTermSchoolSkills(careers[careers.length-1].career,updateFunc,()=>{
+                if(typeof careers[careers.length-1].skillsToGain !== "undefined"){
+                    for(var i = 0, len = careers[careers.length-1].skillsToGain.length; i < len; i++){
+                        var skillToGain = careers[careers.length-1].skillsToGain[i];
+                        var termInWhichToGainSkill = skillToGain.termIndex;
+                        termSkillTables[termInWhichToGainSkill].schooling = skillToGain;                        
+                    }
+                    var skillToGain = careers[careers.length-1].skillsToGain = [];
+                }
+                var defaultValue = 0;
+                if(ccValue+totalMod > 12){
+                    defaultValue = ccValue + totalMod - 12;
+                }
+                pickOption([9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9],
+                    "Select caution(+) or bravery(-) mod.<br/>" +
+                    "Target " + CC + "=" + ccValue + "<br/>Branch:+"+branchMod + " Operation:+" + maxOperationMod+
+                    "<br/>Risk: Roll <= "+(ccValue-totalMod) + " + Mod<br/>Reward: Roll <= "+(ccValue+totalMod)+" - Mod",
+                    (selectedMod)=>{
+                        var caution = +(selectedMod);
+                        var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                        var riskResult = checkCharacteristic(CC,numDice,-totalMod+caution,"Risk Roll");
+                        record(riskResult.remarks);
+                        updateFunc();
+                        if(riskResult.success){
+                            careers[careers.length-1].awards.push("Campaign Ribbon");
+                            
+                        }else{
+                            var penalty = -totalMod;
+                            if(caution < 0){ penalty += caution;}
+                            penalty += roller.flux().result;
+                            if(penalty < 0){
+                                decreaseCharacteristic(CC,-penalty,"Injury!");
+                                if(characteristics[ccIndex].value <= 0){ characteristics[ccIndex].value = 1;}
+                                updateFunc();
+                                careers[careers.length-1].awards.push("Wound Badge");
+                                if(penalty <= -4){
+                                    careers[careers.length-1].awards.push("Disabled");
+                                }
                             }
                         }
-                    }
-                    var rewardResult = checkCharacteristic(CC,numDice,totalMod-caution,"Reward Roll");
-                    record(rewardResult.remarks);
-                    var promoMod = 0;
-                    if(rewardResult.success){
-                        var rawResult = rewardResult.rolls.reduce((a, b) => a + b, 0);
-                        if(careers[careers.length-1].rank.officer > 0){ rawResult += 1;}
-                        if(rawResult <= 8){
-                            careers[careers.length-1].awards.push("XS");
-                            record("Earned Exemplary Service (XS) badge");
-                            promoMod += 1;
-                        }else if(rawResult <= 10){
-                            careers[careers.length-1].awards.push("MCUF");
-                            record("Earned Meritorious Conduct Under Fire (MCUF) medal");
-                            promoMod += 2;
-                        }else if(rawResult <= 11){
-                            careers[careers.length-1].awards.push("MCG");
-                            record("Earned Medal for Conspicuous Gallantry (MCG)");
-                            promoMod += 3;
-                        }else if(rawResult <= 12){
-                            careers[careers.length-1].awards.push("SEH");
-                            record("Earned Starburst for Extreme Heroism (SEH) medal");
-                            promoMod += 1;
-                        }else{
-                            careers[careers.length-1].awards.push("*SEH*");
-                            record("Earned Starburst for Extreme Heroism with Diamonds (*SEH*) medal");
-                            promoMod += 5;0
+                        var rewardResult = checkCharacteristic(CC,numDice,totalMod-caution,"Reward Roll");
+                        record(rewardResult.remarks);
+                        var promoMod = 0;
+                        if(rewardResult.success){
+                            var rawResult = rewardResult.rolls.reduce((a, b) => a + b, 0);
+                            if(careers[careers.length-1].rank.officer > 0){ rawResult += 1;}
+                            if(rawResult <= 8){
+                                careers[careers.length-1].awards.push("XS");
+                                record("Earned Exemplary Service (XS) badge");
+                                promoMod += 1;
+                            }else if(rawResult <= 10){
+                                careers[careers.length-1].awards.push("MCUF");
+                                record("Earned Meritorious Conduct Under Fire (MCUF) medal");
+                                promoMod += 2;
+                            }else if(rawResult <= 11){
+                                careers[careers.length-1].awards.push("MCG");
+                                record("Earned Medal for Conspicuous Gallantry (MCG)");
+                                promoMod += 3;
+                            }else if(rawResult <= 12){
+                                careers[careers.length-1].awards.push("SEH");
+                                record("Earned Starburst for Extreme Heroism (SEH) medal");
+                                promoMod += 1;
+                            }else{
+                                careers[careers.length-1].awards.push("*SEH*");
+                                record("Earned Starburst for Extreme Heroism with Diamonds (*SEH*) medal");
+                                promoMod += 5;0
+                            }
+                            updateFunc();
                         }
-                        updateFunc();
-                    }
-                
-                if(careers[careers.length-1].rank.officer > 0){
-                    // roll for officer promotion
-                    var promoRoll = checkCharacteristic(ENUM_CHARACTERISTICS.SOC,undefined,promoMod,"Roll for Officer Promotion");
-                    record(promoRoll.remarks); updateFunc();
-                    if(promoRoll.success){
-                        numSkills += 1;
-                        careers[careers.length-1].rank.officer += 1;
-                        // gain officer skill here
-                        if(careers[careers.length-1].rank.officer == 3){ 
-                            gainSkillWithPromptForKnowledge("Promoted to Lieutenant. Gain Engineer.",ENUM_SKILLS.Engineer,()=>{
-                                advanceAge(numYears);
-                                gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
-                                    updateFunc(); 
-                                    promptContinue(ENUM_CAREERS.Spacer,updateFunc);
-                                });
-                            });
-                        }else if(careers[careers.length-1].rank.officer == 4){
-                            gainSkillWithPromptForKnowledge("Promoted to Lt Commander. Gain Pilot.",ENUM_SKILLS.Pilot,()=>{
-                                // TODO Command College in Year 1 of next term
-                                careers[careers.length-1].schools.push("Upcoming Command College");
-                                advanceAge(numYears);
-                                gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
-                                    updateFunc(); 
-                                    promptContinue(ENUM_CAREERS.Spacer,updateFunc);
-                                });
-                            });
-                        }else if(careers[careers.length-1].rank.officer == 6){
-                            gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to Captain.");
-                            advanceAge(numYears);
-                            gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
-                                updateFunc(); 
-                                promptContinue(ENUM_CAREERS.Spacer,updateFunc);
-                            });
-                        }else{
-                            advanceAge(numYears);
-                            gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
-                                updateFunc(); 
-                                promptContinue(ENUM_CAREERS.Spacer,updateFunc);
-                            });
-                        }
-                    }else{
-                        advanceAge(numYears);
-                        gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
-                            updateFunc(); 
-                            promptContinue(ENUM_CAREERS.Spacer,updateFunc);
-                        });
-                    }
-                }else{
-                    // roll for officer commission
-                    var commissionRoll = checkCharacteristic("C2",undefined,0,"Roll for Officer Commission");
-                    record(commissionRoll.remarks);
-                    updateFunc();
-                    if(commissionRoll.success){
-                        careers[careers.length-1].rank.officer = 1;
-                        gainSkillOrKnowledge(ENUM_SKILLS.Astrogator,undefined,false,"Promoted to O1 Ensign.");
-                        numSkills += 1;
-                        advanceAge(numYears);
-                        gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
-                            updateFunc(); 
-                            promptContinue(ENUM_CAREERS.Spacer,updateFunc);
-                        });
-                    }else{
-                        // roll for rating promotion
-                        var ratingRoll = checkCharacteristic("C2",undefined,promoMod,"Roll for enlisted promotion");
-                        record(ratingRoll.remarks); updateFunc();
-                        if(ratingRoll.success){
-                            numSkills += 1;
-                            careers[careers.length-1].rank.enlisted += 1;
-                            // gain enlisted skill here
-                            if(careers[careers.length-1].rank.enlisted == 4){
-                                gainSkillWithPromptForKnowledge("Promoted to Petty Officer First. Gain Gunner.",ENUM_SKILLS.Gunner,()=>{
-                                    advanceAge(numYears);
-                                    gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                    
+                    if(careers[careers.length-1].rank.officer > 0){
+                        // roll for officer promotion
+                        var promoRoll = checkCharacteristic(ENUM_CHARACTERISTICS.SOC,undefined,promoMod,"Roll for Officer Promotion");
+                        record(promoRoll.remarks); updateFunc();
+                        if(promoRoll.success){
+                            termSkillTables.push({age:false,note:"Bonus skill from promotion"});
+                            careers[careers.length-1].rank.officer += 1;
+                            // gain officer skill here
+                            if(careers[careers.length-1].rank.officer == 3){ 
+                                gainSkillWithPromptForKnowledge("Promoted to Lieutenant. Gain Engineer.",ENUM_SKILLS.Engineer,()=>{
+                                    
+                                    gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
                                         updateFunc(); 
                                         promptContinue(ENUM_CAREERS.Spacer,updateFunc);
                                     });
                                 });
-                            }else if(careers[careers.length-1].rank.enlisted == 5){
-                                gainSkillOrKnowledge(ENUM_SKILLS.Sensors,undefined,false,"Promoted to Chief Petty Officer. Gain Sensors.");
-                                advanceAge(numYears);
-                                gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                            }else if(careers[careers.length-1].rank.officer == 4){
+                                gainSkillWithPromptForKnowledge("Promoted to Lt Commander. Gain Pilot.",ENUM_SKILLS.Pilot,()=>{
+                                    // TODO Command College in Year 1 of next term
+                                    careers[careers.length-1].schools.push("Upcoming Command College");
+                                    
+                                    gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                                        updateFunc(); 
+                                        promptContinue(ENUM_CAREERS.Spacer,updateFunc);
+                                    });
+                                });
+                            }else if(careers[careers.length-1].rank.officer == 6){
+                                gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to Captain.");
+                                
+                                gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
                                     updateFunc(); 
                                     promptContinue(ENUM_CAREERS.Spacer,updateFunc);
                                 });
                             }else{
-                                advanceAge(numYears);
-                                gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                                
+                                gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
                                     updateFunc(); 
                                     promptContinue(ENUM_CAREERS.Spacer,updateFunc);
                                 });
                             }
                         }else{
-                            advanceAge(numYears);
-                            gainTermSkills(numSkills,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                            
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
                                 updateFunc(); 
                                 promptContinue(ENUM_CAREERS.Spacer,updateFunc);
                             });
                         }
+                    }else{
+                        // roll for officer commission
+                        var commissionRoll = checkCharacteristic("C2",undefined,0,"Roll for Officer Commission");
+                        record(commissionRoll.remarks);
+                        updateFunc();
+                        if(commissionRoll.success){
+                            careers[careers.length-1].rank.officer = 1;
+                            gainSkillOrKnowledge(ENUM_SKILLS.Astrogator,undefined,false,"Promoted to O1 Ensign.");
+                            termSkillTables.push({age:false,note:"Bonus skill from promotion"});
+                            
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                                updateFunc(); 
+                                promptContinue(ENUM_CAREERS.Spacer,updateFunc);
+                            });
+                        }else{
+                            // roll for rating promotion
+                            var ratingRoll = checkCharacteristic("C2",undefined,promoMod,"Roll for enlisted promotion");
+                            record(ratingRoll.remarks); updateFunc();
+                            if(ratingRoll.success){
+                                    careers[careers.length-1].freeBranchSelection = true;     
+                                    termSkillTables.push({age:false,note:"Bonus skill from promotion"});
+                                    careers[careers.length-1].rank.enlisted += 1;
+                                    // gain enlisted skill here
+                                    if(careers[careers.length-1].rank.enlisted == 4){
+                                        gainSkillWithPromptForKnowledge("Promoted to Petty Officer First. Gain Gunner.",ENUM_SKILLS.Gunner,()=>{
+                                            
+                                            gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                                                updateFunc(); 
+                                                promptContinue(ENUM_CAREERS.Spacer,updateFunc);
+                                            });
+                                        });
+                                    }else if(careers[careers.length-1].rank.enlisted == 5){
+                                        gainSkillOrKnowledge(ENUM_SKILLS.Sensors,undefined,false,"Promoted to Chief Petty Officer. Gain Sensors.");
+                                        
+                                        gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                                            updateFunc(); 
+                                            promptContinue(ENUM_CAREERS.Spacer,updateFunc);
+                                        });
+                                    }else{
+                                        
+                                        gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                                            updateFunc(); 
+                                            promptContinue(ENUM_CAREERS.Spacer,updateFunc);
+                                        });
+                                    }
+                               
+                            }else{
+                                
+                                gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
+                                    updateFunc(); 
+                                    promptContinue(ENUM_CAREERS.Spacer,updateFunc);
+                                });
+                            }
+                        }
                     }
-                }
-            },true);
-            
+                },true,defaultValue);
+            });
         };
-        var rollForBranch = function(callback){
+        var rollForBranch = function(callback,keepExisting){
+            var firstTime = typeof keepExisting == "undefined" || keepExisting == false;
             // pick branch
+            
             var chooseBranchRoll = checkCharacteristic(ENUM_CHARACTERISTICS.SOC,2,0,"Choose naval branch vs Soc");
             record(chooseBranchRoll.remarks);
             updateFunc();
             if(chooseBranchRoll.success){
-                pickOption(["Line","Engineer","Gunnery","Flight","Technical","Medical"],"You may choose a naval branch for your service.",(choice)=>{
-                    careers[careers.length-1].branch = choice;
-                    record("Joined " + choice + " branch");
-                    updateFunc();
-                    if(choice == "Technical"){
-                        gainSkillWithPromptForCategory("Technical branch provides a skill.","Trade",()=>{
+                var options = ["Line","Engineer","Gunnery","Flight","Technical","Medical"];
+                if(!firstTime){
+                    pickOption(["Stay in " + careers[careers.length-1].branch + " branch","Switch branches"],"Thanks to your promotion, you may switch to a different branch if desired.",(decision)=>{
+                        if(decision === "Switch branches"){
+                            options.splice(options.indexOf(careers[careers.length-1].branch),1);
+                            pickOption(options, "Choose a new naval branch for your service.",(choice)=>{
+                                record("Joined " + choice + " branch");
+                                updateFunc();
+                                if(choice == "Technical"){
+                                    gainSkillWithPromptForCategory("Technical branch provides a skill.","Trade",()=>{
+                                        updateFunc();
+                                        callback();
+                                    });
+                                }else if(choice == "Medical"){
+                                    gainSkillOrKnowledge(ENUM_SKILLS.Medic,undefined,false,"Medical branch provides a skill.");
+                                    updateFunc();
+                                    callback();
+                                }else{
+                                    callback();
+                                }
+                            },true);
+                        }else{
+                            record("Declined opportunity to change branches.");
+                            callback();
+                        }
+                    },true);
+                    
+                }else{
+                    pickOption(options, "You may choose a naval branch for your service.",(choice)=>{
+                        careers[careers.length-1].branch = choice;
+                        record("Joined " + choice + " branch");
+                        updateFunc();
+                        if(choice == "Technical"){
+                            gainSkillWithPromptForCategory("Technical branch provides a skill.","Trade",()=>{
+                                updateFunc();
+                                callback();
+                            });
+                        }else if(choice == "Medical"){
+                            gainSkillOrKnowledge(ENUM_SKILLS.Medic,undefined,false,"Medical branch provides a skill.");
                             updateFunc();
                             callback();
-                        });
-                    }else if(choice == "Medical"){
+                        }else{
+                            callback();
+                        }
+                    },true);
+                }
+                
+            }else{
+                if(typeof keepExisting == "undefined" || keepExisting == false){
+                    // roll for branch
+                    var roll = roller.d6(1);
+                    var sum = roll.result;
+                    var remark = "Roll for branch: ["+roll.rolls.join(",")+"]";
+                    if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU && characteristics[4].value >= 10){
+                        sum += 2;
+                        remark += "+2";
+                    }
+                    remark += "=" + sum;
+                    var newBranch = "";
+                    switch(sum){
+                        case 1:
+                        case 2:
+                        case 3: newBranch = "Line"; break;
+                        case 4: newBranch = "Engineer"; break;
+                        case 5: newBranch = "Gunnery"; break;
+                        case 6: newBranch = "Flight"; break;
+                        case 7: newBranch = "Technical"; break;
+                        case 8: newBranch = "Medical"; break;
+                    }
+                    remark += " - " + newBranch;
+                    careers[careers.length - 1].branch = newBranch;
+                    record(remark);
+                    updateFunc();
+                    if(newBranch == "Technical"){
+                        gainSkillWithPromptForCategory("Technical branch provides a skill.","Trade",()=>{
+                            updateFunc(); callback();
+                        })
+                    }else if(newBranch == "Medical"){
                         gainSkillOrKnowledge(ENUM_SKILLS.Medic,undefined,false,"Medical branch provides a skill.");
                         updateFunc();
                         callback();
                     }else{
                         callback();
                     }
-                },true);
-            }else{
-                // roll for branch
-                var roll = roller.d6(1);
-                var sum = roll.result;
-                var remark = "Roll for branch: ["+roll.rolls.join(",")+"]";
-                if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU && characteristics[4].value >= 10){
-                    sum += 2;
-                    remark += "+2";
-                }
-                remark += "=" + sum;
-                var newBranch = "";
-                switch(sum){
-                    case 1:
-                    case 2:
-                    case 3: newBranch = "Line"; break;
-                    case 4: newBranch = "Engineer"; break;
-                    case 5: newBranch = "Gunnery"; break;
-                    case 6: newBranch = "Flight"; break;
-                    case 7: newBranch = "Technical"; break;
-                    case 8: newBranch = "Medical"; break;
-                }
-                remark += " - " + newBranch;
-                careers[careers.length - 1].branch = newBranch;
-                record(remark);
-                updateFunc();
-                if(newBranch == "Technical"){
-                    gainSkillWithPromptForCategory("Technical branch provides a skill.","Trade",()=>{
-                        updateFunc(); callback();
-                    })
-                }else if(newBranch == "Medical"){
-                    gainSkillOrKnowledge(ENUM_SKILLS.Medic,undefined,false,"Medical branch provides a skill.");
-                    updateFunc();
-                    callback();
                 }else{
                     callback();
                 }
@@ -2144,34 +2256,31 @@ export function createCharacter(roller, species){
                                             updateFunc();
                                             gainSkillWithPromptForKnowledge("Passed flight school",ENUM_SKILLS.Pilot,()=>{
                                                 updateFunc();
-                                                // advance age by one year
-                                                advanceAge(1);
-                                                updateFunc();
                                                 // set branch = flight
                                                 careers[careers.length-1].branch = "Flight";
-                                                // proceed with R&R, +3 years of skills,
+                                                advanceAge(1); updateFunc();
                                                 advanceAndGetSkills(3);
                                             });
                                         });
                                     });
-                                }else{
+                                }else{ // failed flight school
                                     updateFunc();
-                                    // advance age by one year
-                                    advanceAge(1);
-                                    updateFunc();
-                                    // proceed with R&R, +3 years of skills,
-                                    advanceAndGetSkills(3)
+                                    rollForBranch(()=>{
+                                        // proceed with R&R, +3 years of operations, promotion/commission
+                                        advanceAge(1); updateFunc();
+                                        advanceAndGetSkills(3);
+                                    });
                                 }
                             }else{
                                 rollForBranch(()=>{
                                     // proceed with R&R, +4 years of skills, promotion/commission
-                                    advanceAndGetSkills(4);
+                                    advanceAndGetSkills();
                                 });
                             }
                         }else{
                             rollForBranch(()=>{
                                 // proceed with R&R, +4 years of skills, promotion/commission
-                                advanceAndGetSkills(4);
+                                advanceAndGetSkills();
                             });
                         }
                     },true);
@@ -2191,7 +2300,7 @@ export function createCharacter(roller, species){
                                 CC = selectedCC;
                                 CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                 // proceed with R&R, +4 years of skills, promotion/commission
-                                advanceAndGetSkills(4);
+                                advanceAndGetSkills();
                             },true);
                         });
                     });
@@ -2202,7 +2311,7 @@ export function createCharacter(roller, species){
                     pickOption(["Retry","Try something else"],"Failed to begin Spacer career. Do you wish to retry?",(retryOption)=>{
                         if(retryOption === "Retry"){
                             var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
-                            var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,numDice,0,"Attempt to join Spacers vs Intellect");
+                            var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,numDice,0,"Retry attempt to begin Spacer vs Intellect");
                             record(beginRoll.remarks);
                             updateFunc();
                             if(beginRoll.success){
@@ -2214,7 +2323,7 @@ export function createCharacter(roller, species){
                                             CC = selectedCC;
                                             CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                             // proceed with R&R, +4 years of skills, promotion/commission
-                                            advanceAndGetSkills(4);
+                                            advanceAndGetSkills();
                                         },true);
                                     });
                                 });
@@ -2228,14 +2337,28 @@ export function createCharacter(roller, species){
                 }                
             }
         }else{
-            careers[careers.length-1].terms += 1;
-            pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
-                CC = selectedCC;
-                CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
-                // proceed with R&R, +4 years of skills, promotion/commission
-                advanceAndGetSkills(4);
-                
-            },true);
+            if(careers[careers.length-1].freeBranchSelection){
+                careers[careers.length-1].freeBranchSelection = false;
+                rollForBranch(()=>{
+                    careers[careers.length-1].terms += 1;
+                    pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                        CC = selectedCC;
+                        CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                        // proceed with R&R, +4 years of skills, promotion/commission
+                        advanceAndGetSkills();
+                        
+                    },true);
+                },true);
+            }else{
+                careers[careers.length-1].terms += 1;
+                pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                    CC = selectedCC;
+                    CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                    // proceed with R&R, +4 years of skills, promotion/commission
+                    advanceAndGetSkills();
+                    
+                },true);
+            }
         }
     }
     function removeDuplicates(arr){
@@ -2401,9 +2524,11 @@ export function createCharacter(roller, species){
         if(typeof characteristic === "number" && characteristic <= 6 && characteristic >= 1){ index = characteristic-1; }
         else if(typeof characteristic === "string"){
             switch(characteristic){
+                case "C1":
                 case ENUM_CHARACTERISTICS.STR: 
                     index = 0; 
                     break;
+                case "C2":
                 case ENUM_CHARACTERISTICS.DEX: 
                     index = 1; 
                     break;
@@ -2413,6 +2538,7 @@ export function createCharacter(roller, species){
                 case ENUM_CHARACTERISTICS.GRA: 
                     index = 1; 
                     break;
+                case "C3":
                 case ENUM_CHARACTERISTICS.END: 
                     index = 2; 
                     break;
@@ -2422,9 +2548,11 @@ export function createCharacter(roller, species){
                 case ENUM_CHARACTERISTICS.VIG: 
                     index = 2;  
                     break;
+                case "C4":
                 case ENUM_CHARACTERISTICS.INT: 
                     index = 3; 
                     break;
+                case "C5":
                 case ENUM_CHARACTERISTICS.EDU: 
                     index = 4; 
                     break;
@@ -2434,6 +2562,7 @@ export function createCharacter(roller, species){
                 case ENUM_CHARACTERISTICS.INS: 
                     index = 4; 
                     break;
+                case "C6":
                 case ENUM_CHARACTERISTICS.SOC: 
                     index = 5; 
                     break;
@@ -2465,10 +2594,12 @@ export function createCharacter(roller, species){
     }
     function getQualifications(){
         var q = {};
-        
+        var availability = musteredOut ? false : true; // can't pursue careers if you've already mustered out
         q.MusterOut = (careers.length > 0 && musteredOut == false);
-        q.Citizen = careers.length == 0;
-        q.Spacer = true;
+        q.Citizen = availability && careers.length == 0;
+        q.Spacer = availability && (careers.length == 0 || careers.filter((v,i,ar)=>{
+            return v.career === ENUM_CAREERS.Spacer;
+        }).length == 0);
         if(awards.indexOf("Navy Officer1") >= 0){
             // no other career can be pursued until navy term served
             q.Citizen = false;
