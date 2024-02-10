@@ -1206,9 +1206,9 @@ export function createCharacter(roller, species){
             }
         }
     }
-    function gainTermSchoolSkills(career,schools,updateFunc,callback){
+    function gainTermSchoolSkills(career,updateFunc,callback){
         var commandCollege = false, ANMSchool = false;
-        var commandIndex = -1, anmSchoolIndex = -1;
+        var commandIndex = -1, anmSchoolIndices = [];
         if(careers[careers.length-1].schools && careers[careers.length-1].schools.length > 0){
             for(var i = 0, len = careers[careers.length-1].schools.length; i < len; i++){
                 var school = careers[careers.length-1].schools[i].school;
@@ -1219,12 +1219,12 @@ export function createCharacter(roller, species){
                     commandIndex = i;
                 }else if(school == "ANM School"){
                     ANMSchool = true;
-                    anmSchoolIndex = i;
+                    anmSchoolIndices.push(i);
                 }
             }
         }
         if(commandCollege){
-            schools.splice(commandIndex,1);
+            careers[careers.length-1].schools.splice(commandIndex,1);
             var schoolType = "";
             if(career == ENUM_CAREERS.Spacer){
                 schoolType = "N"
@@ -1243,15 +1243,16 @@ export function createCharacter(roller, species){
                         pickSkill(schoolType,"Command College provides two skills. (2 of 2)",(sk2)=>{
                             gainSkillOrKnowledge(sk2.skill,sk2.knowledge,true,"Command College");
                             updateFunc();
-                            gainTermSchoolSkills(careers,schools,updateFunc,callback);
+                            gainTermSchoolSkills(career,updateFunc,callback);
                         });
                     })
                 }else{
-                    gainTermSchoolSkills(careers,schools,updateFunc,callback);
+                    gainTermSchoolSkills(career,updateFunc,callback);
                 }
         }else if(ANMSchool){
+            var anmSchoolIndex = anmSchoolIndices[0];
             var skillAcquisitionIndex = careers[careers.length-1].schools[anmSchoolIndex].term;
-            schools.splice(anmSchoolIndex,1);
+            careers[careers.length-1].schools.splice(anmSchoolIndex,1);
             var schoolType = "";
             if(career == ENUM_CAREERS.Spacer){
                 schoolType = "N"
@@ -1270,10 +1271,10 @@ export function createCharacter(roller, species){
                         //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
                         //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
                         updateFunc();
-                        gainTermSchoolSkills(careers,schools,updateFunc,callback);
+                        gainTermSchoolSkills(career,updateFunc,callback);
                     })
                 }else{
-                    gainTermSchoolSkills(careers,schools,updateFunc,callback);
+                    gainTermSchoolSkills(career,updateFunc,callback);
                 }
         }else{
             callback();
@@ -1298,6 +1299,7 @@ export function createCharacter(roller, species){
                 for(var r = 0, numReceipts = currentTablesObject.schooling.receipts; r < numReceipts; r++){
                     gainSkillOrKnowledge(currentTablesObject.schooling.skill,currentTablesObject.schooling.knowledge,true,currentTablesObject.schooling.note);
                 }
+                currentTablesObject.schooling = [];
             }
 
             var note = "Choose a skill table";
@@ -1945,14 +1947,14 @@ export function createCharacter(roller, species){
             var ccIndex = +(CC.substring(1))-1;
             var ccValue = characteristics[ccIndex].value;
 
-            gainTermSchoolSkills(careers[careers.length-1].career,careers[careers.length-1].schools,updateFunc,()=>{
+            gainTermSchoolSkills(careers[careers.length-1].career,updateFunc,()=>{
                 if(typeof careers[careers.length-1].skillsToGain !== "undefined"){
                     for(var i = 0, len = careers[careers.length-1].skillsToGain.length; i < len; i++){
                         var skillToGain = careers[careers.length-1].skillsToGain[i];
                         var termInWhichToGainSkill = skillToGain.termIndex;
                         termSkillTables[termInWhichToGainSkill].schooling = skillToGain;                        
                     }
-                    
+                    var skillToGain = careers[careers.length-1].skillsToGain = [];
                 }
                 var defaultValue = 0;
                 if(ccValue+totalMod > 12){

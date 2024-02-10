@@ -243,7 +243,7 @@ export var CareerSkillTables = {
         "Base":["Major","Major","Minor","Minor","One Trade","One Trade"],
         "Combat":["Fighter","Vacc Suit","Fighter","Stealth","Leader","Tactics"],
         "Peacekeeper":["Admin","Fighter","Hostile Environ","Animals","Liaison","Navigation"],
-        "Occupation":["Fighter","Vacc Suit","Driver","Stealth","Heavy Wpns","Sensors"],
+        "Occupation":["Fighter","Vacc Suit","Driver","Stealth","Heavy Weapons","Sensors"],
         "Mission":["Soldier Skill","Liaison","Language","Soldier Skill","Computer","Tactics"],
         "Technical":["One Art","One Science","Explosives","Medic","Seafarer","One Trade"]
     },
