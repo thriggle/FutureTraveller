@@ -116,19 +116,21 @@ function statBlock(character,element){
 function skillBlock(character,element){
     var statHTML = "<ul>";
     var skills = Object.keys(character.skills).sort();
-    var nativeLanguage = character.getNativeLanguage(), nativeLanguageLevel = character.getNativeLanguageLevel()
+    var nativeLanguage = character.getNativeLanguage(), nativeLanguageLevel = character.getNativeLanguageLevel();
     for(var i = 0, len = skills.length; i < len; i++){
         var skill = skills[i];
-        statHTML += "<li> "+ skill +": " + (character.skills[skill].Skill >= 0 ? character.skills[skill].Skill : "n/a")
+        var skillLevel = character.skills[skill].Skill;
+        statHTML += "<li data-skill=\""+(skillLevel >= 1)+"\"> "+ skill +": " + (skillLevel >= 0 ? character.skills[skill].Skill : "n/a")
         if(character.skills[skill].Knowledge){
             statHTML += "<ul>";
             var knowledges = Object.keys(character.skills[skill].Knowledge).sort();
             for(var j = 0, jlen = knowledges.length; j < jlen; j++){
                 var k = knowledges[j];
                 if(skill == ENUM_SKILLS.Language && k === nativeLanguage){
-                    statHTML += "<li> "+ k +": " + nativeLanguageLevel;
+                    statHTML += "<li data-skill=\"true\"> "+ k +": " + nativeLanguageLevel;
                 }else{
-                    statHTML += "<li> "+ k +": " + (character.skills[skill].Knowledge[k] );
+                    var klevel = character.skills[skill].Knowledge[k];
+                    statHTML += "<li data-skill=\""+(klevel > 0)+"\"> "+ k +": " + (klevel );
                 }
             }
             statHTML += "</ul>";
