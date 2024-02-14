@@ -525,6 +525,7 @@ function validateQualifications(){
     var qual = person.getQualifications();
     if(qual.Citizen){ document.getElementById("btnCitizen").removeAttribute("disabled"); }else{ document.getElementById("btnCitizen").setAttribute("disabled","");}
     if(qual.Spacer){ document.getElementById("btnSpacer").removeAttribute("disabled"); }else{ document.getElementById("btnSpacer").setAttribute("disabled","");}
+    if(qual.Soldier){ document.getElementById("btnSoldier").removeAttribute("disabled"); }else{ document.getElementById("btnSoldier").setAttribute("disabled","");}
     if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
 }
 function redraw(){
@@ -538,6 +539,10 @@ document.getElementById("btnCitizen").addEventListener("click",function(){
 document.getElementById("btnSpacer").addEventListener("click",function(){
     document.getElementById("btnSpacer").setAttribute("disabled","disabled");
     person.resolveCareer(ENUM_CAREERS.Spacer,redraw);
+});
+document.getElementById("btnSoldier").addEventListener("click",function(){
+    document.getElementById("btnSoldier").setAttribute("disabled","disabled");
+    person.resolveCareer(ENUM_CAREERS.Soldier,redraw);
 });
 function log(msg){
     if(typeof msg !== "undefined"){
