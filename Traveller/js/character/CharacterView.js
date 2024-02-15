@@ -515,7 +515,7 @@ function newCharacter(){
     console.log(person);
 }
 function enableControls(){
-    var buttons = document.querySelectorAll("[data-educationbtn],#btnCitizen");
+    var buttons = document.querySelectorAll("[data-educationbtn]");
     for(var i = 0, len = buttons.length; i < len; i++){
         buttons[i].removeAttribute("disabled");
     }

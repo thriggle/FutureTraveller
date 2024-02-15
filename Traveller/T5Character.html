@@ -105,13 +105,17 @@
         .event.Pass{
             background-color: lightgreen;
         }
-        .event.Loss, .event.Fail{
-           
-            background-color: pink;;
-        }
         .event.Aging{
             background-color:lightyellow;
         }
+        .event.Loss, .event.Fail{
+           
+            background-color: pink;
+        }
+        .event.AgingFail{
+            background-color: #ff9999;
+        }
+        
         .event_text, .event_age, .event_index{ 
             display:table-cell;
         }
@@ -125,6 +129,10 @@
         .event_index{
             width:2rem;
             text-align:center;
+        }
+        .event.Death{
+            background-color: darkred;
+            color:white;
         }
         nav.menu ul{ margin:0px; }
         nav.menu li{display:inline-block;font-family: Bahnschrift; user-select: none; }
