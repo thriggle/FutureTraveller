@@ -2030,6 +2030,8 @@ export function createCharacter(roller, species){
                                 if(penalty <= -4){
                                     careers[careers.length-1].awards.push("Disabled");
                                 }
+                            }else{
+                                record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
                             }
                         }
                         var rewardResult = checkCharacteristic(CC,numDice,totalMod-caution,"Reward Roll");
@@ -2379,7 +2381,7 @@ export function createCharacter(roller, species){
                                 updateFunc();
                             }
                         }
-                    },true);
+                    });
                 }                
             }
         }else{
@@ -2537,6 +2539,8 @@ export function createCharacter(roller, species){
                                 if(penalty <= -4){
                                     careers[careers.length-1].awards.push("Disabled");
                                 }
+                            }else{
+                                record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
                             }
                         }
                         var rewardResult = checkCharacteristic(CC,numDice,totalMod-caution,"Reward Roll");
@@ -2834,7 +2838,7 @@ export function createCharacter(roller, species){
                                 updateFunc();
                             }
                         }
-                    },true);
+                    });
                 }                
             }
         }else{
@@ -2995,6 +2999,8 @@ export function createCharacter(roller, species){
                                 if(penalty <= -4){
                                     careers[careers.length-1].awards.push("Disabled");
                                 }
+                            }else{
+                                record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
                             }
                         }
                         var rewardResult = checkCharacteristic(CC,numDice,totalMod-caution,"Reward Roll");
@@ -3299,7 +3305,7 @@ export function createCharacter(roller, species){
                                 updateFunc();
                             }
                         }
-                    },true);
+                    });
                 }                
             }
         }else{
