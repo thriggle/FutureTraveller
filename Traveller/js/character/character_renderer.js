@@ -27,6 +27,14 @@ function careers(character,element){
         if(careers[i].rank){
             switch(careers[i].career){
                 case ENUM_CAREERS.Spacer: 
+                    rank = (careers[i].rank.officer>0 ? "O"+careers[i].rank.officer : ("R"+careers[i].rank.enlisted));
+                    rank = "-"+rank;
+                    break;
+                case ENUM_CAREERS.Soldier: 
+                    rank = (careers[i].rank.officer>0 ? "O"+careers[i].rank.officer : ("R"+careers[i].rank.enlisted));
+                    rank = "-"+rank;
+                    break;
+                case ENUM_CAREERS.Marine: 
                 rank = (careers[i].rank.officer>0 ? "O"+careers[i].rank.officer : ("R"+careers[i].rank.enlisted));
                 rank = "-"+rank;
                 break;
@@ -70,7 +78,12 @@ function history(character, elements){
                     var isFail = eventText.indexOf("? FAIL") >= 0;
                     var isLoss = eventText.indexOf(" reduced to ") >= 0;
                     var isAging = eventText.indexOf("Aging check") >= 0;
-                    element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+(isGain ? " Gain" : "")+(isPass ? " Pass" : "")+(isFail ? " Fail" : "")+(isLoss ? " Loss" : "")+(isAging ? " Aging" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");  
+                    var isDeath = false, isAgingFail = false;
+                    if(isAging){
+                        isDeath = eventText.indexOf("This character has died") >= 0;
+                        isAgingFail = eventText.indexOf("illness") >= 0;
+                    }
+                    element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+(isGain ? " Gain" : "")+(isAgingFail ? " AgingFail" : "")+(isPass ? " Pass" : "")+(isFail ? " Fail" : "")+(isLoss ? " Loss" : "")+(isAging ? " Aging" : "")+(isDeath ? " Death" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");  
                 }
             
         

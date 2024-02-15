@@ -14,6 +14,7 @@ export function createCharacter(roller, species){
     if(typeof species === "undefined"){
         species = human;
     }
+    var agingCrises = 0;
     var name = "J. Doe";
     var majors = [], minors = [], history = [];
     var nativeLanguage = "Anglic";
@@ -45,6 +46,7 @@ export function createCharacter(roller, species){
     var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
     var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
     function rollStats(){
+        agingCrises = 0;
         var statRolls = [
             roller.d6(species.Characteristics[0].nD + gender.Characteristics[0].nD + caste.Characteristics[0].nD),
             roller.d6(species.Characteristics[1].nD + gender.Characteristics[1].nD + caste.Characteristics[1].nD),
@@ -79,6 +81,7 @@ export function createCharacter(roller, species){
     }
     
     function initStats(stats, geneticValues){
+        agingCrises = 0;
        characteristics = [
             {name:species.Characteristics[0].name,value:stats[0]},
             {name:species.Characteristics[1].name,value:stats[1]},
@@ -107,6 +110,7 @@ export function createCharacter(roller, species){
         history.push("Age " + age+ ": " + message);
     }
     function rollStatsFromGenes(genes){
+        agingCrises = 0;
         var gene_statRolls = [];
         genetics = [];
         for(var i = 0, len = genes.length; i < len; i++){
@@ -1985,7 +1989,10 @@ export function createCharacter(roller, species){
                             penalty += roller.flux().result;
                             if(penalty < 0){
                                 decreaseCharacteristic(CC,-penalty,"Injury!");
-                                if(characteristics[ccIndex].value <= 0){ characteristics[ccIndex].value = 1;}
+                                if(characteristics[ccIndex].value <= 0){ 
+                                    record("This character has died. Please create a new character.");
+                                    characteristics[ccIndex].value = 1;
+                                }
                                 updateFunc();
                                 careers[careers.length-1].awards.push("Wound Badge");
                                 if(penalty <= -4){
@@ -2483,7 +2490,10 @@ export function createCharacter(roller, species){
                             penalty += roller.flux().result;
                             if(penalty < 0){
                                 decreaseCharacteristic(CC,-penalty,"Injury!");
-                                if(characteristics[ccIndex].value <= 0){ characteristics[ccIndex].value = 1;}
+                                if(characteristics[ccIndex].value <= 0){ 
+                                    record("This character has died. Please create a new character.");
+                                    characteristics[ccIndex].value = 1;
+                                }
                                 updateFunc();
                                 careers[careers.length-1].awards.push("Wound Badge");
                                 if(penalty <= -4){
@@ -3049,10 +3059,8 @@ export function createCharacter(roller, species){
         var availability = musteredOut ? false : true; // can't pursue careers if you've already mustered out
         q.MusterOut = (careers.length > 0 && musteredOut == false);
         q.Citizen = availability && careers.length == 0;
-        q.Soldier = availability && careers.length == 0;
-        q.Spacer = availability && (careers.length == 0 || careers.filter((v,i,ar)=>{
-            return v.career === ENUM_CAREERS.Spacer;
-        }).length == 0);
+        q.Soldier = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Soldier).length == 0);
+        q.Spacer = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Spacer).length == 0);
         if(awards.indexOf("Navy Officer1") >= 0){
             // no other career can be pursued until navy term served
             q.Citizen = false;
@@ -3149,7 +3157,13 @@ export function createCharacter(roller, species){
         }else{
             remarks += " Character does not experience aging. "
         }
-        if(numReducedToZero >= 3){ remarks += "Extremely major illness. Requires 4 months rest and recuperation. If 2nd time receiving this event, character has died." ;}
+        if(numReducedToZero >= 3){ agingCrises += 1; 
+            if(agingCrises == 1){
+                remarks += "Extremely major illness. Requires 4 months rest and recuperation." ;
+            }else{
+                remarks += "This character has died of age-related illness."
+            }
+        }
         else if(numReducedToZero === 2){ remarks += "Major illness. Requires 4 weeks rest and recuperation.";}
        //record(remarks);
         return remarks;
