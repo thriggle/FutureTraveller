@@ -1602,18 +1602,18 @@ export function createCharacter(roller, species){
                             var maxMod = career.terms + career.benefitDM;
                             var roll = roller.d6().result; var rollChoices = []
                             for(var i = 0; i <= maxMod; i++){
-                                var sum = roll + i;
+                                var sum = roll + i - 1;
                                 if(sum > 10){   
                                     sum = 11; 
-                                    rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
+                                    rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                                     break;
                                 }else{
-                                    rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
+                                    rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                                 }
                             }
                             if(rollChoices.length > 0){
                                 pickOption(rollChoices,"Roll='"+roll+"' choose a monetary benefit.",(rollChoice)=>{
-                                    var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")));
+                                    var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
                                     var chosenBenefit = CareerBenefitTables[career.career]["Money"][choiceIndex];
                                     switch(chosenBenefit.type){
                                         case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
@@ -1636,18 +1636,18 @@ export function createCharacter(roller, species){
                                 var maxMod = career.terms + career.benefitDM;
                                 var roll = roller.d6().result; var rollChoices = []
                                 for(var i = 0; i <= maxMod; i++){
-                                    var sum = roll + i;
+                                    var sum = roll + i - 1;
                                     if(sum > 10){   
                                         sum = 11; 
-                                        rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
+                                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                                         break;
                                     }else{
-                                        rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
+                                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                                     }
                                 }
                                 if(rollChoices.length > 0){
                                     pickOption(rollChoices,"Roll='"+roll+"' choose a benefit.",(rollChoice)=>{
-                                        var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")));
+                                        var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
                                         var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][choiceIndex];
                                         switch(chosenBenefit.type){
                                             case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
@@ -1685,18 +1685,18 @@ export function createCharacter(roller, species){
                             var maxMod = career.terms + career.benefitDM;
                             var roll = roller.d6().result; var rollChoices = []
                             for(var i = 0; i <= maxMod; i++){
-                                var sum = roll + i;
+                                var sum = roll + i - 1;
                                 if(sum > 11){   
                                     sum = 11; 
-                                    rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
+                                    rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                                     break;
                                 }else{
-                                    rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Money"][sum].label);
+                                    rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                                 }
                             }
                             if(rollChoices.length > 0){
                                 pickOption(rollChoices,"Roll='"+roll+"' choose a monetary benefit.",(rollChoice)=>{
-                                    var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")));
+                                    var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
                                     var chosenBenefit = CareerBenefitTables[career.career]["Money"][choiceIndex];
                                     switch(chosenBenefit.type){
                                         case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
@@ -1719,18 +1719,18 @@ export function createCharacter(roller, species){
                                 var maxMod = career.rank.officer + career.benefitDM;
                                 var roll = roller.d6().result; var rollChoices = []
                                 for(var i = 0; i <= maxMod; i++){
-                                    var sum = roll + i;
+                                    var sum = roll + i - 1;
                                     if(sum > 11){   
                                         sum = 11; 
-                                        rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
+                                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                                         break;
                                     }else{
-                                        rollChoices.push(sum+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
+                                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                                     }
                                 }
                                 if(rollChoices.length > 0){
                                     pickOption(rollChoices,"Roll='"+roll+"' choose a benefit.",(rollChoice)=>{
-                                        var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")));
+                                        var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
                                         var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][choiceIndex];
                                         switch(chosenBenefit.type){
                                             case "knowledge": 
