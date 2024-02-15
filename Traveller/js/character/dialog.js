@@ -1,8 +1,9 @@
 import { clearElement } from "./character_renderer.js";
 
 export var dialogCallback = () => {};
-export function pickOption(choices,prompt,callback,noCancel,defaultSelection){
-    
+export function pickOption(choices,prompt,callback,noCancel,defaultSelection,previews,numberedPreviews){
+    if(typeof previews === "undefined"){ previews = [];}
+    if(typeof numberedPreviews === "undefined"){ numberedPreviews = false;}
     var pickerDialog = getDialog();
     var dialog = pickerDialog.dialog, selector = pickerDialog.selector, dialogText = pickerDialog.dialogText;
     if(noCancel){
@@ -11,6 +12,25 @@ export function pickOption(choices,prompt,callback,noCancel,defaultSelection){
         document.getElementById("cancelDlgBtn").removeAttribute("disabled");
     }
     clearElement(selector); 
+    var dlgPreviewText = document.getElementById("txtDialogPreview");
+    clearElement(dlgPreviewText);
+   
+    var selectorChange = function(){
+        clearElement(dlgPreviewText);
+        var i = selector.selectedIndex;
+        if(previews.length > i){
+            var selectedPreview = previews[i];
+            if(typeof selectedPreview === "string"){
+                dlgPreviewText.appendChild(document.createElement("span")).appendChild(document.createTextNode(selectedPreview));
+            }else if(typeof selectedPreview !== "undefined" && selectedPreview.length > 0){
+                var previewList = dlgPreviewText.appendChild(document.createElement( numberedPreviews ? "ol" : "ul"));
+                for(var j = 0, jlen = selectedPreview.length; j < jlen; j++){
+                    previewList.appendChild(document.createElement("li")).appendChild(document.createTextNode(selectedPreview[j]));
+                }
+            }
+        }
+    };
+    selector.addEventListener("change",selectorChange);
     clearElement(dialogText);
     dialogText.insertAdjacentHTML("beforeend","<span>"+prompt+"</span>");
     for(var i = 0, len = choices.length; i < len; i++){
@@ -27,7 +47,13 @@ export function pickOption(choices,prompt,callback,noCancel,defaultSelection){
     if(typeof defaultSelection !== "undefined"){
         selector.value = defaultSelection;
     }
-    dialogCallback = function(){ callback(selector.value); };
+    selectorChange();
+    dialogCallback = function(){ 
+        var dlgPreviewText = document.getElementById("txtDialogPreview");
+        clearElement(dlgPreviewText); 
+        callback(selector.value); 
+        selector.removeEventListener("change",selectorChange)
+    };
     dialog.showModal();
 }
 export function getDialog(){
@@ -44,6 +70,8 @@ export function getDialog(){
         var selector = dialog.appendChild(document.createElement("select")); selector.id = "slctDialog";
         var dlgBtn = dialog.appendChild(document.createElement("input")); dlgBtn.setAttribute("type","button"); dlgBtn.setAttribute("value","OK"); dlgBtn.id = "dlgBtn";
         var cancelDlgBtn = dialog.appendChild(document.createElement("input")); cancelDlgBtn.setAttribute("type","button"); cancelDlgBtn.setAttribute("value","Cancel"); cancelDlgBtn.id = "cancelDlgBtn";
+        dialog.appendChild(document.createElement("br"));
+        var dlgPreviewText = dialog.appendChild(document.createElement("div")); dlgPreviewText.id = "txtDialogPreview";
         dlgBtn.addEventListener("click",() =>{ dialog.style.top = "0px"; dialog.close(selector.value); dialogCallback(selector.value); });
         cancelDlgBtn.addEventListener("click",function(){ dialog.style.top = "0px"; dialog.close(false); });
         dialogHandle.onmousedown = dragMouseDown;
