@@ -1999,7 +1999,7 @@ export function createCharacter(roller, species){
                     defaultValue = ccValue + totalMod - 12;
                 }
                 var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
-                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
+                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Uninjured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
                 pickOption(cautionBraveryOptions,
                     "Select caution(+) or bravery(-) mod.<br/>" +
                     "Target " + CC + "=" + ccValue + "<br/>Branch:+"+branchMod + " Operation:+" + maxOperationMod+
@@ -2507,7 +2507,7 @@ export function createCharacter(roller, species){
                     defaultValue = ccValue + totalMod - 12;
                 }
                 var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
-                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
+                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Uninjured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
                 
                 pickOption(cautionBraveryOptions,
                     "Select caution(+) or bravery(-) mod.<br/>" +
@@ -2967,7 +2967,7 @@ export function createCharacter(roller, species){
                     defaultValue = ccValue + totalMod - 12;
                 }
                 var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
-                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
+                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Uninjured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
                 
                 pickOption(cautionBraveryOptions,
                     "Select caution(+) or bravery(-) mod.<br/>" +
