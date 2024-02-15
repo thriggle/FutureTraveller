@@ -80,9 +80,9 @@ function history(character, elements){
                     var isAging = eventText.indexOf("Aging check") >= 0;
                     var isDeath = false, isAgingFail = false;
                     if(isAging){
-                        isDeath = eventText.indexOf("This character has died") >= 0;
                         isAgingFail = eventText.indexOf("illness") >= 0;
                     }
+                    isDeath = eventText.indexOf("This character has died") >= 0;
                     element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+(isGain ? " Gain" : "")+(isAgingFail ? " AgingFail" : "")+(isPass ? " Pass" : "")+(isFail ? " Fail" : "")+(isLoss ? " Loss" : "")+(isAging ? " Aging" : "")+(isDeath ? " Death" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");  
                 }
             
