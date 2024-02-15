@@ -463,11 +463,7 @@ document.getElementById("btnMusterOut").addEventListener("click",function(){
 function newCharacter(){
     clear();
     person = createCharacter(roller, human);
-    if(document.getElementById("txtName").value){
-        person.setName(document.getElementById("txtName").value);
-    }else{
-        person.setName(addCaps(nameGenerator.getRandomName("human")));
-    }
+    
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if(document.getElementById("rdoAttributesNatural").checked){
         person.rollStatsFromGenes(["Random","Random","Random","Random"]);
@@ -502,7 +498,18 @@ function newCharacter(){
         person.initStats(attributes, genetics);
         person.characteristics = person.getCharacteristics();
     }
-    
+    if(document.getElementById("txtName").value){
+        person.setName(document.getElementById("txtName").value);
+    }else{
+        if(person.getGender() === "M"){
+            person.setName(addCaps(nameGenerator.getRandomName("human.malefirstname") + " " + nameGenerator.getRandomName("human.lastname")+nameGenerator.getRandomName("human.suffix")));
+        }else if(person.getGender() === "F"){
+            person.setName(addCaps(nameGenerator.getRandomName("human.femalefirstname") + " " + nameGenerator.getRandomName("human.lastname")+nameGenerator.getRandomName("human.suffix")));
+        }else{
+            person.setName(addCaps(nameGenerator.getRandomName("human")));
+        }
+    }
+    //{human.firstname} {human.lastname}{human.suffix}
     if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
     log("Initial UPP: "+ person.characteristics[0].value + "," +  person.characteristics[1].value + "," + person.characteristics[2].value + "," + 
     person.characteristics[3].value + "," + person.characteristics[4].value + "," + person.characteristics[5].value
