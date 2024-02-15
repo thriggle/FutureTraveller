@@ -12,6 +12,7 @@ export function renderCharacter(character,element){
     history(character,document.querySelectorAll("[data-history]"));
     injectHTML("[data-careers]",careers);
     injectHTML("[data-credits]",renderCredits);
+    injectHTML("[data-gender]",renderGender);
     function injectHTML(selector,htmlfunc){
         var elements = document.querySelectorAll(selector);
         for(var i = 0, len = elements.length; i < len; i++){
@@ -52,6 +53,9 @@ function renderName(character,element){
 }
 function renderCredits(character,element){
     element.insertAdjacentHTML("beforeend","<span>Cr"+ character.getCredits() + "</span>");
+}
+function renderGender(character,element){
+    element.insertAdjacentHTML("beforeend","<span>"+ character.getGender() + "</span>");
 }
 function history(character, elements){
     var events = character.getHistory();

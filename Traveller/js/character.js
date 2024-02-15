@@ -3738,6 +3738,9 @@ export function createCharacter(roller, species){
     function getCredits(){
         return credits;
     }
+    function getGender(){
+        return genderKey;
+    }
     return {
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, characteristics:characteristics,
@@ -3754,6 +3757,6 @@ export function createCharacter(roller, species){
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics,
-        resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut
+        resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender
     }
 }
