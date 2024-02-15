@@ -1733,6 +1733,7 @@ export function createCharacter(roller, species){
                                         var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")));
                                         var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][choiceIndex];
                                         switch(chosenBenefit.type){
+                                            case "knowledge": 
                                             case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
                                             case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
                                         }
@@ -1743,11 +1744,12 @@ export function createCharacter(roller, species){
                                     record("Benefit roll="+roll);
                                     var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][roll];
                                     switch(chosenBenefit.type){
+                                        case "knowledge": 
                                         case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
                                         case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
                                     }
                                     updateFunc();
-                                        musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                                    musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
                                 } 
                             break;
                         }
@@ -1999,7 +2001,7 @@ export function createCharacter(roller, species){
                     defaultValue = ccValue + totalMod - 12;
                 }
                 var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
-                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
+                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll > " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
                 pickOption(cautionBraveryOptions,
                     "Select caution(+) or bravery(-) mod.<br/>" +
                     "Target " + CC + "=" + ccValue + "<br/>Branch:+"+branchMod + " Operation:+" + maxOperationMod+
@@ -2030,6 +2032,8 @@ export function createCharacter(roller, species){
                                 if(penalty <= -4){
                                     careers[careers.length-1].awards.push("Disabled");
                                 }
+                            }else{
+                                record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
                             }
                         }
                         var rewardResult = checkCharacteristic(CC,numDice,totalMod-caution,"Reward Roll");
@@ -2379,7 +2383,7 @@ export function createCharacter(roller, species){
                                 updateFunc();
                             }
                         }
-                    },true);
+                    });
                 }                
             }
         }else{
@@ -2505,7 +2509,7 @@ export function createCharacter(roller, species){
                     defaultValue = ccValue + totalMod - 12;
                 }
                 var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
-                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
+                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll > " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
                 
                 pickOption(cautionBraveryOptions,
                     "Select caution(+) or bravery(-) mod.<br/>" +
@@ -2537,6 +2541,8 @@ export function createCharacter(roller, species){
                                 if(penalty <= -4){
                                     careers[careers.length-1].awards.push("Disabled");
                                 }
+                            }else{
+                                record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
                             }
                         }
                         var rewardResult = checkCharacteristic(CC,numDice,totalMod-caution,"Reward Roll");
@@ -2834,7 +2840,7 @@ export function createCharacter(roller, species){
                                 updateFunc();
                             }
                         }
-                    },true);
+                    });
                 }                
             }
         }else{
@@ -2963,7 +2969,7 @@ export function createCharacter(roller, species){
                     defaultValue = ccValue + totalMod - 12;
                 }
                 var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
-                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
+                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll > " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
                 
                 pickOption(cautionBraveryOptions,
                     "Select caution(+) or bravery(-) mod.<br/>" +
@@ -2995,6 +3001,8 @@ export function createCharacter(roller, species){
                                 if(penalty <= -4){
                                     careers[careers.length-1].awards.push("Disabled");
                                 }
+                            }else{
+                                record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
                             }
                         }
                         var rewardResult = checkCharacteristic(CC,numDice,totalMod-caution,"Reward Roll");
@@ -3299,7 +3307,7 @@ export function createCharacter(roller, species){
                                 updateFunc();
                             }
                         }
-                    },true);
+                    });
                 }                
             }
         }else{
