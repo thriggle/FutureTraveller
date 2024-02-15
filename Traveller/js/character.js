@@ -1287,7 +1287,8 @@ export function createCharacter(roller, species){
     function gainTermSkills(tablesPerTerm,career,updateFunc,callback){
         if(tablesPerTerm.length > 0){
             var currentTablesObject = tablesPerTerm[0];
-            var tables = CareerSkillTables[career]
+            var tables = CareerSkillTables[career];
+            var defaultValue = undefined;
             if(typeof currentTablesObject.table != "undefined"){
                 var tableHeaders = currentTablesObject.table;
                 tables = {
@@ -1296,6 +1297,12 @@ export function createCharacter(roller, species){
                 for(var i = 0, len = tableHeaders.length; i < len; i++){
                     tables.Tables.push(tableHeaders[i]);
                     tables[tableHeaders[i]] = CareerSkillTables[career][tableHeaders[i]];
+                    if(currentTablesObject.note !== "undefined" &&  currentTablesObject.note.length > 0 &&(
+                        currentTablesObject.note.indexOf(tableHeaders[i]) == 0 ||
+                        tableHeaders[i].indexOf(currentTablesObject.note.split(" ")[0]) == 0
+                    )){
+                        defaultValue = tableHeaders[i];
+                    }
                 }
             }
             if(typeof currentTablesObject.schooling !== "undefined"){
@@ -1307,8 +1314,8 @@ export function createCharacter(roller, species){
             }
 
             var note = "Choose a skill table";
-            if(typeof currentTablesObject.note !== "undefined"){ note = "" + currentTablesObject.note + ": " + note;}
-            note += " ("+(tablesPerTerm.length)+" picks remaining)"; 
+            if(typeof currentTablesObject.note !== "undefined"){ note = "" + currentTablesObject.note + ":<br/>" + note;}
+            note += "<br/>("+(tablesPerTerm.length)+" picks remaining)"; 
                 var getOlder = typeof currentTablesObject.age !== "undefined" && currentTablesObject.age;
                 tablesPerTerm.splice(0,1);
                 function nextSteps(n,addYear){
@@ -1318,8 +1325,12 @@ export function createCharacter(roller, species){
                     }
                     setTimeout(()=>{gainTermSkills(n,career,updateFunc,callback);},0);
                 };
-            
-                pickOption(tables.Tables,note,(table)=>{
+                var previewArray = [];
+                for(var i = 0, len = tables.Tables.length; i < len; i++){
+                    previewArray.push(tables[tables.Tables[i]]);
+                }
+                pickOption(tables.Tables,note,
+                    (table)=>{
                     var newSkill = tables[table][roller.d6().result-1];
                     //record(table + ": " + newSkill); updateFunc();
                     var note = "("+table + ": " + newSkill+")";
@@ -1416,7 +1427,7 @@ export function createCharacter(roller, species){
                         
                     }                
                     
-                },true);
+                },true,defaultValue,previewArray,true);
             
         }else{
             updateFunc();
@@ -1575,6 +1586,11 @@ export function createCharacter(roller, species){
             switch(career.career){
                 case ENUM_CAREERS.Citizen:
                     updateFunc();
+                    var moneyMod = career.terms + career.benefitDM;
+                    var possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
+                    if(6+moneyMod < possibleMonies.length){ possibleMonies.splice(6+moneyMod); }
+                    var possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>val.label);
+                    if(6+moneyMod < possibleBennies.length){ possibleBennies.splice(6+moneyMod); }
                     pickOption(["Money","Benefits"],"Choose a table for Citizen benefits.<br/>("+(rollsRemaining+1)+" rolls remaining)",(choice)=>{
                         switch(choice){
                             case "Money": 
@@ -1647,11 +1663,16 @@ export function createCharacter(roller, species){
                                 } 
                             break;
                         }
-                    },true);
+                    },true,undefined,[possibleMonies,possibleBennies],true)
                 break;
                 case ENUM_CAREERS.Spacer:
                 case ENUM_CAREERS.Soldier:
                     updateFunc();
+                    var moneyMod = career.terms + career.benefitDM, bennyMod = career.rank.officer + career.benefitDM;
+                    var possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
+                    if(6+moneyMod < possibleMonies.length){ possibleMonies.splice(6+moneyMod); }
+                    var possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>val.label);
+                    if(6+bennyMod < possibleBennies.length){ possibleBennies.splice(6+bennyMod); }
                     pickOption(["Money","Benefits"],"Choose a table for "+career.career+" benefits.<br/>("+(rollsRemaining+1)+" rolls remaining)",(choice)=>{
                         switch(choice){
                             case "Money": 
@@ -1724,7 +1745,7 @@ export function createCharacter(roller, species){
                                 } 
                             break;
                         }
-                    },true);
+                    },true,undefined,[possibleMonies,possibleBennies],true);
                 break;
             }
             
@@ -1755,6 +1776,7 @@ export function createCharacter(roller, species){
             if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
                 CCs = getCCs(career);
             }
+            var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name;});
             var nextSteps = function(){
                 //advanceAge(4);
                 updateFunc();
@@ -1893,7 +1915,7 @@ export function createCharacter(roller, species){
                     nextSteps();
                 }
                 
-            },true);
+            },true,undefined,CCDescriptions);
         }
     }
     function resolveSpacer(career, updateFunc){
@@ -1970,7 +1992,9 @@ export function createCharacter(roller, species){
                 if(ccValue+totalMod > 12){
                     defaultValue = ccValue + totalMod - 12;
                 }
-                pickOption([9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9],
+                var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
+                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
+                pickOption(cautionBraveryOptions,
                     "Select caution(+) or bravery(-) mod.<br/>" +
                     "Target " + CC + "=" + ccValue + "<br/>Branch:+"+branchMod + " Operation:+" + maxOperationMod+
                     "<br/>Risk: Roll <= "+(ccValue-totalMod) + " + Mod<br/>Reward: Roll <= "+(ccValue+totalMod)+" - Mod",
@@ -2132,7 +2156,7 @@ export function createCharacter(roller, species){
                             }
                         }
                     }
-                },true,defaultValue);
+                },true,defaultValue,cautionBraveryPreviews,false);
             });
         };
         var rollForBranch = function(callback,keepExisting){
@@ -2235,6 +2259,7 @@ export function createCharacter(roller, species){
         if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
             CCs = getCCs(career);
         }
+        var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name;});
         if(priorCareers == 0 || careers[priorCareers - 1].active == false){
             // apply for career
             if(awards.indexOf("Navy Officer1") >= 0){
@@ -2297,7 +2322,7 @@ export function createCharacter(roller, species){
                             });
                         }
                     },true);
-                },true);
+                },true,undefined,CCDescriptions);
             }else{
                 // roll to apply
                 var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
@@ -2314,7 +2339,7 @@ export function createCharacter(roller, species){
                                 CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                 // proceed with R&R, +4 years of skills, promotion/commission
                                 advanceAndGetSkills();
-                            },true);
+                            },true,undefined,CCDescriptions);
                         });
                     });
                     
@@ -2337,7 +2362,7 @@ export function createCharacter(roller, species){
                                             CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                             // proceed with R&R, +4 years of skills, promotion/commission
                                             advanceAndGetSkills();
-                                        },true);
+                                        },true,undefined,CCDescriptions);
                                     });
                                 });
                             }else{
@@ -2360,7 +2385,7 @@ export function createCharacter(roller, species){
                         // proceed with R&R, +4 years of skills, promotion/commission
                         advanceAndGetSkills();
                         
-                    },true);
+                    },true,undefined,CCDescriptions);
                 },true);
             }else{
                 careers[careers.length-1].terms += 1;
@@ -2370,7 +2395,7 @@ export function createCharacter(roller, species){
                     // proceed with R&R, +4 years of skills, promotion/commission
                     advanceAndGetSkills();
                     
-                },true);
+                },true,undefined,CCDescriptions);
             }
         }
     }
@@ -2471,7 +2496,10 @@ export function createCharacter(roller, species){
                 if(ccValue+totalMod > 12){
                     defaultValue = ccValue + totalMod - 12;
                 }
-                pickOption([9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9],
+                var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
+                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll < " + (val+ccValue-totalMod),"Medal if Reward roll < " + (-val+ccValue+totalMod)]);
+                
+                pickOption(cautionBraveryOptions,
                     "Select caution(+) or bravery(-) mod.<br/>" +
                     "Target " + CC + "=" + ccValue + "<br/>Branch:+"+branchMod + " Operation:+" + maxOperationMod+
                     "<br/>Risk: Roll <= "+(ccValue-totalMod) + " + Mod<br/>Reward: Roll <= "+(ccValue+totalMod)+" - Mod",
@@ -2623,7 +2651,7 @@ export function createCharacter(roller, species){
                             }
                         }
                     }
-                },true,defaultValue);
+                },true,defaultValue,cautionBraveryPreviews,false);
             });
         };
 
@@ -2727,6 +2755,7 @@ export function createCharacter(roller, species){
         if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
             CCs = getCCs(career);
         }
+        var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name;});
         if(priorCareers == 0 || careers[priorCareers - 1].active == false){
             // apply for career
             if(awards.indexOf("Army Officer1") >= 0){
@@ -2745,7 +2774,7 @@ export function createCharacter(roller, species){
                         advanceAndGetSkills();
                     });
                         
-                },true);
+                },true,undefined,CCDescriptions);
             }else{
                 // roll to apply
                 var numDice = species.Characteristics[0].nD + gender.Characteristics[0].nD + caste.Characteristics[0].nD;
@@ -2762,7 +2791,7 @@ export function createCharacter(roller, species){
                                 CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                 // proceed with R&R, +4 years of skills, promotion/commission
                                 advanceAndGetSkills();
-                            },true);
+                            },true,undefined,CCDescriptions);
                         });
                     });
                     
@@ -2786,7 +2815,7 @@ export function createCharacter(roller, species){
                                             record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                             // proceed with R&R, +4 years of skills, promotion/commission
                                             advanceAndGetSkills();
-                                        },true);
+                                        },true,undefined,CCDescriptions);
                                     });
                                 });
                             }else{
@@ -2809,7 +2838,7 @@ export function createCharacter(roller, species){
                         // proceed with R&R, +4 years of skills, promotion/commission
                         advanceAndGetSkills();
                         
-                    },true);
+                    },true,undefined,CCDescriptions);
                 },true);
             }else{
                 careers[careers.length-1].terms += 1;
@@ -2819,7 +2848,7 @@ export function createCharacter(roller, species){
                     // proceed with R&R, +4 years of skills, promotion/commission
                     advanceAndGetSkills();
                     
-                },true);
+                },true,undefined,CCDescriptions);
             }
         }
     }
