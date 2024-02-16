@@ -555,6 +555,13 @@ export function createCharacter(roller, species){
                         gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended trade school.");
                         remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended trade school.") + newLine;
                         addMajor(MajorSkill,MajorKnowledge);
+                        var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                        record("Honors program? " + honorsResult.remarks);
+                        if(honorsResult.success){
+                            remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Graduated with Honors.") + newLine;
+                        }else{
+                            record("Failed to achieve Honors.");
+                        }
                     }
                     remarks += advanceAge(1);
                 }else{
@@ -597,6 +604,14 @@ export function createCharacter(roller, species){
                         gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended Training Course.");
                         remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended Training Course.") + newLine;
                         addMajor(MajorSkill,MajorKnowledge);
+                        var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                        remarks += "Honors program? " + honorsResult.remarks + newLine;
+                        record("Honors program? " + honorsResult.remarks);
+                        if(honorsResult.success){
+                            remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Graduated with Honors.") + newLine;
+                        }else{
+                            record("Failed to achieve Honors.");
+                        }
                     }
                     remarks += advanceAge(1);
                 }else{
