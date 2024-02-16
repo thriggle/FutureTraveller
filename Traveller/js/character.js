@@ -1167,8 +1167,7 @@ export function createCharacter(roller, species){
             }
         }
         return remarks;
-    }
-    
+    }    
     function resolveCareer(career,callback){
         switch(career){
             case ENUM_CAREERS.Craftsman: resolveCraftsman(career,callback); break;

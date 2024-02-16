@@ -83,11 +83,12 @@ function history(character, elements){
                     var isLoss = eventText.indexOf(" reduced to ") >= 0;
                     var isAging = eventText.indexOf("Aging check") >= 0;
                     var isDeath = false, isAgingFail = false;
+                    var isReady = eventText.indexOf("Ready to begin adventuring!") >=0;
                     if(isAging){
                         isAgingFail = eventText.indexOf("illness") >= 0;
                     }
                     isDeath = eventText.indexOf("This character has died") >= 0;
-                    element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+(isGain ? " Gain" : "")+(isAgingFail ? " AgingFail" : "")+(isPass ? " Pass" : "")+(isFail ? " Fail" : "")+(isLoss ? " Loss" : "")+(isAging ? " Aging" : "")+(isDeath ? " Death" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");  
+                    element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+(isReady ? " ready" : "")+(isGain ? " Gain" : "")+(isAgingFail ? " AgingFail" : "")+(isPass ? " Pass" : "")+(isFail ? " Fail" : "")+(isLoss ? " Loss" : "")+(isAging ? " Aging" : "")+(isDeath ? " Death" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");  
                 }
             
         
