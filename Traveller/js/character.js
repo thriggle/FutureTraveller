@@ -1599,36 +1599,31 @@ export function createCharacter(roller, species){
         musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
     }
     function musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback){
+        updateFunc();
         if(rollsRemaining > 0){
             rollsRemaining -= 1;
             var career = careers[careerIndex];
             if(typeof career.awards === "undefined"){ career.awards = [];}
             var bennyMod = 0, moneyMod = 0;
             var possibleMonies = [], possibleBennies = [];
+            var mainOptions = ["Money","Benefits"];
             switch(career.career){
                 case ENUM_CAREERS.Citizen:
-                    updateFunc();
                     moneyMod = career.terms + career.benefitDM;
-                    bennyMod = moneyMod;
-                    possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
-                    if(6+moneyMod < possibleMonies.length){ possibleMonies.splice(6+moneyMod); }
-                    possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>val.label);
-                    if(6+moneyMod < possibleBennies.length){ possibleBennies.splice(6+moneyMod); }
-                    
+                    bennyMod = moneyMod; 
                 break;
                 case ENUM_CAREERS.Spacer:
                 case ENUM_CAREERS.Marine:
                 case ENUM_CAREERS.Soldier:
-                    updateFunc();
-                    moneyMod = career.terms + career.benefitDM, bennyMod = career.rank.officer + career.benefitDM;
-                    possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
-                    if(6+moneyMod < possibleMonies.length){ possibleMonies.splice(6+moneyMod); }
-                    possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>val.label);
-                    if(6+bennyMod < possibleBennies.length){ possibleBennies.splice(6+bennyMod); }
-                    
+                    moneyMod = career.terms + career.benefitDM; 
+                    bennyMod = career.rank.officer + career.benefitDM;
                 break;
             }
-            pickOption(["Money","Benefits"],"Choose a table for "+career.career+" benefits.<br/>("+(rollsRemaining+1)+" rolls remaining)",(choice)=>{
+            possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
+            possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>val.label);
+            if(6+moneyMod < possibleMonies.length){ possibleMonies.splice(6+moneyMod); }
+            if(6+bennyMod < possibleBennies.length){ possibleBennies.splice(6+bennyMod); }
+            pickOption(mainOptions,"Choose a table for "+career.career+" benefits.<br/>("+(rollsRemaining+1)+" rolls remaining)",(choice)=>{
                 switch(choice){
                     case "Money": 
                     var maxMod = moneyMod;
@@ -1637,13 +1632,10 @@ export function createCharacter(roller, species){
                         var sum = roll + i - 1;
                         if(sum > 11){   
                             sum = 11; 
-                            rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
-                            break;
-                        }else{
-                            rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                         }
+                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
                     }
-                    if(rollChoices.length > 0){
+                    if(rollChoices.length > 1){
                         pickOption(rollChoices,"Roll='"+roll+"' choose a monetary benefit.",(rollChoice)=>{
                             var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
                             var chosenBenefit = CareerBenefitTables[career.career]["Money"][choiceIndex];
@@ -1653,9 +1645,9 @@ export function createCharacter(roller, species){
                             }
                             updateFunc();
                             musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                        },true);
+                        },true,rollChoices[rollChoices.length-1]);
                     }else{
-                        var chosenBenefit = CareerBenefitTables[career.career]["Money"][roll];
+                        var chosenBenefit = CareerBenefitTables[career.career]["Money"][sum];
                         switch(chosenBenefit.type){
                             case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
                             case "money": credits += (chosenBenefit.amount); record("Gained " + chosenBenefit.label); break;
@@ -1671,13 +1663,10 @@ export function createCharacter(roller, species){
                             var sum = roll + i - 1;
                             if(sum > 11){   
                                 sum = 11; 
-                                rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
-                                break;
-                            }else{
-                                rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                             }
+                            rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
                         }
-                        if(rollChoices.length > 0){
+                        if(rollChoices.length > 1){
                             pickOption(rollChoices,"Roll='"+roll+"' choose a benefit.",(rollChoice)=>{
                                 var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
                                 var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][choiceIndex];
@@ -1688,10 +1677,10 @@ export function createCharacter(roller, species){
                                 }
                                 updateFunc();
                                 musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                            },true);
+                            },true,rollChoices[rollChoices.length-1]);
                         }else{
                             record("Benefit roll="+roll);
-                            var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][roll];
+                            var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][sum];
                             switch(chosenBenefit.type){
                                 case "knowledge": 
                                 case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
