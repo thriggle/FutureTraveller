@@ -1599,177 +1599,99 @@ export function createCharacter(roller, species){
         musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
     }
     function musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback){
+        updateFunc();
         if(rollsRemaining > 0){
             rollsRemaining -= 1;
             var career = careers[careerIndex];
+            if(typeof career.awards === "undefined"){ career.awards = [];}
+            var bennyMod = 0, moneyMod = 0;
+            var possibleMonies = [], possibleBennies = [];
+            var mainOptions = ["Money","Benefits"];
             switch(career.career){
                 case ENUM_CAREERS.Citizen:
-                    updateFunc();
-                    var moneyMod = career.terms + career.benefitDM;
-                    var possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
-                    if(6+moneyMod < possibleMonies.length){ possibleMonies.splice(6+moneyMod); }
-                    var possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>val.label);
-                    if(6+moneyMod < possibleBennies.length){ possibleBennies.splice(6+moneyMod); }
-                    pickOption(["Money","Benefits"],"Choose a table for Citizen benefits.<br/>("+(rollsRemaining+1)+" rolls remaining)",(choice)=>{
-                        switch(choice){
-                            case "Money": 
-                            var maxMod = career.terms + career.benefitDM;
-                            var roll = roller.d6().result; var rollChoices = []
-                            for(var i = 0; i <= maxMod; i++){
-                                var sum = roll + i - 1;
-                                if(sum > 10){   
-                                    sum = 11; 
-                                    rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
-                                    break;
-                                }else{
-                                    rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
-                                }
-                            }
-                            if(rollChoices.length > 0){
-                                pickOption(rollChoices,"Roll='"+roll+"' choose a monetary benefit.",(rollChoice)=>{
-                                    var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
-                                    var chosenBenefit = CareerBenefitTables[career.career]["Money"][choiceIndex];
-                                    switch(chosenBenefit.type){
-                                        case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
-                                        case "money": credits += (chosenBenefit.amount); record("Gained " + chosenBenefit.label); break;
-                                    }
-                                    updateFunc();
-                                    musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                                },true);
-                            }else{
-                                var chosenBenefit = CareerBenefitTables[career.career]["Money"][roll];
-                                switch(chosenBenefit.type){
-                                    case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
-                                    case "money": credits += (chosenBenefit.amount); record("Gained " + chosenBenefit.label); break;
-                                }
-                                updateFunc();
-                                    musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                            }
-                            break;
-                            case "Benefits":
-                                var maxMod = career.terms + career.benefitDM;
-                                var roll = roller.d6().result; var rollChoices = []
-                                for(var i = 0; i <= maxMod; i++){
-                                    var sum = roll + i - 1;
-                                    if(sum > 10){   
-                                        sum = 11; 
-                                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
-                                        break;
-                                    }else{
-                                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
-                                    }
-                                }
-                                if(rollChoices.length > 0){
-                                    pickOption(rollChoices,"Roll='"+roll+"' choose a benefit.",(rollChoice)=>{
-                                        var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
-                                        var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][choiceIndex];
-                                        switch(chosenBenefit.type){
-                                            case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
-                                            case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
-                                        }
-                                        updateFunc();
-                                        musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                                    },true);
-                                }else{
-                                    record("Benefit roll="+roll);
-                                    var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][roll];
-                                    switch(chosenBenefit.type){
-                                        case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
-                                        case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
-                                    }
-                                    updateFunc();
-                                        musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                                } 
-                            break;
-                        }
-                    },true,undefined,[possibleMonies,possibleBennies],true)
+                    moneyMod = career.terms + career.benefitDM;
+                    bennyMod = moneyMod; 
                 break;
                 case ENUM_CAREERS.Spacer:
                 case ENUM_CAREERS.Marine:
                 case ENUM_CAREERS.Soldier:
-                    updateFunc();
-                    var moneyMod = career.terms + career.benefitDM, bennyMod = career.rank.officer + career.benefitDM;
-                    var possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
-                    if(6+moneyMod < possibleMonies.length){ possibleMonies.splice(6+moneyMod); }
-                    var possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>val.label);
-                    if(6+bennyMod < possibleBennies.length){ possibleBennies.splice(6+bennyMod); }
-                    pickOption(["Money","Benefits"],"Choose a table for "+career.career+" benefits.<br/>("+(rollsRemaining+1)+" rolls remaining)",(choice)=>{
-                        switch(choice){
-                            case "Money": 
-                            var maxMod = career.terms + career.benefitDM;
-                            var roll = roller.d6().result; var rollChoices = []
-                            for(var i = 0; i <= maxMod; i++){
-                                var sum = roll + i - 1;
-                                if(sum > 11){   
-                                    sum = 11; 
-                                    rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
-                                    break;
-                                }else{
-                                    rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
-                                }
-                            }
-                            if(rollChoices.length > 0){
-                                pickOption(rollChoices,"Roll='"+roll+"' choose a monetary benefit.",(rollChoice)=>{
-                                    var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
-                                    var chosenBenefit = CareerBenefitTables[career.career]["Money"][choiceIndex];
-                                    switch(chosenBenefit.type){
-                                        case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
-                                        case "money": credits += (chosenBenefit.amount); record("Gained " + chosenBenefit.label); break;
-                                    }
-                                    updateFunc();
-                                    musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                                },true);
-                            }else{
-                                var chosenBenefit = CareerBenefitTables[career.career]["Money"][roll];
-                                switch(chosenBenefit.type){
-                                    case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
-                                    case "money": credits += (chosenBenefit.amount); record("Gained " + chosenBenefit.label); break;
-                                }
-                                updateFunc();
-                                    musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                            }
-                            break;
-                            case "Benefits":
-                                var maxMod = career.rank.officer + career.benefitDM;
-                                var roll = roller.d6().result; var rollChoices = []
-                                for(var i = 0; i <= maxMod; i++){
-                                    var sum = roll + i - 1;
-                                    if(sum > 11){   
-                                        sum = 11; 
-                                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
-                                        break;
-                                    }else{
-                                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
-                                    }
-                                }
-                                if(rollChoices.length > 0){
-                                    pickOption(rollChoices,"Roll='"+roll+"' choose a benefit.",(rollChoice)=>{
-                                        var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
-                                        var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][choiceIndex];
-                                        switch(chosenBenefit.type){
-                                            case "knowledge": 
-                                            case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
-                                            case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
-                                        }
-                                        updateFunc();
-                                        musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                                    },true);
-                                }else{
-                                    record("Benefit roll="+roll);
-                                    var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][roll];
-                                    switch(chosenBenefit.type){
-                                        case "knowledge": 
-                                        case "award": awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
-                                        case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
-                                    }
-                                    updateFunc();
-                                    musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
-                                } 
-                            break;
-                        }
-                    },true,undefined,[possibleMonies,possibleBennies],true);
+                    moneyMod = career.terms + career.benefitDM; 
+                    bennyMod = career.rank.officer + career.benefitDM;
                 break;
             }
+            possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
+            possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>val.label);
+            if(6+moneyMod < possibleMonies.length){ possibleMonies.splice(6+moneyMod); }
+            if(6+bennyMod < possibleBennies.length){ possibleBennies.splice(6+bennyMod); }
+            pickOption(mainOptions,"Choose a table for "+career.career+" benefits.<br/>("+(rollsRemaining+1)+" rolls remaining)",(choice)=>{
+                switch(choice){
+                    case "Money": 
+                    var maxMod = moneyMod;
+                    var roll = roller.d6().result; var rollChoices = []
+                    for(var i = 0; i <= maxMod; i++){
+                        var sum = roll + i - 1;
+                        if(sum > 11){   
+                            sum = 11; 
+                        }
+                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
+                    }
+                    if(rollChoices.length > 1){
+                        pickOption(rollChoices,"Roll='"+roll+"' choose a monetary benefit.",(rollChoice)=>{
+                            var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
+                            var chosenBenefit = CareerBenefitTables[career.career]["Money"][choiceIndex];
+                            switch(chosenBenefit.type){
+                                case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
+                                case "money": credits += (chosenBenefit.amount); record("Gained " + chosenBenefit.label); break;
+                            }
+                            updateFunc();
+                            musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                        },true,rollChoices[rollChoices.length-1]);
+                    }else{
+                        var chosenBenefit = CareerBenefitTables[career.career]["Money"][sum];
+                        switch(chosenBenefit.type){
+                            case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
+                            case "money": credits += (chosenBenefit.amount); record("Gained " + chosenBenefit.label); break;
+                        }
+                        updateFunc();
+                            musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                    }
+                    break;
+                    case "Benefits":
+                        var maxMod = bennyMod;
+                        var roll = roller.d6().result; var rollChoices = []
+                        for(var i = 0; i <= maxMod; i++){
+                            var sum = roll + i - 1;
+                            if(sum > 11){   
+                                sum = 11; 
+                            }
+                            rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Benefits"][sum].label);
+                        }
+                        if(rollChoices.length > 1){
+                            pickOption(rollChoices,"Roll='"+roll+"' choose a benefit.",(rollChoice)=>{
+                                var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
+                                var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][choiceIndex];
+                                switch(chosenBenefit.type){
+                                    case "knowledge": 
+                                    case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
+                                    case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
+                                }
+                                updateFunc();
+                                musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                            },true,rollChoices[rollChoices.length-1]);
+                        }else{
+                            record("Benefit roll="+roll);
+                            var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][sum];
+                            switch(chosenBenefit.type){
+                                case "knowledge": 
+                                case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
+                                case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
+                            }
+                            updateFunc();
+                            musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                        } 
+                    break;
+                }
+            },true,undefined,[possibleMonies,possibleBennies],true);
             
         }else{
             callback();
