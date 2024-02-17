@@ -105,13 +105,17 @@
         .event.Pass{
             background-color: lightgreen;
         }
-        .event.Loss, .event.Fail{
-           
-            background-color: pink;;
-        }
         .event.Aging{
             background-color:lightyellow;
         }
+        .event.Loss, .event.Fail{
+           
+            background-color: pink;
+        }
+        .event.AgingFail{
+            background-color: #ff9999;
+        }
+        
         .event_text, .event_age, .event_index{ 
             display:table-cell;
         }
@@ -125,6 +129,14 @@
         .event_index{
             width:2rem;
             text-align:center;
+        }
+        .event.Death{
+            background-color: darkred;
+            color:white;
+        }
+        .event.ready{
+            background-color:darkblue;
+            color:white;
         }
         nav.menu ul{ margin:0px; }
         nav.menu li{display:inline-block;font-family: Bahnschrift; user-select: none; }
@@ -148,8 +160,12 @@
         #slctDialog{ margin-left:1rem;}
         #slctDialog,#dlgBtn,#cancelDlgBtn{ margin-bottom:1rem;}
         #cancelDlgBtn{ margin-right:1rem;}
-        [data-name],[data-ageblock]{font-weight: bold; margin-right: 0.5rem;}
+        #txtDialogPreview{ margin-left:1rem; margin-bottom:1rem;}
+        #txtDialogPreview ul, #txtDialogPreview ol{ margin-block:0; padding-inline:1rem;}
+        [data-name],[data-ageblock],[data-gender]{font-weight: bold; margin-right: 0.5rem;}
         [data-credits]{font-weight: bold;}
+        [data-skill='true']{font-weight:bold;}
+        [data-skill='false']{color:#111;}
     </style>
     <script src="./js/character/CharacterView.js" type="module"></script>
     <nav class="menu">
@@ -297,11 +313,21 @@ Rating Promotion/Commission vs C2
 Officer Promotion vs Soc
 Continue vs Str
 "/>
-            <input type="button" disabled="disabled" value="Soldier" id="btnSoldier" />
+            <input type="button" disabled="disabled" value="Soldier" id="btnSoldier" title="Begin vs Str
+CC=C1,C3,C4
+Rating Promotion/Commission vs C3
+Officer Promotion vs Soc
+Continue vs C3
+"/>
             <input type="button" disabled="disabled" value="Agent" id="btnAgent" />
             <input type="button" disabled="disabled" value="Rogue" id="btnRogue" />
             <input type="button" disabled="disabled" value="Noble" id="btnNoble" />
-            <input type="button" disabled="disabled" value="Marine" id="btnMarine" />
+            <input type="button" disabled="disabled" value="Marine" id="btnMarine" title="Begin vs Str
+CC=C1,C4
+Rating Promotion/Commission vs C1
+Officer Promotion vs Int
+Continue vs C1
+"/>
             <input type="button" disabled="disabled" value="Functionary" id="btnFunctionary" />
             <input type="button" disabled="disabled" value="Muster Out" id="btnMusterOut" />
         </fieldset>
@@ -311,7 +337,7 @@ Continue vs Str
             <fieldset style="display:flex; flex-direction:row; flex-wrap:wrap;">
                 <legend>Character Sheet</legend>
                 <div style="width:100%;">
-                    <label for="" style="white-space:nowrap">Name: <span data-name></span></label> <label style="white-space:nowrap" for="">Age: <span data-ageblock=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
+                    <label for="" style="white-space:nowrap">Name: <span data-name></span></label> <label style="white-space:nowrap" for="">Age: <span data-ageblock=""></span></label> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
                 </div>
                 <fieldset>
                     <legend>Stats</legend>
@@ -349,7 +375,7 @@ Continue vs Str
     <div data-tier="1" data-nav="sheet">
 
         <div>
-            <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span data-ageblock=""></span> 
+            <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span data-ageblock=""></span> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
         </div>
             
             <fieldset>
@@ -363,7 +389,7 @@ Continue vs Str
             <fieldset>
                 <legend>Awards</legend>
                 <div data-awards=""></div> 
-                <div data-credits=""></div> 
+               
             </fieldset>
             <fieldset>
                 <legend>Careers</legend>

@@ -12,6 +12,7 @@ export function renderCharacter(character,element){
     history(character,document.querySelectorAll("[data-history]"));
     injectHTML("[data-careers]",careers);
     injectHTML("[data-credits]",renderCredits);
+    injectHTML("[data-gender]",renderGender);
     function injectHTML(selector,htmlfunc){
         var elements = document.querySelectorAll(selector);
         for(var i = 0, len = elements.length; i < len; i++){
@@ -27,6 +28,14 @@ function careers(character,element){
         if(careers[i].rank){
             switch(careers[i].career){
                 case ENUM_CAREERS.Spacer: 
+                    rank = (careers[i].rank.officer>0 ? "O"+careers[i].rank.officer : ("R"+careers[i].rank.enlisted));
+                    rank = "-"+rank;
+                    break;
+                case ENUM_CAREERS.Soldier: 
+                    rank = (careers[i].rank.officer>0 ? "O"+careers[i].rank.officer : ("R"+careers[i].rank.enlisted));
+                    rank = "-"+rank;
+                    break;
+                case ENUM_CAREERS.Marine: 
                 rank = (careers[i].rank.officer>0 ? "O"+careers[i].rank.officer : ("R"+careers[i].rank.enlisted));
                 rank = "-"+rank;
                 break;
@@ -44,6 +53,9 @@ function renderName(character,element){
 }
 function renderCredits(character,element){
     element.insertAdjacentHTML("beforeend","<span>Cr"+ character.getCredits() + "</span>");
+}
+function renderGender(character,element){
+    element.insertAdjacentHTML("beforeend","<span>"+ character.getGender() + "</span>");
 }
 function history(character, elements){
     var events = character.getHistory();
@@ -70,7 +82,13 @@ function history(character, elements){
                     var isFail = eventText.indexOf("? FAIL") >= 0;
                     var isLoss = eventText.indexOf(" reduced to ") >= 0;
                     var isAging = eventText.indexOf("Aging check") >= 0;
-                    element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+(isGain ? " Gain" : "")+(isPass ? " Pass" : "")+(isFail ? " Fail" : "")+(isLoss ? " Loss" : "")+(isAging ? " Aging" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");  
+                    var isDeath = false, isAgingFail = false;
+                    var isReady = eventText.indexOf("Ready to begin adventuring!") >=0;
+                    if(isAging){
+                        isAgingFail = eventText.indexOf("illness") >= 0;
+                    }
+                    isDeath = eventText.indexOf("This character has died") >= 0;
+                    element.insertAdjacentHTML("beforeend","<div class=\"event"+(isNewAge ? " newage" : "")+(isReady ? " ready" : "")+(isGain ? " Gain" : "")+(isAgingFail ? " AgingFail" : "")+(isPass ? " Pass" : "")+(isFail ? " Fail" : "")+(isLoss ? " Loss" : "")+(isAging ? " Aging" : "")+(isDeath ? " Death" : "")+"\"><div class=\"event_index\">"+i+"</div><div class=\"event_age\">"+eventSplit[1]+"</div> <div class=\"event_text\">"+eventSplit[2]+"</div> </div>");  
                 }
             
         
@@ -116,19 +134,21 @@ function statBlock(character,element){
 function skillBlock(character,element){
     var statHTML = "<ul>";
     var skills = Object.keys(character.skills).sort();
-    var nativeLanguage = character.getNativeLanguage(), nativeLanguageLevel = character.getNativeLanguageLevel()
+    var nativeLanguage = character.getNativeLanguage(), nativeLanguageLevel = character.getNativeLanguageLevel();
     for(var i = 0, len = skills.length; i < len; i++){
         var skill = skills[i];
-        statHTML += "<li> "+ skill +": " + (character.skills[skill].Skill >= 0 ? character.skills[skill].Skill : "n/a")
+        var skillLevel = character.skills[skill].Skill;
+        statHTML += "<li data-skill=\""+(skillLevel >= 1)+"\"> "+ skill +": " + (skillLevel >= 0 ? character.skills[skill].Skill : "n/a")
         if(character.skills[skill].Knowledge){
             statHTML += "<ul>";
             var knowledges = Object.keys(character.skills[skill].Knowledge).sort();
             for(var j = 0, jlen = knowledges.length; j < jlen; j++){
                 var k = knowledges[j];
                 if(skill == ENUM_SKILLS.Language && k === nativeLanguage){
-                    statHTML += "<li> "+ k +": " + nativeLanguageLevel;
+                    statHTML += "<li data-skill=\"true\"> "+ k +": " + nativeLanguageLevel;
                 }else{
-                    statHTML += "<li> "+ k +": " + (character.skills[skill].Knowledge[k] );
+                    var klevel = character.skills[skill].Knowledge[k];
+                    statHTML += "<li data-skill=\""+(klevel > 0)+"\"> "+ k +": " + (klevel );
                 }
             }
             statHTML += "</ul>";

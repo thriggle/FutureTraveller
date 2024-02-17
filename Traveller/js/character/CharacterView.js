@@ -463,11 +463,7 @@ document.getElementById("btnMusterOut").addEventListener("click",function(){
 function newCharacter(){
     clear();
     person = createCharacter(roller, human);
-    if(document.getElementById("txtName").value){
-        person.setName(document.getElementById("txtName").value);
-    }else{
-        person.setName(addCaps(nameGenerator.getRandomName("human")));
-    }
+    
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if(document.getElementById("rdoAttributesNatural").checked){
         person.rollStatsFromGenes(["Random","Random","Random","Random"]);
@@ -502,7 +498,18 @@ function newCharacter(){
         person.initStats(attributes, genetics);
         person.characteristics = person.getCharacteristics();
     }
-    
+    if(document.getElementById("txtName").value){
+        person.setName(document.getElementById("txtName").value);
+    }else{
+        if(person.getGender() === "M"){
+            person.setName(addCaps(nameGenerator.getRandomName("human.malefirstname") + " " + nameGenerator.getRandomName("human.lastname")+nameGenerator.getRandomName("human.suffix")));
+        }else if(person.getGender() === "F"){
+            person.setName(addCaps(nameGenerator.getRandomName("human.femalefirstname") + " " + nameGenerator.getRandomName("human.lastname")+nameGenerator.getRandomName("human.suffix")));
+        }else{
+            person.setName(addCaps(nameGenerator.getRandomName("human")));
+        }
+    }
+    //{human.firstname} {human.lastname}{human.suffix}
     if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
     log("Initial UPP: "+ person.characteristics[0].value + "," +  person.characteristics[1].value + "," + person.characteristics[2].value + "," + 
     person.characteristics[3].value + "," + person.characteristics[4].value + "," + person.characteristics[5].value
@@ -515,7 +522,7 @@ function newCharacter(){
     console.log(person);
 }
 function enableControls(){
-    var buttons = document.querySelectorAll("[data-educationbtn],#btnCitizen");
+    var buttons = document.querySelectorAll("[data-educationbtn]");
     for(var i = 0, len = buttons.length; i < len; i++){
         buttons[i].removeAttribute("disabled");
     }
@@ -525,6 +532,8 @@ function validateQualifications(){
     var qual = person.getQualifications();
     if(qual.Citizen){ document.getElementById("btnCitizen").removeAttribute("disabled"); }else{ document.getElementById("btnCitizen").setAttribute("disabled","");}
     if(qual.Spacer){ document.getElementById("btnSpacer").removeAttribute("disabled"); }else{ document.getElementById("btnSpacer").setAttribute("disabled","");}
+    if(qual.Marine){ document.getElementById("btnMarine").removeAttribute("disabled"); }else{ document.getElementById("btnMarine").setAttribute("disabled","");}
+    if(qual.Soldier){ document.getElementById("btnSoldier").removeAttribute("disabled"); }else{ document.getElementById("btnSoldier").setAttribute("disabled","");}
     if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
 }
 function redraw(){
@@ -538,6 +547,14 @@ document.getElementById("btnCitizen").addEventListener("click",function(){
 document.getElementById("btnSpacer").addEventListener("click",function(){
     document.getElementById("btnSpacer").setAttribute("disabled","disabled");
     person.resolveCareer(ENUM_CAREERS.Spacer,redraw);
+});
+document.getElementById("btnSoldier").addEventListener("click",function(){
+    document.getElementById("btnSoldier").setAttribute("disabled","disabled");
+    person.resolveCareer(ENUM_CAREERS.Soldier,redraw);
+});
+document.getElementById("btnMarine").addEventListener("click",function(){
+    document.getElementById("btnMarine").setAttribute("disabled","disabled");
+    person.resolveCareer(ENUM_CAREERS.Marine,redraw);
 });
 function log(msg){
     if(typeof msg !== "undefined"){
