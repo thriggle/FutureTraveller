@@ -399,7 +399,8 @@ export function createCharacter(roller, species){
         }
         return canIncrease
     }
-    function gainSkillWithPromptForKnowledge(prompt,skill,callback){
+    function gainSkillWithPromptForKnowledge(prompt,skill,callback,isEducation){
+        if(typeof isEducation == "undefined"){ isEducation = false;}
         if(typeof skill !== "string" && skill.length == 2){
                 gainSkillWithPromptForKnowledge(prompt,skill[0],function(x){
                     gainSkillWithPromptForKnowledge(prompt,skill[1],callback);
@@ -407,14 +408,19 @@ export function createCharacter(roller, species){
             
         }else{
             if(KnowledgeSpecialties[skill]){
-                var specialties = KnowledgeSpecialties[skill];
+                var specialties = KnowledgeSpecialties[skill].slice();
                 if(canGainBaseSkill(skill)){
                     specialties = ["<!>Increase " + skill + " skill"].concat(specialties);
+                    
+                }else if(skill == ENUM_SKILLS.Language){
+                    if(specialties.indexOf(nativeLanguage) >= 0){
+                        specialties.splice(specialties.indexOf(nativeLanguage),1);
+                    }
                 }
                 pickOption(specialties,prompt + " Choose a specialized "+skill+" knowledge.",function(x){ proceed(x); },true)
             }else{proceed(undefined);}
             function proceed(chosenKnowledge){
-                var remarks = gainSkillOrKnowledge(skill,chosenKnowledge,false, prompt);
+                var remarks = gainSkillOrKnowledge(skill,chosenKnowledge,isEducation, prompt);
                 callback(prompt + " " + remarks);
             }
         }
@@ -1270,12 +1276,20 @@ export function createCharacter(roller, species){
                 updateFunc();
                 if(ANMSchoolResult.success){
                     pickSkill(schoolType,"ANM School provides a skill",(sk1)=>{
-                        if(typeof careers[careers.length-1].skillsToGain == "undefined"){ careers[careers.length-1].skillsToGain = []; }
-                        careers[careers.length-1].skillsToGain.push({receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex});
-                        //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
-                        //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
-                        updateFunc();
-                        gainTermSchoolSkills(career,updateFunc,callback);
+                        if(sk1.skill === ENUM_SKILLS.Language){
+                            pickOption(KnowledgeSpecialties[ENUM_SKILLS.Language],"Choose a language specialty",(sk2)=>{
+                                if(typeof careers[careers.length-1].skillsToGain == "undefined"){ careers[careers.length-1].skillsToGain = []; }
+                                careers[careers.length-1].skillsToGain.push({receipts:2,skill:sk1.skill,knowledge:sk2,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex});
+                                updateFunc();
+                                gainTermSchoolSkills(career,updateFunc,callback);
+                            },true); 
+                        }else{
+                            if(typeof careers[careers.length-1].skillsToGain == "undefined"){ careers[careers.length-1].skillsToGain = []; }
+                            careers[careers.length-1].skillsToGain.push({receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex});
+                            updateFunc();
+                            gainTermSchoolSkills(career,updateFunc,callback);
+                        }
+                        
                     })
                 }else{
                     gainTermSchoolSkills(career,updateFunc,callback);
