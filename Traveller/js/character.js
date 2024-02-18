@@ -770,14 +770,8 @@ export function createCharacter(roller, species){
                                         var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
                                         further_remarks += otcWaiverResult.remarks + newLine;
                                         otcResult.success = otcWaiverResult.success;
-                                        if(otcResult.success){
-                                            if(choice === "OTC"){
-                                                armyCommission = true;
-                                            }else{
-                                                navyCommission = true;
-                                            }
-                                        }
-                                    }else{
+                                    }
+                                    if(otcResult.success){
                                         var otc_skill_list = []
                                         if(otc){
                                             armyCommission = true;
