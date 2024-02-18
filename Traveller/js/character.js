@@ -384,7 +384,7 @@ export function createCharacter(roller, species){
     }
     function canGainBaseSkill(skill){
         var canIncrease = false;
-        if(typeof skills[skill] == "undefined" || skills === ENUM_SKILLS.Language){
+        if(typeof skills[skill] == "undefined" || skill === ENUM_SKILLS.Language){
             canIncrease = false;
         }else{
             var kcount = 0;
