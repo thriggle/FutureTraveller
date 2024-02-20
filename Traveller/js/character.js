@@ -1954,7 +1954,9 @@ export function createCharacter(roller, species){
                         }else{
                             var penalty = -totalMod;
                             if(caution < 0){ penalty += caution;}
-                            penalty += roller.flux().result;
+                            var fresult = roller.flux().result;
+                            penalty += fresult;
+                            record("Attribute Damage = [" + (-totalMod) + " operation] " + (caution < 0 ? " + [" + (caution) + " bravery]" : "") + " + [" + fresult + " flux] = " + penalty)
                             if(penalty < 0){
                                 decreaseCharacteristic(CC,-penalty,"Injury!");
                                 if(characteristics[ccIndex].value <= 0){ 
@@ -2463,7 +2465,9 @@ export function createCharacter(roller, species){
                         }else{
                             var penalty = -totalMod;
                             if(caution < 0){ penalty += caution;}
-                            penalty += roller.flux().result;
+                            var fresult = roller.flux().result;
+                            penalty += fresult;
+                            record("Attribute Damage = [" + (-totalMod) + " operation] " + (caution < 0 ? " + [" + (caution) + " bravery]" : "") + " + [" + fresult + " flux] = " + penalty)
                             if(penalty < 0){
                                 decreaseCharacteristic(CC,-penalty,"Injury!");
                                 if(characteristics[ccIndex].value <= 0){ 
@@ -2923,7 +2927,9 @@ export function createCharacter(roller, species){
                         }else{
                             var penalty = -totalMod;
                             if(caution < 0){ penalty += caution;}
-                            penalty += roller.flux().result;
+                            var fresult = roller.flux().result;
+                            penalty += fresult;
+                            record("Attribute Damage = [" + (-totalMod) + " operation] " + (caution < 0 ? " + [" + (caution) + " bravery]" : "") + " + [" + fresult + " flux] = " + penalty)
                             if(penalty < 0){
                                 decreaseCharacteristic(CC,-penalty,"Injury!");
                                 if(characteristics[ccIndex].value <= 0){ 
