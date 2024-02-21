@@ -221,94 +221,86 @@ export function createCharacter(roller, species){
         if(typeof skill !== "undefined" && skill == ENUM_SKILLS.Language){
             remarks += gainLanguage(knowledge, isEducation);
         }else{
-        if(typeof knowledge == "undefined" || knowledge == "undefined"){ // if no knowledge specified, just increase skill
-            if(typeof skills[skill] != "undefined"){
-                if(skills[skill].Skill >= 0){
-                    if(skills[skill].Skill < 15){
-                        skills[skill].Skill += 1;
-                        remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
+            if(typeof knowledge == "undefined" || knowledge == "undefined"){ // if no knowledge specified, just increase skill
+                if(typeof skills[skill] != "undefined"){
+                    if(skills[skill].Skill >= 0){
+                        if(skills[skill].Skill < 15){
+                            skills[skill].Skill += 1;
+                            remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
+                        }else{
+                            remarks += skill+" was not increased as it is already at maximum level.";
+                        }
                     }else{
-                        remarks += skill+" was not increased as it is already at maximum level.";
+                        skills[skill].Skill = 1;
+                        remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
                     }
                 }else{
-                    skills[skill].Skill = 1;
+                    skills[skill] = {Skill:1,Knowledge:{}};
                     remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
                 }
             }else{
-                skills[skill] = {Skill:1,Knowledge:{}};
-                remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
-            }
-        }else{
-            if(typeof skills[skill] == "undefined"){ // if we don't have this skill at all, gain the knowledge
-                var k = {}; k[knowledge] = 1;
-                skills[skill] = {Skill:-1,Knowledge:k};
-                remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
-            }else if(isEducation || skill === ENUM_SKILLS.Science || skill === "World" || skill == "Career"){ // if this is during education, only increase K
-                if(skill == ENUM_SKILLS.Language && isEducation){ // Language gains are doubled during Education and not limited to 6
-                    if(skills[skill].Knowledge[knowledge]){
-                        skills[skill].Knowledge[knowledge] += 2;
-                        remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
+                if(typeof skills[skill] == "undefined"){ // if we don't have this skill at all, gain the knowledge
+                    var k = {}; k[knowledge] = 1;
+                    skills[skill] = {Skill:-1,Knowledge:k};
+                    remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
+                }else if(isEducation || skill === ENUM_SKILLS.Science || skill === "World" || skill == "Career"){ // if this is during education, only increase K
+                    if(skills[skill].Knowledge[knowledge]){  // if we already have the knowledge
+                        if(skills[skill].Knowledge[knowledge] < 6){ // and we haven't reached the cap
+                            skills[skill].Knowledge[knowledge] += 1; // increase it by 1
+                            remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
+                        }else if( skill === ENUM_SKILLS.Science){ // if we have reached the cap and it's a science, gain a specialty instead
+                            var spec_counter = 0;
+                            var specialty_name = knowledge;
+                            while(skills[skill].Knowledge[specialty_name] && skills[skill].Knowledge[specialty_name] === 6){
+                                spec_counter += 1;
+                                specialty_name = knowledge + " Specialty " + spec_counter;
+                            }
+                            if(skills[skill].Knowledge[specialty_name]){
+                                skills[skill].Knowledge[specialty_name] += 1;
+                                remarks += "Gained " + skill + "("+specialty_name + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
+                            }else{
+                                skills[skill].Knowledge[specialty_name] = 1;
+                                remarks += "Gained " + skill + "("+specialty_name + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
+                            }
+                        }else{
+                            remarks += knowledge+" was not increased as it is already at maximum level.";
+                        }
                     }else{
-                        skills[skill].Knowledge[knowledge] = 2;
+                        skills[skill].Knowledge[knowledge] = 1; // if we don't have the knowledge, gain a rank
                         remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
                     }
-                }else if(skills[skill].Knowledge[knowledge]){  // if we already have the knowledge
-                    if(skills[skill].Knowledge[knowledge] < 6){ // and we haven't reached the cap
-                        skills[skill].Knowledge[knowledge] += 1; // increase it by 1
-                        remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
-                    }else if( skill === ENUM_SKILLS.Science){ // if we have reached the cap and it's a science, gain a specialty instead
-                        var spec_counter = 0;
-                        var specialty_name = knowledge;
-                        while(skills[skill].Knowledge[specialty_name] && skills[skill].Knowledge[specialty_name] === 6){
-                            spec_counter += 1;
-                            specialty_name = knowledge + " Specialty " + spec_counter;
-                        }
-                        if(skills[skill].Knowledge[specialty_name]){
-                            skills[skill].Knowledge[specialty_name] += 1;
-                            remarks += "Gained " + skill + "("+specialty_name + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
-                        }else{
-                            skills[skill].Knowledge[specialty_name] = 1;
-                            remarks += "Gained " + skill + "("+specialty_name + ")-" + skills[skill].Knowledge[specialty_name] + ". ";
-                        }
-                    }else{
-                        remarks += knowledge+" was not increased as it is already at maximum level.";
+                }else{ // we have the base skill, check the knowledge count to see if we can increase S or only K
+                    var kcount = 0;
+                    var ks = skills[skill].Knowledge;
+                    for(var key in ks){
+                        var level = skills[skill].Knowledge[key];
+                        kcount += level;
                     }
-                }else{
-                    skills[skill].Knowledge[knowledge] = 1; // if we don't have the knowledge, gain a rank
-                    remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
-                }
-            }else{ // we have the base skill, check the knowledge count to see if we can increase S or only K
-                var kcount = 0;
-                var ks = skills[skill].Knowledge;
-                for(var key in ks){
-                    var level = skills[skill].Knowledge[key];
-                    kcount += level;
-                }
-                
-                // increase knowledge
-                if(typeof skills[skill].Knowledge[knowledge] == "undefined"){
-                    skills[skill].Knowledge[knowledge] = 1;
-                    remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
-                }else if(skills[skill].Knowledge[knowledge] < 6){
-                    skills[skill].Knowledge[knowledge] += 1;
-                    remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
-                }else{
-                    if(kcount >= 2 && skills[skill].Skill < 15){
-                        // increase skill
-                        if(skills[skill].Skill <= 0){ 
-                            skills[skill].Skill = 1;
-                            remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
-                        }else{
-                            skills[skill].Skill += 1;
-                            remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
-                        }
+                    
+                    // increase knowledge
+                    if(typeof skills[skill].Knowledge[knowledge] == "undefined"){
+                        skills[skill].Knowledge[knowledge] = 1;
+                        remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
+                    }else if(skills[skill].Knowledge[knowledge] < 6){
+                        skills[skill].Knowledge[knowledge] += 1;
+                        remarks += "Gained " + skill + "("+knowledge + ")-" + skills[skill].Knowledge[knowledge] + ". ";
                     }else{
-                        remarks += knowledge+" was not increased as it is already at maximum level.";
+                        if(kcount >= 2 && skills[skill].Skill < 15){
+                            // increase skill
+                            if(skills[skill].Skill <= 0){ 
+                                skills[skill].Skill = 1;
+                                remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
+                            }else{
+                                skills[skill].Skill += 1;
+                                remarks += "Gained " + skill + "-" + skills[skill].Skill + ". ";
+                            }
+                        }else{
+                            remarks += knowledge+" was not increased as it is already at maximum level.";
+                        }
                     }
                 }
             }
         }
-    }
        record(remarks);
         return remarks;
     }
@@ -392,7 +384,7 @@ export function createCharacter(roller, species){
     }
     function canGainBaseSkill(skill){
         var canIncrease = false;
-        if(typeof skills[skill] == "undefined"){
+        if(typeof skills[skill] == "undefined" || skill === ENUM_SKILLS.Language){
             canIncrease = false;
         }else{
             var kcount = 0;
@@ -407,7 +399,8 @@ export function createCharacter(roller, species){
         }
         return canIncrease
     }
-    function gainSkillWithPromptForKnowledge(prompt,skill,callback){
+    function gainSkillWithPromptForKnowledge(prompt,skill,callback,isEducation){
+        if(typeof isEducation == "undefined"){ isEducation = false;}
         if(typeof skill !== "string" && skill.length == 2){
                 gainSkillWithPromptForKnowledge(prompt,skill[0],function(x){
                     gainSkillWithPromptForKnowledge(prompt,skill[1],callback);
@@ -415,14 +408,19 @@ export function createCharacter(roller, species){
             
         }else{
             if(KnowledgeSpecialties[skill]){
-                var specialties = KnowledgeSpecialties[skill];
+                var specialties = KnowledgeSpecialties[skill].slice();
                 if(canGainBaseSkill(skill)){
                     specialties = ["<!>Increase " + skill + " skill"].concat(specialties);
+                    
+                }else if(skill == ENUM_SKILLS.Language){
+                    if(specialties.indexOf(nativeLanguage) >= 0){
+                        specialties.splice(specialties.indexOf(nativeLanguage),1);
+                    }
                 }
                 pickOption(specialties,prompt + " Choose a specialized "+skill+" knowledge.",function(x){ proceed(x); },true)
             }else{proceed(undefined);}
             function proceed(chosenKnowledge){
-                var remarks = gainSkillOrKnowledge(skill,chosenKnowledge,false, prompt);
+                var remarks = gainSkillOrKnowledge(skill,chosenKnowledge,isEducation, prompt);
                 callback(prompt + " " + remarks);
             }
         }
@@ -770,14 +768,8 @@ export function createCharacter(roller, species){
                                         var otcWaiverResult = promptEducationWaiver("Failed " + choice + " training course.");
                                         further_remarks += otcWaiverResult.remarks + newLine;
                                         otcResult.success = otcWaiverResult.success;
-                                        if(otcResult.success){
-                                            if(choice === "OTC"){
-                                                armyCommission = true;
-                                            }else{
-                                                navyCommission = true;
-                                            }
-                                        }
-                                    }else{
+                                    }
+                                    if(otcResult.success){
                                         var otc_skill_list = []
                                         if(otc){
                                             armyCommission = true;
@@ -1284,12 +1276,20 @@ export function createCharacter(roller, species){
                 updateFunc();
                 if(ANMSchoolResult.success){
                     pickSkill(schoolType,"ANM School provides a skill",(sk1)=>{
-                        if(typeof careers[careers.length-1].skillsToGain == "undefined"){ careers[careers.length-1].skillsToGain = []; }
-                        careers[careers.length-1].skillsToGain.push({receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex});
-                        //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
-                        //gainSkillOrKnowledge(sk1.skill,sk1.knowledge,true,"ANM School");
-                        updateFunc();
-                        gainTermSchoolSkills(career,updateFunc,callback);
+                        if(sk1.skill === ENUM_SKILLS.Language){
+                            pickOption(KnowledgeSpecialties[ENUM_SKILLS.Language],"Choose a language specialty",(sk2)=>{
+                                if(typeof careers[careers.length-1].skillsToGain == "undefined"){ careers[careers.length-1].skillsToGain = []; }
+                                careers[careers.length-1].skillsToGain.push({receipts:2,skill:sk1.skill,knowledge:sk2,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex});
+                                updateFunc();
+                                gainTermSchoolSkills(career,updateFunc,callback);
+                            },true); 
+                        }else{
+                            if(typeof careers[careers.length-1].skillsToGain == "undefined"){ careers[careers.length-1].skillsToGain = []; }
+                            careers[careers.length-1].skillsToGain.push({receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex});
+                            updateFunc();
+                            gainTermSchoolSkills(career,updateFunc,callback);
+                        }
+                        
                     })
                 }else{
                     gainTermSchoolSkills(career,updateFunc,callback);
@@ -1954,7 +1954,9 @@ export function createCharacter(roller, species){
                         }else{
                             var penalty = -totalMod;
                             if(caution < 0){ penalty += caution;}
-                            penalty += roller.flux().result;
+                            var fresult = roller.flux().result;
+                            penalty += fresult;
+                            record("Attribute Damage = [" + (-totalMod) + " operation] " + (caution < 0 ? " + [" + (caution) + " bravery]" : "") + " + [" + fresult + " flux] = " + penalty)
                             if(penalty < 0){
                                 decreaseCharacteristic(CC,-penalty,"Injury!");
                                 if(characteristics[ccIndex].value <= 0){ 
@@ -2463,7 +2465,9 @@ export function createCharacter(roller, species){
                         }else{
                             var penalty = -totalMod;
                             if(caution < 0){ penalty += caution;}
-                            penalty += roller.flux().result;
+                            var fresult = roller.flux().result;
+                            penalty += fresult;
+                            record("Attribute Damage = [" + (-totalMod) + " operation] " + (caution < 0 ? " + [" + (caution) + " bravery]" : "") + " + [" + fresult + " flux] = " + penalty)
                             if(penalty < 0){
                                 decreaseCharacteristic(CC,-penalty,"Injury!");
                                 if(characteristics[ccIndex].value <= 0){ 
@@ -2923,7 +2927,9 @@ export function createCharacter(roller, species){
                         }else{
                             var penalty = -totalMod;
                             if(caution < 0){ penalty += caution;}
-                            penalty += roller.flux().result;
+                            var fresult = roller.flux().result;
+                            penalty += fresult;
+                            record("Attribute Damage = [" + (-totalMod) + " operation] " + (caution < 0 ? " + [" + (caution) + " bravery]" : "") + " + [" + fresult + " flux] = " + penalty)
                             if(penalty < 0){
                                 decreaseCharacteristic(CC,-penalty,"Injury!");
                                 if(characteristics[ccIndex].value <= 0){ 
