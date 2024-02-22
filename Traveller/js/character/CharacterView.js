@@ -519,7 +519,7 @@ function newCharacter(){
     log(person.gainSkillsFromHomeworldTradeCodes(document.getElementById("txtHomeworldTradeCodes").value, log)());
     renderCharacter(person, document.body);
     enableControls();
-    console.log(person);
+
 }
 function enableControls(){
     var buttons = document.querySelectorAll("[data-educationbtn]");
@@ -539,6 +539,7 @@ function validateQualifications(){
 function redraw(){
     validateQualifications();
     renderCharacter(person, document.body);
+    console.log(person);
 }
 document.getElementById("btnCitizen").addEventListener("click",function(){
     document.getElementById("btnCitizen").setAttribute("disabled","disabled");
@@ -564,7 +565,6 @@ function log(msg){
         }
         redraw();
     }
-    console.log(msg);
 }
 function clear(){
     var historyRecipients = document.querySelectorAll("[data-history]");
