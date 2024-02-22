@@ -2280,6 +2280,7 @@ export function createCharacter(roller, species){
                 record(beginRoll.remarks);
                 updateFunc();
                 if(beginRoll.success){
+                    addToReserves("Navy");
                     careers.push({career:career,terms:1,active:true,rank:{label:"R1 Spacehand",officer:0,enlisted:1},schools:[],awards:[]});
                     gainSkillWithPromptForKnowledge("Gain Fighter skill as a Spacehand. ",ENUM_SKILLS.Fighter,()=>{
                         // roll to select branch
@@ -2303,6 +2304,7 @@ export function createCharacter(roller, species){
                             record(beginRoll.remarks);
                             updateFunc();
                             if(beginRoll.success){
+                                addToReserves("Navy");
                                 careers.push({career:career,terms:1,active:true,rank:{label:"R1 Spacehand",officer:0,enlisted:1},schools:[],awards:[]});
                                 gainSkillWithPromptForKnowledge("Gain Fighter skill as a Spacehand. ",ENUM_SKILLS.Fighter,()=>{
                                     // roll to select branch
@@ -2348,6 +2350,10 @@ export function createCharacter(roller, species){
                 },true,undefined,CCDescriptions);
             }
         }
+    }
+    function addToReserves(service){
+        var reserve = service + " Reserves";
+        if(awards.indexOf(reserve) === -1){awards.push(reserve);}
     }
     function resolveSoldier(career, updateFunc){
         var priorCareers = careers.length;
@@ -2738,6 +2744,7 @@ export function createCharacter(roller, species){
                 record(beginRoll.remarks);
                 updateFunc();
                 if(beginRoll.success){
+                    addToReserves("Army");
                     careers.push({career:career,terms:1,active:true,rank:{label:"S1 Private",officer:0,enlisted:1},schools:[],awards:[]});
                     gainSkillWithPromptForKnowledge("Gain Fighter skill as a Private. ",ENUM_SKILLS.Fighter,()=>{
                         // roll to select branch
@@ -2761,6 +2768,7 @@ export function createCharacter(roller, species){
                             record(beginRoll.remarks);
                             updateFunc();
                             if(beginRoll.success){
+                                addToReserves("Army");
                                 careers.push({career:career,terms:1,active:true,rank:{label:"S1 Private",officer:0,enlisted:1},schools:[],awards:[]});
                                 gainSkillWithPromptForKnowledge("Gain Fighter skill as a Private. ",ENUM_SKILLS.Fighter,()=>{
                                     // roll to select branch
@@ -3207,6 +3215,7 @@ export function createCharacter(roller, species){
                 record(beginRoll.remarks);
                 updateFunc();
                 if(beginRoll.success){
+                    addToReserves("Marine");
                     careers.push({career:career,terms:1,active:true,rank:{label:"S1 Private",officer:0,enlisted:1},schools:[],awards:[]});
                     gainSkillWithPromptForKnowledge("Gain Fighter skill as a Private. ",ENUM_SKILLS.Fighter,()=>{
                         // roll to select branch
@@ -3230,6 +3239,7 @@ export function createCharacter(roller, species){
                             record(beginRoll.remarks);
                             updateFunc();
                             if(beginRoll.success){
+                                addToReserves("Marine");
                                 careers.push({career:career,terms:1,active:true,rank:{label:"S1 Private",officer:0,enlisted:1},schools:[],awards:[]});
                                 gainSkillWithPromptForKnowledge("Gain Fighter skill as a Private. ",ENUM_SKILLS.Fighter,()=>{
                                     // roll to select branch
@@ -3508,6 +3518,52 @@ export function createCharacter(roller, species){
         if(typeof amount == "undefined"){ amount = 1;}
         return gainCharacteristic(characteristic,-amount, premark);
     }
+    function getPlayabilityScore(){
+        var playabilityScore = 0;
+        var charComponent = 0;
+        for(var i = 0, len = characteristics.length; i < len; i++){
+            charComponent += characteristics[i].value;
+        }
+        charComponent = charComponent / 6;
+
+        var skillComponent = 0;
+        var knowledgeComponent = 0;
+        var languageComponent = 0;
+        var JOTComponent = 0;
+        var skillNames = Object.keys(skills);
+        for(var i = 0, len = skillNames.length; i < len; i++){
+            var skillName = skillNames[i];
+            var skill = skills[skillName];
+            if(skill.Skill >= 0){
+                if(skillName === ENUM_SKILLS.JOT){
+                    JOTComponent += skill.Skill * 2;
+                }else{
+                    skillComponent += skill.Skill;
+                }
+            }
+            var knowledgeNames = Object.keys(skill.Knowledge);
+            if(skillName === ENUM_SKILLS.Language){
+                for(var j = 0, jlen = knowledgeNames.length; j < jlen; j++){
+                    languageComponent += 1;
+                }
+            }else{
+                for(var j = 0, jlen = knowledgeNames.length; j < jlen; j++){
+                    knowledgeComponent += skill.Knowledge[knowledgeNames[j]];
+                }
+            }
+            
+        }
+        knowledgeComponent = knowledgeComponent / 2
+        playabilityScore = charComponent + skillComponent + knowledgeComponent + languageComponent + JOTComponent;
+        return {
+            score: ((playabilityScore * 10) >>> 0)/10,
+            characteristicScore : ((charComponent*10) >>> 0)/10,
+            skillScore : skillComponent >>> 0,
+            knowledgeScore : ((knowledgeComponent * 10) >>> 0)/10,
+            JOTScore : JOTComponent >>> 0,
+            languageScore : languageComponent >>> 0
+        };
+    }
     function getQualifications(){
         var q = {};
         var isDead = false;
@@ -3707,6 +3763,7 @@ export function createCharacter(roller, species){
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics,
-        resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender
+        resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
+        getPlayabilityScore
     }
 }

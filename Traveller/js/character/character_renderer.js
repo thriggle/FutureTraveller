@@ -3,7 +3,6 @@ import { ENUM_SKILLS } from "./skills.js";
 import { ENUM_CHARACTERISTICS } from "./species.js";
 
 export function renderCharacter(character,element){
-    console.log(character.getHistory());
     injectHTML("[data-name]",renderName);
     injectHTML("[data-ageblock]",ageBlock);
     injectHTML("[data-statblock]",statBlock)
@@ -13,6 +12,7 @@ export function renderCharacter(character,element){
     injectHTML("[data-careers]",careers);
     injectHTML("[data-credits]",renderCredits);
     injectHTML("[data-gender]",renderGender);
+    injectHTML("[data-score]",renderScore);
     function injectHTML(selector,htmlfunc){
         var elements = document.querySelectorAll(selector);
         for(var i = 0, len = elements.length; i < len; i++){
@@ -57,12 +57,40 @@ function renderCredits(character,element){
 function renderGender(character,element){
     element.insertAdjacentHTML("beforeend","<span>"+ character.getGender() + "</span>");
 }
+function renderScore(character,element){
+    var scores = character.getPlayabilityScore();
+    var score = scores.score;
+    var scoreDesc = "";
+    if(score < 15){ 
+        scoreDesc = "Incompetent";
+    }else if(score < 20){
+        scoreDesc = "Novice";
+    }else if(score < 25){
+        scoreDesc = "Adequate";
+    }else if(score < 30){
+        scoreDesc = "Competent";
+    }else if(score < 35){
+        scoreDesc = "Proficient";
+    }else if(score < 40){
+        scoreDesc = "Expert";
+    }else if(score < 50){
+        scoreDesc = "Veteran";
+    }else{
+        scoreDesc = "Legendary";
+    }
+    var lineBreak = `
+`;
+    var title = "Characteristics: " + scores.characteristicScore + lineBreak 
+    + "Skills: " + scores.skillScore + lineBreak
+    + "Knowledge: " + scores.knowledgeScore + lineBreak
+    + "Languages: " + scores.languageScore + lineBreak
+    + "JOT: " + scores.JOTScore;
+    element.insertAdjacentHTML("beforeend","<span alt==\""+title+"\" title=\""+title+"\" data-skilllevel=\""+scoreDesc+"\">" + scoreDesc + " ("+score+")</span>");
+}
 function history(character, elements){
     var events = character.getHistory();
     for(var j = 0, jlen = elements.length; j < jlen; j++){
-        var element = elements[j];
-  
-            
+        var element = elements[j];        
                 clearElement(element);
                 // clear history and start over
                 var lastAge = "Age 0";
@@ -71,8 +99,6 @@ function history(character, elements){
                     var age = eventSplit[1];
                     var isNewAge = false;
                     if(age != lastAge){
-                        console.log(age);
-                        console.log(lastAge);
                         lastAge = age;
                         isNewAge = true;
                     }

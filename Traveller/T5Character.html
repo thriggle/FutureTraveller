@@ -166,6 +166,15 @@
         [data-credits]{font-weight: bold;}
         [data-skill='true']{font-weight:bold;}
         [data-skill='false']{color:#111;}
+        [data-skilllevel]{font-weight:bold;}
+        [data-skilllevel='Incompetent']{ color:darkred;}
+        [data-skilllevel='Novice']{ color:rgb(139, 95, 0);}
+        [data-skilllevel='Adequate']{ color:rgb(53, 139, 0);}
+        [data-skilllevel='Competent']{ color:rgb(0, 116, 116);}
+        [data-skilllevel='Proficient']{ color:rgb(0, 60, 116);}
+        [data-skilllevel='Expert']{ color:rgb(37, 0, 116);}
+        [data-skilllevel='Veteran']{ color:rgb(102, 0, 116);}
+        [data-skilllevel='Legendary']{ color:rgb(151, 0, 116);}
     </style>
     <script src="./js/character/CharacterView.js" type="module"></script>
     <nav class="menu">
@@ -336,6 +345,9 @@ Continue vs C1
                 
             <fieldset style="display:flex; flex-direction:row; flex-wrap:wrap;">
                 <legend>Character Sheet</legend>
+                <div>
+                    <label for="" style="white-space:nowrap">Competency: <span data-score></span>
+                </div>
                 <div style="width:100%;">
                     <label for="" style="white-space:nowrap">Name: <span data-name></span></label> <label style="white-space:nowrap" for="">Age: <span data-ageblock=""></span></label> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
                 </div>
@@ -372,11 +384,11 @@ Continue vs C1
         </div>
        
     </div>
-    <div data-tier="1" data-nav="sheet">
-
-        <div>
-            <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span data-ageblock=""></span> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
-        </div>
+    <div data-tier="1" data-nav="sheet" >
+        <div style="display:flex; flex-direction:row; flex-wrap:wrap;">
+            <div style="width:100%;">
+                <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span data-ageblock=""></span> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
+            </div>
             
             <fieldset>
                 <legend>Stats</legend>
@@ -389,12 +401,13 @@ Continue vs C1
             <fieldset>
                 <legend>Awards</legend>
                 <div data-awards=""></div> 
-               
+                
             </fieldset>
             <fieldset>
                 <legend>Careers</legend>
                 <div data-careers></div>
             </fieldset>
+        </div>
     </div>
 </body>
 </html>
