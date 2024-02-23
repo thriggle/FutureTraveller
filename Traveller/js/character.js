@@ -746,8 +746,8 @@ export function createCharacter(roller, species){
                             
                             var options = [];
                             options.push("None");
-                            if(awards.indexOf("Army Officer1") === -1){ options.push("OTC");}
-                            if(awards.indexOf("Navy Officer1") === -1 || awards.indexOf("Marine Officer1")){ options.push("NOTC");}
+                            if(awards.indexOf("Army Reserves") === -1){ options.push("OTC");}
+                            if(awards.indexOf("Navy Reserves") === -1 || awards.indexOf("Marine Reserves") == -1){ options.push("NOTC");}
                             pickOption(options,"Do you wish to join OTC (Army) or NOTC (Navy)?",
                             function(choice){
                                 var otc = false, notc = false, further_remarks = "";
@@ -785,29 +785,39 @@ export function createCharacter(roller, species){
                                                     pickOption(KnowledgeSpecialties[new_skill],"Please choose a knowledge from this list.",function(new_knowledge){
                                                         log(gainSkillOrKnowledge(new_skill,new_knowledge,true, "("+choice + ")"));
                                                         if(navyCommission){ 
-                                                            pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
-                                                            awards.push(service_choice + " Officer1");
-                                                            awards.push(service_choice + " Reserves");
-                                                        record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                                            log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                                            },true);
+                                                            var navyCommissionOptions = [];
+                                                            if(! isNavyOfficer()){ navyCommissionOptions.push("Navy");}
+                                                            if(! isMarineOfficer()){ navyCommissionOptions.push("Marine");}
+                                                            if(navyCommissionOptions.length > 0){
+                                                                pickOption(navyCommissionOptions,"Choose a service.",function(service_choice){
+                                                                    awards.push(service_choice + " Officer1");
+                                                                    awards.push(service_choice + " Reserves");
+                                                                    record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                                    log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                                },true);
+                                                            }
                                                         }
                                                     },true);
                                                 }else{
                                                     if(navyCommission){ 
-                                                        pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
-                                                        awards.push(service_choice + " Officer1");
-                                                        awards.push(service_choice + " Reserves");
-                                                    record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).")
-                                                        log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                                        },true);
+                                                        var navyCommissionOptions = [];
+                                                        if(! isNavyOfficer()){ navyCommissionOptions.push("Navy");}
+                                                        if(! isMarineOfficer()){ navyCommissionOptions.push("Marine");}
+                                                        if(navyCommissionOptions.length > 0){
+                                                            pickOption(navyCommissionOptions,"Choose a service.",function(service_choice){
+                                                                awards.push(service_choice + " Officer1");
+                                                                awards.push(service_choice + " Reserves");
+                                                                record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                                log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                                            },true);
+                                                        }
                                                     }
                                                     even_further_remarks += gainSkillOrKnowledge(new_skill,undefined,true,"("+choice +")") + newLine;
                                                     log(even_further_remarks);
                                                 }
                                             },true);
                                     }
-                                    if(armyCommission){ 
+                                    if(armyCommission && !isArmyOfficer()){ 
                                         awards.push("Army Officer1");
                                         awards.push("Army Reserves");
                                         further_remarks += "Earned Army commission (Army Officer1).";
@@ -827,17 +837,24 @@ export function createCharacter(roller, species){
                         }
                         if(commissionOnSuccess){
                             if(commissionOnSuccess === "Army"){
+                                if(! isArmyOfficer()){
                                     awards.push("Army Officer1");
-                                    awards.push("Army Reserves");
                                     remarks += "Earned Army commission (Army Officer1).";
                                     record("Earned Army commission (Army Officer1).");
+                                }
+                                if(awards.indexOf("Army Reserves") == -1){awards.push("Army Reserves");}
                             }else if(commissionOnSuccess === "Navy"){ 
-                                pickOption(["Navy","Marine"],"Choose a service.",function(service_choice){
-                                    awards.push(service_choice + " Officer1");
-                                    awards.push(service_choice + " Reserves");
-                                    record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                    log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
-                                });
+                                var navyCommissionOptions = [];
+                                if(! isNavyOfficer()){ navyCommissionOptions.push("Navy");}
+                                if(! isMarineOfficer()){ navyCommissionOptions.push("Marine");}
+                                if(navyCommissionOptions.length > 0){
+                                    pickOption(navyCommissionOptions,"Choose a service.",function(service_choice){
+                                        awards.push(service_choice + " Officer1");
+                                        awards.push(service_choice + " Reserves");
+                                        record("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                        log("Earned " + service_choice + " Commission ("+service_choice+" Officer1).");
+                                    });
+                                }                               
                             }
                         }
                     }
@@ -851,6 +868,42 @@ export function createCharacter(roller, species){
             record(remarks);
         }
         return remarks;
+    }
+    function isArmyOfficer(){
+        var isOfficer = awards.indexOf("Army Officer1") >= 0;
+        if(!isOfficer){
+            for(var i = 0, len = careers.length; i < len; i++){
+                var career = careers[i];
+                if(career.career == ENUM_CAREERS.Soldier){
+                    isOfficer = career.rank.officer > 0;
+                }
+            }
+        }
+        return isOfficer;
+    }
+    function isNavyOfficer(){
+        var isOfficer = awards.indexOf("Navy Officer1") >= 0;
+        if(!isOfficer){
+            for(var i = 0, len = careers.length; i < len; i++){
+                var career = careers[i];
+                if(career.career == ENUM_CAREERS.Spacer){
+                    isOfficer = career.rank.officer > 0;
+                }
+            }
+        }
+        return isOfficer;
+    }
+    function isMarineOfficer(){
+        var isOfficer = awards.indexOf("Marine Officer1") >= 0;
+        if(!isOfficer){
+            for(var i = 0, len = careers.length; i < len; i++){
+                var career = careers[i];
+                if(career.career == ENUM_CAREERS.Marine){
+                    isOfficer = career.rank.officer > 0;
+                }
+            }
+        }
+        return isOfficer;
     }
     function Masters(MajorSkill,MajorKnowledge,MinorSkill,MinorKnowledge){
         var remarks = "", newLine = "_", notFlunked = false;
