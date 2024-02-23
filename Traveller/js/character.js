@@ -1651,6 +1651,21 @@ export function createCharacter(roller, species){
         };
         musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
     }
+    function getForbiddenKnowledge(callback){
+        var roll = roller.d6();
+        var prompt = "Acquired forbidden knowledge."
+        switch(roll.result){
+            case 1: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Fighter,callback,false); break;
+            case 2: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Streetwise,callback,false); break;
+            case 3: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Stealth,callback,false); break;
+            case 4: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Explosives,callback,false); break;
+            case 5: 
+                gainSkillOrKnowledge(ENUM_SKILLS.HeavyWeapons,"WMD",false,prompt);
+                callback();
+                 break;
+            case 6: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Programmer,callback,false); break;
+        }
+    }
     function musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback){
         updateFunc();
         if(rollsRemaining > 0){
@@ -1660,6 +1675,7 @@ export function createCharacter(roller, species){
             var bennyMod = 0, moneyMod = 0;
             var possibleMonies = [], possibleBennies = [];
             var mainOptions = ["Money","Benefits"];
+            var eligibleForKnighthood = true;
             switch(career.career){
                 case ENUM_CAREERS.Citizen:
                     moneyMod = career.terms + career.benefitDM;
@@ -1668,12 +1684,19 @@ export function createCharacter(roller, species){
                 case ENUM_CAREERS.Spacer:
                 case ENUM_CAREERS.Marine:
                 case ENUM_CAREERS.Soldier:
+                    if(career.rank.officer <= 0){
+                        // ineligible for knighthood
+                        eligibleForKnighthood = false;
+                    }
                     moneyMod = career.terms + career.benefitDM; 
                     bennyMod = career.rank.officer + career.benefitDM;
                 break;
             }
             possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
-            possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>val.label);
+            possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>{
+                if(val.label !== "Knighthood" || eligibleForKnighthood){ return val.label }  
+                else{ return "Soc +1";}
+            });
             if(6+moneyMod < possibleMonies.length){ possibleMonies.splice(6+moneyMod); }
             if(6+bennyMod < possibleBennies.length){ possibleBennies.splice(6+bennyMod); }
             pickOption(mainOptions,"Choose a table for "+career.career+" benefits.<br/>("+(rollsRemaining+1)+" rolls remaining)",(choice)=>{
@@ -1686,7 +1709,7 @@ export function createCharacter(roller, species){
                         if(sum > 11){   
                             sum = 11; 
                         }
-                        rollChoices.push((sum+1)+":" +CareerBenefitTables[career.career]["Money"][sum].label);
+                        rollChoices.push((sum+1)+":" + CareerBenefitTables[career.career]["Money"][sum].label);
                     }
                     if(rollChoices.length > 1){
                         pickOption(rollChoices,"Roll='"+roll+"' choose a monetary benefit.",(rollChoice)=>{
@@ -1723,24 +1746,45 @@ export function createCharacter(roller, species){
                             pickOption(rollChoices,"Roll='"+roll+"' choose a benefit.",(rollChoice)=>{
                                 var choiceIndex = +(rollChoice.substring(0,rollChoice.indexOf(":")))-1;
                                 var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][choiceIndex];
+                                var keepGoing = true;
+                                if(chosenBenefit.label == "Knighthood"){
+                                    if(eligibleForKnighthood){
+                                        if(characteristics[5].name === ENUM_CHARACTERISTICS.SOC){
+                                            if(characteristics[5].value < 11){
+                                                characteristics[5].value = 11;
+                                                record("Knighthood receipt increased Social Standing to 11.");
+                                            }else{
+                                                gainCharacteristic(ENUM_CHARACTERISTICS.SOC,1,"Knighthood receipt.");
+                                            }
+                                        }
+                                    }else{
+                                        chosenBenefit.type = "characteristic";
+                                        chosenBenefit.characteristic = "Soc";
+                                    }
+                                }
                                 switch(chosenBenefit.type){
-                                    case "knowledge": 
+                                    case "knowledge": getForbiddenKnowledge(()=>{updateFunc(); musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback); }); keepGoing = false; break;
                                     case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
                                     case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
                                 }
-                                updateFunc();
-                                musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                                if(keepGoing){
+                                    updateFunc();
+                                    musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                                }
                             },true,rollChoices[rollChoices.length-1]);
                         }else{
                             record("Benefit roll="+roll);
                             var chosenBenefit = CareerBenefitTables[career.career]["Benefits"][sum];
+                            var keepGoing = true;
                             switch(chosenBenefit.type){
-                                case "knowledge": 
+                                case "knowledge": getForbiddenKnowledge(()=>{updateFunc(); musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback); }); keepGoing = false; break;
                                 case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
                                 case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
                             }
-                            updateFunc();
-                            musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                            if(keepGoing){
+                                updateFunc();
+                                musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback);
+                            }
                         } 
                     break;
                 }
