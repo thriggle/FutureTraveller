@@ -3576,35 +3576,18 @@ export function createCharacter(roller, species){
         q.Soldier = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Soldier).length == 0);
         q.Spacer = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Spacer).length == 0);
         q.Marine = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Marine).length == 0);
-        if(awards.indexOf("Navy Officer1") >= 0){
-            // no other career can be pursued until navy term served
-            q.Citizen = false;
-            if(awards.indexOf("Army Officer1") == -1){
-                q.Soldier = false;
-            }
-            if(awards.indexOf("Marine Officer1") == -1){
-                q.Marine = false;
-            }
+        var navyCommission = awards.indexOf("Navy Officer1") >= 0,
+            armyCommission = awards.indexOf("Army Officer1") >= 0,
+            marineCommission = awards.indexOf("Marine Officer1") >= 0;
+        if(navyCommission || armyCommission || marineCommission){
+            q.Citizen = false, q.Spacer = false, q.Soldier = false, q.Marine = false;
+            q.BA = false;
+            if(navyCommission){ q.Spacer = true;}
+            if(armyCommission){ q.Soldier = true;}
+            if(marineCommission){ q.Marine = true; }
+        }else{
+            q.BA = true;
         }
-        if(awards.indexOf("Army Officer1") >= 0){
-            q.Citizen = false;
-            if(awards.indexOf("Navy Officer1") == -1){
-                q.Spacer = false;
-            }
-            if(awards.indexOf("Marine Officer1") == -1){
-                q.Marine = false;
-            }
-        }
-        if(awards.indexOf("Marine Officer1") >= 0){
-            q.Citizen = false;
-            if(awards.indexOf("Army Officer1") == -1){
-                q.Soldier = false;
-            }
-            if(awards.indexOf("Navy Officer1") == -1){
-                q.Spacer = false;
-            }
-        }
-        
         return q;
     }
     function checkCSK(characteristic, skill, knowledge, difficulty,mods,remarks){
