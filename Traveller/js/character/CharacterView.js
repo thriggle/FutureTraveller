@@ -535,6 +535,16 @@ function validateQualifications(){
     if(qual.Marine){ document.getElementById("btnMarine").removeAttribute("disabled"); }else{ document.getElementById("btnMarine").setAttribute("disabled","");}
     if(qual.Soldier){ document.getElementById("btnSoldier").removeAttribute("disabled"); }else{ document.getElementById("btnSoldier").setAttribute("disabled","");}
     if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
+    var baOptions = document.querySelectorAll("[data-qualify=\"BA\"]");
+    if(qual.BA){ 
+        for(var i = 0, len = baOptions.length; i < len; i++){
+            baOptions[i].removeAttribute("disabled");
+        }
+    }else{
+        for(var i = 0, len = baOptions.length; i < len; i++){
+            baOptions[i].setAttribute("disabled","");
+        }
+    }
 }
 function redraw(){
     validateQualifications();
