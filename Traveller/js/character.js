@@ -3485,6 +3485,9 @@ export function createCharacter(roller, species){
                         var promoRoll = check((careers[careers.length-1].terms)*2,2,characteristics[3].value >= 8 ? 3 : 0,"Roll for Officer promotion");
                         record(promoRoll.remarks); updateFunc();
                         officerPromotion = promoRoll.success;
+                    }else{
+                        record("Already at max rank, ineligible for promotion.");
+                        updateFunc();
                     }
                     if(officerPromotion){
                         termSkillTables.push({age:false,note:"Bonus skill from promotion"});
@@ -3516,8 +3519,14 @@ export function createCharacter(roller, species){
                                 updateFunc(); 
                                 promptContinue(ENUM_CAREERS.Merchant,updateFunc);
                             });
+                        }else{
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
+                                updateFunc(); 
+                                promptContinue(ENUM_CAREERS.Merchant,updateFunc);
+                            });
                         }
                     }else{
+                        
                         gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                             updateFunc(); 
                             promptContinue(ENUM_CAREERS.Merchant,updateFunc);
