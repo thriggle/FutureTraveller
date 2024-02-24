@@ -530,6 +530,7 @@ function enableControls(){
 }
 function validateQualifications(){
     var qual = person.getQualifications();
+    if(qual.Merchant){ document.getElementById("btnMerchant").removeAttribute("disabled"); }else{ document.getElementById("btnMerchant").setAttribute("disabled","");}
     if(qual.Citizen){ document.getElementById("btnCitizen").removeAttribute("disabled"); }else{ document.getElementById("btnCitizen").setAttribute("disabled","");}
     if(qual.Spacer){ document.getElementById("btnSpacer").removeAttribute("disabled"); }else{ document.getElementById("btnSpacer").setAttribute("disabled","");}
     if(qual.Marine){ document.getElementById("btnMarine").removeAttribute("disabled"); }else{ document.getElementById("btnMarine").setAttribute("disabled","");}
@@ -566,6 +567,10 @@ document.getElementById("btnSoldier").addEventListener("click",function(){
 document.getElementById("btnMarine").addEventListener("click",function(){
     document.getElementById("btnMarine").setAttribute("disabled","disabled");
     person.resolveCareer(ENUM_CAREERS.Marine,redraw);
+});
+document.getElementById("btnMerchant").addEventListener("click",function(){
+    document.getElementById("btnMerchant").setAttribute("disabled","disabled");
+    person.resolveCareer(ENUM_CAREERS.Merchant,redraw);
 });
 function log(msg){
     if(typeof msg !== "undefined"){
