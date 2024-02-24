@@ -2112,9 +2112,13 @@ export function createCharacter(roller, species){
                     
                     if(careers[careers.length-1].rank.officer > 0){
                         // roll for officer promotion
-                        var promoRoll = checkCharacteristic(ENUM_CHARACTERISTICS.SOC,undefined,promoMod,"Roll for Officer Promotion");
-                        record(promoRoll.remarks); updateFunc();
-                        if(promoRoll.success){
+                        var officerPromotion = false;
+                        if(careers[careers.length-1].rank.officer < 7){
+                            var promoRoll = checkCharacteristic(ENUM_CHARACTERISTICS.SOC,undefined,promoMod,"Roll for Officer Promotion");
+                            record(promoRoll.remarks); updateFunc();
+                            officerPromotion = promoRoll.success
+                        }
+                        if(officerPromotion){
                             termSkillTables.push({age:false,note:"Bonus skill from promotion"});
                             careers[careers.length-1].rank.officer += 1;
                             // gain officer skill here
@@ -2173,9 +2177,13 @@ export function createCharacter(roller, species){
                             });
                         }else{
                             // roll for rating promotion
-                            var ratingRoll = checkCharacteristic("C2",undefined,promoMod,"Roll for enlisted promotion");
-                            record(ratingRoll.remarks); updateFunc();
-                            if(ratingRoll.success){
+                            var ratingPromotion = false;
+                            if(careers[careers.length-1].rank.enlisted < 6){
+                                var ratingRoll = checkCharacteristic("C2",undefined,promoMod,"Roll for enlisted promotion");
+                                record(ratingRoll.remarks); updateFunc();
+                                ratingPromotion = ratingRoll.success;
+                            }
+                            if(ratingPromotion){
                                     careers[careers.length-1].freeBranchSelection = true;     
                                     termSkillTables.push({age:false,note:"Bonus skill from promotion"});
                                     careers[careers.length-1].rank.enlisted += 1;
@@ -2629,9 +2637,13 @@ export function createCharacter(roller, species){
                     
                     if(careers[careers.length-1].rank.officer > 0){
                         // roll for officer promotion
-                        var promoRoll = checkCharacteristic(ENUM_CHARACTERISTICS.SOC,undefined,promoMod,"Roll for Officer Promotion");
-                        record(promoRoll.remarks); updateFunc();
-                        if(promoRoll.success){
+                        var officerPromotion = false
+                        if(careers[careers.length-1].rank.officer < 7){
+                            var promoRoll = checkCharacteristic(ENUM_CHARACTERISTICS.SOC,undefined,promoMod,"Roll for Officer Promotion");
+                            record(promoRoll.remarks); updateFunc();
+                            officerPromotion = promoRoll.success
+                        }
+                        if(officerPromotion){
                             termSkillTables.push({age:false,note:"Bonus skill from promotion"});
                             careers[careers.length-1].rank.officer += 1;
                             // gain officer skill here
@@ -2680,9 +2692,13 @@ export function createCharacter(roller, species){
                             });
                         }else{
                             // roll for rating promotion
-                            var ratingRoll = checkCharacteristic("C3",undefined,promoMod,"Roll for enlisted promotion");
-                            record(ratingRoll.remarks); updateFunc();
-                            if(ratingRoll.success){
+                            var ratingPromotion = false;
+                            if(careers[careers.length-1].rank.enlisted < 6){
+                                var ratingRoll = checkCharacteristic("C3",undefined,promoMod,"Roll for enlisted promotion");
+                                record(ratingRoll.remarks); updateFunc();
+                                ratingPromotion = ratingRoll.success
+                            }
+                            if(ratingPromotion){
                                     careers[careers.length-1].freeBranchSelection = true;     
                                     termSkillTables.push({age:false,note:"Bonus skill from promotion"});
                                     careers[careers.length-1].rank.enlisted += 1;
@@ -3093,9 +3109,13 @@ export function createCharacter(roller, species){
                     
                     if(careers[careers.length-1].rank.officer > 0){
                         // roll for officer promotion
-                        var promoRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,undefined,promoMod,"Roll for Officer Promotion");
-                        record(promoRoll.remarks); updateFunc();
-                        if(promoRoll.success){
+                        var officerPromotion = false;
+                        if(careers[careers.length-1].rank.officer < 7){
+                            var promoRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,undefined,promoMod,"Roll for Officer Promotion");
+                            record(promoRoll.remarks); updateFunc();
+                            officerPromotion = promoRoll.success;
+                        }
+                        if(officerPromotion){
                             termSkillTables.push({age:false,note:"Bonus skill from promotion"});
                             careers[careers.length-1].rank.officer += 1;
                             // gain officer skill here
@@ -3143,10 +3163,14 @@ export function createCharacter(roller, species){
                                 promptContinue(ENUM_CAREERS.Marine,updateFunc);
                             });
                         }else{
-                            // roll for rating promotion
-                            var ratingRoll = checkCharacteristic("C1",undefined,promoMod,"Roll for enlisted promotion");
-                            record(ratingRoll.remarks); updateFunc();
-                            if(ratingRoll.success){
+                            var ratingPromotion = false;
+                            if(careers[careers.length-1].rank.enlisted < 6){
+                                // roll for rating promotion
+                                var ratingRoll = checkCharacteristic("C1",undefined,promoMod,"Roll for enlisted promotion");
+                                record(ratingRoll.remarks); updateFunc();
+                                ratingPromotion = ratingRoll.success;
+                            }
+                            if(ratingPromotion){
                                     careers[careers.length-1].freeBranchSelection = true;     
                                     termSkillTables.push({age:false,note:"Bonus skill from promotion"});
                                     careers[careers.length-1].rank.enlisted += 1;
