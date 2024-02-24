@@ -36,9 +36,13 @@ function careers(character,element){
                     rank = "-"+rank;
                     break;
                 case ENUM_CAREERS.Marine: 
-                rank = (careers[i].rank.officer>0 ? "O"+careers[i].rank.officer : ("R"+careers[i].rank.enlisted));
-                rank = "-"+rank;
-                break;
+                    rank = (careers[i].rank.officer>0 ? "O"+careers[i].rank.officer : ("R"+careers[i].rank.enlisted));
+                    rank = "-"+rank;
+                    break;
+                case ENUM_CAREERS.Merchant: 
+                    rank = (careers[i].rank.officer>0 ? "M"+careers[i].rank.officer : ("R"+(careers[i].rank.enlisted < 0 ? "X" : careers[i].rank.enlisted)));
+                    rank = "-"+rank;
+                    break;
             }
         }
         var awards = "";
@@ -141,6 +145,10 @@ function awards(character,element){
     }
     if(minors.length > 0){
         element.insertAdjacentHTML("beforeend","<div> Minors: " + minors.join(", ") + "<div>");
+    }
+    var shares = character.getShipShares();
+    if(shares > 0){
+        element.insertAdjacentHTML("beforeend","<hr/><div> Ship Shares: " + shares +"</div>");
     }
     
 }
