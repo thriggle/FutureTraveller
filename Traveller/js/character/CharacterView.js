@@ -519,7 +519,7 @@ function newCharacter(){
     log(person.gainSkillsFromHomeworldTradeCodes(document.getElementById("txtHomeworldTradeCodes").value, log)());
     renderCharacter(person, document.body);
     enableControls();
-    console.log(person);
+
 }
 function enableControls(){
     var buttons = document.querySelectorAll("[data-educationbtn]");
@@ -530,15 +530,27 @@ function enableControls(){
 }
 function validateQualifications(){
     var qual = person.getQualifications();
+    if(qual.Merchant){ document.getElementById("btnMerchant").removeAttribute("disabled"); }else{ document.getElementById("btnMerchant").setAttribute("disabled","");}
     if(qual.Citizen){ document.getElementById("btnCitizen").removeAttribute("disabled"); }else{ document.getElementById("btnCitizen").setAttribute("disabled","");}
     if(qual.Spacer){ document.getElementById("btnSpacer").removeAttribute("disabled"); }else{ document.getElementById("btnSpacer").setAttribute("disabled","");}
     if(qual.Marine){ document.getElementById("btnMarine").removeAttribute("disabled"); }else{ document.getElementById("btnMarine").setAttribute("disabled","");}
     if(qual.Soldier){ document.getElementById("btnSoldier").removeAttribute("disabled"); }else{ document.getElementById("btnSoldier").setAttribute("disabled","");}
     if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
+    var baOptions = document.querySelectorAll("[data-qualify=\"BA\"]");
+    if(qual.BA){ 
+        for(var i = 0, len = baOptions.length; i < len; i++){
+            baOptions[i].removeAttribute("disabled");
+        }
+    }else{
+        for(var i = 0, len = baOptions.length; i < len; i++){
+            baOptions[i].setAttribute("disabled","");
+        }
+    }
 }
 function redraw(){
     validateQualifications();
     renderCharacter(person, document.body);
+    console.log(person);
 }
 document.getElementById("btnCitizen").addEventListener("click",function(){
     document.getElementById("btnCitizen").setAttribute("disabled","disabled");
@@ -556,6 +568,10 @@ document.getElementById("btnMarine").addEventListener("click",function(){
     document.getElementById("btnMarine").setAttribute("disabled","disabled");
     person.resolveCareer(ENUM_CAREERS.Marine,redraw);
 });
+document.getElementById("btnMerchant").addEventListener("click",function(){
+    document.getElementById("btnMerchant").setAttribute("disabled","disabled");
+    person.resolveCareer(ENUM_CAREERS.Merchant,redraw);
+});
 function log(msg){
     if(typeof msg !== "undefined"){
         var historyRecipients = document.querySelectorAll("[data-history]");
@@ -564,7 +580,6 @@ function log(msg){
         }
         redraw();
     }
-    console.log(msg);
 }
 function clear(){
     var historyRecipients = document.querySelectorAll("[data-history]");

@@ -166,6 +166,15 @@
         [data-credits]{font-weight: bold;}
         [data-skill='true']{font-weight:bold;}
         [data-skill='false']{color:#111;}
+        [data-skilllevel]{font-weight:bold;}
+        [data-skilllevel='Incompetent']{ color:darkred;}
+        [data-skilllevel='Novice']{ color:rgb(139, 95, 0);}
+        [data-skilllevel='Adequate']{ color:rgb(53, 139, 0);}
+        [data-skilllevel='Competent']{ color:rgb(0, 116, 116);}
+        [data-skilllevel='Proficient']{ color:rgb(0, 60, 116);}
+        [data-skilllevel='Expert']{ color:rgb(37, 0, 116);}
+        [data-skilllevel='Veteran']{ color:rgb(102, 0, 116);}
+        [data-skilllevel='Legendary']{ color:rgb(151, 0, 116);}
     </style>
     <script src="./js/character/CharacterView.js" type="module"></script>
     <nav class="menu">
@@ -286,10 +295,10 @@
                 <input type="button" data-educationbtn value="Trade School" id="btnTradeSchool"/>
                 <input type="button" data-educationbtn value="Training Course" id="btnTrainingCourse"/>
                 <hr>
-                <input type="button" data-educationbtn value="College" id="btnCollege"/>
-                <input type="button" data-educationbtn value="University" id="btnUniversity"/>
-                <input type="button" data-educationbtn value="Naval Academy" id="btnNavalAcademy"/>
-                <input type="button" data-educationbtn value="Military Academy" id="btnMilitaryAcademy"/>
+                <input type="button" data-qualify="BA" data-educationbtn value="College" id="btnCollege"/>
+                <input type="button" data-qualify="BA" data-educationbtn value="University" id="btnUniversity"/>
+                <input type="button" data-qualify="BA" data-educationbtn value="Naval Academy" id="btnNavalAcademy"/>
+                <input type="button" data-qualify="BA" data-educationbtn value="Military Academy" id="btnMilitaryAcademy"/>
                 <hr>
                 <input type="button" data-educationbtn value="Masters" id="btnMasters"/>
                 <input type="button" data-educationbtn value="Professors" id="btnProfessors"/>
@@ -306,7 +315,13 @@
 CC=C1,C2,C3,C4
 Continue vs 10"/>
             <input type="button" disabled="disabled" value="Scout" id="btnScout" />
-            <input type="button" disabled="disabled" value="Merchant" id="btnMerchant" />
+            <input type="button" disabled="disabled" value="Merchant" id="btnMerchant" title="Begin 4th Officer vs Int
+Begin Spacehand vs Dex
+Begin Temp automatic
+Rating Promotion vs Dex (+3 if Int 8+)
+Officer Commission vs Int
+Officer Promotion vs Terms x2 (+3 if Int 8+)
+Continue vs Str"/>
             <input type="button" disabled="disabled" value="Spacer" id="btnSpacer" title="Begin vs Int
 CC=C1,C2,C3
 Rating Promotion/Commission vs C2
@@ -336,6 +351,9 @@ Continue vs C1
                 
             <fieldset style="display:flex; flex-direction:row; flex-wrap:wrap;">
                 <legend>Character Sheet</legend>
+                <div>
+                    <label for="" style="white-space:nowrap">Competency: <span data-score></span>
+                </div>
                 <div style="width:100%;">
                     <label for="" style="white-space:nowrap">Name: <span data-name></span></label> <label style="white-space:nowrap" for="">Age: <span data-ageblock=""></span></label> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
                 </div>
@@ -372,11 +390,11 @@ Continue vs C1
         </div>
        
     </div>
-    <div data-tier="1" data-nav="sheet">
-
-        <div>
-            <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span data-ageblock=""></span> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
-        </div>
+    <div data-tier="1" data-nav="sheet" >
+        <div style="display:flex; flex-direction:row; flex-wrap:wrap;">
+            <div style="width:100%;">
+                <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span data-ageblock=""></span> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
+            </div>
             
             <fieldset>
                 <legend>Stats</legend>
@@ -389,12 +407,13 @@ Continue vs C1
             <fieldset>
                 <legend>Awards</legend>
                 <div data-awards=""></div> 
-               
+                
             </fieldset>
             <fieldset>
                 <legend>Careers</legend>
                 <div data-careers></div>
             </fieldset>
+        </div>
     </div>
 </body>
 </html>

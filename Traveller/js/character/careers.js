@@ -303,8 +303,8 @@ export var CareerSkillTables = {
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
         "Space Travel":["Astrogator","Pilot","Medic","Sensors","Steward","Gunner"],
         "Trade":["Broker","Trader","Diplomat","Admin","Steward","Trader"],
-        "Business":["Computer","Trader","Driver","Advocae","Steward","Comms"],
-        "Vocation":["Broker","Admin","Language","Starship Skill","JOT","Vacc Siot"],
+        "Business":["Computer","Trader","Driver","Advocate","Steward","Comms"],
+        "Vocation":["Broker","Admin","Language","Starship Skill","JOT","Vacc Suit"],
         "Avocation":["One Art","One Science","Computer","Comms","Medic","One Trade"]
     },
     "Agent":{ // Career 09
@@ -403,7 +403,7 @@ export var CareerBenefitTables = {
             {label:"Int +1",type:"characteristic",characteristic:"C4"},
             {label:"Soc +1",type:"characteristic",characteristic:"Soc"},
             {label:"TAS Fellow",type:"award"},
-            {label:"Ship Share",type:"award"}            
+            {label:"Ship Share",type:"ship"}            
         ]
     },
     "Spacer":{
@@ -430,7 +430,7 @@ export var CareerBenefitTables = {
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
             {label:"Int +1",type:"characteristic",characteristic:"C4"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"Life Insur",type:"award"},
             {label:"Knighthood",type:"award"},
             {label:"Knighthood",type:"award"},
@@ -489,7 +489,7 @@ export var CareerBenefitTables = {
             {label:"Int +1",type:"characteristic",characteristic:"C4"},
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"Life Insur",type:"award"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"Directorship",type:"award"},
             {label:"Knighthood",type:"award"},
             {label:"Knighthood",type:"award"},
@@ -512,14 +512,14 @@ export var CareerBenefitTables = {
             {label:"Cr 80,000",type:"money",amount:80000},
         ], 
         "Benefits":[
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"Forbidden K",type:"knowledge"},
             {label:"Wafer Jack",type:"award"},
             {label:"C5 +1",type:"characteristic",characteristic:"C5"},
             {label:"Str +1",type:"characteristic",characteristic:"C1"},
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"Life Insur",type:"award"},
             {label:"TAS Fellow",type:"award"},
             {label:"Fame +2",type:"fame",amount:2}, //not sure what type to use.
@@ -550,7 +550,7 @@ export var CareerBenefitTables = {
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
             {label:"Int +1",type:"characteristic",characteristic:"C4"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"Life Insurance",type:"award"},
             {label:"TAS Life",type:"award"},
             {label:"Directorship",type:"award"},
@@ -594,7 +594,7 @@ export var CareerBenefitTables = {
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
             {label:"Int +1",type:"characteristic",characteristic:"C4"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"TAS Fellow",type:"award"},
             {label:"Directorship",type:"award"},
             {label:"TAS Life",type:"award"}
@@ -625,7 +625,7 @@ export var CareerBenefitTables = {
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
             {label:"Int +1",type:"characteristic",characteristic:"C4"},
             {label:"Fame +1",type:"fame",amount:1},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"TAS Fellow",type:"award"},
             {label:"TAS Fellow",type:"award"}
         ]
@@ -655,7 +655,7 @@ export var CareerBenefitTables = {
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
             {label:"Int +1",type:"characteristic",characteristic:"C4"},
             {label:"Fame +1",type:"fame",amount:1},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"TAS Fellow",type:"award"},
             {label:"Knighthood",type:"award"}
         ]
@@ -682,11 +682,11 @@ export var CareerBenefitTables = {
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
             {label:"Life Insur",type:"award"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"Knighthood",type:"award"},
-            {label:"Ship Share",type:"award"},
-            {label:"Ship Share",type:"award"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
+            {label:"Ship Share",type:"ship"},
+            {label:"Ship Share",type:"ship"},
             {label:"Knighthood",type:"award"}
         ]
     },
@@ -706,14 +706,14 @@ export var CareerBenefitTables = {
             {label:"Cr 90,000",type:"money",amount:90000},
         ], 
         "Benefits":[
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"Forbidden K",type:"knowledge"},
             {label:"Wafer Jack",type:"award"},
             {label:"C5 +1",type:"characteristic",characteristic:"C5"},
             {label:"Str +1",type:"characteristic",characteristic:"C1"},
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"Life Insur",type:"award"},
             {label:"TAS Fellow",type:"award"},
             {label:"Fame +2",type:"fame",amount:2},
@@ -742,11 +742,11 @@ export var CareerBenefitTables = {
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},
             {label:"Life Insur",type:"award"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
             {label:"Knighthood",type:"award"},
-            {label:"Ship Share",type:"award"},
-            {label:"Ship Share",type:"award"},
-            {label:"Ship Share",type:"award"},
+            {label:"Ship Share",type:"ship"},
+            {label:"Ship Share",type:"ship"},
+            {label:"Ship Share",type:"ship"},
             {label:"Knighthood",type:"award"}
         ]
     },
