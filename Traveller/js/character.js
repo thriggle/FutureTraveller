@@ -3604,6 +3604,7 @@ export function createCharacter(roller, species){
             return;
         }else{
             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                careers[careers.length-1].terms += 1;
                 CC = selectedCC;
                 CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                 // proceed with R&R, +4 years of skills, promotion/commission
