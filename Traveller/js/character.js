@@ -3482,7 +3482,7 @@ export function createCharacter(roller, species){
                     var officerPromotion = false;
                     if(careers[careers.length-1].rank.officer < 6){
                         // roll for officer promotion
-                        var promoRoll = check(careers[careers.length-1].terms,2,characteristics[3].value >= 8 ? 3 : 0,"Roll for Officer promotion");
+                        var promoRoll = check((careers[careers.length-1].terms)*2,2,characteristics[3].value >= 8 ? 3 : 0,"Roll for Officer promotion");
                         record(promoRoll.remarks); updateFunc();
                         officerPromotion = promoRoll.success;
                     }
