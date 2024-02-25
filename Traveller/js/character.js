@@ -1618,7 +1618,7 @@ export function createCharacter(roller, species){
                             var svcIndex = 0;
                             for(var s = 0; s < careers.length; s++){
                                 if(careers[s].career === reserve.career){
-                                    svcIndex = i; break;
+                                    svcIndex = s; break;
                                 }
                             }
                             careers[svcIndex].active = true;
