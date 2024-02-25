@@ -117,6 +117,7 @@ export function createCharacter(roller, species){
                 case ENUM_CAREERS.Spacer:
                 case ENUM_CAREERS.Marine:
                     var base = career.rank.officer;
+                    careerFame += base;
                     for(var j = 0, jlen = career.awards.length; j < jlen; j++){
                         var award = career.awards[j];
                         switch(award){
@@ -130,10 +131,11 @@ export function createCharacter(roller, species){
                     break;
                 case ENUM_CAREERS.Merchant:
                     var base = career.rank.officer;
-                    if(shipShares >= 10){
+                    careerFame += base;
+                    if(shipShares >= 2 && musteredOut){
                         if(typeof career.shipfame == "undefined"){
                             career.shipfame = roller.d6(1).result;
-                            record("Became owner of a ship. Ship Fame = ["+career.shipfame+"]");
+                            record("Became owner of a ship (up to "+(shipShares/50)+" tons). Ship Fame = ["+career.shipfame+"]");
                         }
                         careerFame += base * career.shipfame;
                     }
