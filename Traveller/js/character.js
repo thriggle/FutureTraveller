@@ -118,6 +118,7 @@ export function createCharacter(roller, species){
                 case ENUM_CAREERS.Marine:
                     var base = career.rank.officer;
                     careerFame += base;
+                    if(base > 0){
                     for(var j = 0, jlen = career.awards.length; j < jlen; j++){
                         var award = career.awards[j];
                         switch(award){
@@ -127,6 +128,7 @@ export function createCharacter(roller, species){
                             case "SEH": careerFame += 3; break;
                             case "*SEH*": careerFame += 4; break;
                         }
+                    }
                     }
                     break;
                 case ENUM_CAREERS.Merchant:
