@@ -3665,9 +3665,9 @@ export function createCharacter(roller, species){
                                     });
                                 }
                         }else{
-                            gainTermSkills(termSkillTables,ENUM_CAREERS.Marine,updateFunc,()=>{
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                                 updateFunc(); 
-                                promptContinue(ENUM_CAREERS.Marine,updateFunc);
+                                promptContinue(ENUM_CAREERS.Merchant,updateFunc);
                             });
                         }
                     }
