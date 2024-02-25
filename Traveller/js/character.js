@@ -137,7 +137,7 @@ export function createCharacter(roller, species){
                             career.shipfame = roller.d6(1).result;
                             record("Became owner of a ship (up to "+(shipShares * 50)+" tons). Ship Fame = ["+career.shipfame+"]");
                         }
-                        careerFame += base * career.shipfame;
+                        careerFame += career.shipfame;
                     }
                     break;
             }
