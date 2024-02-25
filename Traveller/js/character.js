@@ -40,18 +40,19 @@ export function createCharacter(roller, species){
     var casteKey = species.CasteTable[casteRoll.result-2];
     var caste = species.Castes[casteKey];
     var age = 0, isForcedGrowthClone = false;
-    var statRollResults = rollStats();
     var careers = [], CCs = [];
-    var fame = 0, credits = 0;
-    var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
-    var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
+    var fame = 0, credits = 0, fameFluxApplied = false, finalFameRoll = false;
     var merchantShipShareReceiptLevel = 1, shipShares = 0;
+    var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
+    var statRollResults = rollStats();
+    var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;    
     function resetVariables(){
         careers = [], CCs = []; edu_waivers = 0; 
         fame = 0, credits = 0; languageReceipts = 0;
         job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
         merchantShipShareReceiptLevel = 1, shipShares = 0;
         age = 0; musteredOut = false; agingCrises = 0;
+        fameFluxApplied = false, finalFameRoll = false;
     }
     function rollStats(){
         var statRolls = [
@@ -84,6 +85,80 @@ export function createCharacter(roller, species){
     }
     function getShipShares(){
         return shipShares;
+    }
+    function fameFluxEvent(){
+        if(!fameFluxApplied){
+            fameFluxApplied = true;
+            var fluxResult = roller.flux();
+            record("Fame Flux Event: [" + fluxResult.rolls.join("-") + "] = " +fluxResult.result);
+            var change = fluxResult.result;
+            fame += change;
+            if(change < 0){ 
+                record("Fame decreased by " + change+".");
+            }else if(change === 0){
+                record("Fame is unchanged.");
+            }else{
+                record("Fame increased by " + change+".");
+            }
+        }else{
+            record("Fame Flux Event already occurred.");
+        }
+    }
+    function calculateFame(){
+        var totalFame = fame;
+        var highestSourceOfFame = 0;
+        for(var i = 0, len = careers.length; i < len; i++){
+            var career = careers[i];
+            var careerFame = 0;
+            switch(career.career){
+                case ENUM_CAREERS.Citizen:
+                    break;
+                case ENUM_CAREERS.Soldier:
+                case ENUM_CAREERS.Spacer:
+                case ENUM_CAREERS.Marine:
+                    var base = career.rank.officer;
+                    for(var j = 0, jlen = career.awards.length; j < jlen; j++){
+                        var award = career.awards[j];
+                        switch(award){
+                            case "Wound Badge": careerFame += base * 1; break;
+                            case "MCUF": careerFame += base * 1; break;
+                            case "MCG": careerFame += base * 2; break;
+                            case "SEH": careerFame += base * 3; break;
+                            case "*SEH*": careerFame += base * 4; break;
+                        }
+                    }
+                    break;
+                case ENUM_CAREERS.Merchant:
+                    var base = career.rank.officer;
+                    if(shipShares >= 10){
+                        if(typeof career.shipfame == "undefined"){
+                            career.shipfame = roller.d6(1).result;
+                            record("Became owner of a ship. Ship Fame = ["+career.shipfame+"]");
+                        }
+                        careerFame += base * career.shipfame;
+                    }
+                    break;
+            }
+            if(careerFame > highestSourceOfFame){
+                highestSourceOfFame = careerFame;
+            }
+            career.fame = careerFame;
+            if(totalFame < 20 && totalFame + careerFame <= 20){
+                totalFame += careerFame;
+            }else{
+                totalFame = 20;
+            }
+        }
+        if(highestSourceOfFame > 20){ totalFame = highestSourceOfFame + fame; }
+        if(highestSourceOfFame == 0 && musteredOut){
+            if(!finalFameRoll){
+                finalFameRoll = true;
+                fame = roller.d6(1).result;
+                record("Absent any other source of fame, Fame = ["+fame+"]");
+            }
+            totalFame = fame; 
+        }
+        return totalFame;
     }
     function initStats(stats, geneticValues){
        characteristics = [
@@ -144,6 +219,7 @@ export function createCharacter(roller, species){
             characteristics[i].value = gene_characteristics[i].value
             characteristics[i].name = gene_characteristics[i].name
         }
+        sanity = roller.d6(2).result;
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
             characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
@@ -3956,6 +4032,7 @@ export function createCharacter(roller, species){
         }else{
             q.BA = true;
         }
+        q.fameEvent = !fameFluxApplied;
         return q;
     }
     function checkCSK(characteristic, skill, knowledge, difficulty,mods,remarks){
@@ -4115,6 +4192,6 @@ export function createCharacter(roller, species){
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
-        getPlayabilityScore, getShipShares
+        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent
     }
 }
