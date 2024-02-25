@@ -121,11 +121,11 @@ export function createCharacter(roller, species){
                     for(var j = 0, jlen = career.awards.length; j < jlen; j++){
                         var award = career.awards[j];
                         switch(award){
-                            case "Wound Badge": careerFame += base * 1; break;
-                            case "MCUF": careerFame += base * 1; break;
-                            case "MCG": careerFame += base * 2; break;
-                            case "SEH": careerFame += base * 3; break;
-                            case "*SEH*": careerFame += base * 4; break;
+                            case "Wound Badge": careerFame += 1; break;
+                            case "MCUF": careerFame += 1; break;
+                            case "MCG": careerFame += 2; break;
+                            case "SEH": careerFame += 3; break;
+                            case "*SEH*": careerFame += 4; break;
                         }
                     }
                     break;
