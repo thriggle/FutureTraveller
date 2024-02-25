@@ -135,7 +135,7 @@ export function createCharacter(roller, species){
                     if(shipShares >= 2 && musteredOut){
                         if(typeof career.shipfame == "undefined"){
                             career.shipfame = roller.d6(1).result;
-                            record("Became owner of a ship (up to "+(shipShares/50)+" tons). Ship Fame = ["+career.shipfame+"]");
+                            record("Became owner of a ship (up to "+(shipShares * 50)+" tons). Ship Fame = ["+career.shipfame+"]");
                         }
                         careerFame += base * career.shipfame;
                     }
