@@ -1614,12 +1614,19 @@ export function createCharacter(roller, species){
                             var reserve = reserves[(roller.random() * reserves.length) >>> 0];
                             record("Called up by the " + reserve.reserves+ "!");
                             updateFunc();
-                            musterOut(career,
-                                updateFunc,
-                                ()=>{
-                                    updateFunc();
-                                    resolveCareer(reserve.career,updateFunc);
-                                });
+                            // TODO: Resume service career
+                            var svcIndex = 0;
+                            for(var s = 0; s < careers.length; s++){
+                                if(careers[s].career === reserve.career){
+                                    svcIndex = s; break;
+                                }
+                            }
+                            careers[svcIndex].active = true;
+                            careers[careers.length - 1].active = false;
+                            var svcCareers = careers.splice(svcIndex,1);
+                            careers.push(svcCareers[0]);
+                            resolveCareer(reserve.career,updateFunc);
+                    
                         }else{
                             record("Continuation is mandatory for this term.");
                             updateFunc();
