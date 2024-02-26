@@ -46,9 +46,18 @@ function careers(character,element){
             }
         }
         var awards = "";
-        if(careers[i].awards && careers[i].awards.length > 0){
-            awards = "<ul style=\"font-size:smaller\"><li>" + careers[i].awards.join("</li><li>") + "</li></ul>";
+        if(careers[i].fame || (careers[i].awards && careers[i].awards.length > 0)){
+
+            var awards = "<ul style=\"font-size:smaller\">";
+            if(careers[i].fame){
+                awards += "<li>"+(careers[i].fame)+" Fame</li>";
+            }
+            if(careers[i].awards && careers[i].awards.length > 0){
+                awards += "<li>" + careers[i].awards.join("</li><li>") + "</li>";
+            }
+            awards += "</ul>";
         }
+        
         element.insertAdjacentHTML("beforeend","<div>"+careers[i].career+rank+", " + careers[i].terms + " terms"+awards+"</div>");
     }
 }
@@ -162,7 +171,8 @@ function statBlock(character,element){
         statHTML += "<li> "+ character.characteristics[i].name +": " + character.characteristics[i].value +" </li>";
     }
     statHTML += "</ul>";
-    statHTML += "<span>Genetics: " + character.getGenetics().join(",")+"</span>";
+    statHTML += "<hr/><span>Genetics: " + character.getGenetics().join(",")+"</span>";
+    statHTML += "<hr/><span>Fame: " + character.calculateFame()+"</span>";
     element.insertAdjacentHTML("beforeend",statHTML);
 }
 function skillBlock(character,element){

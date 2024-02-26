@@ -40,18 +40,19 @@ export function createCharacter(roller, species){
     var casteKey = species.CasteTable[casteRoll.result-2];
     var caste = species.Castes[casteKey];
     var age = 0, isForcedGrowthClone = false;
-    var statRollResults = rollStats();
     var careers = [], CCs = [];
-    var fame = 0, credits = 0;
-    var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
-    var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
+    var fame = 0, credits = 0, fameFluxApplied = false, finalFameRoll = false;
     var merchantShipShareReceiptLevel = 1, shipShares = 0;
+    var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
+    var statRollResults = rollStats();
+    var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;    
     function resetVariables(){
         careers = [], CCs = []; edu_waivers = 0; 
         fame = 0, credits = 0; languageReceipts = 0;
         job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
         merchantShipShareReceiptLevel = 1, shipShares = 0;
         age = 0; musteredOut = false; agingCrises = 0;
+        fameFluxApplied = false, finalFameRoll = false;
     }
     function rollStats(){
         var statRolls = [
@@ -84,6 +85,84 @@ export function createCharacter(roller, species){
     }
     function getShipShares(){
         return shipShares;
+    }
+    function fameFluxEvent(){
+        if(!fameFluxApplied){
+            fameFluxApplied = true;
+            var fluxResult = roller.flux();
+            record("Fame Flux Event: [" + fluxResult.rolls.join("-") + "] = " +fluxResult.result);
+            var change = fluxResult.result;
+            fame += change;
+            if(change < 0){ 
+                record("Fame decreased by " + change+".");
+            }else if(change === 0){
+                record("Fame is unchanged.");
+            }else{
+                record("Fame increased by " + change+".");
+            }
+        }else{
+            record("Fame Flux Event already occurred.");
+        }
+    }
+    function calculateFame(){
+        var totalFame = fame;
+        var highestSourceOfFame = 0;
+        for(var i = 0, len = careers.length; i < len; i++){
+            var career = careers[i];
+            var careerFame = 0;
+            switch(career.career){
+                case ENUM_CAREERS.Citizen:
+                    break;
+                case ENUM_CAREERS.Soldier:
+                case ENUM_CAREERS.Spacer:
+                case ENUM_CAREERS.Marine:
+                    var base = career.rank.officer;
+                    careerFame += base;
+                    if(base > 0){
+                    for(var j = 0, jlen = career.awards.length; j < jlen; j++){
+                        var award = career.awards[j];
+                        switch(award){
+                            case "Wound Badge": careerFame += 1; break;
+                            case "MCUF": careerFame += 1; break;
+                            case "MCG": careerFame += 2; break;
+                            case "SEH": careerFame += 3; break;
+                            case "*SEH*": careerFame += 4; break;
+                        }
+                    }
+                    }
+                    break;
+                case ENUM_CAREERS.Merchant:
+                    var base = career.rank.officer;
+                    careerFame += base;
+                    if(shipShares >= 2 && musteredOut){
+                        if(typeof career.shipfame == "undefined"){
+                            career.shipfame = roller.d6(1).result;
+                            record("Became owner of a ship (up to "+(shipShares * 50)+" tons). Ship Fame = ["+career.shipfame+"]");
+                        }
+                        careerFame += career.shipfame;
+                    }
+                    break;
+            }
+            if(careerFame > highestSourceOfFame){
+                highestSourceOfFame = careerFame;
+            }
+            career.fame = careerFame;
+            if(totalFame < 20 && totalFame + careerFame <= 20){
+                totalFame += careerFame;
+            }else{
+                totalFame = 20;
+            }
+        }
+        if(highestSourceOfFame > 20){ totalFame = highestSourceOfFame + fame; }
+        if(highestSourceOfFame == 0 && musteredOut){
+            if(!finalFameRoll){
+                finalFameRoll = true;
+                fame = roller.d6(1).result;
+                record("Absent any other source of fame, Fame = ["+fame+"]");
+            }
+            totalFame = fame; 
+        }
+        return totalFame;
     }
     function initStats(stats, geneticValues){
        characteristics = [
@@ -144,6 +223,7 @@ export function createCharacter(roller, species){
             characteristics[i].value = gene_characteristics[i].value
             characteristics[i].name = gene_characteristics[i].name
         }
+        sanity = roller.d6(2).result;
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
             characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
@@ -448,13 +528,15 @@ export function createCharacter(roller, species){
                 remarks += "Cannot increase native language except through education.";
             }else{
                 var nativeLanguageLevel = getNativeLanguageLevel();
-                languageReceipts += 1;
+                
                 if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language] < nativeLanguageLevel){
+                    languageReceipts += 1;
                     skills[ENUM_SKILLS.Language].Knowledge[language] +=1;
                     remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
                 }else if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language]>= nativeLanguageLevel){
                     remarks = "Language("+language+") cannot be increased further.";
                 }else{
+                    languageReceipts += 1;
                     skills[ENUM_SKILLS.Language].Knowledge[language] = nativeLanguageLevel-languageReceipts;
                     remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
                 }
@@ -1536,12 +1618,19 @@ export function createCharacter(roller, species){
                             var reserve = reserves[(roller.random() * reserves.length) >>> 0];
                             record("Called up by the " + reserve.reserves+ "!");
                             updateFunc();
-                            musterOut(career,
-                                updateFunc,
-                                ()=>{
-                                    updateFunc();
-                                    resolveCareer(reserve.career,updateFunc);
-                                });
+                            // TODO: Resume service career
+                            var svcIndex = 0;
+                            for(var s = 0; s < careers.length; s++){
+                                if(careers[s].career === reserve.career){
+                                    svcIndex = s; break;
+                                }
+                            }
+                            careers[svcIndex].active = true;
+                            careers[careers.length - 1].active = false;
+                            var svcCareers = careers.splice(svcIndex,1);
+                            careers.push(svcCareers[0]);
+                            resolveCareer(reserve.career,updateFunc);
+                    
                         }else{
                             record("Continuation is mandatory for this term.");
                             updateFunc();
@@ -2124,7 +2213,7 @@ export function createCharacter(roller, species){
                             // gain officer skill here
                             if(careers[careers.length-1].rank.officer == 3){ 
                                 gainSkillWithPromptForKnowledge("Promoted to Lieutenant. Gain Engineer.",ENUM_SKILLS.Engineer,()=>{
-                                    
+                                    updateFunc();
                                     gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
                                         updateFunc(); 
                                         promptContinue(ENUM_CAREERS.Spacer,updateFunc);
@@ -2134,7 +2223,7 @@ export function createCharacter(roller, species){
                                 gainSkillWithPromptForKnowledge("Promoted to Lt Commander. Gain Pilot.",ENUM_SKILLS.Pilot,()=>{
                                     // TODO Command College in Year 1 of next term
                                     careers[careers.length-1].schools.push("Upcoming Command College");
-                                    
+                                    updateFunc();
                                     gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
                                         updateFunc(); 
                                         promptContinue(ENUM_CAREERS.Spacer,updateFunc);
@@ -2142,7 +2231,7 @@ export function createCharacter(roller, species){
                                 });
                             }else if(careers[careers.length-1].rank.officer == 6){
                                 gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to Captain.");
-                                
+                                updateFunc();
                                 gainTermSkills(termSkillTables,ENUM_CAREERS.Spacer,updateFunc,()=>{
                                     updateFunc(); 
                                     promptContinue(ENUM_CAREERS.Spacer,updateFunc);
@@ -2649,6 +2738,7 @@ export function createCharacter(roller, species){
                             // gain officer skill here
                             if(careers[careers.length-1].rank.officer == 4){ 
                                 gainSkillOrKnowledge(ENUM_SKILLS.Tactics,undefined,false,"Promoted to Major.");
+                                updateFunc();
                                 careers[careers.length-1].schools.push("Upcoming Command College");
                                 gainTermSkills(termSkillTables,ENUM_CAREERS.Soldier,updateFunc,()=>{
                                     updateFunc(); 
@@ -2657,7 +2747,7 @@ export function createCharacter(roller, species){
                                 
                             }else if(careers[careers.length-1].rank.officer == 6){
                                 gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to Colonel.");
-                                
+                                updateFunc();
                                 gainTermSkills(termSkillTables,ENUM_CAREERS.Soldier,updateFunc,()=>{
                                     updateFunc(); 
                                     promptContinue(ENUM_CAREERS.Soldier,updateFunc);
@@ -2685,7 +2775,7 @@ export function createCharacter(roller, species){
                             careers[careers.length-1].rank.officer = 1;
                             gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to O1 2nd Lieutenant.");
                             termSkillTables.push({age:false,note:"Bonus skill from promotion"});
-                            
+                            updateFunc();
                             gainTermSkills(termSkillTables,ENUM_CAREERS.Soldier,updateFunc,()=>{
                                 updateFunc(); 
                                 promptContinue(ENUM_CAREERS.Soldier,updateFunc);
@@ -2705,7 +2795,7 @@ export function createCharacter(roller, species){
                                     // gain enlisted skill here
                                     if(careers[careers.length-1].rank.enlisted == 3){
                                         gainSkillWithPromptForKnowledge("Promoted to Sergeant. Gain Heavy Weapons.",ENUM_SKILLS.HeavyWeapons,()=>{
-                                            
+                                            updateFunc();
                                             gainTermSkills(termSkillTables,ENUM_CAREERS.Soldier,updateFunc,()=>{
                                                 updateFunc(); 
                                                 promptContinue(ENUM_CAREERS.Soldier,updateFunc);
@@ -2713,7 +2803,7 @@ export function createCharacter(roller, species){
                                         });
                                     }else if(careers[careers.length-1].rank.enlisted == 4){
                                         gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to Staff Sergeant.");
-                                        
+                                        updateFunc();
                                         gainTermSkills(termSkillTables,ENUM_CAREERS.Soldier,updateFunc,()=>{
                                             updateFunc(); 
                                             promptContinue(ENUM_CAREERS.Soldier,updateFunc);
@@ -3121,6 +3211,7 @@ export function createCharacter(roller, species){
                             // gain officer skill here
                             if(careers[careers.length-1].rank.officer == 4){ 
                                 gainSkillOrKnowledge(ENUM_SKILLS.Tactics,undefined,false,"Promoted to Force Commander.");
+                                updateFunc();
                                 careers[careers.length-1].schools.push("Upcoming Command College");
                                 gainTermSkills(termSkillTables,ENUM_CAREERS.Marine,updateFunc,()=>{
                                     updateFunc(); 
@@ -3129,7 +3220,7 @@ export function createCharacter(roller, species){
                                 
                             }else if(careers[careers.length-1].rank.officer == 6){
                                 gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to Coronel.");
-                                
+                                updateFunc();
                                 gainTermSkills(termSkillTables,ENUM_CAREERS.Marine,updateFunc,()=>{
                                     updateFunc(); 
                                     promptContinue(ENUM_CAREERS.Marine,updateFunc);
@@ -3156,8 +3247,8 @@ export function createCharacter(roller, species){
                         if(commissionRoll.success){
                             careers[careers.length-1].rank.officer = 1;
                             gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to O1 2nd Lieutenant.");
-                            termSkillTables.push({age:false,note:"Bonus skill from promotion"});
-                            
+                            updateFunc();
+                            termSkillTables.push({age:false,note:"Bonus skill from promotion"});                            
                             gainTermSkills(termSkillTables,ENUM_CAREERS.Marine,updateFunc,()=>{
                                 updateFunc(); 
                                 promptContinue(ENUM_CAREERS.Marine,updateFunc);
@@ -3177,7 +3268,7 @@ export function createCharacter(roller, species){
                                     // gain enlisted skill here
                                     if(careers[careers.length-1].rank.enlisted == 3){
                                         gainSkillWithPromptForKnowledge("Promoted to Sergeant. Gain Heavy Weapons.",ENUM_SKILLS.HeavyWeapons,()=>{
-                                            
+                                            updateFunc();
                                             gainTermSkills(termSkillTables,ENUM_CAREERS.Marine,updateFunc,()=>{
                                                 updateFunc(); 
                                                 promptContinue(ENUM_CAREERS.Marine,updateFunc);
@@ -3185,14 +3276,14 @@ export function createCharacter(roller, species){
                                         });
                                     }else if(careers[careers.length-1].rank.enlisted == 4){
                                         gainSkillOrKnowledge(ENUM_SKILLS.Tactics,undefined,false,"Promoted to Staff Sergeant.");
-                                        
+                                        updateFunc();
                                         gainTermSkills(termSkillTables,ENUM_CAREERS.Marine,updateFunc,()=>{
                                             updateFunc(); 
                                             promptContinue(ENUM_CAREERS.Marine,updateFunc);
                                         });
                                     }else if(careers[careers.length-1].rank.enlisted == 5){
                                         gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to Master Sergeant.");
-                                        
+                                        updateFunc();
                                         gainTermSkills(termSkillTables,ENUM_CAREERS.Marine,updateFunc,()=>{
                                             updateFunc(); 
                                             promptContinue(ENUM_CAREERS.Marine,updateFunc);
@@ -3482,9 +3573,12 @@ export function createCharacter(roller, species){
                     var officerPromotion = false;
                     if(careers[careers.length-1].rank.officer < 6){
                         // roll for officer promotion
-                        var promoRoll = check(careers[careers.length-1].terms,2,characteristics[3].value >= 8 ? 3 : 0,"Roll for Officer promotion");
+                        var promoRoll = check((careers[careers.length-1].terms)*2,2,characteristics[3].value >= 8 ? 3 : 0,"Roll for Officer promotion");
                         record(promoRoll.remarks); updateFunc();
                         officerPromotion = promoRoll.success;
+                    }else{
+                        record("Already at max rank, ineligible for promotion.");
+                        updateFunc();
                     }
                     if(officerPromotion){
                         termSkillTables.push({age:false,note:"Bonus skill from promotion"});
@@ -3492,6 +3586,7 @@ export function createCharacter(roller, species){
                         // gain officer skill here
                         if(careers[careers.length-1].rank.officer == 4){ 
                             gainSkillWithPromptForKnowledge("Promoted to First Officer.",ENUM_SKILLS.Pilot,()=>{
+                                updateFunc();
                                 gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                                     updateFunc(); 
                                     promptContinue(ENUM_CAREERS.Merchant,updateFunc);
@@ -3499,12 +3594,14 @@ export function createCharacter(roller, species){
                             },false);   
                         }else if(careers[careers.length-1].rank.officer == 3){
                             gainSkillOrKnowledge(ENUM_SKILLS.Astrogator,undefined,false,"Promoted to Second Officer"); 
+                            updateFunc();
                             gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                                 updateFunc(); 
                                 promptContinue(ENUM_CAREERS.Merchant,updateFunc);
                             });
                         }else if(careers[careers.length-1].rank.officer == 2){
                             gainSkillWithPromptForKnowledge("Promoted to Third Officer.",ENUM_SKILLS.Engineer,()=>{
+                                updateFunc();
                                 gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                                     updateFunc(); 
                                     promptContinue(ENUM_CAREERS.Merchant,updateFunc);
@@ -3512,12 +3609,19 @@ export function createCharacter(roller, species){
                             },false); 
                         }else if(careers[careers.length-1].rank.officer == 1){
                             gainSkillOrKnowledge(ENUM_SKILLS.Steward,undefined,false,"Promoted to Fourth Officer");
+                            updateFunc();
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
+                                updateFunc(); 
+                                promptContinue(ENUM_CAREERS.Merchant,updateFunc);
+                            });
+                        }else{
                             gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                                 updateFunc(); 
                                 promptContinue(ENUM_CAREERS.Merchant,updateFunc);
                             });
                         }
                     }else{
+                        
                         gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                             updateFunc(); 
                             promptContinue(ENUM_CAREERS.Merchant,updateFunc);
@@ -3532,6 +3636,7 @@ export function createCharacter(roller, species){
                     if(commissionRoll.success){
                         careers[careers.length-1].rank.officer = 1; updateFunc();
                         gainSkillOrKnowledge(ENUM_SKILLS.Steward,undefined,false,"Promoted to M1 Fourth Officer.");
+                        updateFunc();
                         termSkillTables.push({age:false,note:"Bonus skill from promotion"});
                         gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                             updateFunc(); 
@@ -3551,12 +3656,14 @@ export function createCharacter(roller, species){
                                 // gain enlisted skill here
                                 if(careers[careers.length-1].rank.enlisted == 1){
                                     gainSkillOrKnowledge(ENUM_SKILLS.Steward,undefined,false,"Promoted to Steward Apprentice.");
+                                    updateFunc();
                                     gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                                         updateFunc(); 
                                         promptContinue(ENUM_CAREERS.Merchant,updateFunc);
                                     });
                                 }else if(careers[careers.length-1].rank.enlisted == 2){
                                     gainSkillWithPromptForKnowledge("Promoted to Drive Helper.",ENUM_SKILLS.Engineer,()=>{
+                                        updateFunc();
                                         gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                                             updateFunc(); 
                                             promptContinue(ENUM_CAREERS.Merchant,updateFunc);
@@ -3569,9 +3676,9 @@ export function createCharacter(roller, species){
                                     });
                                 }
                         }else{
-                            gainTermSkills(termSkillTables,ENUM_CAREERS.Marine,updateFunc,()=>{
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                                 updateFunc(); 
-                                promptContinue(ENUM_CAREERS.Marine,updateFunc);
+                                promptContinue(ENUM_CAREERS.Merchant,updateFunc);
                             });
                         }
                     }
@@ -3938,6 +4045,7 @@ export function createCharacter(roller, species){
         }else{
             q.BA = true;
         }
+        q.fameEvent = !fameFluxApplied;
         return q;
     }
     function checkCSK(characteristic, skill, knowledge, difficulty,mods,remarks){
@@ -4097,6 +4205,6 @@ export function createCharacter(roller, species){
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
-        getPlayabilityScore, getShipShares
+        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent
     }
 }

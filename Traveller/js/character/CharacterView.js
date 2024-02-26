@@ -460,6 +460,10 @@ document.getElementById("btnProfessors").addEventListener("click",function(){
 document.getElementById("btnMusterOut").addEventListener("click",function(){
     person.musterOut(redraw);
 });
+document.getElementById("btnFameFluxEvent").addEventListener("click",function(){
+    person.fameFluxEvent();
+    redraw();
+});
 function newCharacter(){
     clear();
     person = createCharacter(roller, human);
@@ -546,6 +550,7 @@ function validateQualifications(){
             baOptions[i].setAttribute("disabled","");
         }
     }
+    if(qual.fameEvent){ document.getElementById("btnFameFluxEvent").removeAttribute("disabled"); }else{ document.getElementById("btnFameFluxEvent").setAttribute("disabled","");}
 }
 function redraw(){
     validateQualifications();
