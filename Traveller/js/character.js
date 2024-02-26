@@ -528,13 +528,15 @@ export function createCharacter(roller, species){
                 remarks += "Cannot increase native language except through education.";
             }else{
                 var nativeLanguageLevel = getNativeLanguageLevel();
-                languageReceipts += 1;
+                
                 if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language] < nativeLanguageLevel){
+                    languageReceipts += 1;
                     skills[ENUM_SKILLS.Language].Knowledge[language] +=1;
                     remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
                 }else if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language]>= nativeLanguageLevel){
                     remarks = "Language("+language+") cannot be increased further.";
                 }else{
+                    languageReceipts += 1;
                     skills[ENUM_SKILLS.Language].Knowledge[language] = nativeLanguageLevel-languageReceipts;
                     remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
                 }
