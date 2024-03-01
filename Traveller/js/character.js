@@ -118,15 +118,17 @@ export function createCharacter(roller, species){
                 case ENUM_CAREERS.Marine:
                     var base = career.rank.officer;
                     careerFame += base;
+                    if(base > 0){
                     for(var j = 0, jlen = career.awards.length; j < jlen; j++){
                         var award = career.awards[j];
                         switch(award){
-                            case "Wound Badge": careerFame += base * 1; break;
-                            case "MCUF": careerFame += base * 1; break;
-                            case "MCG": careerFame += base * 2; break;
-                            case "SEH": careerFame += base * 3; break;
-                            case "*SEH*": careerFame += base * 4; break;
+                            case "Wound Badge": careerFame += 1; break;
+                            case "MCUF": careerFame += 1; break;
+                            case "MCG": careerFame += 2; break;
+                            case "SEH": careerFame += 3; break;
+                            case "*SEH*": careerFame += 4; break;
                         }
+                    }
                     }
                     break;
                 case ENUM_CAREERS.Merchant:
@@ -135,9 +137,9 @@ export function createCharacter(roller, species){
                     if(shipShares >= 2 && musteredOut){
                         if(typeof career.shipfame == "undefined"){
                             career.shipfame = roller.d6(1).result;
-                            record("Became owner of a ship (up to "+(shipShares/50)+" tons). Ship Fame = ["+career.shipfame+"]");
+                            record("Became owner of a ship (up to "+(shipShares * 50)+" tons). Ship Fame = ["+career.shipfame+"]");
                         }
-                        careerFame += base + career.shipfame;
+                        careerFame += career.shipfame;
                     }
                     break;
             }
@@ -526,13 +528,15 @@ export function createCharacter(roller, species){
                 remarks += "Cannot increase native language except through education.";
             }else{
                 var nativeLanguageLevel = getNativeLanguageLevel();
-                languageReceipts += 1;
+                
                 if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language] < nativeLanguageLevel){
+                    languageReceipts += 1;
                     skills[ENUM_SKILLS.Language].Knowledge[language] +=1;
                     remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
                 }else if(skills[ENUM_SKILLS.Language].Knowledge[language] && skills[ENUM_SKILLS.Language].Knowledge[language]>= nativeLanguageLevel){
                     remarks = "Language("+language+") cannot be increased further.";
                 }else{
+                    languageReceipts += 1;
                     skills[ENUM_SKILLS.Language].Knowledge[language] = nativeLanguageLevel-languageReceipts;
                     remarks = "Gained Language(" + language + ")-" + skills[ENUM_SKILLS.Language].Knowledge[language];
                 }
@@ -1614,12 +1618,19 @@ export function createCharacter(roller, species){
                             var reserve = reserves[(roller.random() * reserves.length) >>> 0];
                             record("Called up by the " + reserve.reserves+ "!");
                             updateFunc();
-                            musterOut(career,
-                                updateFunc,
-                                ()=>{
-                                    updateFunc();
-                                    resolveCareer(reserve.career,updateFunc);
-                                });
+                            // TODO: Resume service career
+                            var svcIndex = 0;
+                            for(var s = 0; s < careers.length; s++){
+                                if(careers[s].career === reserve.career){
+                                    svcIndex = s; break;
+                                }
+                            }
+                            careers[svcIndex].active = true;
+                            careers[careers.length - 1].active = false;
+                            var svcCareers = careers.splice(svcIndex,1);
+                            careers.push(svcCareers[0]);
+                            resolveCareer(reserve.career,updateFunc);
+                    
                         }else{
                             record("Continuation is mandatory for this term.");
                             updateFunc();
@@ -3665,9 +3676,9 @@ export function createCharacter(roller, species){
                                     });
                                 }
                         }else{
-                            gainTermSkills(termSkillTables,ENUM_CAREERS.Marine,updateFunc,()=>{
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
                                 updateFunc(); 
-                                promptContinue(ENUM_CAREERS.Marine,updateFunc);
+                                promptContinue(ENUM_CAREERS.Merchant,updateFunc);
                             });
                         }
                     }
