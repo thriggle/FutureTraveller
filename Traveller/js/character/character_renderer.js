@@ -172,7 +172,7 @@ function statBlock(character,element){
     }
     statHTML += "</ul>";
     statHTML += "<hr/><span>Genetics: " + character.getGenetics().join(",")+"</span>";
-    statHTML += "<hr/><span>Fame: " + character.calculateFame()+"</span>";
+    statHTML += "<hr/><span>Fame-" + character.calculateFame()+"</span>";
     element.insertAdjacentHTML("beforeend",statHTML);
 }
 function skillBlock(character,element){

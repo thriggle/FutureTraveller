@@ -357,6 +357,13 @@ export var ServiceBranchMods = {
         "Technical":0,
         "Medical":0
     },
+    "SpacerEnlisted":{
+        "Crew":1,
+        "Engineer":0,
+        "Gunnery":1,
+        "Technical":0,
+        "Medical":0
+    },
     "Soldier" : {
         "Infantry":1,
         "Artillery":1,

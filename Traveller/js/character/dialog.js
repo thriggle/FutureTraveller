@@ -21,7 +21,7 @@ export function pickOption(choices,prompt,callback,noCancel,defaultSelection,pre
         if(previews.length > i){
             var selectedPreview = previews[i];
             if(typeof selectedPreview === "string"){
-                dlgPreviewText.appendChild(document.createElement("span")).appendChild(document.createTextNode(selectedPreview));
+                dlgPreviewText.appendChild(document.createElement("span")).insertAdjacentHTML("beforeend",selectedPreview);
             }else if(typeof selectedPreview !== "undefined" && selectedPreview.length > 0){
                 var previewList = dlgPreviewText.appendChild(document.createElement( numberedPreviews ? "ol" : "ul"));
                 for(var j = 0, jlen = selectedPreview.length; j < jlen; j++){
