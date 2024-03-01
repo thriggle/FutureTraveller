@@ -662,7 +662,7 @@ export var CareerBenefitTables = {
     },
     "Merchant":{
         "Money":[
-            {label:"Cr 40,000",type:"award"},
+            {label:"Cr 40,000",type:"money", amount: 40000},
             {label:"StarPass",type:"award"},
             {label:"StarPass",type:"award"},
             {label:"High Psg",type:"award"},
