@@ -116,6 +116,8 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
     var pickerDialog = getDialog();
     document.getElementById("cancelDlgBtn").removeAttribute("disabled");
     var dialog = pickerDialog.dialog, selector = pickerDialog.selector, dialogText = pickerDialog.dialogText;
+    var dlgPreviewText = document.getElementById("txtDialogPreview");
+    clearElement(dlgPreviewText);
     var skills = [];
     switch(category){
         case "S":

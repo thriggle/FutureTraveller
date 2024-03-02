@@ -2262,6 +2262,7 @@ export function createCharacter(roller, species){
                         record(commissionRoll.remarks);
                         updateFunc();
                         if(commissionRoll.success){
+                            careers[careers.length-1].freeBranchSelection = true;   
                             careers[careers.length-1].rank.officer = 1;
                             gainSkillOrKnowledge(ENUM_SKILLS.Astrogator,undefined,false,"Promoted to O1 Ensign.");
                             termSkillTables.push({age:false,note:"Bonus skill from promotion"});
@@ -2344,7 +2345,7 @@ export function createCharacter(roller, species){
 
                     }
                 );
-                if(!firstTime){
+                if(!firstTime && !isOfficer){
                     pickOption(["Stay in " + careers[careers.length-1].branch + " branch","Switch branches"],"Thanks to your promotion, you may switch to a different branch if desired.",(decision)=>{
                         if(decision === "Switch branches"){
                             var currentBranchIndex = options.indexOf(careers[careers.length-1].branch);
@@ -2370,7 +2371,7 @@ export function createCharacter(roller, species){
                             record("Declined opportunity to change branches.");
                             callback();
                         }
-                    },true,undefined,branchDangerPreviews);
+                    },true,undefined);
                     
                 }else{
                     pickOption(options, "You may choose a naval branch for your service.",(choice)=>{
@@ -2821,6 +2822,7 @@ export function createCharacter(roller, species){
                         record(commissionRoll.remarks);
                         updateFunc();
                         if(commissionRoll.success){
+                            careers[careers.length-1].freeBranchSelection = true;    
                             careers[careers.length-1].rank.officer = 1;
                             gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to O1 2nd Lieutenant.");
                             termSkillTables.push({age:false,note:"Bonus skill from promotion"});
@@ -2900,7 +2902,7 @@ export function createCharacter(roller, species){
                     glory += opHTML;
                     return glory;
                 });
-                if(!firstTime){
+                if(!firstTime && !careers[careers.length-1].rank.officer > 0){
                     pickOption(["Stay in " + careers[careers.length-1].branch + " branch","Switch branches"],"Thanks to your promotion, you may switch to a different branch if desired.",(decision)=>{
                         if(decision === "Switch branches"){
                             var currentBranchIndex = options.indexOf(careers[careers.length-1].branch)
@@ -2926,7 +2928,7 @@ export function createCharacter(roller, species){
                             record("Declined opportunity to change branches.");
                             callback();
                         }
-                    },true,undefined,branchDangerPreviews);
+                    },true,undefined);
                     
                 }else{
                     pickOption(options, "You may choose an army branch for your service.",(choice)=>{
@@ -3320,6 +3322,7 @@ export function createCharacter(roller, species){
                         record(commissionRoll.remarks);
                         updateFunc();
                         if(commissionRoll.success){
+                            careers[careers.length-1].freeBranchSelection = true;    
                             careers[careers.length-1].rank.officer = 1;
                             gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to O1 2nd Lieutenant.");
                             updateFunc();
@@ -3406,7 +3409,7 @@ export function createCharacter(roller, species){
                     glory += opHTML;
                     return glory;
                 });
-                if(!firstTime){
+                if(!firstTime && !careers[careers.length-1].rank.officer > 0){
                     pickOption(["Stay in " + careers[careers.length-1].branch + " branch","Switch branches"],"Thanks to your promotion, you may switch to a different branch if desired.",(decision)=>{
                         if(decision === "Switch branches"){
                             var currentBranchIndex = options.indexOf(careers[careers.length-1].branch)
@@ -3432,7 +3435,7 @@ export function createCharacter(roller, species){
                             record("Declined opportunity to change branches.");
                             callback();
                         }
-                    },true,undefined,branchDangerPreviews);
+                    },true,undefined);
                     
                 }else{
                     pickOption(options, "You may choose a marine branch for your service.",(choice)=>{
