@@ -3845,7 +3845,7 @@ export function createCharacter(roller, species){
                     advanceAndGetSkills();
                 },true,undefined,CCDescriptions);
                 
-            },false,"Begin as 4th Officer",["Roll vs Int","Roll vs Dex","Automatic"]);
+            },true,"Begin as 4th Officer",["Roll vs Int","Roll vs Dex","Automatic"]);
             return;
         }else{
             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){

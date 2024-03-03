@@ -557,26 +557,21 @@ function redraw(){
     renderCharacter(person, document.body);
     console.log(person);
 }
-document.getElementById("btnCitizen").addEventListener("click",function(){
-    document.getElementById("btnCitizen").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Citizen,redraw);
-});
-document.getElementById("btnSpacer").addEventListener("click",function(){
-    document.getElementById("btnSpacer").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Spacer,redraw);
-});
-document.getElementById("btnSoldier").addEventListener("click",function(){
-    document.getElementById("btnSoldier").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Soldier,redraw);
-});
-document.getElementById("btnMarine").addEventListener("click",function(){
-    document.getElementById("btnMarine").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Marine,redraw);
-});
-document.getElementById("btnMerchant").addEventListener("click",function(){
-    document.getElementById("btnMerchant").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Merchant,redraw);
-});
+
+var careerBtns = document.querySelectorAll("[data-careerbtn]");
+for(var i = 0, len = careerBtns.length; i < len; i++){
+    (function(button){
+    button.addEventListener("click",function(){
+        var career = button.getAttribute("data-careerbtn");
+        pickOption(["Begin","Nevermind"],getCareerDescription(career),(choice)=>{
+            if(choice == "Begin"){
+                button.setAttribute("disabled","disabled");
+                person.resolveCareer(career,redraw);
+            }
+        });
+    });
+    })(careerBtns[i]);
+}
 function log(msg){
     if(typeof msg !== "undefined"){
         var historyRecipients = document.querySelectorAll("[data-history]");
@@ -592,6 +587,27 @@ function clear(){
         clearElement(historyRecipients[i]);     
     }
 
+}
+function getCareerDescription(career){
+    var desc = "<div><strong>Begin a "+career+" career?</strong></div>";
+    switch(career){
+        case "Citizen":
+            desc += "<ul><li>Begin: Automatic (1st career only)</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Continue: 10-</li></ul>";
+            break;
+        case "Merchant":
+            desc += "<ul><li>Begin:<ul><li>Begin as 4th Officer: Int</li><li>Begin as Spacehand: Dex</li><li>Begin as Temp: Automatic</li></ul></li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Promotion:<ul><li>Rating promotion: Dex*</li><li>Officer Commission: Int</li><li>Officer Promotion: Terms x2*</li></ul></li><li>Continue: Str</li></ul>*Mod +3 if Int 8+";
+            break;
+        case "Spacer":
+            desc += "<ul><li>Begin: Int</li><li>Select Branch: Soc</li><li>Controlling Characteristics: C1, C2, C4</li><li>Promotion:<ul><li>Rating Promotion: C2*</li><li>Officer Commission: C2</li><li>Officer Promotion: Soc*</li></ul></li><li>Continue: Str</li></ul>*+mods from Medals earned";
+            break;
+        case "Soldier":
+                desc += "<ul><li>Begin: Str</li><li>Select Branch: Soc</li><li>Controlling Characteristics: C1, C3, C4</li><li>Promotion:<ul><li>Enlisted Promotion: C3*</li><li>Officer Commission: C3</li><li>Officer Promotion: Soc*</li></ul></li><li>Continue: C3</li></ul>*+mods from Medals earned";
+                break;
+        case "Marine":
+            desc += "<ul><li>Begin: Str</li><li>Select Branch: Soc</li><li>Controlling Characteristics: C1, C4</li><li>Promotion:<ul><li>Enlisted Promotion: Str*</li><li>Officer Commission: C3</li><li>Officer Promotion: Int*</li></ul></li><li>Continue: Str</li></ul>*+mods from Medals earned";
+            break;
+    }
+    return desc;
 }
 function getRandomTradeCodes() {
     var classifications1 = [
