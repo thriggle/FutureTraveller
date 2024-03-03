@@ -2060,17 +2060,8 @@ export function createCharacter(roller, species){
     function resolveSpacer(career, updateFunc){
         var priorCareers = careers.length;
         var CC = "";
-        var rollForOperation = function(){
-            var mod = 0;
-            var roll = roller.d6(1);
-            var sum = roll.result;
-            var remark = "Roll for operation: ["+roll.rolls.join(",")+"]";
-            if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU && characteristics[4].value >= 10){
-                sum += 2;
-                remark += "+2";
-            }
-            remark += "=" + sum;
-            var operation = "";
+        var getOperationFromRoll = function(sum){
+            var operation = "", mod = 0;
             switch(sum){
                 case 1: operation = "Battle"; mod = 2; break;
                 case 2: operation = "Strike"; mod = 2; break;
@@ -2081,6 +2072,20 @@ export function createCharacter(roller, species){
                 case 7: operation = "Shore Duty"; mod = 0; break;
                 case 8: operation = "Shore Duty"; mod = 0; break;
             }
+            return {operation,mod};
+        }
+        var rollForOperation = function(){
+            var mod = 0;
+            var roll = roller.d6(1);
+            var sum = roll.result;
+            var remark = "Roll for operation: ["+roll.rolls.join(",")+"]";
+            if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU && characteristics[4].value >= 10){
+                sum += 2;
+                remark += "+2";
+            }
+            remark += "=" + sum;
+            var opsResult = getOperationFromRoll(sum);
+            var operation = opsResult.operation; mod = opsResult.mod;
             remark += " - " + operation;
             record(remark);
             return{operation,mod,remark};
@@ -2113,7 +2118,8 @@ export function createCharacter(roller, species){
                 termSkillTables[i].table = allOperationsEncountered.slice();
             }
             updateFunc();
-            var branchMod = ServiceBranchMods[career][careers[careers.length-1].branch];
+            var isOfficer = careers[careers.length-1].rank.officer > 0;
+            var branchMod = isOfficer ? ServiceBranchMods[career][careers[careers.length-1].branch] : ServiceBranchMods[career+"Enlisted"][careers[careers.length-1].branch];
             var totalMod = maxOperationMod + branchMod;
             var ccIndex = +(CC.substring(1))-1;
             var ccValue = characteristics[ccIndex].value;
@@ -2256,6 +2262,7 @@ export function createCharacter(roller, species){
                         record(commissionRoll.remarks);
                         updateFunc();
                         if(commissionRoll.success){
+                            careers[careers.length-1].freeBranchSelection = true;   
                             careers[careers.length-1].rank.officer = 1;
                             gainSkillOrKnowledge(ENUM_SKILLS.Astrogator,undefined,false,"Promoted to O1 Ensign.");
                             termSkillTables.push({age:false,note:"Bonus skill from promotion"});
@@ -2320,11 +2327,30 @@ export function createCharacter(roller, species){
             record(chooseBranchRoll.remarks);
             updateFunc();
             if(chooseBranchRoll.success){
-                var options = ["Line","Engineer","Gunnery","Flight","Technical","Medical"];
-                if(!firstTime){
+                var isOfficer = careers[careers.length-1].rank.officer > 0;
+                var options = isOfficer ? ["Line","Engineer","Gunnery","Flight","Technical","Medical"] : ["Crew","Engineer","Gunnery","Technical","Medical"];
+                var branchDangerPreviews = options.map(
+                    (v,i,arr)=>{
+                    "Danger/Glory +"+ServiceBranchMods[career+(isOfficer > 0 ? "" : "Enlisted")][v]
+                    var baseDanger = ServiceBranchMods[career+(isOfficer > 0 ? "" : "Enlisted")][v];
+                    var glory = "<strong>"+ v+" Operations: </strong><br/>";
+                    var opHTML = "<ol>";
+                    for(var roll = 1; roll < 7; roll++){
+                        var potentialOp = getOperationFromRoll(roll);
+                        opHTML += "<li>"+potentialOp.operation+" (+"+(baseDanger + potentialOp.mod)+" danger)</li>";
+                    }
+                    opHTML += "</ol>";
+                    glory += opHTML;
+                    return glory;
+
+                    }
+                );
+                if(!firstTime && !isOfficer){
                     pickOption(["Stay in " + careers[careers.length-1].branch + " branch","Switch branches"],"Thanks to your promotion, you may switch to a different branch if desired.",(decision)=>{
                         if(decision === "Switch branches"){
-                            options.splice(options.indexOf(careers[careers.length-1].branch),1);
+                            var currentBranchIndex = options.indexOf(careers[careers.length-1].branch);
+                            options.splice(currentBranchIndex,1);
+                            branchDangerPreviews.splice(currentBranchIndex,1);
                             pickOption(options, "Choose a new naval branch for your service.",(choice)=>{
                                 record("Joined " + choice + " branch");
                                 updateFunc();
@@ -2340,12 +2366,12 @@ export function createCharacter(roller, species){
                                 }else{
                                     callback();
                                 }
-                            },true);
+                            },true,undefined,branchDangerPreviews);
                         }else{
                             record("Declined opportunity to change branches.");
                             callback();
                         }
-                    },true);
+                    },true,undefined);
                     
                 }else{
                     pickOption(options, "You may choose a naval branch for your service.",(choice)=>{
@@ -2364,7 +2390,7 @@ export function createCharacter(roller, species){
                         }else{
                             callback();
                         }
-                    },true);
+                    },true, undefined, branchDangerPreviews);
                 }
                 
             }else{
@@ -2379,16 +2405,31 @@ export function createCharacter(roller, species){
                     }
                     remark += "=" + sum;
                     var newBranch = "";
-                    switch(sum){
-                        case 1:
-                        case 2:
-                        case 3: newBranch = "Line"; break;
-                        case 4: newBranch = "Engineer"; break;
-                        case 5: newBranch = "Gunnery"; break;
-                        case 6: newBranch = "Flight"; break;
-                        case 7: newBranch = "Technical"; break;
-                        case 8: newBranch = "Medical"; break;
+                    var isOfficer = careers[careers.length-1].rank.officer > 0;
+                    if(isOfficer){
+                        switch(sum){
+                            case 1:
+                            case 2:
+                            case 3: newBranch = "Line"; break;
+                            case 4: newBranch = "Engineer"; break;
+                            case 5: newBranch = "Gunnery"; break;
+                            case 6: newBranch = "Flight"; break;
+                            case 7: newBranch = "Technical"; break;
+                            case 8: newBranch = "Medical"; break;
+                        }
+                    }else{
+                        switch(sum){
+                            case 1:
+                            case 2: newBranch = "Crew"; break;
+                            case 3: 
+                            case 4: newBranch = "Engineer"; break;
+                            case 5: 
+                            case 6: newBranch = "Gunnery"; break;
+                            case 7: newBranch = "Technical"; break;
+                            case 8: newBranch = "Medical"; break;
+                        }
                     }
+                    
                     remark += " - " + newBranch;
                     careers[careers.length - 1].branch = newBranch;
                     record(remark);
@@ -2561,17 +2602,9 @@ export function createCharacter(roller, species){
     function resolveSoldier(career, updateFunc){
         var priorCareers = careers.length;
         var CC = "";
-        var rollForOperation = function(){
-            var mod = 0;
-            var roll = roller.d6(1);
-            var sum = roll.result;
-            var remark = "Roll for operation: ["+roll.rolls.join(",")+"]";
-            if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU && characteristics[4].value >= 10){
-                sum += 2;
-                remark += "+2";
-            }
+        var getBranchOperationDM = function(branch){
             var branchDM = 0;
-            switch(careers[careers.length - 1].branch){
+            switch(branch){
                 case "Protected": branchDM = 0; break;
                 case "Infantry": branchDM = 1; break;
                 case "Cavalry": branchDM = 3; break;
@@ -2579,10 +2612,10 @@ export function createCharacter(roller, species){
                 case "Artillery": branchDM = 5; break;
                 case "Technical": branchDM = 6; break;
             }
-            remark += "+"+branchDM;
-            sum += branchDM;
-            remark += "=" + sum;
-            var operation = "";
+            return branchDM;
+        }
+        var getOperationFromRoll = function(sum){
+            var operation = "", mod = 0;
             switch(sum){
                 case 1: 
                 case 2: operation = "Combat"; mod = 2; break;
@@ -2599,7 +2632,24 @@ export function createCharacter(roller, species){
                 case 13: 
                 case 14: operation = "Base"; mod = 0; break;
             }
-            remark += " - " + operation;
+            return {operation,mod};
+        }
+        var rollForOperation = function(){
+            var mod = 0;
+            var roll = roller.d6(1);
+            var sum = roll.result;
+            var remark = "Roll for operation: ["+roll.rolls.join(",")+"]";
+            if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU && characteristics[4].value >= 10){
+                sum += 2;
+                remark += "+2";
+            }
+            var branchDM = getBranchOperationDM(careers[careers.length - 1].branch);
+            remark += "+"+branchDM;
+            sum += branchDM;
+            remark += "=" + sum;
+            var opsResult = getOperationFromRoll(sum);
+            remark += " - " + opsResult.operation;
+            var operation = opsResult.operation, mod = opsResult.mod;
             record(remark);
             return{operation,mod,remark};
         };
@@ -2772,6 +2822,7 @@ export function createCharacter(roller, species){
                         record(commissionRoll.remarks);
                         updateFunc();
                         if(commissionRoll.success){
+                            careers[careers.length-1].freeBranchSelection = true;    
                             careers[careers.length-1].rank.officer = 1;
                             gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to O1 2nd Lieutenant.");
                             termSkillTables.push({age:false,note:"Bonus skill from promotion"});
@@ -2838,10 +2889,25 @@ export function createCharacter(roller, species){
             updateFunc();
             if(chooseBranchRoll.success){
                 var options = ["Infantry","Artillery","Cavalry","Protected","Technical","Medical"];
-                if(!firstTime){
+                var branchDangerPreviews = options.map((v,i,arr)=>{
+                    var baseDanger = ServiceBranchMods[career][v];
+                    var glory = "<strong>"+ v+" Operations: </strong><br/>";
+                    var branchDM = getBranchOperationDM(v);
+                    var opHTML = "<ol>";
+                    for(var roll = 1; roll < 7; roll++){
+                        var potentialOp = getOperationFromRoll(roll + branchDM);
+                        opHTML += "<li>"+potentialOp.operation+" (+"+(baseDanger + potentialOp.mod)+" danger)</li>";
+                    }
+                    opHTML += "</ol>";
+                    glory += opHTML;
+                    return glory;
+                });
+                if(!firstTime && !careers[careers.length-1].rank.officer > 0){
                     pickOption(["Stay in " + careers[careers.length-1].branch + " branch","Switch branches"],"Thanks to your promotion, you may switch to a different branch if desired.",(decision)=>{
                         if(decision === "Switch branches"){
-                            options.splice(options.indexOf(careers[careers.length-1].branch),1);
+                            var currentBranchIndex = options.indexOf(careers[careers.length-1].branch)
+                            options.splice(currentBranchIndex,1);
+                            branchDangerPreviews.splice(currentBranchIndex,1);
                             pickOption(options, "Choose a new army branch for your service.",(choice)=>{
                                 record("Joined " + choice + " branch");
                                 updateFunc();
@@ -2857,12 +2923,12 @@ export function createCharacter(roller, species){
                                 }else{
                                     callback();
                                 }
-                            },true);
+                            },true,undefined,branchDangerPreviews);
                         }else{
                             record("Declined opportunity to change branches.");
                             callback();
                         }
-                    },true);
+                    },true,undefined);
                     
                 }else{
                     pickOption(options, "You may choose an army branch for your service.",(choice)=>{
@@ -2881,7 +2947,7 @@ export function createCharacter(roller, species){
                         }else{
                             callback();
                         }
-                    },true);
+                    },true,undefined,branchDangerPreviews);
                 }
                 
             }else{
@@ -3031,17 +3097,9 @@ export function createCharacter(roller, species){
     function resolveMarine(career, updateFunc){
         var priorCareers = careers.length;
         var CC = "";
-        var rollForOperation = function(){
-            var mod = 0;
-            var roll = roller.d6(1);
-            var sum = roll.result;
-            var remark = "Roll for operation: ["+roll.rolls.join(",")+"]";
-            if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU && characteristics[4].value >= 10){
-                sum += 2;
-                remark += "+2";
-            }
+        var getBranchOperationDM = function(branch){
             var branchDM = 0;
-            switch(careers[careers.length - 1].branch){
+            switch(branch){
                 case "Infantry": branchDM = 2; break;
                 case "Artillery": branchDM = 5; break;
                 case "Cavalry": branchDM = 3; break;
@@ -3050,10 +3108,10 @@ export function createCharacter(roller, species){
                 case "Technical": branchDM = 6; break;
                 case "Medical": branchDM = 4; break;
             }
-            remark += "+"+branchDM;
-            sum += branchDM;
-            remark += "=" + sum;
-            var operation = "";
+            return branchDM;
+        }
+        var getOperationFromRoll = function(sum){
+            var operation = "", mod = 0;
             switch(sum){
                 case 1: 
                 case 2: operation = "Combat"; mod = 2; break;
@@ -3072,6 +3130,25 @@ export function createCharacter(roller, species){
                 case 15: 
                 case 16: operation = "Garrison"; mod = 0; break;
             }
+            return {operation,mod};
+        }
+        var rollForOperation = function(){
+            var mod = 0;
+            var roll = roller.d6(1);
+            var sum = roll.result;
+            var remark = "Roll for operation: ["+roll.rolls.join(",")+"]";
+            if(characteristics[4].name === ENUM_CHARACTERISTICS.EDU && characteristics[4].value >= 10){
+                sum += 2;
+                remark += "+2";
+            }
+            var branchDM = getBranchOperationDM(careers[careers.length - 1].branch);
+            
+            remark += "+"+branchDM;
+            sum += branchDM;
+            remark += "=" + sum;
+            var opResult = getOperationFromRoll(sum);
+            var operation = opResult.operation;
+            mod = opResult.mod;
             remark += " - " + operation;
             record(remark);
             return{operation,mod,remark};
@@ -3245,6 +3322,7 @@ export function createCharacter(roller, species){
                         record(commissionRoll.remarks);
                         updateFunc();
                         if(commissionRoll.success){
+                            careers[careers.length-1].freeBranchSelection = true;    
                             careers[careers.length-1].rank.officer = 1;
                             gainSkillOrKnowledge(ENUM_SKILLS.Leader,undefined,false,"Promoted to O1 2nd Lieutenant.");
                             updateFunc();
@@ -3318,10 +3396,25 @@ export function createCharacter(roller, species){
             updateFunc();
             if(chooseBranchRoll.success){
                 var options = ["Infantry","Artillery","Cavalry","Protected","Commando","Technical","Medical"];
-                if(!firstTime){
+                var branchDangerPreviews = options.map((v,i,arr)=>{
+                    var baseDanger = ServiceBranchMods[career][v];
+                    var glory = "<strong>"+ v+" Operations: </strong><br/>";
+                    var branchDM = getBranchOperationDM(v);
+                    var opHTML = "<ol>";
+                    for(var roll = 1; roll < 7; roll++){
+                        var potentialOp = getOperationFromRoll(roll + branchDM);
+                        opHTML += "<li>"+potentialOp.operation+" (+"+(baseDanger + potentialOp.mod)+" danger)</li>";
+                    }
+                    opHTML += "</ol>";
+                    glory += opHTML;
+                    return glory;
+                });
+                if(!firstTime && !careers[careers.length-1].rank.officer > 0){
                     pickOption(["Stay in " + careers[careers.length-1].branch + " branch","Switch branches"],"Thanks to your promotion, you may switch to a different branch if desired.",(decision)=>{
                         if(decision === "Switch branches"){
-                            options.splice(options.indexOf(careers[careers.length-1].branch),1);
+                            var currentBranchIndex = options.indexOf(careers[careers.length-1].branch)
+                            options.splice(currentBranchIndex,1);
+                            branchDangerPreviews.splice(currentBranchIndex,1);
                             pickOption(options, "Choose a new marine branch for your service.",(choice)=>{
                                 record("Joined " + choice + " branch");
                                 updateFunc();
@@ -3337,12 +3430,12 @@ export function createCharacter(roller, species){
                                 }else{
                                     callback();
                                 }
-                            },true);
+                            },true,undefined,branchDangerPreviews);
                         }else{
                             record("Declined opportunity to change branches.");
                             callback();
                         }
-                    },true);
+                    },true,undefined);
                     
                 }else{
                     pickOption(options, "You may choose a marine branch for your service.",(choice)=>{
@@ -3361,7 +3454,7 @@ export function createCharacter(roller, species){
                         }else{
                             callback();
                         }
-                    },true);
+                    },true,undefined,branchDangerPreviews);
                 }
                 
             }else{

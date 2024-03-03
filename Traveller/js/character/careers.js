@@ -242,7 +242,7 @@ export var CareerSkillTables = {
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Base":["Major","Major","Minor","Minor","One Trade","One Trade"],
         "Combat":["Fighter","Vacc Suit","Fighter","Stealth","Leader","Tactics"],
-        "Peacekeeper":["Admin","Fighter","Hostile Environ","Animals","Liaison","Navigation"],
+        "Peacekeeper":["Admin","Fighter","Hostile Environ","Animals","Liaison","Navigator"],
         "Occupation":["Fighter","Vacc Suit","Driver","Stealth","Heavy Weapons","Sensors"],
         "Mission":["Soldier Skill","Liaison","Language","Soldier Skill","Computer","Tactics"],
         "Technical":["One Art","One Science","Explosives","Medic","Seafarer","One Trade"]
@@ -271,8 +271,8 @@ export var CareerSkillTables = {
         "Tables":["Personal","Academic","Travel","General","Conflict","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Travel":["Seafarer","Navigation","Hostile Environ","Flyer","Driver","Vacc Suit"],
-        "General":["Survey","Astrogation","Hostile Environ","Survival","Animals","Bureaucrat"],
+        "Travel":["Seafarer","Navigator","Hostile Environ","Flyer","Driver","Vacc Suit"],
+        "General":["Survey","Astrogator","Hostile Environ","Survival","Animals","Bureaucrat"],
         "Conflict":["Fighter","Fighter","Stealth","Flyer","Gunner","Sensors"],
         "Vocation":["Admin","Language","One Science","Comms","Starship Skill","Bureaucrat"],
         "Avocation":["Seafarer","One Art","One Science","Athlete","Medic","One Trade"]
@@ -282,7 +282,7 @@ export var CareerSkillTables = {
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
         "Travel":["Zero-G","Vacc Suit","Pilot","Astrogator","Sensors","Starship Skill"],
-        "General":["Survey","Survival","Hostile Environ","Animals","Bureaucrat","Navigation"],
+        "General":["Survey","Survival","Hostile Environ","Animals","Bureaucrat","Navigator"],
         "Business":["Broker","Trader","Advocate","Liaison","Diplomat","Bureaucrat"],
         "Vocation":["Broker","One Art","Language","Admin","One Art","Bureaucrat"],
         "Avocation":["one Art","One Art","One Trade","Athlete","Medic","One Trade"]
@@ -292,7 +292,7 @@ export var CareerSkillTables = {
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
         "Courier":["Comms","Language","Computer","JOT","Gunner","Starship Skills"],
-        "Exploration":["Survey","Survival","Hostile Environ","Animals","Vacc Suit","Navigation"],
+        "Exploration":["Survey","Survival","Hostile Environ","Animals","Vacc Suit","Navigator"],
         "Business":["Diplomat","Sensors","Trader","Teacher","Fighter","Streetwise"],
         "Vocation":["Survey","Flyer","Language","Starship Skill","Engineer","Comms"],
         "Avocation":["One Art","One Science","Seafarer","Athlete","Medic","One Trade"]
@@ -312,7 +312,7 @@ export var CareerSkillTables = {
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
         "Travel":["Zero-G","Vacc Suit","Pilot","Starhip Skill","Gunner","Sensors"],
-        "Mission":["Survey","Survival","Hostile Environ","Animals","Bureaucrat","Navigation"],
+        "Mission":["Survey","Survival","Hostile Environ","Animals","Bureaucrat","Navigator"],
         "Conflict":["Fighter","Soldier Skill","Flyer","Stealth","Gunner","Streetwise"],
         "Vocation":["Any Knowledge","Admin","Language","Starhip Skill","Forensics","Comms"],
         "Avocation":["One Art","One Science","Athlete","Medic","Seafarer","One Trade"]
@@ -321,7 +321,7 @@ export var CareerSkillTables = {
         "Tables":["Personal","Academic","World Travel","Space Travel","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "World Travel":["Driver","Flyer","Hostile Environ","High-G","Vacc Suit","Navigation"],
+        "World Travel":["Driver","Flyer","Hostile Environ","High-G","Vacc Suit","Navigator"],
         "Space Travel":["Starhip Skill","Pilot","Engineer","Zero-G","Vacc Suit","Astrogator"],
         "Business":["Trader","Broker","Computer","JOT","Teacher","Fighter"],
         "Vocation":["Advocate","Counsellor","Language","Leader","Streetwise","Comms"],
@@ -341,7 +341,7 @@ export var CareerSkillTables = {
         "Tables":["Personal","Academic","World Travel","General","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "World Travel":["High-G","Vacc Suit","Driver","Flyer","Navigation","Seafarer"],
+        "World Travel":["High-G","Vacc Suit","Driver","Flyer","Navigator","Seafarer"],
         "General":["One Trade","One Art","One Science","Any Skill","Bureaucrat","Leader"],
         "Business":["Advocate","Broker","Trader","Teacher","One Trade","Driver"],
         "Vocation":["Advocate","Comms","Language","Admin","Bureaucrat","Comms"],
@@ -354,6 +354,13 @@ export var ServiceBranchMods = {
         "Engineer":0,
         "Gunnery":1,
         "Flight":2,
+        "Technical":0,
+        "Medical":0
+    },
+    "SpacerEnlisted":{
+        "Crew":1,
+        "Engineer":0,
+        "Gunnery":1,
         "Technical":0,
         "Medical":0
     },
@@ -662,7 +669,7 @@ export var CareerBenefitTables = {
     },
     "Merchant":{
         "Money":[
-            {label:"Cr 40,000",type:"award"},
+            {label:"Cr 40,000",type:"money", amount: 40000},
             {label:"StarPass",type:"award"},
             {label:"StarPass",type:"award"},
             {label:"High Psg",type:"award"},
