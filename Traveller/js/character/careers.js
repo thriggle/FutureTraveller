@@ -271,8 +271,8 @@ export var CareerSkillTables = {
         "Tables":["Personal","Academic","Travel","General","Conflict","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Travel":["Seafarer","Navigation","Hostile Environ","Flyer","Driver","Vacc Suit"],
-        "General":["Survey","Astrogation","Hostile Environ","Survival","Animals","Bureaucrat"],
+        "Travel":["Seafarer","Navigator","Hostile Environ","Flyer","Driver","Vacc Suit"],
+        "General":["Survey","Astrogator","Hostile Environ","Survival","Animals","Bureaucrat"],
         "Conflict":["Fighter","Fighter","Stealth","Flyer","Gunner","Sensors"],
         "Vocation":["Admin","Language","One Science","Comms","Starship Skill","Bureaucrat"],
         "Avocation":["Seafarer","One Art","One Science","Athlete","Medic","One Trade"]
