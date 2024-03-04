@@ -1622,6 +1622,8 @@ export function createCharacter(roller, species){
                                 }
                             }
                             var reserve = reserves[(roller.random() * reserves.length) >>> 0];
+                            record("Continue as "+career+": [" + continueResult.rolls.join(",") + "] = RESERVES");
+                            updateFunc();
                             record("Called up by the " + reserve.reserves+ "!");
                             updateFunc();
                             // TODO: Resume service career
@@ -1638,6 +1640,8 @@ export function createCharacter(roller, species){
                             resolveCareer(reserve.career,updateFunc);
                     
                         }else{
+                            record("Continue as "+career+": [" + continueResult.rolls.join(",") + "] = MANDATORY");
+                            updateFunc();
                             record("Continuation is mandatory for this term.");
                             updateFunc();
                             resolveCareer(career,updateFunc);
