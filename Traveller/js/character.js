@@ -1323,8 +1323,10 @@ export function createCharacter(roller, species){
             lastCitLifeReceipt = "Hobby";
         }
         if(typeof skill === "undefined"){
+            console.log("Tried to acquire skill: " +skill + ", knowledge: " + knowledge);
             record("No skills acquired from useless " + lastCitLifeReceipt);
             updateFunc();
+            callback();
         }else{
             if(typeof knowledge === "undefined" && KnowledgeSpecialties[skill]){
                 pickOption(KnowledgeSpecialties[skill],"Choose a "+skill+" specialty",(k)=>{
