@@ -2409,7 +2409,7 @@ export function createCharacter(roller, species){
                 }
                 
             }else{
-                if(typeof keepExisting == "undefined" || keepExisting == false){
+                if(typeof keepExisting == "undefined" || keepExisting == false || (typeof careers[careers.length-1].branch !== "undefined" && careers[careers.length-1].branch  === "Crew")){
                     // roll for branch
                     var roll = roller.d6(1);
                     var sum = roll.result;
@@ -2461,6 +2461,8 @@ export function createCharacter(roller, species){
                         callback();
                     }
                 }else{
+                    record("Remained in " + careers[careers.length-1].branch +" branch.");
+                    updateFunc();
                     callback();
                 }
             }
@@ -4316,7 +4318,7 @@ export function createCharacter(roller, species){
             characteristics[index].value = max;
         }
         
-        var message =  (amount >= 0 ? "Increased " : "Decreased ")+ characteristics[index].name + " by " + amount;  
+        var message =  (amount >= 0 ? "Increased " : "Decreased ")+ characteristics[index].name + " by " + amount + ".";  
         if(typeof premark !== "undefined"){ message = premark + " " + message; }
        record(message);
         return message;
