@@ -1427,7 +1427,7 @@ export function createCharacter(roller, species){
                             gainTermSchoolSkills(career,updateFunc,callback);
                         }
                         
-                    })
+                    }, undefined, undefined, true);
                 }else{
                     gainTermSchoolSkills(career,updateFunc,callback);
                 }
