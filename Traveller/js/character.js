@@ -1295,20 +1295,20 @@ export function createCharacter(roller, species){
         }
         return remarks;
     }    
-    function resolveCareer(career,callback){
+    function resolveCareer(career,callback,resetCCs){
         switch(career){
             case ENUM_CAREERS.Craftsman: resolveCraftsman(career,callback); break;
             case ENUM_CAREERS.Scholar: resolveScholar(career,callback); break;
             case ENUM_CAREERS.Entertainer: resolveEntertainer(career,callback); break;
             case ENUM_CAREERS.Citizen: resolveCitizen(career,callback); break;
-            case ENUM_CAREERS.Scout: resolveScout(career,callback); break;
+            case ENUM_CAREERS.Scout: resolveScout(career,callback,resetCCs); break;
             case ENUM_CAREERS.Merchant: resolveMerchant(career,callback); break;
-            case ENUM_CAREERS.Spacer: resolveSpacer(career,callback); break;
-            case ENUM_CAREERS.Soldier: resolveSoldier(career,callback); break;
+            case ENUM_CAREERS.Spacer: resolveSpacer(career,callback,resetCCs); break;
+            case ENUM_CAREERS.Soldier: resolveSoldier(career,callback,resetCCs); break;
             case ENUM_CAREERS.Agent: resolveAgent(career,callback); break;
             case ENUM_CAREERS.Rogue: resolveRogue(career,callback); break;
             case ENUM_CAREERS.Noble: resolveNoble(career,callback); break;
-            case ENUM_CAREERS.Marine: resolveMarine(career,callback); break;
+            case ENUM_CAREERS.Marine: resolveMarine(career,callback,resetCCs); break;
             case ENUM_CAREERS.Functionary: resolveFunctionary(career,callback); break;
         }
     }
@@ -1637,7 +1637,8 @@ export function createCharacter(roller, species){
                             careers[careers.length - 1].active = false;
                             var svcCareers = careers.splice(svcIndex,1);
                             careers.push(svcCareers[0]);
-                            resolveCareer(reserve.career,updateFunc);
+                            var resetCCs = true;
+                            resolveCareer(reserve.career,updateFunc,resetCCs);
                     
                         }else{
                             record("Continue as "+career+": [" + continueResult.rolls.join(",") + "] = MANDATORY");
@@ -2067,7 +2068,8 @@ export function createCharacter(roller, species){
             },true,undefined,CCDescriptions);
         }
     }
-    function resolveSpacer(career, updateFunc){
+    function resolveSpacer(career, updateFunc, resetCCs){
+        if(typeof resetCCs === "undefined"){resetCCs = false;}
         var priorCareers = careers.length;
         var CC = "";
         var getOperationFromRoll = function(sum){
@@ -2471,7 +2473,7 @@ export function createCharacter(roller, species){
                 }
             }
         }
-        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
+        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false || resetCCs){
             CCs = getCCs(career);
         }
         var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
@@ -2616,7 +2618,8 @@ export function createCharacter(roller, species){
             }
         }
     }
-    function resolveSoldier(career, updateFunc){
+    function resolveSoldier(career, updateFunc, resetCCs){
+        if(typeof resetCCs === "undefined"){resetCCs = false;}
         var priorCareers = careers.length;
         var CC = "";
         var getBranchOperationDM = function(branch){
@@ -3015,7 +3018,7 @@ export function createCharacter(roller, species){
                 }
             }
         };
-        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
+        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false || resetCCs){
             CCs = getCCs(career);
         }
         var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
@@ -3117,7 +3120,8 @@ export function createCharacter(roller, species){
             }
         }
     }
-    function resolveMarine(career, updateFunc){
+    function resolveMarine(career, updateFunc, resetCCs){
+        if(typeof resetCCs === "undefined"){resetCCs = false;}
         var priorCareers = careers.length;
         var CC = "";
         var getBranchOperationDM = function(branch){
@@ -3528,7 +3532,7 @@ export function createCharacter(roller, species){
                 }
             }
         };
-        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
+        if(CCs.length == 0 || priorCareers == 0 || resetCCs || careers[priorCareers - 1].active == false){
             CCs = getCCs(career);
         }
         var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
