@@ -170,7 +170,7 @@ function ageBlock(character,element){
 function statBlock(character,element){
     var statHTML = "<ul>";
     for(var i = 0; i < 6; i++){
-        statHTML += "<li> "+ character.characteristics[i].name +": " + character.characteristics[i].value +" </li>";
+        statHTML += "<li>(C"+(i+1)+") "+ character.characteristics[i].name +": " + character.characteristics[i].value +" </li>";
     }
     statHTML += "</ul>";
     statHTML += "<hr/><span>Genetics: " + character.getGenetics().join(",")+"</span>";
