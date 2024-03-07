@@ -58,6 +58,7 @@ document.getElementById("btnRandomHWTCs").addEventListener("click",function(){
 })
 document.getElementById("btnED5").addEventListener("click",()=>{log(person.ED5()); document.getElementById("btnED5").setAttribute("disabled",true); redraw(); });
 document.getElementById("btnApprenticeship").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Apprenticeship",true),(choice)=>{
     pickSkill("S", "Please choose a skill for your apprenticeship",
     function(choice){
         document.getElementById("btnApprenticeship").setAttribute("disabled",true);
@@ -72,8 +73,10 @@ document.getElementById("btnApprenticeship").addEventListener("click",function()
             log(person.Apprenticeship(selectedSkill,selectedKnowledge));
         }
     });
+    });
 });
 document.getElementById("btnTradeSchool").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Trade School",true),(choice)=>{
     pickSkill("S", "Please choose a skill for your Trade School",
     function(choice){
         var selectedSkill = choice.skill;
@@ -89,8 +92,10 @@ document.getElementById("btnTradeSchool").addEventListener("click",function(){
         }
     });
 });
+});
 
 document.getElementById("btnTrainingCourse").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Training Course",true),(choice)=>{
     pickSkill("S", "Please choose a skill for your Training Course",
     function(choice){
         var selectedSkill = choice.skill;
@@ -105,8 +110,10 @@ document.getElementById("btnTrainingCourse").addEventListener("click",function()
             log(person.TrainingCourse(selectedSkill,selectedKnowledge));
         }
     });
+    });
 });
 document.getElementById("btnMedicalSchool").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Medical School",true),(choice)=>{
     pickSkill("Medical", "Please choose a major for Medical School",
     function(choice){
         var selectedSkill = choice.skill;
@@ -121,8 +128,10 @@ document.getElementById("btnMedicalSchool").addEventListener("click",function(){
             log(person.MedicalSchool(selectedSkill,selectedKnowledge));
         }
     });
+    });
 });
 document.getElementById("btnLawSchool").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Law School",true),(choice)=>{
     pickSkill("Law", "Please choose a major for Law School",
     function(choice){
         var selectedSkill = choice.skill;
@@ -137,8 +146,10 @@ document.getElementById("btnLawSchool").addEventListener("click",function(){
             log(person.LawSchool(selectedSkill,selectedKnowledge));
         }
     });
+    });
 });
 document.getElementById("btnCollege").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("College",true),(choice)=>{
     var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
     if(majors.length > 0){
         preferredMajor = majors[majors.length-1];
@@ -193,7 +204,9 @@ document.getElementById("btnCollege").addEventListener("click",function(){
         }
     },undefined, preferredMajor);
 });
+});
 document.getElementById("btnNavalAcademy").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Naval Academy",true),(choice)=>{
     pickSkill("N", "Please choose a Major for Navy Academy",
     function(choice){
         var MajorSkill = choice.skill;
@@ -240,8 +253,10 @@ document.getElementById("btnNavalAcademy").addEventListener("click",function(){
                 },choice); 
         }
     });
+    });
 });
 document.getElementById("btnMilitaryAcademy").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Military Academy",true),(choice)=>{
     pickSkill("A", "Please choose a Major for Military Academy",
     function(choice){
         var MajorSkill = choice.skill;
@@ -289,7 +304,9 @@ document.getElementById("btnMilitaryAcademy").addEventListener("click",function(
         }
     });
 });
+});
 document.getElementById("btnUniversity").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("University",true),(choice)=>{
     var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
     if(majors.length > 0){
         preferredMajor = majors[majors.length-1];
@@ -345,7 +362,9 @@ document.getElementById("btnUniversity").addEventListener("click",function(){
         }
     },undefined, preferredMajor);
 });
+});
 document.getElementById("btnMasters").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Masters Program",true),(choice)=>{
     var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
     if(majors.length > 0){
         preferredMajor = majors[majors.length-1];
@@ -401,61 +420,67 @@ document.getElementById("btnMasters").addEventListener("click",function(){
         }
     },undefined,preferredMajor);
 });
+});
 document.getElementById("btnProfessors").addEventListener("click",function(){
-    var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
-    if(majors.length > 0){
-        preferredMajor = majors[majors.length-1];
-    }
-    if(minors.length > 0){
-        preferredMinor = minors[minors.length-1];
-    }
-    pickSkill("C", "Please choose a Major",
-    function(choice){
-        var MajorSkill = choice.skill;
-        var MajorKnowledge = choice.knowledge;
-        if(MajorKnowledge === "undefined"){ MajorKnowledge = undefined;}
-        if(MajorSkill === ENUM_SKILLS.Language){
-            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
-                MajorKnowledge = lang;
-                pickSkill("C", "Please choose a Minor",
-                function(minorChoice){
-                    var MinorSkill = minorChoice.skill;
-                    var MinorKnowledge = minorChoice.knowledge;
-                    if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
-                    if(MinorSkill === ENUM_SKILLS.Language){
-                        var languages = Knowledges[ENUM_SKILLS.Language].slice();
-                        var majorLangIndex = languages.indexOf(MajorKnowledge);
-                        languages.splice(majorLangIndex,1);
-                        pickOption(languages, "Choose a language.", (lang)=>{
-                            MinorKnowledge = lang;
+    pickOption(["Begin","Nevermind"],getCareerDescription("Professors Program",true),(choice)=>{
+        if(choice == "Begin"){
+            var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
+            if(majors.length > 0){
+                preferredMajor = majors[majors.length-1];
+            }
+            if(minors.length > 0){
+                preferredMinor = minors[minors.length-1];
+            }
+            pickSkill("C", "Please choose a Major",
+            function(choice){
+                var MajorSkill = choice.skill;
+                var MajorKnowledge = choice.knowledge;
+                if(MajorKnowledge === "undefined"){ MajorKnowledge = undefined;}
+                if(MajorSkill === ENUM_SKILLS.Language){
+                    pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                        MajorKnowledge = lang;
+                        pickSkill("C", "Please choose a Minor",
+                        function(minorChoice){
+                            var MinorSkill = minorChoice.skill;
+                            var MinorKnowledge = minorChoice.knowledge;
+                            if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
+                            if(MinorSkill === ENUM_SKILLS.Language){
+                                var languages = Knowledges[ENUM_SKILLS.Language].slice();
+                                var majorLangIndex = languages.indexOf(MajorKnowledge);
+                                languages.splice(majorLangIndex,1);
+                                pickOption(languages, "Choose a language.", (lang)=>{
+                                    MinorKnowledge = lang;
+                                    log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
+                                    
+                                });
+                            }else{
+                                log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
+                                
+                            }
+                        },undefined,preferredMinor); 
+                    });
+                }else{
+                    pickSkill("C", "Please choose a Minor",
+                    function(minorChoice){
+                        var MinorSkill = minorChoice.skill;
+                        var MinorKnowledge = minorChoice.knowledge;
+                        if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
+                        if(MinorSkill === ENUM_SKILLS.Language){
+                            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                                MinorKnowledge = lang;
+                                log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
+                                
+                            });
+                        }else{
                             log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
                             
-                        });
-                    }else{
-                        log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
-                        
-                    }
-                },undefined,preferredMinor); 
-            });
-        }else{
-            pickSkill("C", "Please choose a Minor",
-            function(minorChoice){
-                var MinorSkill = minorChoice.skill;
-                var MinorKnowledge = minorChoice.knowledge;
-                if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
-                if(MinorSkill === ENUM_SKILLS.Language){
-                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
-                            MinorKnowledge = lang;
-                            log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
-                            
-                        });
-                    }else{
-                        log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
-                        
-                    }
-                },choice,preferredMinor); 
+                        }
+                    },choice,preferredMinor); 
+                }
+            },undefined,preferredMajor);
+            
         }
-    },undefined,preferredMajor);
+    });
 });
 document.getElementById("btnMusterOut").addEventListener("click",function(){
     person.musterOut(redraw);
@@ -588,8 +613,9 @@ function clear(){
     }
 
 }
-function getCareerDescription(career){
-    var desc = "<div><strong>Begin a "+career+" career?</strong></div>";
+function getCareerDescription(career,isSchool){
+    if(typeof isSchool === "undefined"){ isSchool = false;}
+    var desc = isSchool ? "<div>Enroll in " + career + "?</div>" : "<div><strong>Begin a "+career+" career?</strong></div>";
     switch(career){
         case "Citizen":
             desc += "<ul><li>Begin: Automatic (1st career only)</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Continue: 10-</li></ul>";
@@ -606,6 +632,17 @@ function getCareerDescription(career){
         case "Marine":
             desc += "<ul><li>Begin: Str</li><li>Select Branch: Soc</li><li>Controlling Characteristics: C1, C4</li><li>Promotion:<ul><li>Enlisted Promotion: Str*</li><li>Officer Commission: C3</li><li>Officer Promotion: Int*</li></ul></li><li>Continue: Str</li></ul>*+mods from Medals earned";
             break;
+        case "Apprenticeship": desc += ""; break;
+        case "Trade School": desc += ""; break;
+        case "Training Course": desc += ""; break;
+        case "College": desc += ""; break;
+        case "University": desc += ""; break;
+        case "Naval Academy": desc += ""; break;
+        case "Military Academy": desc += ""; break;
+        case "Masters Program": desc += ""; break;
+        case "Professors Program": desc += ""; break;
+        case "Medical School": desc += ""; break;
+        case "Law School": desc += ""; break;
     }
     return desc;
 }
