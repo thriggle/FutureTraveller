@@ -657,6 +657,8 @@ export function createCharacter(roller, species){
     function TrainingCourse(MajorSkill,MajorKnowledge){
         var newLine = "_";
         var remarks = "Training Course: " + newLine;
+        var Int_nD = species.Characteristics[3].nD;
+        var nD = species.Characteristics[4].nD;
         if(characteristics[4].name != ENUM_CHARACTERISTICS.INS){
             var tryTradeSchool = true;
             if((characteristics[4].value < 5 && characteristics[4].name === ENUM_CHARACTERISTICS.TRA) || 
@@ -669,7 +671,7 @@ export function createCharacter(roller, species){
             }
             if(tryTradeSchool){
                 remarks += "Training Course Application: ";
-                var applyResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,2,0);
+                var applyResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,Int_nD,0);
                 remarks +=  applyResult.remarks + newLine;
                 if(! applyResult.success){ 
                     var applyWaiverResult = promptEducationWaiver("Failed Training Course application.");
@@ -677,14 +679,15 @@ export function createCharacter(roller, species){
                     applyResult.success = applyWaiverResult.success;
                 }
                 if(applyResult.success){
-                    var passResult = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,2,0);
+                    var passResult = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,nD,0);
                     remarks += "Training Course Pass/Fail: " + passResult.remarks + newLine;
                     record("Training Course Pass/Fail: " + passResult.remarks);
                     if(passResult.success){
                         gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended Training Course.");
                         remarks += gainSkillOrKnowledge(MajorSkill,MajorKnowledge,true,"Attended Training Course.") + newLine;
                         addMajor(MajorSkill,MajorKnowledge);
-                        var honorsResult = checkCharacteristic(intScore > eduScore ? ENUM_CHARACTERISTICS.INT : ENUM_CHARACTERISTICS.EDU,2,0);
+                        
+                        var honorsResult = checkCharacteristic(ENUM_CHARACTERISTICS.TRA,nD,0);
                         remarks += "Honors program? " + honorsResult.remarks + newLine;
                         record("Honors program? " + honorsResult.remarks);
                         if(honorsResult.success){
