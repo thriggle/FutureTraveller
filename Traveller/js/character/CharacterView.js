@@ -632,17 +632,17 @@ function getCareerDescription(career,isSchool){
         case "Marine":
             desc += "<ul><li>Begin: Str</li><li>Select Branch: Soc</li><li>Controlling Characteristics: C1, C4</li><li>Promotion:<ul><li>Enlisted Promotion: Str*</li><li>Officer Commission: C3</li><li>Officer Promotion: Int*</li></ul></li><li>Continue: Str</li></ul>*+mods from Medals earned";
             break;
-        case "Apprenticeship": desc += ""; break;
-        case "Trade School": desc += ""; break;
-        case "Training Course": desc += ""; break;
-        case "College": desc += ""; break;
-        case "University": desc += ""; break;
-        case "Naval Academy": desc += ""; break;
-        case "Military Academy": desc += ""; break;
-        case "Masters Program": desc += ""; break;
-        case "Professors Program": desc += ""; break;
-        case "Medical School": desc += ""; break;
-        case "Law School": desc += ""; break;
+        case "Apprenticeship": desc += "<ul><li>Begin: Automatic</li><li>Pass/Fail: Check Tra (or Edu/2)</li><li>Duration: Consumes no time (happens during youth)</li><li>Provides: Skill/Knowledge +2</li></ul>"; break;
+        case "Trade School": desc += "<ul><li>Pre Req: Edu 5+</li><li>Begin: Int</li><li>Pass/Fail: Int or Edu, One check</li><li>Duration: 1 year</li><li>Provides: Major +2</li><li>Additional Major +1 with Honors</li></ul>"; break;
+        case "Training Course": desc += "<ul><li>Pre Req: Tra 5+</li><li>Begin: Int</li><li>Pass/Fail: Tra (or Edu/2), One check</li><li>Duration: 1 year</li><li>Provides: Skill/Knowedge +2</li><li>Additional Skill/Knowledge +1 with Honors</li></ul>"; break;
+        case "College": desc += "<ul><li>Pre Req: Edu 5+</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Major+4,Minor+2</li><li>Additional Major +1 with Honors</li><li>Optional NOTC/OTC Check: Gain Ship/Soldier Skill and Officer commission.</li><li>Graduation confers Edu=8 or Edu+1, BA</li></ul>"; break;
+        case "University": desc += "<ul><li>Pre Req: Edu 7+</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Major+4,Minor+2</li><li>Additional Major +1 with Honors</li><li>Optional NOTC/OTC Check: Gain Ship/Soldier Skill and Officer commission.</li><li>Graduation confers Edu=9 or Edu+1, BA</li></ul>";  break;
+        case "Naval Academy": desc += "<ul><li>Pre Req: Edu 6+</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Major+4,Minor+2</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=8 or Edu+1, BA, Navy or Marine Officer commission</li></ul>";  break;
+        case "Military Academy": desc += "<ul><li>Pre Req: Edu 6+</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Major+4,Minor+2</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=8 or Edu+1, BA, Army Officer commission</li></ul>"; break;
+        case "Masters Program": desc += "<ul><li>Pre Req: BA</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 2 checks</li><li>Duration: 2 years</li><li>Provides: Major+2,Minor+1</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=9 or Edu+1, MA</li></ul>"; break;
+        case "Professors Program": desc += "<ul><li>Pre Req: MA</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 2 checks</li><li>Duration: 2 years</li><li>Provides: Major+2,Minor+1</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=12 or Edu+1, Professor</li></ul>"; break;
+        case "Medical School": desc += "<ul><li>Pre Req: Honors BA</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Medic or Forensics +4</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=10 or Edu+1, Doctor</li></ul>"; break;
+        case "Law School": desc += "<ul><li>Pre Req: Honors BA</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 2 checks</li><li>Duration: 2 years</li><li>Provides: Advocate or Diplomat +4</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=10 or Edu+1, Attorney</li></ul>"; break;
     }
     return desc;
 }
