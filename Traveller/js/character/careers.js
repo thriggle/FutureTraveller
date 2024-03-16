@@ -291,7 +291,7 @@ export var CareerSkillTables = {
         "Tables":["Personal","Academic","Courier","Exploration","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Courier":["Comms","Language","Computer","JOT","Gunner","Starship Skills"],
+        "Courier":["Comms","Language","Computer","JOT","Gunner","Starship Skill"],
         "Exploration":["Survey","Survival","Hostile Environ","Animals","Vacc Suit","Navigator"],
         "Business":["Diplomat","Sensors","Trader","Teacher","Fighter","Streetwise"],
         "Vocation":["Survey","Flyer","Language","Starship Skill","Engineer","Comms"],
