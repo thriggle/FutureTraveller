@@ -3981,7 +3981,7 @@ export function createCharacter(roller, species){
                                     });
                                 }else{
                                     var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
-                                    var retryRoll = checkCharacteristic(ENUM_CHARACTERISTICS.EDU,numDice,0,"Retry Risk & Reward vs Edu");
+                                    var retryRoll = checkCharacteristic("C5",numDice,0,"Retry Risk & Reward vs C5");
                                     
                                     if(retryRoll.success){
                                         record(retryRoll.remarks);
@@ -4105,7 +4105,7 @@ export function createCharacter(roller, species){
                 pickOption(["Retry","Try something else"],"Failed aptitude test to join Scouts. You may appeal for a second chance if you pass a qualifying exam.",(choice)=>{
                     if(choice === "Retry"){
                         var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
-                        var retryRoll = checkCharacteristic(ENUM_CHARACTERISTICS.EDU,numDice,0,"Retry Join Scouts vs Edu");
+                        var retryRoll = checkCharacteristic("C5",numDice,0,"Retry Join Scouts vs C5");
                         record(retryRoll.remarks);
                         updateFunc();
                         if(retryRoll.success){
@@ -4143,7 +4143,7 @@ export function createCharacter(roller, species){
                             }
                         }
                     }
-                },true,"Retry",["Check vs. Edu for a chance to try again.","Give up trying to join the Scouts."]);
+                },true,"Retry",["Check vs. C5 for a chance to try again.","Give up trying to join the Scouts."]);
             }
             
         }else{

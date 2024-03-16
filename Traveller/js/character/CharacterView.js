@@ -633,6 +633,9 @@ function getCareerDescription(career,isSchool){
         case "Marine":
             desc += "<ul><li>Begin: Str</li><li>Select Branch: Soc</li><li>Controlling Characteristics: C1, C4</li><li>Promotion:<ul><li>Enlisted Promotion: Str*</li><li>Officer Commission: C3</li><li>Officer Promotion: Int*</li></ul></li><li>Continue: Str</li></ul>*+mods from Medals earned";
             break;
+        case "Scout":
+            desc += "<ul><li>Begin: C1, C2, or C3</li><li>Retry: C5</li><li>Controlling Characteristics: C1, C2, C3</li><li>Continue: Int</li></ul>";
+            break;
         case "Apprenticeship": desc += "<ul><li>Begin: Automatic</li><li>Pass/Fail: Check Tra (or Edu/2)</li><li>Duration: Consumes no time (happens during youth)</li><li>Provides: Skill/Knowledge +2</li></ul>"; break;
         case "Trade School": desc += "<ul><li>Pre Req: Edu 5+</li><li>Begin: Int</li><li>Pass/Fail: Int or Edu, One check</li><li>Duration: 1 year</li><li>Provides: Major +2</li><li>Additional Major +1 with Honors</li></ul>"; break;
         case "Training Course": desc += "<ul><li>Pre Req: Tra 5+</li><li>Begin: Int</li><li>Pass/Fail: Tra (or Edu/2), One check</li><li>Duration: 1 year</li><li>Provides: Skill/Knowedge +2</li><li>Additional Skill/Knowledge +1 with Honors</li></ul>"; break;
