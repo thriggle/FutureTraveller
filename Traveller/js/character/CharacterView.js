@@ -564,6 +564,7 @@ function validateQualifications(){
     if(qual.Spacer){ document.getElementById("btnSpacer").removeAttribute("disabled"); }else{ document.getElementById("btnSpacer").setAttribute("disabled","");}
     if(qual.Marine){ document.getElementById("btnMarine").removeAttribute("disabled"); }else{ document.getElementById("btnMarine").setAttribute("disabled","");}
     if(qual.Soldier){ document.getElementById("btnSoldier").removeAttribute("disabled"); }else{ document.getElementById("btnSoldier").setAttribute("disabled","");}
+    if(qual.Scout){ document.getElementById("btnScout").removeAttribute("disabled"); }else{ document.getElementById("btnScout").setAttribute("disabled","");}
     if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
     var baOptions = document.querySelectorAll("[data-qualify=\"BA\"]");
     if(qual.BA){ 
