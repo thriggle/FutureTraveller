@@ -22,7 +22,7 @@ export function getCCs(career){
     switch(career){
         case ENUM_CAREERS.Scholar: ccs = ["C1","C2","C3","C4"]; break;
         case ENUM_CAREERS.Citizen: ccs = ["C1","C2","C3","C4"]; break;
-        case ENUM_CAREERS.Scout: ccs = ["C1","C2","C3","C4"]; break;
+        case ENUM_CAREERS.Scout: ccs = ["C1","C2","C3"]; break;
         case ENUM_CAREERS.Merchant: ccs = ["C1","C2","C3","C4"]; break;
         case ENUM_CAREERS.Spacer: ccs = ["C1","C2","C4"]; break;
         case ENUM_CAREERS.Soldier: ccs = ["C1","C3","C4"]; break;
