@@ -3945,12 +3945,11 @@ export function createCharacter(roller, species){
                             penalty += fresult;
                             tempRecord.push("Attribute Damage = [" + fresult + " flux]" + (caution < 0 ? " + [" + (caution) + " bravery]" : "") + " = " + penalty)
                             if(penalty < 0){
-                                decreaseCharacteristic(CC,-penalty,"Injury!");                     
+                                tempRecord.push(decreaseCharacteristic(CC,-penalty,"Injury!",false));                     
                                 if(characteristics[ccIndex].value <= 0){ 
                                     isDead = true;
                                     tempRecord.push("This character has died. Please create a new character.");
                                     updateFunc();
-                                    return;
                                 }
                                 updateFunc();
                                 if(penalty <= -4 && !isDead){
@@ -4141,6 +4140,7 @@ export function createCharacter(roller, species){
                             }else{
                                 record("Failed to begin Scout career.")
                                 advanceAge(1);
+                                updateFunc();
                             }
                         }
                     }
@@ -4326,7 +4326,8 @@ export function createCharacter(roller, species){
         }
         return check(target,difficulty,mods,remarks);
     }
-    function gainCharacteristic(characteristic, amount, premark){
+    function gainCharacteristic(characteristic, amount, premark, recordGain){
+        if(typeof recordGain == "undefined"){ recordGain = true; }
         if(typeof amount == "undefined"){ amount = 1;}
         var index = 0; var special = false;
         var characteristicName = characteristic;
@@ -4384,12 +4385,14 @@ export function createCharacter(roller, species){
                 case ENUM_CHARACTERISTICS.SAN:
                     special = true;
                     characteristicName = "Sanity";
-                    if(typeof sanity == "undefined"){
+                    if(typeof getSanity() == "undefined"){
                         var sanityRoll = roller.d6(2);
                         record("Roll for Sanity: ["+sanityRoll.rolls.join(",")+"]");
-                        sanity = sanityRoll.result;
+                        console.log(sanityRoll.result);
+                        setSanity(sanityRoll.result);
                     }
-                    sanity += amount;
+                    setSanity(getSanity() + amount);
+                    
                     break;
             }
         }
@@ -4407,12 +4410,15 @@ export function createCharacter(roller, species){
         }
         var message =  (amount >= 0 ? "Increased " : "Decreased ")+ characteristicName + " by " + amount + ".";  
         if(typeof premark !== "undefined"){ message = premark + " " + message; }
-       record(message);
+        if(recordGain){
+            record(message);
+        }       
         return message;
     }
-    function decreaseCharacteristic(characteristic, amount, premark){
+    function decreaseCharacteristic(characteristic, amount, premark, recordLoss){
         if(typeof amount == "undefined"){ amount = 1;}
-        return gainCharacteristic(characteristic,-amount, premark);
+        if(typeof recordLoss == "undefined"){ recordLoss = true; }
+        return gainCharacteristic(characteristic,-amount, premark, recordLoss);
     }
     function getPlayabilityScore(){
         var playabilityScore = 0;
@@ -4629,6 +4635,12 @@ export function createCharacter(roller, species){
     function getGender(){
         return genderKey;
     }
+    function getSanity(){
+        return sanity;
+    }
+    function setSanity(newValue){
+        sanity = newValue;
+    }
     return {
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, characteristics:characteristics,
@@ -4644,7 +4656,7 @@ export function createCharacter(roller, species){
         Apprenticeship:Apprenticeship, ED5:ED5, TradeSchool:TradeSchool, TrainingCourse,
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
-        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,sanity, getHistory, initStats, getCharacteristics,
+        NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
         getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent
     }

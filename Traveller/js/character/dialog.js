@@ -69,6 +69,7 @@ export function getDialog(){
         var dialogText = dialog.appendChild(document.createElement("div")); dialogText.id = "txtDialog";
         var selector = dialog.appendChild(document.createElement("select")); selector.id = "slctDialog";
         var dlgBtn = dialog.appendChild(document.createElement("input")); dlgBtn.setAttribute("type","button"); dlgBtn.setAttribute("value","OK"); dlgBtn.id = "dlgBtn";
+        selector.addEventListener("keypress",(ev)=>{if(ev.key === "Enter"){ ev.preventDefault(); dlgBtn.click();}});
         var cancelDlgBtn = dialog.appendChild(document.createElement("input")); cancelDlgBtn.setAttribute("type","button"); cancelDlgBtn.setAttribute("value","Cancel"); cancelDlgBtn.id = "cancelDlgBtn";
         dialog.appendChild(document.createElement("br"));
         var dlgPreviewText = dialog.appendChild(document.createElement("div")); dlgPreviewText.id = "txtDialogPreview";

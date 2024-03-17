@@ -172,6 +172,11 @@ function statBlock(character,element){
     for(var i = 0; i < 6; i++){
         statHTML += "<li>(C"+(i+1)+") "+ character.characteristics[i].name +": " + character.characteristics[i].value +" </li>";
     }
+    if(typeof character.getSanity() === "undefined"){
+        statHTML += "<li data-characteristic='unknown'>(CS) Sanity: ?</li>";
+    }else{
+        statHTML += "<li>(CS) Sanity: "+character.getSanity()+"</li>";
+    }
     statHTML += "</ul>";
     statHTML += "<hr/><span>Genetics: " + character.getGenetics().join(",")+"</span>";
     var fame = character.calculateFame();
