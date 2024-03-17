@@ -81,7 +81,7 @@ export function createCharacter(roller, species){
             statRolls[2].rolls[0],
             statRolls[3].rolls[0],
         ];
-        sanity = statRolls[6].result;
+        sanity = undefined; //statRolls[6].result;
         if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.INS){ genetics.push(statRolls[4].rolls[0]);}
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         resetVariables();
@@ -186,7 +186,7 @@ export function createCharacter(roller, species){
             {name:species.Characteristics[4].name,value:stats[4]},
             {name:species.Characteristics[5].name,value:stats[5]}
         ];
-        sanity = roller.d6(2).result;
+        sanity = undefined;// roller.d6(2).result;
         genetics = geneticValues.slice(0,4);
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         if(species.Characteristics[4].name === ENUM_CHARACTERISTICS.INS){ genetics.push(geneticValues[4]);}
@@ -236,7 +236,7 @@ export function createCharacter(roller, species){
             characteristics[i].value = gene_characteristics[i].value
             characteristics[i].name = gene_characteristics[i].name
         }
-        sanity = roller.d6(2).result;
+        sanity = undefined; //roller.d6(2).result;
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
             characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
@@ -1690,6 +1690,7 @@ export function createCharacter(roller, species){
                             case ENUM_CAREERS.Scout:
                                 passedContinueRoll = continueResult.result <= characteristics[3].value;
                                 record("Continue as Scout: [" + continueResult.rolls.join(",") + "] < Int ("+characteristics[3].value+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
+                                updateFunc();
                                 break;
                         }
                         if(passedContinueRoll){
@@ -1814,7 +1815,7 @@ export function createCharacter(roller, species){
                 break;
                 case ENUM_CAREERS.Scout:
                     moneyMod = career.terms;
-                    bennyMod = fame / 2;
+                    bennyMod = calculateFame() / 2;
                     break;
             }
             possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
@@ -4147,8 +4148,10 @@ export function createCharacter(roller, species){
             }
             
         }else{
+            careers[careers.length-1].terms += 1;
             if(careers[careers.length-1].terms % 2 == 0){
-                decreaseCharacteristic(ENUM_CHARACTERISTICS.SAN,1,"Long term isolation");
+                decreaseCharacteristic(ENUM_CHARACTERISTICS.SAN,1,"Long term isolation.");
+                updateFunc();
             }
             pickOption(["Explorer Duty","Courier Duty"],"Do you wish to explore/survey or volunteer for courier duty?",(dutyChoice)=>{
                 if(dutyChoice === "Explorer Duty"){
@@ -4326,6 +4329,7 @@ export function createCharacter(roller, species){
     function gainCharacteristic(characteristic, amount, premark){
         if(typeof amount == "undefined"){ amount = 1;}
         var index = 0; var special = false;
+        var characteristicName = characteristic;
         if(typeof characteristic === "number" && characteristic <= 6 && characteristic >= 1){ index = characteristic-1; }
         else if(typeof characteristic === "string"){
             switch(characteristic){
@@ -4379,6 +4383,7 @@ export function createCharacter(roller, species){
                     break;
                 case ENUM_CHARACTERISTICS.SAN:
                     special = true;
+                    characteristicName = "Sanity";
                     if(typeof sanity == "undefined"){
                         var sanityRoll = roller.d6(2);
                         record("Roll for Sanity: ["+sanityRoll.rolls.join(",")+"]");
@@ -4389,7 +4394,7 @@ export function createCharacter(roller, species){
             }
         }
         if(!special){
-
+            characteristicName = characteristics[index].name
             var max = (species == human) ? 15 : species.Characteristics[index].nD*6+6;
             if(characteristics[index].value < max){
                 characteristics[index].value += amount;
@@ -4400,7 +4405,7 @@ export function createCharacter(roller, species){
             }
             
         }
-        var message =  (amount >= 0 ? "Increased " : "Decreased ")+ characteristics[index].name + " by " + amount + ".";  
+        var message =  (amount >= 0 ? "Increased " : "Decreased ")+ characteristicName + " by " + amount + ".";  
         if(typeof premark !== "undefined"){ message = premark + " " + message; }
        record(message);
         return message;
