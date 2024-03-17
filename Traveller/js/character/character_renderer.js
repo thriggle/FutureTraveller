@@ -170,7 +170,7 @@ function ageBlock(character,element){
 function statBlock(character,element){
     var statHTML = "<ul>";
     for(var i = 0; i < 6; i++){
-        statHTML += "<li>(C"+(i+1)+") "+ character.characteristics[i].name +": " + character.characteristics[i].value +" </li>";
+        statHTML += "<li>(C"+(i+1)+") "+ character.getCharacteristics()[i].name +": " + character.getCharacteristics()[i].value +" </li>";
     }
     if(typeof character.getSanity() === "undefined"){
         statHTML += "<li data-characteristic='unknown'>(CS) Sanity: ?</li>";
@@ -185,21 +185,21 @@ function statBlock(character,element){
 }
 function skillBlock(character,element){
     var statHTML = "<ul>";
-    var skills = Object.keys(character.skills).sort();
+    var skills = Object.keys(character.getSkills()).sort();
     var nativeLanguage = character.getNativeLanguage(), nativeLanguageLevel = character.getNativeLanguageLevel();
     for(var i = 0, len = skills.length; i < len; i++){
         var skill = skills[i];
-        var skillLevel = character.skills[skill].Skill;
-        statHTML += "<li data-skill=\""+(skillLevel >= 1)+"\"> "+ skill +": " + (skillLevel >= 0 ? character.skills[skill].Skill : "n/a")
-        if(character.skills[skill].Knowledge){
+        var skillLevel = character.getSkills()[skill].Skill;
+        statHTML += "<li data-skill=\""+(skillLevel >= 1)+"\"> "+ skill +": " + (skillLevel >= 0 ? character.getSkills()[skill].Skill : "n/a")
+        if(character.getSkills()[skill].Knowledge){
             statHTML += "<ul>";
-            var knowledges = Object.keys(character.skills[skill].Knowledge).sort();
+            var knowledges = Object.keys(character.getSkills()[skill].Knowledge).sort();
             for(var j = 0, jlen = knowledges.length; j < jlen; j++){
                 var k = knowledges[j];
                 if(skill == ENUM_SKILLS.Language && k === nativeLanguage){
                     statHTML += "<li data-skill=\"true\"> "+ k +": " + nativeLanguageLevel;
                 }else{
-                    var klevel = character.skills[skill].Knowledge[k];
+                    var klevel = character.getSkills()[skill].Knowledge[k];
                     statHTML += "<li data-skill=\""+(klevel > 0)+"\"> "+ k +": " + (klevel );
                 }
             }
