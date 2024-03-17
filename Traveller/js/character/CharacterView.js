@@ -544,7 +544,7 @@ function newCharacter(){
             +(document.getElementById("txtCustomC6").value),
         ];
         person.initStats(attributes, genetics);
-        person.getCharacteristics() = person.getCharacteristics();
+        // person.getCharacteristics() = person.getCharacteristics();
     }
     if(document.getElementById("txtName").value){
         person.setName(document.getElementById("txtName").value);
