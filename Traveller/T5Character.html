@@ -65,7 +65,7 @@
             margin-block-end:0rem;
         }
         li[data-characteristic='unknown']{ opacity: 0.65;}
-        input[type='button'],input[type='submit']{
+        input[type='button'],input[type='submit'],input[type='file' i],input#file-upload-button{
             padding:0.3rem;
             border-radius:0.2rem;
             cursor:pointer;
@@ -193,11 +193,17 @@
     <div data-tier="1" data-nav="create">
         <nav class="menu">
             <ul>
+                <li><a data-tier="2" target="save">Save/Load</a></li>
                 <li><a data-tier="2" target="background" class="selected">Background</a></li>
                 <li><a data-tier="2" target="education">Education</a></li>
                 <li><a data-tier="2" target="career">Career</a></li>
             </ul>
         </nav>
+        <div data-tier="2" data-nav="save">
+            <label for="btnExport">&nbsp;Export current character to .json file <input type="button" value="Save Character" id="btnExport"></label>
+            <hr/>
+            <label for="btnImportJSON">&nbsp;Import a character from a .json file: </label><input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json" />
+        </div>
         <fieldset data-tier="2" data-nav="background">
             
             <div style="display:flex">
@@ -421,5 +427,6 @@ Continue vs C1
             </fieldset>
         </div>
     </div>
+    
 </body>
 </html>

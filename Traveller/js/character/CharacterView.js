@@ -489,6 +489,25 @@ document.getElementById("btnFameFluxEvent").addEventListener("click",function(){
     person.fameFluxEvent();
     redraw();
 });
+document.getElementById("btnExport").addEventListener("click",()=>{
+    var data = person.exportCharacter();
+    var a = document.createElement("a");
+    a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    a.download = person.getName().trim() + ".json";
+    a.click();
+});
+document.getElementById("btnImportJSON").addEventListener("change", function () {
+    var curFiles = document.getElementById("btnImportJSON").files;
+    if (curFiles.length > 0) {
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            person.importCharacter(JSON.parse(event.target.result));
+            redraw();
+        }
+        reader.readAsText(curFiles[0]);
+
+    }
+});
 function newCharacter(){
     clear();
     person = createCharacter(roller, human);
@@ -505,7 +524,7 @@ function newCharacter(){
             document.getElementById("slctGeneticC5").value,
         ];
         person.rollStatsFromGenes(genes);
-        person.characteristics = person.getCharacteristics();
+        //person.characteristics = person.getCharacteristics();
     }else if(document.getElementById("rdoAttributesCustom").checked){
         // TODO
         var attributes = [
@@ -525,7 +544,7 @@ function newCharacter(){
             +(document.getElementById("txtCustomC6").value),
         ];
         person.initStats(attributes, genetics);
-        person.characteristics = person.getCharacteristics();
+        person.getCharacteristics() = person.getCharacteristics();
     }
     if(document.getElementById("txtName").value){
         person.setName(document.getElementById("txtName").value);
@@ -540,8 +559,8 @@ function newCharacter(){
     }
     //{human.firstname} {human.lastname}{human.suffix}
     if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
-    log("Initial UPP: "+ person.characteristics[0].value + "," +  person.characteristics[1].value + "," + person.characteristics[2].value + "," + 
-    person.characteristics[3].value + "," + person.characteristics[4].value + "," + person.characteristics[5].value
+    log("Initial UPP: "+ person.getCharacteristics()[0].value + "," +  person.getCharacteristics()[1].value + "," + person.getCharacteristics()[2].value + "," + 
+    person.getCharacteristics()[3].value + "," + person.getCharacteristics()[4].value + "," + person.getCharacteristics()[5].value
     );
     log(person.setNativeLanguage(document.getElementById("slctNativeLanguage").value));
     log(person.advanceAge(human.getFirstYearOfStage(3)));
@@ -578,6 +597,7 @@ function validateQualifications(){
     }
     if(qual.fameEvent){ document.getElementById("btnFameFluxEvent").removeAttribute("disabled"); }else{ document.getElementById("btnFameFluxEvent").setAttribute("disabled","");}
 }
+
 function redraw(){
     validateQualifications();
     renderCharacter(person, document.body);

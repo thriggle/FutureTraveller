@@ -4641,10 +4641,88 @@ export function createCharacter(roller, species){
     function setSanity(newValue){
         sanity = newValue;
     }
+    function exportCharacter(){
+        var character = {
+            age:age,
+            agingCrises:agingCrises,
+            awards:getAwards(),
+            careers:getCareers(),
+            CCs:CCs,
+            characteristics:getCharacteristics(),
+            credits:credits,
+            edu_waivers:edu_waivers,
+            fame:fame,
+            fameFluxApplied:fameFluxApplied,
+            finalFameRoll:finalFameRoll,
+            gender:getGender(),
+            genetics:getGenetics(),
+            history:getHistory(),
+            hobby:hobby,
+            job:job,
+            languageReceipts:languageReceipts,
+            lastCitLifeReceipt:lastCitLifeReceipt,
+            majors:majors,
+            merchantShipShareReceiptLevel:merchantShipShareReceiptLevel,
+            minors:minors,
+            name:getName(),
+            nativeLanguage:getNativeLanguage(),
+            musteredOut:musteredOut,
+            sanity:getSanity(),
+            shipShares:getShipShares(),
+            skills:skills,
+            species:species,
+        }
+        return character;
+    }
+    function setSkills(newSkills){
+        skills = newSkills;
+    }
+    function getSkills(){
+        return skills;
+    }
+    function importCharacter(characterJson){
+        setAge(characterJson.age);
+        agingCrises = characterJson.agingCrises;
+        awards = characterJson.awards;
+        careers = characterJson.careers;
+        CCs = characterJson.CCs;
+        setCharacteristics(characterJson.characteristics);
+        credits = characterJson.credits;
+        edu_waivers = characterJson.edu_waivers;
+        fame = characterJson.fame;
+        fameFluxApplied = characterJson.fameFluxApplied;
+        finalFameRoll = characterJson.finalFameRoll;
+        genderKey = characterJson.gender;
+        genetics = characterJson.genetics;
+        hobby = characterJson.hobby;
+        history = characterJson.history;
+        job = characterJson.job;
+        languageReceipts = characterJson.languageReceipts;
+        lastCitLifeReceipt = characterJson.lastCitLifeReceipt;
+        majors = characterJson.majors;
+        merchantShipShareReceiptLevel = characterJson.merchantShipShareReceiptLevel;
+        minors = characterJson.minors;
+        setName(characterJson.name);
+        nativeLanguage = characterJson.nativeLanguage;
+        musteredOut = characterJson.musteredOut;
+        setSanity(characterJson.sanity);
+        shipShares = characterJson.shipShares;
+        setSkills(characterJson.skills);
+        switch(characterJson.species){
+            case "human":species = human; break;
+            default: species = human;
+        }
+    }
+    function setCharacteristics(newCharacteristics){
+        characteristics = newCharacteristics;
+    }
+    function getCharacteristics(){
+        return characteristics;
+    }
     return {
         isForcedGrowthClone:isForcedGrowthClone,
-        gender:genderKey, characteristics:characteristics,
-        skills:skills, getGenetics:getGenetics, species:species,
+        gender:genderKey, getCharacteristics,
+        getSkills, getGenetics:getGenetics, species:species,
         setAge:setAge, getAge:getAge, getNativeLanguage:getNativeLanguage, setNativeLanguage:setNativeLanguage, getNativeLanguageLevel,
         setForcedGrowthClone:setForcedGrowthClone, rollStatsFromGenes:rollStatsFromGenes,
         getAwards:getAwards, getMajorsLabels:getMajorsLabels, getMinorsLabels:getMinorsLabels, getMajors:getMajors, getMinors:getMinors,
@@ -4658,6 +4736,6 @@ export function createCharacter(roller, species){
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
-        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent
+        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter
     }
 }
