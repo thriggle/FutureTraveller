@@ -3965,7 +3965,7 @@ export function createCharacter(roller, species){
                             if(rewardResult.success){
                                 tempRecord.push("Made a discovery! Earned a land grant."); updateFunc();
                             }
-                            pickOption(["Accept Results","Retry"],"You can check EDU for a Risk & Reward do-over.",(dooverchoice)=>{
+                            pickOption(["Accept Results","Retry"],"You can check C5 for a Risk & Reward do-over.",(dooverchoice)=>{
                                 if(dooverchoice == "Accept Results"){
                                     for(var r = 0; r < tempRecord.length; r++){
                                         record(tempRecord[r]);
@@ -4147,7 +4147,7 @@ export function createCharacter(roller, species){
             }
             
         }else{
-            if(careers[career.length-1].terms % 2 == 0){
+            if(careers[careers.length-1].terms % 2 == 0){
                 decreaseCharacteristic(ENUM_CHARACTERISTICS.SAN,1,"Long term isolation");
             }
             pickOption(["Explorer Duty","Courier Duty"],"Do you wish to explore/survey or volunteer for courier duty?",(dutyChoice)=>{
