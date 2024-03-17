@@ -1908,7 +1908,13 @@ export function createCharacter(roller, species){
                             // Reroll duplicate benefit awards (except knighthood, which confers Soc+1 on subsequent receipts)
                             while(chosenBenefit.type === "award" && awards.indexOf(chosenBenefit.label) >= 0 && ["Knighthood"].indexOf(chosenBenefit.label) == -1){
                                 roll = roller.d6().result;
+                                var sum = roll + i - 1;
+                                if(sum > 11){   
+                                    sum = 11; 
+                                }
+                                chosenBenefit = CareerBenefitTables[career.career]["Benefits"][sum];
                                 record("Duplicate "+chosenBenefit.label+" benefit. Benefit reroll="+roll);
+                                updateFunc();
                             }
                             switch(chosenBenefit.type){
                                 case "knowledge": getForbiddenKnowledge(()=>{updateFunc(); musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback); }); keepGoing = false; break;
