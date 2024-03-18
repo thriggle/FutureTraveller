@@ -3958,9 +3958,7 @@ export function createCharacter(roller, species){
                                     updateFunc();
                                 }
                                 updateFunc();
-                                if(penalty <= -4 && !isDead){
-                                    careers[careers.length-1].awards.push("Disabled");
-                                }
+                                
                             }else{
                                 tempRecord.push("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
                             }
@@ -3980,6 +3978,10 @@ export function createCharacter(roller, species){
                                         }
                                         updateFunc();
                                     }
+                                    if(penalty <= -4 && !isDead){
+                                        careers[careers.length-1].awards.push("Disabled");
+                                    }
+                                    updateFunc();
                                     if(isDead){return;}    
                                     gainTermSkills(termSkillTables,ENUM_CAREERS.Scout,updateFunc,()=>{
                                         updateFunc(); 
@@ -4047,6 +4049,9 @@ export function createCharacter(roller, species){
                                                 careers[careers.length-1].awards.push("Discovery");
                                             }
                                             updateFunc();
+                                        }
+                                        if(penalty <= -4 && !isDead){
+                                            careers[careers.length-1].awards.push("Disabled");
                                         }
                                         record(retryRoll.remarks);
                                         updateFunc();
