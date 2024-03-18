@@ -3969,8 +3969,82 @@ export function createCharacter(roller, species){
                             if(rewardResult.success){
                                 tempRecord.push("Made a discovery! Earned a land grant."); updateFunc();
                             }
-                            pickOption(["Accept Results","Retry"],"You can check C5 for a Risk & Reward do-over.",(dooverchoice)=>{
-                                if(dooverchoice == "Accept Results"){
+                        }
+                        pickOption(["Accept Results","Retry"],"You can check C5 for a Risk & Reward do-over.",(dooverchoice)=>{
+                            if(dooverchoice == "Accept Results"){
+                                for(var r = 0; r < tempRecord.length; r++){
+                                    record(tempRecord[r]);
+                                    if(tempRecord[r].indexOf("Made a discovery!")==0){
+                                        careers[careers.length-1].awards.push("Discovery");
+                                    }
+                                    updateFunc();
+                                }
+                                if(penalty <= -4 && !isDead){
+                                    careers[careers.length-1].awards.push("Disabled");
+                                }
+                                updateFunc();
+                                if(isDead){return;}    
+                                gainTermSkills(termSkillTables,ENUM_CAREERS.Scout,updateFunc,()=>{
+                                    updateFunc(); 
+                                    promptContinue(ENUM_CAREERS.Scout,updateFunc);
+                                });
+                            }else{
+                                var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
+                                var retryRoll = checkCharacteristic("C5",numDice,0,"Retry Risk & Reward vs C5");
+                                
+                                if(retryRoll.success){
+                                    record(retryRoll.remarks);
+                                    updateFunc();
+                                    resetCC();
+                                    pickOption(cautionBraveryOptions,
+                                        "Select caution(+) or bravery(-) mod.<br/>" +
+                                        "Target " + CC + "=" + ccValue + "<br/>" +
+                                        "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
+                                        (selectedMod)=>{
+                                            var caution = +(selectedMod);
+                                            var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                                            var riskResult = checkCharacteristic(CC,numDice,caution,"Risk Roll");
+                                            record(riskResult.remarks);
+                                            updateFunc();
+                                            if(riskResult.success){
+                                            }else{
+                                                isDead = false;
+                                                var penalty = 0;
+                                                if(caution < 0){ penalty += caution;}
+                                                var fresult = roller.flux().result;
+                                                penalty += fresult;
+                                                record("Attribute Damage = [" + fresult + " flux]" + (caution < 0 ? " + [" + (caution) + " bravery]" : "") + " = " + penalty)
+                                                if(penalty < 0){
+                                                    decreaseCharacteristic(CC,-penalty,"Injury!");                     
+                                                    if(characteristics[ccIndex].value <= 0){ 
+                                                        isDead = true;
+                                                        record("This character has died. Please create a new character.");
+                                                        updateFunc();
+                                                        return;
+                                                    }
+                                                    updateFunc();
+                                                    if(penalty <= -4 && !isDead){
+                                                        careers[careers.length-1].awards.push("Disabled");
+                                                    }
+                                                }else{
+                                                    record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
+                                                }
+                                            }
+                                            if(!isDead){
+                                                var rewardResult = checkCharacteristic(CC,numDice,-caution,"Reward Roll");
+                                                record(rewardResult.remarks); updateFunc();
+                                                if(rewardResult.success){
+                                                    record("Made a discovery! Earned a land grant."); 
+                                                    careers[careers.length-1].awards.push("Discovery");
+                                                    updateFunc();
+                                                }
+                                                gainTermSkills(termSkillTables,ENUM_CAREERS.Scout,updateFunc,()=>{
+                                                    updateFunc(); 
+                                                    promptContinue(ENUM_CAREERS.Scout,updateFunc);
+                                                });
+                                            }
+                                        },true,defaultValue,cautionBraveryPreviews,false);
+                                }else{
                                     for(var r = 0; r < tempRecord.length; r++){
                                         record(tempRecord[r]);
                                         if(tempRecord[r].indexOf("Made a discovery!")==0){
@@ -3981,91 +4055,19 @@ export function createCharacter(roller, species){
                                     if(penalty <= -4 && !isDead){
                                         careers[careers.length-1].awards.push("Disabled");
                                     }
+                                    record(retryRoll.remarks);
                                     updateFunc();
                                     if(isDead){return;}    
                                     gainTermSkills(termSkillTables,ENUM_CAREERS.Scout,updateFunc,()=>{
                                         updateFunc(); 
                                         promptContinue(ENUM_CAREERS.Scout,updateFunc);
                                     });
-                                }else{
-                                    var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
-                                    var retryRoll = checkCharacteristic("C5",numDice,0,"Retry Risk & Reward vs C5");
-                                    
-                                    if(retryRoll.success){
-                                        record(retryRoll.remarks);
-                                        updateFunc();
-                                        resetCC();
-                                        pickOption(cautionBraveryOptions,
-                                            "Select caution(+) or bravery(-) mod.<br/>" +
-                                            "Target " + CC + "=" + ccValue + "<br/>" +
-                                            "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
-                                            (selectedMod)=>{
-                                                var caution = +(selectedMod);
-                                                var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
-                                                var riskResult = checkCharacteristic(CC,numDice,caution,"Risk Roll");
-                                                record(riskResult.remarks);
-                                                updateFunc();
-                                                if(riskResult.success){
-                                                }else{
-                                                    var penalty = 0;
-                                                    if(caution < 0){ penalty += caution;}
-                                                    var fresult = roller.flux().result;
-                                                    penalty += fresult;
-                                                    record("Attribute Damage = [" + fresult + " flux]" + (caution < 0 ? " + [" + (caution) + " bravery]" : "") + " = " + penalty)
-                                                    if(penalty < 0){
-                                                        decreaseCharacteristic(CC,-penalty,"Injury!");                     
-                                                        if(characteristics[ccIndex].value <= 0){ 
-                                                            isDead = true;
-                                                            record("This character has died. Please create a new character.");
-                                                            updateFunc();
-                                                            return;
-                                                        }
-                                                        updateFunc();
-                                                        if(penalty <= -4 && !isDead){
-                                                            careers[careers.length-1].awards.push("Disabled");
-                                                        }
-                                                    }else{
-                                                        record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
-                                                    }
-                                                }
-                                                if(!isDead){
-                                                    var rewardResult = checkCharacteristic(CC,numDice,-caution,"Reward Roll");
-                                                    record(rewardResult.remarks); updateFunc();
-                                                    if(rewardResult.success){
-                                                        record("Made a discovery! Earned a land grant."); 
-                                                        careers[careers.length-1].awards.push("Discovery");
-                                                        updateFunc();
-                                                    }
-                                                    gainTermSkills(termSkillTables,ENUM_CAREERS.Scout,updateFunc,()=>{
-                                                        updateFunc(); 
-                                                        promptContinue(ENUM_CAREERS.Scout,updateFunc);
-                                                    });
-                                                }
-                                            },true,defaultValue,cautionBraveryPreviews,false);
-                                    }else{
-                                        for(var r = 0; r < tempRecord.length; r++){
-                                            record(tempRecord[r]);
-                                            if(tempRecord[r].indexOf("Made a discovery!")==0){
-                                                careers[careers.length-1].awards.push("Discovery");
-                                            }
-                                            updateFunc();
-                                        }
-                                        if(penalty <= -4 && !isDead){
-                                            careers[careers.length-1].awards.push("Disabled");
-                                        }
-                                        record(retryRoll.remarks);
-                                        updateFunc();
-                                        if(isDead){return;}    
-                                        gainTermSkills(termSkillTables,ENUM_CAREERS.Scout,updateFunc,()=>{
-                                            updateFunc(); 
-                                            promptContinue(ENUM_CAREERS.Scout,updateFunc);
-                                        });
-                                    }
                                 }
-                            },true,undefined,[tempRecord,["Retry Risk","Retry Reward"]],false);
+                            }
+                        },true,undefined,[tempRecord,["Retry Risk","Retry Reward"]],false);
                             //["Check EDU to Retry Risk and Reward","Accept these outcomes: Risk "+(riskResult.success?"Success":"Failure")+", Reward " + (rewardResult.success?"Success":"Failure")]);
-                        }
-                        if(isDead){return;}            
+                        
+                                   
                         
                     },true,defaultValue,cautionBraveryPreviews,false);
             }else{
