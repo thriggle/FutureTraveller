@@ -112,4 +112,5 @@ export class ENUM_CHARACTERISTICS{
     static get SOC(){ return "Social Standing"; }
     static get CHA(){ return "Charisma"; }
     static get CAS(){ return "Caste"; }
+    static get SAN(){ return "Sanity";}
 }

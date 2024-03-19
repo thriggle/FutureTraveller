@@ -58,6 +58,7 @@ document.getElementById("btnRandomHWTCs").addEventListener("click",function(){
 })
 document.getElementById("btnED5").addEventListener("click",()=>{log(person.ED5()); document.getElementById("btnED5").setAttribute("disabled",true); redraw(); });
 document.getElementById("btnApprenticeship").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Apprenticeship",true),(choice)=>{
     pickSkill("S", "Please choose a skill for your apprenticeship",
     function(choice){
         document.getElementById("btnApprenticeship").setAttribute("disabled",true);
@@ -72,8 +73,10 @@ document.getElementById("btnApprenticeship").addEventListener("click",function()
             log(person.Apprenticeship(selectedSkill,selectedKnowledge));
         }
     });
+    });
 });
 document.getElementById("btnTradeSchool").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Trade School",true),(choice)=>{
     pickSkill("S", "Please choose a skill for your Trade School",
     function(choice){
         var selectedSkill = choice.skill;
@@ -89,8 +92,10 @@ document.getElementById("btnTradeSchool").addEventListener("click",function(){
         }
     });
 });
+});
 
 document.getElementById("btnTrainingCourse").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Training Course",true),(choice)=>{
     pickSkill("S", "Please choose a skill for your Training Course",
     function(choice){
         var selectedSkill = choice.skill;
@@ -105,8 +110,10 @@ document.getElementById("btnTrainingCourse").addEventListener("click",function()
             log(person.TrainingCourse(selectedSkill,selectedKnowledge));
         }
     });
+    });
 });
 document.getElementById("btnMedicalSchool").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Medical School",true),(choice)=>{
     pickSkill("Medical", "Please choose a major for Medical School",
     function(choice){
         var selectedSkill = choice.skill;
@@ -121,8 +128,10 @@ document.getElementById("btnMedicalSchool").addEventListener("click",function(){
             log(person.MedicalSchool(selectedSkill,selectedKnowledge));
         }
     });
+    });
 });
 document.getElementById("btnLawSchool").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Law School",true),(choice)=>{
     pickSkill("Law", "Please choose a major for Law School",
     function(choice){
         var selectedSkill = choice.skill;
@@ -137,8 +146,10 @@ document.getElementById("btnLawSchool").addEventListener("click",function(){
             log(person.LawSchool(selectedSkill,selectedKnowledge));
         }
     });
+    });
 });
 document.getElementById("btnCollege").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("College",true),(choice)=>{
     var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
     if(majors.length > 0){
         preferredMajor = majors[majors.length-1];
@@ -193,7 +204,9 @@ document.getElementById("btnCollege").addEventListener("click",function(){
         }
     },undefined, preferredMajor);
 });
+});
 document.getElementById("btnNavalAcademy").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Naval Academy",true),(choice)=>{
     pickSkill("N", "Please choose a Major for Navy Academy",
     function(choice){
         var MajorSkill = choice.skill;
@@ -240,8 +253,10 @@ document.getElementById("btnNavalAcademy").addEventListener("click",function(){
                 },choice); 
         }
     });
+    });
 });
 document.getElementById("btnMilitaryAcademy").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Military Academy",true),(choice)=>{
     pickSkill("A", "Please choose a Major for Military Academy",
     function(choice){
         var MajorSkill = choice.skill;
@@ -289,7 +304,9 @@ document.getElementById("btnMilitaryAcademy").addEventListener("click",function(
         }
     });
 });
+});
 document.getElementById("btnUniversity").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("University",true),(choice)=>{
     var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
     if(majors.length > 0){
         preferredMajor = majors[majors.length-1];
@@ -345,7 +362,9 @@ document.getElementById("btnUniversity").addEventListener("click",function(){
         }
     },undefined, preferredMajor);
 });
+});
 document.getElementById("btnMasters").addEventListener("click",function(){
+    pickOption(["Begin","Nevermind"],getCareerDescription("Masters Program",true),(choice)=>{
     var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
     if(majors.length > 0){
         preferredMajor = majors[majors.length-1];
@@ -401,61 +420,67 @@ document.getElementById("btnMasters").addEventListener("click",function(){
         }
     },undefined,preferredMajor);
 });
+});
 document.getElementById("btnProfessors").addEventListener("click",function(){
-    var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
-    if(majors.length > 0){
-        preferredMajor = majors[majors.length-1];
-    }
-    if(minors.length > 0){
-        preferredMinor = minors[minors.length-1];
-    }
-    pickSkill("C", "Please choose a Major",
-    function(choice){
-        var MajorSkill = choice.skill;
-        var MajorKnowledge = choice.knowledge;
-        if(MajorKnowledge === "undefined"){ MajorKnowledge = undefined;}
-        if(MajorSkill === ENUM_SKILLS.Language){
-            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
-                MajorKnowledge = lang;
-                pickSkill("C", "Please choose a Minor",
-                function(minorChoice){
-                    var MinorSkill = minorChoice.skill;
-                    var MinorKnowledge = minorChoice.knowledge;
-                    if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
-                    if(MinorSkill === ENUM_SKILLS.Language){
-                        var languages = Knowledges[ENUM_SKILLS.Language].slice();
-                        var majorLangIndex = languages.indexOf(MajorKnowledge);
-                        languages.splice(majorLangIndex,1);
-                        pickOption(languages, "Choose a language.", (lang)=>{
-                            MinorKnowledge = lang;
+    pickOption(["Begin","Nevermind"],getCareerDescription("Professors Program",true),(choice)=>{
+        if(choice == "Begin"){
+            var majors = person.getMajors(), minors = person.getMinors(), preferredMajor = undefined, preferredMinor = undefined;
+            if(majors.length > 0){
+                preferredMajor = majors[majors.length-1];
+            }
+            if(minors.length > 0){
+                preferredMinor = minors[minors.length-1];
+            }
+            pickSkill("C", "Please choose a Major",
+            function(choice){
+                var MajorSkill = choice.skill;
+                var MajorKnowledge = choice.knowledge;
+                if(MajorKnowledge === "undefined"){ MajorKnowledge = undefined;}
+                if(MajorSkill === ENUM_SKILLS.Language){
+                    pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                        MajorKnowledge = lang;
+                        pickSkill("C", "Please choose a Minor",
+                        function(minorChoice){
+                            var MinorSkill = minorChoice.skill;
+                            var MinorKnowledge = minorChoice.knowledge;
+                            if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
+                            if(MinorSkill === ENUM_SKILLS.Language){
+                                var languages = Knowledges[ENUM_SKILLS.Language].slice();
+                                var majorLangIndex = languages.indexOf(MajorKnowledge);
+                                languages.splice(majorLangIndex,1);
+                                pickOption(languages, "Choose a language.", (lang)=>{
+                                    MinorKnowledge = lang;
+                                    log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
+                                    
+                                });
+                            }else{
+                                log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
+                                
+                            }
+                        },undefined,preferredMinor); 
+                    });
+                }else{
+                    pickSkill("C", "Please choose a Minor",
+                    function(minorChoice){
+                        var MinorSkill = minorChoice.skill;
+                        var MinorKnowledge = minorChoice.knowledge;
+                        if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
+                        if(MinorSkill === ENUM_SKILLS.Language){
+                            pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
+                                MinorKnowledge = lang;
+                                log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
+                                
+                            });
+                        }else{
                             log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
                             
-                        });
-                    }else{
-                        log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
-                        
-                    }
-                },undefined,preferredMinor); 
-            });
-        }else{
-            pickSkill("C", "Please choose a Minor",
-            function(minorChoice){
-                var MinorSkill = minorChoice.skill;
-                var MinorKnowledge = minorChoice.knowledge;
-                if(MinorKnowledge === "undefined"){ MinorKnowledge = undefined;}
-                if(MinorSkill === ENUM_SKILLS.Language){
-                        pickOption(Knowledges[ENUM_SKILLS.Language], "Choose a language.", (lang)=>{
-                            MinorKnowledge = lang;
-                            log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
-                            
-                        });
-                    }else{
-                        log(person.Professors(MajorSkill, MajorKnowledge, MinorSkill, MinorKnowledge));
-                        
-                    }
-                },choice,preferredMinor); 
+                        }
+                    },choice,preferredMinor); 
+                }
+            },undefined,preferredMajor);
+            
         }
-    },undefined,preferredMajor);
+    });
 });
 document.getElementById("btnMusterOut").addEventListener("click",function(){
     person.musterOut(redraw);
@@ -463,6 +488,25 @@ document.getElementById("btnMusterOut").addEventListener("click",function(){
 document.getElementById("btnFameFluxEvent").addEventListener("click",function(){
     person.fameFluxEvent();
     redraw();
+});
+document.getElementById("btnExport").addEventListener("click",()=>{
+    var data = person.exportCharacter();
+    var a = document.createElement("a");
+    a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    a.download = person.getName().trim() + ".json";
+    a.click();
+});
+document.getElementById("btnImportJSON").addEventListener("change", function () {
+    var curFiles = document.getElementById("btnImportJSON").files;
+    if (curFiles.length > 0) {
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            person.importCharacter(JSON.parse(event.target.result));
+            redraw();
+        }
+        reader.readAsText(curFiles[0]);
+
+    }
 });
 function newCharacter(){
     clear();
@@ -480,7 +524,7 @@ function newCharacter(){
             document.getElementById("slctGeneticC5").value,
         ];
         person.rollStatsFromGenes(genes);
-        person.characteristics = person.getCharacteristics();
+        //person.characteristics = person.getCharacteristics();
     }else if(document.getElementById("rdoAttributesCustom").checked){
         // TODO
         var attributes = [
@@ -500,7 +544,7 @@ function newCharacter(){
             +(document.getElementById("txtCustomC6").value),
         ];
         person.initStats(attributes, genetics);
-        person.characteristics = person.getCharacteristics();
+        // person.getCharacteristics() = person.getCharacteristics();
     }
     if(document.getElementById("txtName").value){
         person.setName(document.getElementById("txtName").value);
@@ -515,8 +559,8 @@ function newCharacter(){
     }
     //{human.firstname} {human.lastname}{human.suffix}
     if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
-    log("Initial UPP: "+ person.characteristics[0].value + "," +  person.characteristics[1].value + "," + person.characteristics[2].value + "," + 
-    person.characteristics[3].value + "," + person.characteristics[4].value + "," + person.characteristics[5].value
+    log("Initial UPP: "+ person.getCharacteristics()[0].value + "," +  person.getCharacteristics()[1].value + "," + person.getCharacteristics()[2].value + "," + 
+    person.getCharacteristics()[3].value + "," + person.getCharacteristics()[4].value + "," + person.getCharacteristics()[5].value
     );
     log(person.setNativeLanguage(document.getElementById("slctNativeLanguage").value));
     log(person.advanceAge(human.getFirstYearOfStage(3)));
@@ -539,6 +583,7 @@ function validateQualifications(){
     if(qual.Spacer){ document.getElementById("btnSpacer").removeAttribute("disabled"); }else{ document.getElementById("btnSpacer").setAttribute("disabled","");}
     if(qual.Marine){ document.getElementById("btnMarine").removeAttribute("disabled"); }else{ document.getElementById("btnMarine").setAttribute("disabled","");}
     if(qual.Soldier){ document.getElementById("btnSoldier").removeAttribute("disabled"); }else{ document.getElementById("btnSoldier").setAttribute("disabled","");}
+    if(qual.Scout){ document.getElementById("btnScout").removeAttribute("disabled"); }else{ document.getElementById("btnScout").setAttribute("disabled","");}
     if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
     var baOptions = document.querySelectorAll("[data-qualify=\"BA\"]");
     if(qual.BA){ 
@@ -552,31 +597,27 @@ function validateQualifications(){
     }
     if(qual.fameEvent){ document.getElementById("btnFameFluxEvent").removeAttribute("disabled"); }else{ document.getElementById("btnFameFluxEvent").setAttribute("disabled","");}
 }
+
 function redraw(){
     validateQualifications();
     renderCharacter(person, document.body);
     console.log(person);
 }
-document.getElementById("btnCitizen").addEventListener("click",function(){
-    document.getElementById("btnCitizen").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Citizen,redraw);
-});
-document.getElementById("btnSpacer").addEventListener("click",function(){
-    document.getElementById("btnSpacer").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Spacer,redraw);
-});
-document.getElementById("btnSoldier").addEventListener("click",function(){
-    document.getElementById("btnSoldier").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Soldier,redraw);
-});
-document.getElementById("btnMarine").addEventListener("click",function(){
-    document.getElementById("btnMarine").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Marine,redraw);
-});
-document.getElementById("btnMerchant").addEventListener("click",function(){
-    document.getElementById("btnMerchant").setAttribute("disabled","disabled");
-    person.resolveCareer(ENUM_CAREERS.Merchant,redraw);
-});
+
+var careerBtns = document.querySelectorAll("[data-careerbtn]");
+for(var i = 0, len = careerBtns.length; i < len; i++){
+    (function(button){
+    button.addEventListener("click",function(){
+        var career = button.getAttribute("data-careerbtn");
+        pickOption(["Begin","Nevermind"],getCareerDescription(career),(choice)=>{
+            if(choice == "Begin"){
+                button.setAttribute("disabled","disabled");
+                person.resolveCareer(career,redraw);
+            }
+        });
+    });
+    })(careerBtns[i]);
+}
 function log(msg){
     if(typeof msg !== "undefined"){
         var historyRecipients = document.querySelectorAll("[data-history]");
@@ -592,6 +633,42 @@ function clear(){
         clearElement(historyRecipients[i]);     
     }
 
+}
+function getCareerDescription(career,isSchool){
+    if(typeof isSchool === "undefined"){ isSchool = false;}
+    var desc = isSchool ? "<div>Enroll in " + career + "?</div>" : "<div><strong>Begin a "+career+" career?</strong></div>";
+    switch(career){
+        case "Citizen":
+            desc += "<ul><li>Begin: Automatic (1st career only)</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Continue: 10-</li></ul>";
+            break;
+        case "Merchant":
+            desc += "<ul><li>Begin:<ul><li>Begin as 4th Officer: Int</li><li>Begin as Spacehand: Dex</li><li>Begin as Temp: Automatic</li></ul></li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Promotion:<ul><li>Rating promotion: Dex*</li><li>Officer Commission: Int</li><li>Officer Promotion: Terms x2*</li></ul></li><li>Continue: Str</li></ul>*Mod +3 if Int 8+";
+            break;
+        case "Spacer":
+            desc += "<ul><li>Begin: Int</li><li>Select Branch: Soc</li><li>Controlling Characteristics: C1, C2, C4</li><li>Promotion:<ul><li>Rating Promotion: C2*</li><li>Officer Commission: C2</li><li>Officer Promotion: Soc*</li></ul></li><li>Continue: Str</li></ul>*+mods from Medals earned";
+            break;
+        case "Soldier":
+                desc += "<ul><li>Begin: Str</li><li>Select Branch: Soc</li><li>Controlling Characteristics: C1, C3, C4</li><li>Promotion:<ul><li>Enlisted Promotion: C3*</li><li>Officer Commission: C3</li><li>Officer Promotion: Soc*</li></ul></li><li>Continue: C3</li></ul>*+mods from Medals earned";
+                break;
+        case "Marine":
+            desc += "<ul><li>Begin: Str</li><li>Select Branch: Soc</li><li>Controlling Characteristics: C1, C4</li><li>Promotion:<ul><li>Enlisted Promotion: Str*</li><li>Officer Commission: C3</li><li>Officer Promotion: Int*</li></ul></li><li>Continue: Str</li></ul>*+mods from Medals earned";
+            break;
+        case "Scout":
+            desc += "<ul><li>Begin: C1, C2, or C3</li><li>Retry: C5</li><li>Controlling Characteristics: C1, C2, C3</li><li>Continue: Int</li></ul>";
+            break;
+        case "Apprenticeship": desc += "<ul><li>Begin: Automatic</li><li>Pass/Fail: Check Tra (or Edu/2)</li><li>Duration: Consumes no time (happens during youth)</li><li>Provides: Skill/Knowledge +4</li></ul>"; break;
+        case "Trade School": desc += "<ul><li>Pre Req: Edu 5+</li><li>Begin: Int</li><li>Pass/Fail: Int or Edu, One check</li><li>Duration: 1 year</li><li>Provides: Major +2</li><li>Additional Major +1 with Honors</li></ul>"; break;
+        case "Training Course": desc += "<ul><li>Pre Req: Tra 5+</li><li>Begin: Int</li><li>Pass/Fail: Tra (or Edu/2), One check</li><li>Duration: 1 year</li><li>Provides: Skill/Knowedge +2</li><li>Additional Skill/Knowledge +1 with Honors</li></ul>"; break;
+        case "College": desc += "<ul><li>Pre Req: Edu 5+</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Major+4,Minor+2</li><li>Additional Major +1 with Honors</li><li>Optional NOTC/OTC Check: Gain Ship/Soldier Skill and Officer commission.</li><li>Graduation confers Edu=8 or Edu+1, BA</li></ul>"; break;
+        case "University": desc += "<ul><li>Pre Req: Edu 7+</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Major+4,Minor+2</li><li>Additional Major +1 with Honors</li><li>Optional NOTC/OTC Check: Gain Ship/Soldier Skill and Officer commission.</li><li>Graduation confers Edu=9 or Edu+1, BA</li></ul>";  break;
+        case "Naval Academy": desc += "<ul><li>Pre Req: Edu 6+</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Major+4,Minor+2</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=8 or Edu+1, BA, Navy or Marine Officer commission</li></ul>";  break;
+        case "Military Academy": desc += "<ul><li>Pre Req: Edu 6+</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Major+4,Minor+2</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=8 or Edu+1, BA, Army Officer commission</li></ul>"; break;
+        case "Masters Program": desc += "<ul><li>Pre Req: BA</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 2 checks</li><li>Duration: 2 years</li><li>Provides: Major+2,Minor+1</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=9 or Edu+1, MA</li></ul>"; break;
+        case "Professors Program": desc += "<ul><li>Pre Req: MA</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 2 checks</li><li>Duration: 2 years</li><li>Provides: Major+2,Minor+1</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=12 or Edu+1, Professor</li></ul>"; break;
+        case "Medical School": desc += "<ul><li>Pre Req: Honors BA</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 4 checks</li><li>Duration: 4 years</li><li>Provides: Medic or Forensics +4</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=10 or Edu+1, Doctor</li></ul>"; break;
+        case "Law School": desc += "<ul><li>Pre Req: Honors BA</li><li>Begin: Int or Edu</li><li>Pass/Fail: Int or Edu, 2 checks</li><li>Duration: 2 years</li><li>Provides: Advocate or Diplomat +4</li><li>Additional Major +1 with Honors</li><li>Graduation confers Edu=10 or Edu+1, Attorney</li></ul>"; break;
+    }
+    return desc;
 }
 function getRandomTradeCodes() {
     var classifications1 = [

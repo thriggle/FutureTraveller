@@ -69,6 +69,7 @@ export function getDialog(){
         var dialogText = dialog.appendChild(document.createElement("div")); dialogText.id = "txtDialog";
         var selector = dialog.appendChild(document.createElement("select")); selector.id = "slctDialog";
         var dlgBtn = dialog.appendChild(document.createElement("input")); dlgBtn.setAttribute("type","button"); dlgBtn.setAttribute("value","OK"); dlgBtn.id = "dlgBtn";
+        selector.addEventListener("keypress",(ev)=>{if(ev.key === "Enter"){ ev.preventDefault(); dlgBtn.click();}});
         var cancelDlgBtn = dialog.appendChild(document.createElement("input")); cancelDlgBtn.setAttribute("type","button"); cancelDlgBtn.setAttribute("value","Cancel"); cancelDlgBtn.id = "cancelDlgBtn";
         dialog.appendChild(document.createElement("br"));
         var dlgPreviewText = dialog.appendChild(document.createElement("div")); dlgPreviewText.id = "txtDialogPreview";
@@ -112,12 +113,17 @@ export function getDialog(){
     }
     
 }
-export function pickSkill(category, prompt, callback, excludedChoice, preferredChoice){
+export function pickSkill(category, prompt, callback, excludedChoice, preferredChoice, noCancel){
     var pickerDialog = getDialog();
-    document.getElementById("cancelDlgBtn").removeAttribute("disabled");
+    if(typeof noCancel === "undefined"){ noCancel = false;}
     var dialog = pickerDialog.dialog, selector = pickerDialog.selector, dialogText = pickerDialog.dialogText;
     var dlgPreviewText = document.getElementById("txtDialogPreview");
     clearElement(dlgPreviewText);
+    if(noCancel){
+        document.getElementById("cancelDlgBtn").setAttribute("disabled","disabled");
+    }else{
+        document.getElementById("cancelDlgBtn").removeAttribute("disabled");
+    }
     var skills = [];
     switch(category){
         case "S":

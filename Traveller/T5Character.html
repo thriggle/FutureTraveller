@@ -64,8 +64,8 @@
             margin-block-start:0rem;
             margin-block-end:0rem;
         }
-        
-        input[type='button']{
+        li[data-characteristic='unknown']{ opacity: 0.65;}
+        input[type='button'],input[type='submit'],input[type='file' i],input#file-upload-button{
             padding:0.3rem;
             border-radius:0.2rem;
             cursor:pointer;
@@ -115,7 +115,12 @@
         .event.AgingFail{
             background-color: #ff9999;
         }
-        
+        .event.drafted{
+            background-color:lightblue;
+        }
+        .event.calledup{
+            background-color: gold;
+        }
         .event_text, .event_age, .event_index{ 
             display:table-cell;
         }
@@ -188,11 +193,17 @@
     <div data-tier="1" data-nav="create">
         <nav class="menu">
             <ul>
+                <li><a data-tier="2" target="save">Save/Load</a></li>
                 <li><a data-tier="2" target="background" class="selected">Background</a></li>
                 <li><a data-tier="2" target="education">Education</a></li>
                 <li><a data-tier="2" target="career">Career</a></li>
             </ul>
         </nav>
+        <div data-tier="2" data-nav="save">
+            <label for="btnExport">&nbsp;Export current character to .json file <input type="button" value="Save Character" id="btnExport"></label>
+            <hr/>
+            <label for="btnImportJSON">&nbsp;Import a character from a .json file: </label><input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json" />
+        </div>
         <fieldset data-tier="2" data-nav="background">
             
             <div style="display:flex">
@@ -308,42 +319,42 @@
         </fieldset>
         </fieldset>
         <fieldset data-tier="2" data-nav="career">
-            <input type="button" disabled="disabled" id="btnCraftsman" value="Craftsman"/>
-            <input type="button" disabled="disabled" id="btnScholar" value="Scholar"/>
-            <input type="button" disabled="disabled" id="btnEntertainer" value="Entertainer"/>
-            <input type="button"  value="Citizen" id="btnCitizen" title="Begin Auto
+            <input type="button" disabled="disabled" data-careerbtn="Craftsman" id="btnCraftsman" value="Craftsman"/>
+            <input type="button" disabled="disabled" data-careerbtn="Scholar" id="btnScholar" value="Scholar"/>
+            <input type="button" disabled="disabled" data-careerbtn="Entertainer" id="btnEntertainer" value="Entertainer"/>
+            <input type="button"  value="Citizen" data-careerbtn="Citizen" id="btnCitizen" title="Begin Auto
 CC=C1,C2,C3,C4
 Continue vs 10"/>
-            <input type="button" disabled="disabled" value="Scout" id="btnScout" />
-            <input type="button" disabled="disabled" value="Merchant" id="btnMerchant" title="Begin 4th Officer vs Int
+            <input type="button" disabled="disabled" data-careerbtn="Scout" value="Scout" id="btnScout" />
+            <input type="button" disabled="disabled" data-careerbtn="Merchant" value="Merchant" id="btnMerchant" title="Begin 4th Officer vs Int
 Begin Spacehand vs Dex
 Begin Temp automatic
 Rating Promotion vs Dex (+3 if Int 8+)
 Officer Commission vs Int
 Officer Promotion vs Terms x2 (+3 if Int 8+)
 Continue vs Str"/>
-            <input type="button" disabled="disabled" value="Spacer" id="btnSpacer" title="Begin vs Int
+            <input type="button" disabled="disabled" data-careerbtn="Spacer" value="Spacer" id="btnSpacer" title="Begin vs Int
 CC=C1,C2,C3
 Rating Promotion/Commission vs C2
 Officer Promotion vs Soc
 Continue vs Str
 "/>
-            <input type="button" disabled="disabled" value="Soldier" id="btnSoldier" title="Begin vs Str
+            <input type="button" disabled="disabled" data-careerbtn="Soldier" value="Soldier" id="btnSoldier" title="Begin vs Str
 CC=C1,C3,C4
 Rating Promotion/Commission vs C3
 Officer Promotion vs Soc
 Continue vs C3
 "/>
-            <input type="button" disabled="disabled" value="Agent" id="btnAgent" />
-            <input type="button" disabled="disabled" value="Rogue" id="btnRogue" />
-            <input type="button" disabled="disabled" value="Noble" id="btnNoble" />
-            <input type="button" disabled="disabled" value="Marine" id="btnMarine" title="Begin vs Str
+            <input type="button" disabled="disabled" data-careerbtn="Agent" value="Agent" id="btnAgent" />
+            <input type="button" disabled="disabled" data-careerbtn="Rogue" value="Rogue" id="btnRogue" />
+            <input type="button" disabled="disabled" data-careerbtn="Noble" value="Noble" id="btnNoble" />
+            <input type="button" disabled="disabled" data-careerbtn="Marine" value="Marine" id="btnMarine" title="Begin vs Str
 CC=C1,C4
 Rating Promotion/Commission vs C1
 Officer Promotion vs Int
 Continue vs C1
 "/>
-            <input type="button" disabled="disabled" value="Functionary" id="btnFunctionary" />
+            <input type="button" disabled="disabled" data-careerbtn="Functionary" value="Functionary" id="btnFunctionary" />
             <input type="button" disabled="disabled" value="Muster Out" id="btnMusterOut" />
             <input type="button" disabled="disabled" value="Fame Flux Event" id="btnFameFluxEvent" />
         </fieldset>
@@ -416,5 +427,6 @@ Continue vs C1
             </fieldset>
         </div>
     </div>
+    
 </body>
 </html>
