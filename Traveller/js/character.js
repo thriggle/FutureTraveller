@@ -1772,6 +1772,8 @@ export function createCharacter(roller, species){
                     });
                     callback();
                 }else{
+                    record("Ready to begin adventuring!");
+                    updateFunc();
                     callback();
                 }
             }
