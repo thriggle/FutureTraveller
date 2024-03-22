@@ -489,6 +489,10 @@ document.getElementById("btnFameFluxEvent").addEventListener("click",function(){
     person.fameFluxEvent();
     redraw();
 });
+document.getElementById("btnFameMusterOutBonus").addEventListener("click",function(){
+    person.claimFameMusterOutBonus(redraw);
+    redraw();
+});
 document.getElementById("btnExport").addEventListener("click",()=>{
     var data = person.exportCharacter();
     var a = document.createElement("a");
@@ -596,6 +600,7 @@ function validateQualifications(){
         }
     }
     if(qual.fameEvent){ document.getElementById("btnFameFluxEvent").removeAttribute("disabled"); }else{ document.getElementById("btnFameFluxEvent").setAttribute("disabled","");}
+    if(qual.fameBonus){ document.getElementById("btnFameMusterOutBonus").removeAttribute("disabled"); }else{document.getElementById("btnFameMusterOutBonus").setAttribute("disabled",""); }
 }
 
 function redraw(){
