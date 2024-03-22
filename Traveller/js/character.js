@@ -45,7 +45,8 @@ export function createCharacter(roller, species){
     var merchantShipShareReceiptLevel = 1, shipShares = 0;
     var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
     var statRollResults = rollStats();
-    var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;    
+    var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
+    var fameMusterOutBonus = false;
     function resetVariables(){
         careers = [], CCs = []; edu_waivers = 0; 
         fame = 0, credits = 0; languageReceipts = 0;
@@ -53,6 +54,7 @@ export function createCharacter(roller, species){
         merchantShipShareReceiptLevel = 1, shipShares = 0;
         age = 0; musteredOut = false; agingCrises = 0;
         fameFluxApplied = false, finalFameRoll = false;
+        fameMusterOutBonus = false;
     }
     function addToReserves(service){
         var reserve = service + " Reserves";
@@ -1750,7 +1752,7 @@ export function createCharacter(roller, species){
             }
             totalRolls += career.numRolls;
         }
-        if(fame >= 19){ careers[careers.length-1].numRolls += 1; totalRolls += 1;}
+        if(calculateFame() >= 19){ totalRolls += 1;}
 
         record("Total benefit rolls: " + totalRolls);
         updateFunc();
@@ -1762,9 +1764,16 @@ export function createCharacter(roller, species){
                 updateFunc();
                 musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
             }else{
-                record("Ready to begin adventuring!");
-                updateFunc();
-                callback();
+                if(calculateFame() >= 19 && !fameMusterOutBonus){
+                    claimFameMusterOutBonus(updateFunc,true,function(){
+                        record("Ready to begin adventuring!");
+                        updateFunc();
+                        callback();
+                    });
+                    callback();
+                }else{
+                    callback();
+                }
             }
         };
         musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
@@ -1948,6 +1957,15 @@ export function createCharacter(roller, species){
             else{ record("Character does not have Social Standing so the Soc increase benefit was lost.");}
              break;
         }
+    }
+    function claimFameMusterOutBonus(updateFunc,noCancel,callback){
+        if(typeof noCancel == "undefined"){noCancel = false;}
+        if(typeof callback == "undefined"){ callback = ()=>{return;} ; }
+        var options = getCareers().map((v)=>{return v.career});
+        pickOption(options,"Fame provides an additional mustering out bonus. Choose a career.",(option)=>{
+            fameMusterOutBonus = true;
+            musterOutSpecificCareer(options.indexOf(option),1,updateFunc,callback);
+        },noCancel,undefined);
     }
     function resolveCitizen(career,updateFunc){
         var priorCareers = careers.length;
@@ -4506,6 +4524,11 @@ export function createCharacter(roller, species){
             q.BA = true;
         }
         q.fameEvent = !fameFluxApplied;
+        if(!fameMusterOutBonus && calculateFame() >= 19){
+            q.fameBonus = true;
+        }else{
+            q.fameBonus = false;
+        }
         return q;
     }
     function checkCSK(characteristic, skill, knowledge, difficulty,mods,remarks){
@@ -4657,6 +4680,7 @@ export function createCharacter(roller, species){
     function exportCharacter(){
         var character = {
             age:age,
+            fameMusterOutBonus:fameMusterOutBonus,
             agingCrises:agingCrises,
             awards:getAwards(),
             careers:getCareers(),
@@ -4699,6 +4723,8 @@ export function createCharacter(roller, species){
         awards = characterJson.awards;
         careers = characterJson.careers;
         CCs = characterJson.CCs;
+        if(typeof characterJson.fameMusterOutBonus !== "undefined"){
+            fameMusterOutBonus = characterJson.fameMusterOutBonus;}else{fameMusterOutBonus = false;}
         setCharacteristics(characterJson.characteristics);
         credits = characterJson.credits;
         edu_waivers = characterJson.edu_waivers;
@@ -4749,6 +4775,6 @@ export function createCharacter(roller, species){
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
-        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter
+        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter, fameMusterOutBonus, claimFameMusterOutBonus
     }
 }
