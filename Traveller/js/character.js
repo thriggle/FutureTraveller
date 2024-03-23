@@ -47,6 +47,7 @@ export function createCharacter(roller, species){
     var statRollResults = rollStats();
     var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
     var fameMusterOutBonus = false;
+    var fameFlux = 0;
     function resetVariables(){
         careers = [], CCs = []; edu_waivers = 0; 
         fame = 0, credits = 0; languageReceipts = 0;
@@ -54,7 +55,7 @@ export function createCharacter(roller, species){
         merchantShipShareReceiptLevel = 1, shipShares = 0;
         age = 0; musteredOut = false; agingCrises = 0;
         fameFluxApplied = false, finalFameRoll = false;
-        fameMusterOutBonus = false;
+        fameMusterOutBonus = false, fameFlux = 0;
     }
     function addToReserves(service){
         var reserve = service + " Reserves";
@@ -92,26 +93,37 @@ export function createCharacter(roller, species){
     function getShipShares(){
         return shipShares;
     }
-    function fameFluxEvent(){
+    function fameFluxEvent(updateFunc){
         if(!fameFluxApplied){
             fameFluxApplied = true;
             var fluxResult = roller.flux();
             record("Fame Flux Event: [" + fluxResult.rolls.join("-") + "] = " +fluxResult.result);
             var change = fluxResult.result;
-            fame += change;
+            var fameWasLessThanNineteen = fame < 19;
+            fameFlux += change;
             if(change < 0){ 
                 record("Fame decreased by " + change+".");
+                updateFunc();
             }else if(change === 0){
                 record("Fame is unchanged.");
+                updateFunc();
             }else{
                 record("Fame increased by " + change+".");
+                updateFunc();
+                if(fameWasLessThanNineteen && calculateFame() >= 19 && musteredOut){
+                    claimFameMusterOutBonus(updateFunc,true,function(){
+                        record("Ready to begin adventuring!");
+                        updateFunc();
+                    });
+                }
             }
         }else{
             record("Fame Flux Event already occurred.");
+            updateFunc();
         }
     }
     function calculateFame(){
-        var totalFame = fame;
+        var totalFame = 0;
         var highestSourceOfFame = 0;
         for(var i = 0, len = careers.length; i < len; i++){
             var career = careers[i];
@@ -168,16 +180,15 @@ export function createCharacter(roller, species){
                 totalFame = 20;
             }
         }
-        if(highestSourceOfFame > 20){ totalFame = highestSourceOfFame + fame; }
+        if(highestSourceOfFame > 20){ totalFame = highestSourceOfFame; }
         if(highestSourceOfFame == 0 && musteredOut){
             if(!finalFameRoll){
                 finalFameRoll = true;
-                fame = roller.d6(1).result;
-                record("Absent any other source of fame, Fame = ["+fame+"]");
+                fameFlux = roller.d6(1).result;
+                record("Absent any other source of fame, Fame = ["+fameFlux+"]");
             }
-            totalFame = fame; 
         }
-        return totalFame;
+        return totalFame + fameFlux;
     }
     function initStats(stats, geneticValues){
        characteristics = [
@@ -4690,7 +4701,6 @@ export function createCharacter(roller, species){
             characteristics:getCharacteristics(),
             credits:credits,
             edu_waivers:edu_waivers,
-            fame:fame,
             fameFluxApplied:fameFluxApplied,
             finalFameRoll:finalFameRoll,
             gender:getGender(),
@@ -4710,6 +4720,7 @@ export function createCharacter(roller, species){
             shipShares:getShipShares(),
             skills:skills,
             species:species,
+            fameFlux:fameFlux
         }
         return character;
     }
@@ -4730,8 +4741,8 @@ export function createCharacter(roller, species){
         setCharacteristics(characterJson.characteristics);
         credits = characterJson.credits;
         edu_waivers = characterJson.edu_waivers;
-        fame = characterJson.fame;
-        fameFluxApplied = characterJson.fameFluxApplied;
+        fameFlux = typeof characterJson.fameFlux == "undefined" ? 0 : characterJson.fameFlux;
+        fameFluxApplied = characterJson.fameFlux == "undefined" ? false : characterJson.fameFluxApplied;
         finalFameRoll = characterJson.finalFameRoll;
         genderKey = characterJson.gender;
         genetics = characterJson.genetics;
