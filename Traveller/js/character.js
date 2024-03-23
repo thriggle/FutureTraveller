@@ -1625,7 +1625,28 @@ export function createCharacter(roller, species){
                         musterOut(updateFunc);
                     }
                 },true);
-        }else{        
+        }else{
+            var continueTarget = -1;
+            switch(career){
+                case ENUM_CAREERS.Citizen:
+                    continueTarget = 10;
+                break;
+                case ENUM_CAREERS.Spacer:
+                    continueTarget = characteristics[0].value;
+                    break;
+                case ENUM_CAREERS.Soldier:
+                        continueTarget = characteristics[2].value;
+                        break;
+                case ENUM_CAREERS.Marine:
+                    continueTarget = characteristics[0].value;
+                    break;
+                case ENUM_CAREERS.Merchant:
+                    continueTarget = characteristics[0].value;
+                    break;
+                case ENUM_CAREERS.Scout:
+                    continueTarget = characteristics[3].value;
+                    break;
+            }
             pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
                 var switchCareer = switchCareerChoice === "Switch to a new career";
                 if(!switchCareer){
@@ -1728,7 +1749,7 @@ export function createCharacter(roller, species){
                     updateFunc();
                     //musterOut(career,updateFunc);
                 }
-            },true);    
+            },true,undefined,["Roll less than or equal to " +continueTarget+" to continue.","Leave " + career + " career to pursue other opportunities."]);    
         }           
     }
     function musterOut(updateFunc, callback){
