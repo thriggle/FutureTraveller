@@ -48,6 +48,7 @@ export function createCharacter(roller, species){
     var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
     var fameMusterOutBonus = false;
     var fameFlux = 0;
+    var resignationDeclined = false;
     function resetVariables(){
         careers = [], CCs = []; edu_waivers = 0; 
         fame = 0, credits = 0; languageReceipts = 0;
@@ -56,6 +57,7 @@ export function createCharacter(roller, species){
         age = 0; musteredOut = false; agingCrises = 0;
         fameFluxApplied = false, finalFameRoll = false;
         fameMusterOutBonus = false, fameFlux = 0;
+        resignationDeclined = false;
     }
     function addToReserves(service){
         var reserve = service + " Reserves";
@@ -4563,7 +4565,7 @@ export function createCharacter(roller, species){
         }else{
             q.fameBonus = false;
         }
-        q.resignReserves = awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 || awards.indexOf("Army Reserves") >= 0;
+        q.resignReserves = !resignationDeclined && (awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 || awards.indexOf("Army Reserves") >= 0);
         return q;
     }
     function checkCSK(characteristic, skill, knowledge, difficulty,mods,remarks){
@@ -4692,6 +4694,7 @@ export function createCharacter(roller, species){
             }else{
                 if(musteredOut){
                     record("Resignation from reserves was not accepted.");
+                    resignationDeclined = true;
                     updateFunc();
                 }else{
                     // TODO: Drafted into career of choice
@@ -4789,7 +4792,7 @@ export function createCharacter(roller, species){
             careers:getCareers(),
             CCs:CCs,
             characteristics:getCharacteristics(),
-            credits:credits,
+            credits:credits,  
             edu_waivers:edu_waivers,
             fameFluxApplied:fameFluxApplied,
             finalFameRoll:finalFameRoll,
@@ -4810,7 +4813,8 @@ export function createCharacter(roller, species){
             shipShares:getShipShares(),
             skills:skills,
             species:species,
-            fameFlux:fameFlux
+            fameFlux:fameFlux,
+            resignationDeclined:resignationDeclined
         }
         return character;
     }
@@ -4850,6 +4854,7 @@ export function createCharacter(roller, species){
         setSanity(characterJson.sanity);
         shipShares = characterJson.shipShares;
         setSkills(characterJson.skills);
+        resignationDeclined = typeof characterJson.resignationDeclined == "undefined" ? false : characterJson.resignationDeclined;
         switch(characterJson.species){
             case "human":species = human; break;
             default: species = human;
