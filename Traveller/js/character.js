@@ -4563,6 +4563,7 @@ export function createCharacter(roller, species){
         }else{
             q.fameBonus = false;
         }
+        q.resignReserves = awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 || awards.indexOf("Army Reserves") >= 0;
         return q;
     }
     function checkCSK(characteristic, skill, knowledge, difficulty,mods,remarks){
@@ -4647,11 +4648,21 @@ export function createCharacter(roller, species){
         var remarks = "";
         if(typeof numYears === "undefined"){ numYears = 1;}
         var peakStart = species.getFirstYearOfStage( isForcedGrowthClone ? 4 : 5);
+        var retirementAge = species.getFirstYearOfStage(9);
         for(var i = 0; i < numYears; i++){
             age += 1;
             if(age >= peakStart){
                 if((age - peakStart) % 4 === 0){
                     remarks += agingCheck();
+                }
+            }
+            if(age === retirementAge && (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0)){
+                for(var j = 0, jlen = awards.length; j < jlen; j++){
+                    var award = awards[j];
+                    if(award.indexOf(" Reserves") > 0){
+                        awards[j] = awards[j].replace("Reserves","Pension");
+                        record("Retired from the " + award +" due to age. Gained pension.");
+                    }
                 }
             }
         }
@@ -4660,6 +4671,64 @@ export function createCharacter(roller, species){
         record(prefix + remarks);
         setAge(age);
         return prefix + remarks; 
+    }
+    function resignFromReserves(updateFunc){
+        if(awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0){
+            var resignResult = check(11,2,0,"Resign Attempt");
+            if(resignResult.success){
+                record(resignResult.remarks);
+                updateFunc();
+                while(awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0){
+                    for(var j = 0, jlen = awards.length; j < jlen; j++){
+                        var award = awards[j];
+                        if(award.indexOf(" Reserves") > 0){
+                            awards.splice(j,1);
+                            record("Resigned from the " + award + ".");
+                            updateFunc();
+                            break;
+                        }
+                    }
+                }
+            }else{
+                if(musteredOut){
+                    record("Resignation from reserves was not accepted.");
+                    updateFunc();
+                }else{
+                    // TODO: Drafted into career of choice
+                    var reserves = [];
+                    for(var i = 0, len = awards.length; i < len; i++){
+                        var award = awards[i];
+                        if(award === "Army Reserves"){
+                            reserves.push({career:ENUM_CAREERS.Soldier,reserves:award});
+                        }else if(award === "Navy Reserves"){
+                            reserves.push({career:ENUM_CAREERS.Spacer,reserves:award});
+                        }else if(award === "Marine Reserves"){
+                            reserves.push({career:ENUM_CAREERS.Marine,reserves:award});
+                        }
+                    }
+                    var reserve = reserves[(roller.random() * reserves.length) >>> 0];
+                    record("Called up by the " + reserve.reserves+ "!");
+                    updateFunc();
+                    var svcIndex = 0;
+                    for(var s = 0; s < careers.length; s++){
+                        if(careers[s].career === reserve.career){
+                            svcIndex = s; break;
+                        }
+                    }
+                    careers[svcIndex].active = true;
+                    careers[careers.length - 1].active = false;
+                    var svcCareers = careers.splice(svcIndex,1);
+                    careers.push(svcCareers[0]);
+                    var resetCCs = true;
+                    resolveCareer(reserve.career,updateFunc,resetCCs);
+                }
+            }
+        }else{
+            record("Could not resign from reserves because character is not in the reserves.");
+        }
+        for(var i = 0, len = awards.length; i < len; i++){
+
+        }
     }
     function getAwards(){
         return awards;
@@ -4809,6 +4878,7 @@ export function createCharacter(roller, species){
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
-        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter, fameMusterOutBonus, claimFameMusterOutBonus
+        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter, fameMusterOutBonus, claimFameMusterOutBonus,
+        resignFromReserves
     }
 }
