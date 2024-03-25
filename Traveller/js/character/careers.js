@@ -216,6 +216,65 @@ export function citizenLifeJob(roller){
     var job = jobList[roll1.result-1][roll2.result-1][roll3.result-1];
     return {rolls:[roll1.result,roll2.result,roll3.result],job:job};
 }
+
+export function agentUnderCover(roller){
+    if(typeof roller === "undefined"){
+        roller = getRollerFromSeed();
+    }
+    var roll1 = roller.d6(1), roll2 = roller.d6(1), roll3 = roller.d6(1);
+    while(roll1.result > 3){ roll1 = roller.d6(1); }
+    while(roll3.result > 4){ roll3 = roller.d6(1);}
+    var ucjobList = [
+        // A = 1
+        [
+            // B = 1 Army Enlisted
+            [],
+            // B = 2 Army Officer
+            [],
+            // B = 3 Marine Enlisted
+            [],
+            // B = 4 Marine Officer
+            [],
+            // B = 5 Navy Enlisted
+            [],
+            // B = 6 Navy Officer
+            []
+        ],
+        // A = 2
+        [
+            // B = 1 Scholar
+            [],
+            // B = 2 Scholar
+            [],
+            // B = 3 Entertainer
+            [],
+            // B = 4 Entertainer
+            [],
+            // B = 5 Citizen
+            [],
+            // B = 6 Citizen
+            []
+        ],
+        // A = 3
+        [
+            // B = 1 Merchant
+            [],
+            // B = 2 Merchant
+            [],
+            // B = 3 Scout
+            [],
+            // B = 4 Scout
+            [],
+            // B = 5 Noble
+            [],
+            // B = 6 Functionary
+            []
+        ]
+    ]
+    var ucJob = ucjobList[roll1.result-1][roll2.result-1][roll3.result-1];
+    return {rolls:[roll1.result,roll2.result,roll3.result],ucJob:ucJob};
+}
+
 export var CareerSkillTables = {
     "Citizen" : { // Career 04
         "Tables":["Personal","Academic","Travel","General","Business","Vocation","Avocation"],
