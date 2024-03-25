@@ -45,7 +45,10 @@ export function createCharacter(roller, species){
     var merchantShipShareReceiptLevel = 1, shipShares = 0;
     var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
     var statRollResults = rollStats();
-    var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;    
+    var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
+    var fameMusterOutBonus = false;
+    var fameFlux = 0;
+    var resignationDeclined = false;
     function resetVariables(){
         careers = [], CCs = []; edu_waivers = 0; 
         fame = 0, credits = 0; languageReceipts = 0;
@@ -53,6 +56,8 @@ export function createCharacter(roller, species){
         merchantShipShareReceiptLevel = 1, shipShares = 0;
         age = 0; musteredOut = false; agingCrises = 0;
         fameFluxApplied = false, finalFameRoll = false;
+        fameMusterOutBonus = false, fameFlux = 0;
+        resignationDeclined = false;
     }
     function addToReserves(service){
         var reserve = service + " Reserves";
@@ -90,26 +95,37 @@ export function createCharacter(roller, species){
     function getShipShares(){
         return shipShares;
     }
-    function fameFluxEvent(){
+    function fameFluxEvent(updateFunc){
         if(!fameFluxApplied){
             fameFluxApplied = true;
             var fluxResult = roller.flux();
             record("Fame Flux Event: [" + fluxResult.rolls.join("-") + "] = " +fluxResult.result);
             var change = fluxResult.result;
-            fame += change;
+            var fameWasLessThanNineteen = fame < 19;
+            fameFlux += change;
             if(change < 0){ 
                 record("Fame decreased by " + change+".");
+                updateFunc();
             }else if(change === 0){
                 record("Fame is unchanged.");
+                updateFunc();
             }else{
                 record("Fame increased by " + change+".");
+                updateFunc();
+                if(fameWasLessThanNineteen && calculateFame() >= 19 && musteredOut){
+                    claimFameMusterOutBonus(updateFunc,true,function(){
+                        record("Ready to begin adventuring!");
+                        updateFunc();
+                    });
+                }
             }
         }else{
             record("Fame Flux Event already occurred.");
+            updateFunc();
         }
     }
     function calculateFame(){
-        var totalFame = fame;
+        var totalFame = 0;
         var highestSourceOfFame = 0;
         for(var i = 0, len = careers.length; i < len; i++){
             var career = careers[i];
@@ -166,16 +182,15 @@ export function createCharacter(roller, species){
                 totalFame = 20;
             }
         }
-        if(highestSourceOfFame > 20){ totalFame = highestSourceOfFame + fame; }
+        if(highestSourceOfFame > 20){ totalFame = highestSourceOfFame; }
         if(highestSourceOfFame == 0 && musteredOut){
             if(!finalFameRoll){
                 finalFameRoll = true;
-                fame = roller.d6(1).result;
-                record("Absent any other source of fame, Fame = ["+fame+"]");
+                fameFlux = roller.d6(1).result;
+                record("Absent any other source of fame, Fame = ["+fameFlux+"]");
             }
-            totalFame = fame; 
         }
-        return totalFame;
+        return totalFame + fameFlux;
     }
     function initStats(stats, geneticValues){
        characteristics = [
@@ -1612,7 +1627,28 @@ export function createCharacter(roller, species){
                         musterOut(updateFunc);
                     }
                 },true);
-        }else{        
+        }else{
+            var continueTarget = -1;
+            switch(career){
+                case ENUM_CAREERS.Citizen:
+                    continueTarget = 10;
+                break;
+                case ENUM_CAREERS.Spacer:
+                    continueTarget = characteristics[0].value;
+                    break;
+                case ENUM_CAREERS.Soldier:
+                        continueTarget = characteristics[2].value;
+                        break;
+                case ENUM_CAREERS.Marine:
+                    continueTarget = characteristics[0].value;
+                    break;
+                case ENUM_CAREERS.Merchant:
+                    continueTarget = characteristics[0].value;
+                    break;
+                case ENUM_CAREERS.Scout:
+                    continueTarget = characteristics[3].value;
+                    break;
+            }
             pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
                 var switchCareer = switchCareerChoice === "Switch to a new career";
                 if(!switchCareer){
@@ -1715,7 +1751,7 @@ export function createCharacter(roller, species){
                     updateFunc();
                     //musterOut(career,updateFunc);
                 }
-            },true);    
+            },true,undefined,["Roll less than or equal to " +continueTarget+" to continue.","Leave " + career + " career to pursue other opportunities."]);    
         }           
     }
     function musterOut(updateFunc, callback){
@@ -1750,7 +1786,7 @@ export function createCharacter(roller, species){
             }
             totalRolls += career.numRolls;
         }
-        if(fame >= 19){ careers[careers.length-1].numRolls += 1; totalRolls += 1;}
+        if(calculateFame() >= 19){ totalRolls += 1;}
 
         record("Total benefit rolls: " + totalRolls);
         updateFunc();
@@ -1762,9 +1798,18 @@ export function createCharacter(roller, species){
                 updateFunc();
                 musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
             }else{
-                record("Ready to begin adventuring!");
-                updateFunc();
-                callback();
+                if(calculateFame() >= 19 && !fameMusterOutBonus){
+                    claimFameMusterOutBonus(updateFunc,true,function(){
+                        record("Ready to begin adventuring!");
+                        updateFunc();
+                        callback();
+                    });
+                    callback();
+                }else{
+                    record("Ready to begin adventuring!");
+                    updateFunc();
+                    callback();
+                }
             }
         };
         musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
@@ -1948,6 +1993,15 @@ export function createCharacter(roller, species){
             else{ record("Character does not have Social Standing so the Soc increase benefit was lost.");}
              break;
         }
+    }
+    function claimFameMusterOutBonus(updateFunc,noCancel,callback){
+        if(typeof noCancel == "undefined"){noCancel = false;}
+        if(typeof callback == "undefined"){ callback = ()=>{return;} ; }
+        var options = getCareers().map((v)=>{return v.career});
+        pickOption(options,"Fame provides an additional mustering out bonus. Choose a career.",(option)=>{
+            fameMusterOutBonus = true;
+            musterOutSpecificCareer(options.indexOf(option),1,updateFunc,callback);
+        },noCancel,undefined);
     }
     function resolveCitizen(career,updateFunc){
         var priorCareers = careers.length;
@@ -4506,6 +4560,12 @@ export function createCharacter(roller, species){
             q.BA = true;
         }
         q.fameEvent = !fameFluxApplied;
+        if(!fameMusterOutBonus && calculateFame() >= 19){
+            q.fameBonus = true;
+        }else{
+            q.fameBonus = false;
+        }
+        q.resignReserves = !resignationDeclined && (awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 || awards.indexOf("Army Reserves") >= 0);
         return q;
     }
     function checkCSK(characteristic, skill, knowledge, difficulty,mods,remarks){
@@ -4590,11 +4650,21 @@ export function createCharacter(roller, species){
         var remarks = "";
         if(typeof numYears === "undefined"){ numYears = 1;}
         var peakStart = species.getFirstYearOfStage( isForcedGrowthClone ? 4 : 5);
+        var retirementAge = species.getFirstYearOfStage(9);
         for(var i = 0; i < numYears; i++){
             age += 1;
             if(age >= peakStart){
                 if((age - peakStart) % 4 === 0){
                     remarks += agingCheck();
+                }
+            }
+            if(age === retirementAge && (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0)){
+                for(var j = 0, jlen = awards.length; j < jlen; j++){
+                    var award = awards[j];
+                    if(award.indexOf(" Reserves") > 0){
+                        awards[j] = awards[j].replace("Reserves","Pension");
+                        record("Retired from the " + award +" due to age. Gained pension.");
+                    }
                 }
             }
         }
@@ -4603,6 +4673,65 @@ export function createCharacter(roller, species){
         record(prefix + remarks);
         setAge(age);
         return prefix + remarks; 
+    }
+    function resignFromReserves(updateFunc){
+        if(awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0){
+            var resignResult = check(11,2,0,"Resign Attempt");
+            if(resignResult.success){
+                record(resignResult.remarks);
+                updateFunc();
+                while(awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0){
+                    for(var j = 0, jlen = awards.length; j < jlen; j++){
+                        var award = awards[j];
+                        if(award.indexOf(" Reserves") > 0){
+                            awards.splice(j,1);
+                            record("Resigned from the " + award + ".");
+                            updateFunc();
+                            break;
+                        }
+                    }
+                }
+            }else{
+                if(musteredOut){
+                    record("Resignation from reserves was not accepted.");
+                    resignationDeclined = true;
+                    updateFunc();
+                }else{
+                    // TODO: Drafted into career of choice
+                    var reserves = [];
+                    for(var i = 0, len = awards.length; i < len; i++){
+                        var award = awards[i];
+                        if(award === "Army Reserves"){
+                            reserves.push({career:ENUM_CAREERS.Soldier,reserves:award});
+                        }else if(award === "Navy Reserves"){
+                            reserves.push({career:ENUM_CAREERS.Spacer,reserves:award});
+                        }else if(award === "Marine Reserves"){
+                            reserves.push({career:ENUM_CAREERS.Marine,reserves:award});
+                        }
+                    }
+                    var reserve = reserves[(roller.random() * reserves.length) >>> 0];
+                    record("Called up by the " + reserve.reserves+ "!");
+                    updateFunc();
+                    var svcIndex = 0;
+                    for(var s = 0; s < careers.length; s++){
+                        if(careers[s].career === reserve.career){
+                            svcIndex = s; break;
+                        }
+                    }
+                    careers[svcIndex].active = true;
+                    careers[careers.length - 1].active = false;
+                    var svcCareers = careers.splice(svcIndex,1);
+                    careers.push(svcCareers[0]);
+                    var resetCCs = true;
+                    resolveCareer(reserve.career,updateFunc,resetCCs);
+                }
+            }
+        }else{
+            record("Could not resign from reserves because character is not in the reserves.");
+        }
+        for(var i = 0, len = awards.length; i < len; i++){
+
+        }
     }
     function getAwards(){
         return awards;
@@ -4657,14 +4786,14 @@ export function createCharacter(roller, species){
     function exportCharacter(){
         var character = {
             age:age,
+            fameMusterOutBonus:fameMusterOutBonus,
             agingCrises:agingCrises,
             awards:getAwards(),
             careers:getCareers(),
             CCs:CCs,
             characteristics:getCharacteristics(),
-            credits:credits,
+            credits:credits,  
             edu_waivers:edu_waivers,
-            fame:fame,
             fameFluxApplied:fameFluxApplied,
             finalFameRoll:finalFameRoll,
             gender:getGender(),
@@ -4684,6 +4813,8 @@ export function createCharacter(roller, species){
             shipShares:getShipShares(),
             skills:skills,
             species:species,
+            fameFlux:fameFlux,
+            resignationDeclined:resignationDeclined
         }
         return character;
     }
@@ -4699,11 +4830,13 @@ export function createCharacter(roller, species){
         awards = characterJson.awards;
         careers = characterJson.careers;
         CCs = characterJson.CCs;
+        if(typeof characterJson.fameMusterOutBonus !== "undefined"){
+            fameMusterOutBonus = characterJson.fameMusterOutBonus;}else{fameMusterOutBonus = false;}
         setCharacteristics(characterJson.characteristics);
         credits = characterJson.credits;
         edu_waivers = characterJson.edu_waivers;
-        fame = characterJson.fame;
-        fameFluxApplied = characterJson.fameFluxApplied;
+        fameFlux = typeof characterJson.fameFlux == "undefined" ? 0 : characterJson.fameFlux;
+        fameFluxApplied = characterJson.fameFlux == "undefined" ? false : characterJson.fameFluxApplied;
         finalFameRoll = characterJson.finalFameRoll;
         genderKey = characterJson.gender;
         genetics = characterJson.genetics;
@@ -4721,6 +4854,7 @@ export function createCharacter(roller, species){
         setSanity(characterJson.sanity);
         shipShares = characterJson.shipShares;
         setSkills(characterJson.skills);
+        resignationDeclined = typeof characterJson.resignationDeclined == "undefined" ? false : characterJson.resignationDeclined;
         switch(characterJson.species){
             case "human":species = human; break;
             default: species = human;
@@ -4749,6 +4883,7 @@ export function createCharacter(roller, species){
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
-        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter
+        getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter, fameMusterOutBonus, claimFameMusterOutBonus,
+        resignFromReserves
     }
 }

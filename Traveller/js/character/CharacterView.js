@@ -486,8 +486,17 @@ document.getElementById("btnMusterOut").addEventListener("click",function(){
     person.musterOut(redraw);
 });
 document.getElementById("btnFameFluxEvent").addEventListener("click",function(){
-    person.fameFluxEvent();
+    person.fameFluxEvent(redraw);
     redraw();
+});
+document.getElementById("btnResignFromReserves").addEventListener("click",function(){
+    pickOption(["Resign","Nevermind"],"Attempt to resign from armed forces reserves?<br/>Forfeits future retirement pension but avoids being called up for active service.",
+    (choice)=>{
+        if(choice == "Resign"){
+            person.resignFromReserves(redraw);
+            redraw();
+        }
+    },false,"Resign",["Roll anything but 12 to leave reserves.<br/>On a 12, you are called up for active service.","Stay in reserves. You will leave automatically and gain a pension at retirement age (66 for humans)."]);
 });
 document.getElementById("btnExport").addEventListener("click",()=>{
     var data = person.exportCharacter();
@@ -596,6 +605,8 @@ function validateQualifications(){
         }
     }
     if(qual.fameEvent){ document.getElementById("btnFameFluxEvent").removeAttribute("disabled"); }else{ document.getElementById("btnFameFluxEvent").setAttribute("disabled","");}
+    if(qual.resignReserves){ document.getElementById("btnResignFromReserves").removeAttribute("disabled"); }else{ document.getElementById("btnResignFromReserves").setAttribute("disabled","");}
+    //if(qual.fameBonus){ document.getElementById("btnFameMusterOutBonus").removeAttribute("disabled"); }else{document.getElementById("btnFameMusterOutBonus").setAttribute("disabled",""); }
 }
 
 function redraw(){
