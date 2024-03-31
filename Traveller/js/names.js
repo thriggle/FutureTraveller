@@ -2734,9 +2734,10 @@ export function getNames(){
         ],
         "liquidanimalpart":[
             "blood",
+            "gurry",
             "milk",
             "lymph",
-            "mucus"
+            "mucus",
         ],
         "liquidmaterial":[
             "muck",
@@ -2744,6 +2745,7 @@ export function getNames(){
             "silt",
             "slime",
             "sludge",
+            "slurry",
             "slush",
             "tar"
         ],
@@ -3048,6 +3050,7 @@ export function getNames(){
             "whimbrel",
             "wildebeest",
             "willet",
+            "woggin",
             "4:wolf",
             "wolverine",
             "wombat",
