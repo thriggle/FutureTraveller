@@ -30,7 +30,7 @@ export function getRollerFromSeed(seed){
             roll1 = roll2;
             roll2 = roll3;
         }
-        var sum = roll1.result = roll2.result;
+        var sum = roll1.result - roll2.result;
         return {result:sum, rolls:roll1.rolls.concat(roll2.rolls)};
     }
     function negFlux(){
@@ -40,7 +40,7 @@ export function getRollerFromSeed(seed){
             roll1 = roll2;
             roll2 = roll3;
         }
-        var sum = roll1.result = roll2.result;
+        var sum = roll1.result - roll2.result;
         return {result:sum, rolls:roll1.rolls.concat(roll2.rolls)};
     }
     return {
