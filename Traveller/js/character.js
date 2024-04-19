@@ -297,7 +297,7 @@ export function createCharacter(roller, species){
     function gainSkill(skill){
         if(typeof skills[skill] != "undefined"){
             if(skills[skill].Skill >= 0){
-                if(skills[skill].Skill = 15){
+                if(skills[skill].Skill == 15){
                 }else{
                     skills[skill].Skill += 1;
                 }
@@ -1554,6 +1554,26 @@ export function createCharacter(roller, species){
                             record("Academic: You do not have a minor; no skill increased.");
                             nextSteps(tablesPerTerm,getOlder);
                         }
+                    }else if(newSkill === "New Trade"){
+                        (function(tablesPerTerm,getOlder){
+                            var trades = TradeSkills.slice();
+                            for(var i = 0; i < trades.length; i++){
+                                if(typeof skills[trades[i]] !== "undefined" && skills[trades[i]].Skill > 0){
+                                    trades.splice(i,1);
+                                    i-=1;
+                                }
+                            }
+                            if(trades.length > 0){
+                                pickOption(trades,"Choose a new skilled trade",(choice)=>{
+                                    gainSkillOrKnowledge(choice,undefined,false,note);
+                                    nextSteps(tablesPerTerm,getOlder);
+                                },true);
+                            }else{
+                                record("New Trade: You already hold all trades; no skill increased.");
+                                nextSteps(tablesPerTerm,getOlder);
+                            }
+                            
+                        })(tablesPerTerm,getOlder);
                     }else if(newSkill === "One Trade"){
                         (function(tablesPerTerm,getOlder){
                             gainSkillWithPromptForCategory(note,"TRADE",()=>{nextSteps(tablesPerTerm,getOlder);});
@@ -1630,6 +1650,9 @@ export function createCharacter(roller, species){
         }else{
             var continueTarget = -1;
             switch(career){
+                case ENUM_CAREERS.Craftsman:
+                    continueTarget = skills[ENUM_SKILLS.Craftsman].Skill*2;;
+                    break;
                 case ENUM_CAREERS.Citizen:
                     continueTarget = 10;
                 break;
@@ -1698,6 +1721,11 @@ export function createCharacter(roller, species){
                     }else{
                         var passedContinueRoll = false;          
                         switch(career){
+                            case ENUM_CAREERS.Craftsman:
+                                passedContinueRoll = continueResult.result <= skills[ENUM_SKILLS.Craftsman].Skill*2;
+                                record("Continue as Craftsman: [" + continueResult.rolls.join(",") + "] < "+(skills[ENUM_SKILLS.Craftsman].Skill*2)+" ? " + (passedContinueRoll ? "PASS":"FAIL"));
+                                updateFunc();
+                                break;
                             case ENUM_CAREERS.Citizen:
                                 passedContinueRoll = continueResult.result <= 10
                                 record("Continue as Citizen: [" + continueResult.rolls.join(",") + "] < 10 ? " + (passedContinueRoll ? "PASS":"FAIL"));
@@ -1840,6 +1868,10 @@ export function createCharacter(roller, species){
             var mainOptions = ["Money","Benefits"];
             var eligibleForKnighthood = true;
             switch(career.career){
+                case ENUM_CAREERS.Craftsman:
+                    moneyMod = career.terms;
+                    bennyMod = moneyMod;
+                break;
                 case ENUM_CAREERS.Citizen:
                     moneyMod = career.terms + career.benefitDM;
                     bennyMod = moneyMod; 
@@ -3722,8 +3754,7 @@ export function createCharacter(roller, species){
     }
     function resolveMerchant(career, updateFunc){
         var CC = ""; var priorCareers = careers.length;
-        var advanceAndGetSkills = function(numYears){
-            if(typeof numYears === "undefined"){numYears = 4;}
+        var advanceAndGetSkills = function(){
             updateFunc();
             var termSkillTables = [
                 {age:true},
@@ -4236,6 +4267,125 @@ export function createCharacter(roller, species){
         
         }
     }
+    function resolveCraftsman(career, updateFunc){
+        var CC = ""; var priorCareers = careers.length;
+        var advanceAndGetSkills = function(checkCC,ccValue,quals){
+            var termSkillTables = [
+                {age:true},
+                {age:true},
+                {age:true},
+                {age:true},
+                {age:false},
+            ];
+            
+            if(checkCC){
+                var craftingSkills = quals.qualifyingSkills;
+                var indexOfCraftsman = -1;
+                for(var i = 0, len = craftingSkills.length; i < len; i++){
+                    if(craftingSkills[i].Skill == ENUM_SKILLS.Craftsman){
+                        indexOfCraftsman = i;
+                    }
+                }
+                if(indexOfCraftsman >= 0){ craftingSkills.splice(indexOfCraftsman,1); }
+                function chooseCraftingSkills(selectedSkills,availableSkills,availableSkillValues,total,callback){
+                    if(selectedSkills.length < 5 && availableSkills.length > 0){
+                        // prompt for a new skill
+                        pickOption(availableSkills,"Choose a skill to use in composing your masterpiece",
+                        function(selectedSkill){
+                            selectedSkills.push(selectedSkill);
+                            total += availableSkillValues[availableSkills.indexOf(selectedSkill)];
+                            record("Using " + selectedSkill + "-"+availableSkillValues[availableSkills.indexOf(selectedSkill)] +". Subtotal=" + total);
+                            updateFunc();
+                            availableSkillValues.splice(availableSkills.indexOf(selectedSkill),1);
+                            availableSkills.splice(availableSkills.indexOf(selectedSkill),1);
+                            chooseCraftingSkills(selectedSkills,availableSkills,availableSkillValues,total,callback);
+                        },
+                        true,undefined,availableSkills.map((a,i)=>a+"-"+availableSkillValues[i]));
+                    }else{
+                        // callback with the selected skills
+                        callback(selectedSkills,total);
+                    }
+                }
+                var selectedSkills = [], availableSkills = craftingSkills.map((a)=>a.Skill), availableSkillValues = craftingSkills.map((a)=>a.Level);
+                chooseCraftingSkills(selectedSkills,availableSkills,availableSkillValues,ccValue + skills[ENUM_SKILLS.Craftsman].Skill,
+                    function(chosenSkills,total){
+                        var wasSuccessful = false;
+                        if(total >= 40){
+                            record("Attempting to create a masterpiece using [" + selectedSkills.join(",")+"]");
+                            updateFunc();
+                            var masterpieceResult = check(total,9,0,"Creating a Masterpiece: 9D vs " + total);
+                            wasSuccessful = masterpieceResult.success;
+                            record(masterpieceResult.remarks + ": "+masterpieceResult.rolls.toString()+" < "+total+"? " + (wasSuccessful ? "SUCCESS" : "FAILURE"));
+                            updateFunc();
+
+                        }else{
+                            record("Attempted to create a masterpiece using [" + selectedSkills.join(",")+"]");
+                            record("Total Master Points ("+total+") is less than 40. Failed to create a masterpiece.");
+                            updateFunc();
+                            
+                        }
+                        if(wasSuccessful){
+                            record("A beautiful masterpiece has been created with " + total + " points to allocate toward QREBS.")
+                            awards.push("Masterpiece ("+selectedSkills.join(",")+") QREBS Points=" + total);
+                            termSkillTables.push({age:false});
+                            termSkillTables.push({age:false});
+                            gainSkillOrKnowledge(ENUM_SKILLS.Craftsman,undefined,false);
+                            updateFunc();
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Craftsman,updateFunc,()=>{
+                                updateFunc(); 
+                                promptContinue(ENUM_CAREERS.Craftsman,updateFunc);
+                            });
+                        }else{
+                            
+                            gainSkillOrKnowledge(ENUM_SKILLS.Craftsman,undefined,false);
+                            updateFunc();
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Craftsman,updateFunc,()=>{
+                                updateFunc(); 
+                                promptContinue(ENUM_CAREERS.Craftsman,updateFunc);
+                            });
+                        }
+                    
+                });
+            }else{
+                var quals = getCraftsmanQualifications();
+                record("Sum of applicable skills (" + quals.masterPoints + ") is less than 40. Failed to create a masterpiece.");
+                updateFunc();
+                gainSkill(ENUM_SKILLS.Craftsman);
+                updateFunc();
+                gainTermSkills(termSkillTables,ENUM_CAREERS.Craftsman,updateFunc,()=>{
+                    updateFunc(); 
+                    promptContinue(ENUM_CAREERS.Craftsman,updateFunc);
+                });
+            }
+        }
+        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
+            CCs = getCCs(career);
+        }
+        var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
+        pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+            if(priorCareers == 0 || careers[priorCareers - 1].active == false){
+                careers.push({career:career,terms:1,active:true});
+            }else{
+                careers[careers.length-1].terms += 1;
+            }
+            
+            updateFunc();
+            var termNumber = careers[careers.length-1].terms;
+            CCs.splice(CCs.indexOf(selectedCC),1);
+            
+            record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+            updateFunc();
+            var ccIndex = +(selectedCC.substring(1))-1;
+            var ccValue = characteristics[ccIndex].value;
+            var quals = getCraftsmanQualifications();
+            if(quals.masterPoints + ccValue >= 40){
+                advanceAndGetSkills(true,ccValue, quals);
+            }else{
+                advanceAndGetSkills(false, ccValue, quals);
+            }
+        },true,undefined,CCDescriptions);
+        
+    }
     function removeDuplicates(arr){
         arr.sort();
         var i = 0;
@@ -4533,6 +4683,46 @@ export function createCharacter(roller, species){
             languageScore : languageComponent >>> 0
         };
     }
+    function getCraftsmanQualifications(){
+        var qualifies = false;
+        var qualifyingSkills = [];
+        var masterPoints = 0;
+        if(typeof skills[ENUM_SKILLS.Craftsman] !== "undefined" && skills[ENUM_SKILLS.Craftsman].Skill > 0){
+            var skillLabels = Object.keys(skills);
+            masterPoints = skills[ENUM_SKILLS.Craftsman].Skill;
+            for(var i = 0, len = skillLabels.length; i < len; i++){
+                var skillLabel = skillLabels[i];
+                if(skillLabel !== ENUM_SKILLS.Language){
+                    var skill = skills[skillLabel];
+                    var baseSkill = skill.Skill;
+                    var knowledgeLabels = Object.keys(skill.Knowledge);
+                    if(baseSkill >= 6){ qualifyingSkills.push({Skill:skillLabel, Level:baseSkill}); }
+                    for(var k = 0, klen = knowledgeLabels.length; k < klen; k++){
+                        var knowledgeLabel = knowledgeLabels[k];
+                        var knowledge = skill.Knowledge[knowledgeLabel];
+                        if(baseSkill > 0){
+                            knowledge += baseSkill;
+                        }
+                        if(knowledge >= 6){
+                            qualifyingSkills.push({Skill:knowledgeLabel, Level:knowledge});
+                        }
+                        
+                    }
+                }
+
+            }
+            if(qualifyingSkills.length >= 2){
+                qualifies = true;
+                qualifyingSkills.sort((a,b)=>{return a.Level > b.Level ? -1 : 1; });
+                for(var i = 0; i < 5 && i < qualifyingSkills.length; i++){
+                    if(qualifyingSkills[i].Skill !== ENUM_SKILLS.Craftsman){
+                        masterPoints += qualifyingSkills[i].Level;
+                    }
+                }
+            }
+        }
+        return {qualifies,qualifyingSkills,masterPoints};
+    }
     function getQualifications(){
         var q = {};
         var isDead = false;
@@ -4550,14 +4740,21 @@ export function createCharacter(roller, species){
         var navyCommission = awards.indexOf("Navy Officer1") >= 0,
             armyCommission = awards.indexOf("Army Officer1") >= 0,
             marineCommission = awards.indexOf("Marine Officer1") >= 0;
+        q.Craftsman = availability && careers.length >=1;
+        
         if(navyCommission || armyCommission || marineCommission){
             q.Citizen = false, q.Spacer = false, q.Soldier = false, q.Marine = false, q.Merchant = false, q.Scout = false;
+            q.Craftsman = false;
             q.BA = false;
             if(navyCommission){ q.Spacer = true;}
             if(armyCommission){ q.Soldier = true;}
             if(marineCommission){ q.Marine = true; }
         }else{
             q.BA = true;
+        }
+        if(q.Craftsman){
+            var craftsmanQ = getCraftsmanQualifications();
+            q.Craftsman = craftsmanQ.qualifies;
         }
         q.fameEvent = !fameFluxApplied;
         if(!fameMusterOutBonus && calculateFame() >= 19){
@@ -4884,6 +5081,6 @@ export function createCharacter(roller, species){
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
         getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter, fameMusterOutBonus, claimFameMusterOutBonus,
-        resignFromReserves
+        resignFromReserves, getCraftsmanQualifications
     }
 }

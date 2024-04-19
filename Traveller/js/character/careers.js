@@ -20,6 +20,7 @@ export class ENUM_CAREERS{
 export function getCCs(career){
     var ccs = [];
     switch(career){
+        case ENUM_CAREERS.Craftsman: ccs = ["C1","C2","C3","C4"]; break;
         case ENUM_CAREERS.Scholar: ccs = ["C1","C2","C3","C4"]; break;
         case ENUM_CAREERS.Citizen: ccs = ["C1","C2","C3","C4"]; break;
         case ENUM_CAREERS.Scout: ccs = ["C1","C2","C3"]; break;
