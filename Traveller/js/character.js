@@ -4311,22 +4311,27 @@ export function createCharacter(roller, species){
                     function(chosenSkills,total){
                         var wasSuccessful = false;
                         if(total >= 40){
-                            record("Attempting to create a masterpiece using [" + selectedSkills.join(",")+"]");
+                            record("Attempted to create a masterpiece using [" + selectedSkills.join(",")+"]");
                             updateFunc();
                             var masterpieceResult = check(total,9,0,"Creating a Masterpiece: 9D vs " + total);
                             wasSuccessful = masterpieceResult.success;
-                            record(masterpieceResult.remarks + ": "+masterpieceResult.rolls.toString()+" < "+total+"? " + (wasSuccessful ? "SUCCESS" : "FAILURE"));
+                            record(masterpieceResult.remarks);
                             updateFunc();
 
                         }else{
                             record("Attempted to create a masterpiece using [" + selectedSkills.join(",")+"]");
-                            record("Total Master Points ("+total+") is less than 40. Failed to create a masterpiece.");
+                            record("Total Master Points ("+total+") >= 40 ? FAIL");
                             updateFunc();
                             
                         }
                         if(wasSuccessful){
-                            record("A beautiful masterpiece has been created with " + total + " points to allocate toward QREBS.")
-                            awards.push("Masterpiece ("+selectedSkills.join(",")+") QREBS Points=" + total);
+                            if(total >= 55){
+                                record("A perfect masterpiece has been created with " + total + " points to allocate toward QREBS.");
+                                careers[careers.length-1].awards.push("Perfect Masterpiece ("+selectedSkills.join(",")+") QREBS=" + total);
+                            }else{
+                                record("A beautiful masterpiece has been created with " + total + " points to allocate toward QREBS.");
+                                careers[careers.length-1].awards.push("Masterpiece ("+selectedSkills.join(",")+") QREBS=" + total);
+                            }
                             termSkillTables.push({age:false});
                             termSkillTables.push({age:false});
                             gainSkillOrKnowledge(ENUM_SKILLS.Craftsman,undefined,false);
@@ -4348,9 +4353,9 @@ export function createCharacter(roller, species){
                 });
             }else{
                 var quals = getCraftsmanQualifications();
-                record("Sum of applicable skills (" + quals.masterPoints + ") is less than 40. Failed to create a masterpiece.");
+                record("Total possible Master Points (" + (ccValue + quals.masterPoints) + ") >= 40 ? FAIL");
                 updateFunc();
-                gainSkill(ENUM_SKILLS.Craftsman);
+                gainSkillOrKnowledge(ENUM_SKILLS.Craftsman,undefined,false);
                 updateFunc();
                 gainTermSkills(termSkillTables,ENUM_CAREERS.Craftsman,updateFunc,()=>{
                     updateFunc(); 
@@ -4361,10 +4366,11 @@ export function createCharacter(roller, species){
         if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
             CCs = getCCs(career);
         }
-        var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
+        var quals = getCraftsmanQualifications();
+        var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; var points = quals.masterPoints + characteristics[cci].value;  return characteristics[cci].name + " (" + characteristics[cci].value + "), Possible Master Points="+points+(points < 40 ? " (failure)":"");});
         pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
             if(priorCareers == 0 || careers[priorCareers - 1].active == false){
-                careers.push({career:career,terms:1,active:true});
+                careers.push({career:career,terms:1,active:true,awards:[]});
             }else{
                 careers[careers.length-1].terms += 1;
             }
@@ -4687,6 +4693,7 @@ export function createCharacter(roller, species){
         var qualifies = false;
         var qualifyingSkills = [];
         var masterPoints = 0;
+        var qualifyingSkillCount = 0;
         if(typeof skills[ENUM_SKILLS.Craftsman] !== "undefined" && skills[ENUM_SKILLS.Craftsman].Skill > 0){
             var skillLabels = Object.keys(skills);
             masterPoints = skills[ENUM_SKILLS.Craftsman].Skill;
@@ -4696,7 +4703,11 @@ export function createCharacter(roller, species){
                     var skill = skills[skillLabel];
                     var baseSkill = skill.Skill;
                     var knowledgeLabels = Object.keys(skill.Knowledge);
-                    if(baseSkill >= 6){ qualifyingSkills.push({Skill:skillLabel, Level:baseSkill}); }
+                    if(baseSkill >= 6){ qualifyingSkillCount+=1; 
+                        if(skillLabel !== ENUM_SKILLS.Craftsman){
+                            qualifyingSkills.push({Skill:skillLabel, Level:baseSkill}); 
+                        }
+                    }
                     for(var k = 0, klen = knowledgeLabels.length; k < klen; k++){
                         var knowledgeLabel = knowledgeLabels[k];
                         var knowledge = skill.Knowledge[knowledgeLabel];
@@ -4704,14 +4715,13 @@ export function createCharacter(roller, species){
                             knowledge += baseSkill;
                         }
                         if(knowledge >= 6){
+                            qualifyingSkillCount += 1;
                             qualifyingSkills.push({Skill:knowledgeLabel, Level:knowledge});
                         }
-                        
                     }
                 }
-
             }
-            if(qualifyingSkills.length >= 2){
+            if(qualifyingSkillCount >= 2){
                 qualifies = true;
                 qualifyingSkills.sort((a,b)=>{return a.Level > b.Level ? -1 : 1; });
                 for(var i = 0; i < 5 && i < qualifyingSkills.length; i++){
