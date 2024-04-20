@@ -140,6 +140,16 @@ export function createCharacter(roller, species){
                         }
                     }
                     break;
+                case ENUM_CAREERS.Craftsman:
+                    for(var j = 0, jlen = career.awards.length; j < jlen; j++){
+                        var award = career.awards[j];
+                        if(award.indexOf("Perfect Masterpiece") >= 0){
+                            careerFame += 5;
+                        }else if(award.indexOf("Masterpiece") >= 0){
+                            careerFame += 3;
+                        }
+                    }
+                break;
                 case ENUM_CAREERS.Citizen:
                     break;
                 case ENUM_CAREERS.Soldier:
