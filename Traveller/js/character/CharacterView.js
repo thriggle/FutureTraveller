@@ -589,11 +589,13 @@ function validateQualifications(){
     var qual = person.getQualifications();
     if(qual.Merchant){ document.getElementById("btnMerchant").removeAttribute("disabled"); }else{ document.getElementById("btnMerchant").setAttribute("disabled","");}
     if(qual.Citizen){ document.getElementById("btnCitizen").removeAttribute("disabled"); }else{ document.getElementById("btnCitizen").setAttribute("disabled","");}
+    if(qual.Craftsman){ document.getElementById("btnCraftsman").removeAttribute("disabled"); }else{ document.getElementById("btnCraftsman").setAttribute("disabled","");}
     if(qual.Spacer){ document.getElementById("btnSpacer").removeAttribute("disabled"); }else{ document.getElementById("btnSpacer").setAttribute("disabled","");}
     if(qual.Marine){ document.getElementById("btnMarine").removeAttribute("disabled"); }else{ document.getElementById("btnMarine").setAttribute("disabled","");}
     if(qual.Soldier){ document.getElementById("btnSoldier").removeAttribute("disabled"); }else{ document.getElementById("btnSoldier").setAttribute("disabled","");}
     if(qual.Scout){ document.getElementById("btnScout").removeAttribute("disabled"); }else{ document.getElementById("btnScout").setAttribute("disabled","");}
     if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
+    
     var baOptions = document.querySelectorAll("[data-qualify=\"BA\"]");
     if(qual.BA){ 
         for(var i = 0, len = baOptions.length; i < len; i++){
@@ -649,6 +651,17 @@ function getCareerDescription(career,isSchool){
     if(typeof isSchool === "undefined"){ isSchool = false;}
     var desc = isSchool ? "<div>Enroll in " + career + "?</div>" : "<div><strong>Begin a "+career+" career?</strong></div>";
     switch(career){
+        case "Craftsman":
+            var craftsmanQualifications = person.getCraftsmanQualifications();
+            var masterPoints = craftsmanQualifications.masterPoints;
+            var craftingSkills = craftsmanQualifications.qualifyingSkills;
+            var skillDesc = "<ul><li>Craftsman-"+person.getSkills()["Craftsman"].Skill+"</li>";
+            for(var i = 0; i < craftingSkills.length; i++){
+                skillDesc += "<li>" + craftingSkills[i].Skill + "-" + craftingSkills[i].Level + "</li>";
+            }
+            skillDesc += "</ul>"
+            desc += "<ul><li>Begin: Auto (if 2x Skill-6 and Craftsman-1)</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Masterpiece: 9D < Master Points (min 40)</li><li>CC + Craftsman + Up to 5 Skill/Knowl at 6+</li><li>Qualifying Skills ("+masterPoints+"):"+skillDesc+"</li><li>Continue: Craftsman x2 ("+(2*person.getSkills()["Craftsman"].Skill)+")</li></ul>";
+            break;
         case "Citizen":
             desc += "<ul><li>Begin: Automatic (1st career only)</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Continue: 10-</li></ul>";
             break;
