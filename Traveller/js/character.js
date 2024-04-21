@@ -2071,7 +2071,7 @@ export function createCharacter(roller, species){
             };
             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                 if(priorCareers == 0 || careers[priorCareers - 1].active == false){
-                    careers.push({career:career,terms:1,active:true});
+                    careers.push({career:career,terms:1,active:true,awards:[]});
                 }else{
                     careers[careers.length-1].terms += 1;
                 }
@@ -2125,6 +2125,7 @@ export function createCharacter(roller, species){
                                             }
                                         }
                                     }
+                                    awardJobOrHobby(isJob,skill,knowledge);
                                     gainCitizenLifeSkills(isJob,skill,knowledge,updateFunc,nextSteps);
                                     
                                 },true);
@@ -2136,6 +2137,7 @@ export function createCharacter(roller, species){
                                 record("Roll for Citizen Skill/Knowledge: " + randomJob.rolls);
                                 updateFunc();
                                 skill = randomJob.job.skill, knowledge = randomJob.job.knowledge;
+                                awardJobOrHobby(isJob,skill,knowledge);
                                 gainCitizenLifeSkills(isJob,skill,knowledge,updateFunc,nextSteps);
                             }
                         }else{
@@ -2146,6 +2148,7 @@ export function createCharacter(roller, species){
                             record("Roll for Citizen Skill/Knowledge: " + randomJob.rolls);
                             updateFunc();
                             skill = randomJob.job.skill, knowledge = randomJob.job.knowledge;
+                            awardJobOrHobby(isJob,skill,knowledge);
                             gainCitizenLifeSkills(isJob,skill,knowledge,updateFunc,nextSteps);
                         }
                     }else{ // increase job/hobby by 1
@@ -2195,6 +2198,20 @@ export function createCharacter(roller, species){
                 
             },true,undefined,CCDescriptions);
         }
+    }
+    function awardJobOrHobby(isJob,skill,knowledge){
+        var jobDesc = "";
+        if(typeof knowledge == "undefined"){
+            jobDesc = skill;
+        }else{
+            jobDesc = skill + "("+knowledge+")";
+        }
+        if(isJob){
+            jobDesc = "Job: " + jobDesc;
+        }else{
+            jobDesc = "Hobby: " + jobDesc;
+        }
+        careers[careers.length-1].awards.push(jobDesc);
     }
     function resolveSpacer(career, updateFunc, resetCCs){
         if(typeof resetCCs === "undefined"){resetCCs = false;}
