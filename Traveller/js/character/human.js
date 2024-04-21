@@ -86,7 +86,8 @@ export class human extends CLASS_SPECIES{
             2, // 5
             2, // 6
             2, // 7
-            2 // 8
+            2, // 8
+            2 // 9
         ]
     }
 
