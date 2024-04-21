@@ -89,7 +89,7 @@ export class CLASS_SPECIES{
     }
     static getLifeStageFromAge(age){
         var stageCursor = 0, ageClimber = 0;
-        while(age > ageClimber && stageCursor < 9){
+        while(age > ageClimber && stageCursor < 10){
             ageClimber += this.LifeStageTerms[stageCursor] * 4;
             stageCursor += 1;
         }

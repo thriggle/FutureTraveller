@@ -200,7 +200,7 @@ export function createCharacter(roller, species){
                 record("Absent any other source of fame, Fame = ["+fameFlux+"]");
             }
         }
-        return totalFame + fameFlux;
+        return Math.min(36,totalFame + fameFlux);
     }
     function initStats(stats, geneticValues){
        characteristics = [
