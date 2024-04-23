@@ -2239,6 +2239,7 @@ export function createCharacter(roller, species){
     }
     function resolveSpacer(career, updateFunc, resetCCs){
         if(typeof resetCCs === "undefined"){resetCCs = false;}
+        var hasBeen = canResumeFromService(career);
         if(hasBeen.canResume){
             swapCareerIndices(hasBeen.prevCareerIndex);
             resetCCs = true;
@@ -2793,6 +2794,7 @@ export function createCharacter(roller, species){
     }
     function resolveSoldier(career, updateFunc, resetCCs){
         if(typeof resetCCs === "undefined"){resetCCs = false;}
+        var hasBeen = canResumeFromService(career);
         if(hasBeen.canResume){
             swapCareerIndices(hasBeen.prevCareerIndex);
             resetCCs = true;
