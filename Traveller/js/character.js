@@ -2070,7 +2070,7 @@ export function createCharacter(roller, species){
             swapCareerIndices(hasBeen.prevCareerIndex);
         }
         var priorCareers = careers.length;
-        if(!hasBeen.canResume || (priorCareers > 0 && careers[priorCareers - 1].career !== career)){
+        if((priorCareers > 0 && careers[priorCareers - 1].career !== career && !hasBeen.canResume)){
             record("Cannot transfer to Citizen career from another career.")
             updateFunc();
         }else{
