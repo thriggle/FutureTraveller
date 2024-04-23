@@ -113,13 +113,20 @@ export function getDialog(){
     }
     
 }
+
 export function pickSkill(category, prompt, callback, excludedChoice, preferredChoice, preventCancel){
     if(typeof preventCancel == "undefined"){ preventCancel = false;}
+
     var pickerDialog = getDialog();
-    document.getElementById("cancelDlgBtn").removeAttribute("disabled");
+    if(typeof noCancel === "undefined"){ noCancel = false;}
     var dialog = pickerDialog.dialog, selector = pickerDialog.selector, dialogText = pickerDialog.dialogText;
     var dlgPreviewText = document.getElementById("txtDialogPreview");
     clearElement(dlgPreviewText);
+    if(noCancel){
+        document.getElementById("cancelDlgBtn").setAttribute("disabled","disabled");
+    }else{
+        document.getElementById("cancelDlgBtn").removeAttribute("disabled");
+    }
     var skills = [];
     switch(category){
         case "S":
