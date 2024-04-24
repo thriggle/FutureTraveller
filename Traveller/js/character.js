@@ -1707,6 +1707,7 @@ export function createCharacter(roller, species){
                             updateFunc();
                             record("Called up by the " + reserve.reserves+ "!");
                             updateFunc();
+                            alert("Called up by the " + reserve.reserves+ "!");
                             // TODO: Resume service career
                             var svcIndex = 0;
                             for(var s = 0; s < careers.length; s++){
@@ -1715,7 +1716,7 @@ export function createCharacter(roller, species){
                                 }
                             }
                             careers[svcIndex].active = true;
-                            careers[careers.length - 1].active = false;
+                            careers[careers.length - 1].active = true;
                             var svcCareers = careers.splice(svcIndex,1);
                             careers.push(svcCareers[0]);
                             var resetCCs = true;
@@ -2045,12 +2046,35 @@ export function createCharacter(roller, species){
             musterOutSpecificCareer(options.indexOf(option),1,updateFunc,callback);
         },noCancel,undefined);
     }
+    function canResumeFromService(career){
+        var prevCareerIndex = -1, canResume = false;
+        for(var i = 0, len = careers.length-1; i < len; i++){
+            var prevCareer = careers[i];
+            if(prevCareer.career === career && prevCareer.active ){
+                canResume = true;
+                prevCareerIndex = i;
+                break;
+            }
+        }
+        return {prevCareerIndex,canResume};
+    }
+    function swapCareerIndices(index){
+        careers[careers.length - 1].active = false;
+        careers[index].active = true;
+        var svcCareers = careers.splice(index,1);
+        careers.push(svcCareers[0]);
+    }
     function resolveCitizen(career,updateFunc){
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+        }
         var priorCareers = careers.length;
-        if(priorCareers > 0 && careers[priorCareers - 1].career !== career){
+        if((priorCareers > 0 && careers[priorCareers - 1].career !== career && !hasBeen.canResume)){
             record("Cannot transfer to Citizen career from another career.")
             updateFunc();
         }else{
+            
             if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
                 CCs = getCCs(career);
             }
@@ -2215,6 +2239,11 @@ export function createCharacter(roller, species){
     }
     function resolveSpacer(career, updateFunc, resetCCs){
         if(typeof resetCCs === "undefined"){resetCCs = false;}
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+            resetCCs = true;
+        }
         var priorCareers = careers.length;
         var CC = "";
         var getOperationFromRoll = function(sum){
@@ -2765,6 +2794,11 @@ export function createCharacter(roller, species){
     }
     function resolveSoldier(career, updateFunc, resetCCs){
         if(typeof resetCCs === "undefined"){resetCCs = false;}
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+            resetCCs = true;
+        }
         var priorCareers = careers.length;
         var CC = "";
         var getBranchOperationDM = function(branch){
@@ -3267,6 +3301,11 @@ export function createCharacter(roller, species){
     }
     function resolveMarine(career, updateFunc, resetCCs){
         if(typeof resetCCs === "undefined"){resetCCs = false;}
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+            resetCCs = true;
+        }
         var priorCareers = careers.length;
         var CC = "";
         var getBranchOperationDM = function(branch){
@@ -3780,6 +3819,10 @@ export function createCharacter(roller, species){
         }
     }
     function resolveMerchant(career, updateFunc){
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+        }
         var CC = ""; var priorCareers = careers.length;
         var advanceAndGetSkills = function(){
             updateFunc();
@@ -3956,7 +3999,7 @@ export function createCharacter(roller, species){
             },true,defaultValue,cautionBraveryPreviews,false);
         };
 
-        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
+        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false || hasBeen.canResume){
             CCs = getCCs(career);
         }
         var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
@@ -4014,6 +4057,10 @@ export function createCharacter(roller, species){
         }
     }
     function resolveScout(career, updateFunc){
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+        }
         var CC = ""; var priorCareers = careers.length;
         var advanceAndGetSkills = function(checkCC){
             updateFunc();
@@ -4190,7 +4237,7 @@ export function createCharacter(roller, species){
             }
         };
 
-        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
+        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false || hasBeen.canResume){
             CCs = getCCs(career);
         }
         var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
@@ -4295,6 +4342,10 @@ export function createCharacter(roller, species){
         }
     }
     function resolveCraftsman(career, updateFunc){
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+        }
         var CC = ""; var priorCareers = careers.length;
         var advanceAndGetSkills = function(checkCC,ccValue,quals){
             var termSkillTables = [
@@ -4390,7 +4441,8 @@ export function createCharacter(roller, species){
                 });
             }
         }
-        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
+        
+        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false || hasBeen.canResume){
             CCs = getCCs(career);
         }
         var quals = getCraftsmanQualifications();
@@ -4766,14 +4818,20 @@ export function createCharacter(roller, species){
         for(var i = 0, len = characteristics.length; i < len; i++){
             if(characteristics[i].value <= 0){ isDead = true;}
         }
+        var hasBeen = {}, isNow = {};
+        for(var i = 0, len = careers.length; i < len; i++){
+            var prevCareer = careers[i].career;
+            hasBeen[prevCareer] = true;
+            if(careers[i].active){ isNow[prevCareer] = true; } else{ isNow[prevCareer] = false; }
+        }
         var availability = (musteredOut || isDead) ? false : true; // can't pursue careers if dead or you've already mustered out
         q.MusterOut = !isDead && (careers.length > 0 && musteredOut == false);
         q.Citizen = availability && careers.length == 0;
-        q.Soldier = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Soldier).length == 0);
-        q.Merchant = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Merchant).length == 0);
-        q.Spacer = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Spacer).length == 0);
-        q.Marine = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Marine).length == 0);
-        q.Scout = availability && (careers.length == 0 || careers.filter((v,i,ar)=> v.career === ENUM_CAREERS.Scout).length == 0);
+        q.Soldier = availability && (careers.length == 0 || (!hasBeen[ENUM_CAREERS.Soldier] || isNow[ENUM_CAREERS.Soldier]));
+        q.Merchant = availability && (careers.length == 0 || (!hasBeen[ENUM_CAREERS.Merchant] || isNow[ENUM_CAREERS.Merchant]));
+        q.Spacer = availability && (careers.length == 0 || (!hasBeen[ENUM_CAREERS.Spacer] || isNow[ENUM_CAREERS.Spacer]));
+        q.Marine = availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Marine] || isNow[ENUM_CAREERS.Marine]));
+        q.Scout = availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Scout] || isNow[ENUM_CAREERS.Scout]));
         var navyCommission = awards.indexOf("Navy Officer1") >= 0,
             armyCommission = awards.indexOf("Army Officer1") >= 0,
             marineCommission = awards.indexOf("Marine Officer1") >= 0;
@@ -4791,7 +4849,7 @@ export function createCharacter(roller, species){
         }
         if(q.Craftsman){
             var craftsmanQ = getCraftsmanQualifications();
-            q.Craftsman = craftsmanQ.qualifies;
+            q.Craftsman = availability && ((!hasBeen[ENUM_CAREERS.Craftsman] || isNow[ENUM_CAREERS.Craftsman])) && craftsmanQ.qualifies;
         }
         q.fameEvent = !fameFluxApplied;
         if(!fameMusterOutBonus && calculateFame() >= 19){

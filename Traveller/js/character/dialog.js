@@ -173,7 +173,7 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
             {name:"Gravitics",skill:"Gravitics",knowledge:undefined},
 
             {name:"High-G",skill:"High-G",knowledge:undefined},
-            {name:"Hostile Env",skill:"Hostile Env",knowledge:undefined},
+            {name:"Hostile Environ",skill:"Hostile Environ",knowledge:undefined},
 
             {name:"Language",skill:"Language",knowledge:undefined},
 
