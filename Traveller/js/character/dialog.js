@@ -450,11 +450,7 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
     
     clearElement(selector); 
     clearElement(dialogText);
-    if(preventCancel){
-        document.getElementById("cancelDlgBtn").setAttribute("disabled","disabled");
-    }else{
-        document.getElementById("cancelDlgBtn").removeAttribute("disabled");
-    }
+    
     dialogText.insertAdjacentHTML("beforeend","<span>"+prompt+"</span>");
     for(var i = 0, len = skills.length; i < len; i++){
         var option = selector.appendChild(document.createElement("option"));
