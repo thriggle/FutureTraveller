@@ -21,6 +21,7 @@ export function createCharacter(roller, species){
     var languageReceipts = 0; var edu_waivers = 0; var awards = [];
     var sanity = 0;
     var musteredOut = false;
+    var reserveYears = {army:0,marine:0,navy:0};
    var defaultSkills = [
         MasterSkills.Actor, MasterSkills.Artist, MasterSkills.Athlete, 
         MasterSkills.Author, MasterSkills.Comms, MasterSkills.Computer, 
@@ -58,6 +59,7 @@ export function createCharacter(roller, species){
         fameFluxApplied = false, finalFameRoll = false;
         fameMusterOutBonus = false, fameFlux = 0;
         resignationDeclined = false;
+        reserveYears = {army:0,marine:0,navy:0};
     }
     function addToReserves(service){
         var reserve = service + " Reserves";
@@ -1812,6 +1814,19 @@ export function createCharacter(roller, species){
             }else{
                 career.benefitDM = 0;
             }
+            
+            if(career.terms >= 4){
+                if(career.career === ENUM_CAREERS.Soldier || career.career === ENUM_CAREERS.Marine || career.career === ENUM_CAREERS.Spacer){
+                    var isOfficer = career.rank.officer > 0;
+                    var retirementPay = 2000;
+                    if(isOfficer){
+                        retirementPay = 3000;
+                    }
+                    retirementPay *= career.terms;
+                    career.awards.push("Retirement Pay: Cr" + retirementPay)
+                }
+            }
+
             if(career.awards && career.awards.length > 0){
                 if(career.awards.indexOf("Disabled") >= 0){
                     career.numRolls *= 2;
@@ -1864,9 +1879,9 @@ export function createCharacter(roller, species){
             case 5: 
                 gainSkillOrKnowledge(ENUM_SKILLS.HeavyWeapons,"WMD",false,prompt);
                 callback();
-                 break;
-            case 6: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Programmer,callback,false); break;
-        }
+                break;
+                case 6: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Programmer,callback,false); break;
+            }
     }
     function musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback){
         updateFunc();
@@ -4943,6 +4958,9 @@ export function createCharacter(roller, species){
         if(typeof numYears === "undefined"){ numYears = 1;}
         var peakStart = species.getFirstYearOfStage( isForcedGrowthClone ? 4 : 5);
         var retirementAge = species.getFirstYearOfStage(9);
+        var armyReservist = awards.indexOf("Army Reserves") >= 0, navyReservist =awards.indexOf("Navy Reserves") >= 0, marineReservist = awards.indexOf("Marine Reserves") >= 0;
+        var isReservist = armyReservist || navyReservist || marineReservist;
+        
         for(var i = 0; i < numYears; i++){
             age += 1;
             if(age >= peakStart){
@@ -4950,13 +4968,88 @@ export function createCharacter(roller, species){
                     remarks += agingCheck();
                 }
             }
-            if(age === retirementAge && (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0)){
-                for(var j = 0, jlen = awards.length; j < jlen; j++){
-                    var award = awards[j];
-                    if(award.indexOf(" Reserves") > 0){
-                        awards[j] = awards[j].replace("Reserves","Pension");
-                        record("Retired from the " + award +" due to age. Gained pension.");
+            if(isReservist){
+                if(armyReservist){
+                    reserveYears.army += 1;
+                }
+                if(marineReservist){
+                    reserveYears.marine += 1;
+                }
+                if(navyReservist){
+                    reserveYears.navy +=1;
+                }
+            }
+            if(age === retirementAge){
+                var armyCareerIndex = -1, marineCareerIndex = -1, navyCareerIndex = -1, functionaryCareerIndex = -1, citizenCareerIndex = -1;
+                var isFunctionary = false; var citPension = 0;
+                for(var c = 0, clen = careers.length; c < clen; c++){
+                    var career = careers[c];
+                    if(armyReservist && career.career === ENUM_CAREERS.Soldier){
+                        reserveYears.army -= (career.terms * 4);
+                        armyCareerIndex = c;
+                    }else if(marineReservist && career.career === ENUM_CAREERS.Marine){
+                        reserveYears.marine -= (career.terms * 4);
+                        marineCareerIndex = c;
+                    }else if(navyReservist && career.career === ENUM_CAREERS.Spacer){
+                        reserveYears.navy -= (career.terms * 4);
+                        navyCareerIndex = c;
+                    }else if(career.career === ENUM_CAREERS.Functionary){
+                        isFunctionary = true;
+                        citPension = 15000;
+                        functionaryCareerIndex = c;
+                    }else if(career.career === ENUM_CAREERS.Citizen){
+                        citPension = Math.max(citPension,5000);
+                        citizenCareerIndex = c;
                     }
+                }
+                if(citPension > 0){
+                    if(isFunctionary){
+                        careers[functionaryCareerIndex].awards.push("Functionary Pension: Cr"+citPension);
+                        record("Gained Functionary pension of Cr"+citPension+"/year.");
+                    }else{
+                        if(citizenCareerIndex >= 0){
+                            careers[citizenCareerIndex].awards.push("Citizen Pension: Cr"+citPension);
+                            record("Gained Citizen pension of Cr"+citPension+"/year.");
+                        }
+                    }
+                    
+                }
+                if(isReservist){
+                    for(var j = 0, jlen = awards.length; j < jlen; j++){
+                        var award = awards[j];
+                        if(award.indexOf(" Reserves") > 0){
+                            awards[j] = awards[j].replace("Reserves","Pension");
+                            record("Retired from the " + award +" due to age.");
+                        }
+                    }
+                    if(armyReservist){
+                        var pension = reserveYears.army * 100;
+                        if(armyCareerIndex >= 0){
+                            careers[armyCareerIndex].awards.push("Army Reserve Pension: Cr"+pension);
+                        }else{
+                            awards.push("Army Reserve Pension: Cr"+pension)
+                        }
+                        record("Gained Army pension of Cr"+pension+"/year.");
+                    }
+                    if(marineReservist){
+                        var pension = reserveYears.marine * 100;
+                        if(marineCareerIndex >= 0){
+                            careers[marineCareerIndex].awards.push("Marine Reserve Pension: Cr"+pension);
+                        }else{
+                            awards.push("Marine Reserve Pension: Cr"+pension)
+                        }
+                        record("Gained Marine pension of Cr"+pension+"/year.");
+                    }
+                    if(navyReservist){
+                        var pension = reserveYears.navy * 100;
+                        if(navyCareerIndex >= 0){
+                            careers[navyCareerIndex].awards.push("Navy Reserve Pension: Cr"+pension);
+                        }else{
+                            awards.push("Navy Reserve Pension: Cr"+pension)
+                        }
+                        record("Gained Navy pension of Cr"+pension+"/year.");
+                    }
+                    
                 }
             }
         }
@@ -5106,7 +5199,8 @@ export function createCharacter(roller, species){
             skills:skills,
             species:species,
             fameFlux:fameFlux,
-            resignationDeclined:resignationDeclined
+            resignationDeclined:resignationDeclined,
+            reserveYears:reserveYears
         }
         return character;
     }
@@ -5147,6 +5241,7 @@ export function createCharacter(roller, species){
         shipShares = characterJson.shipShares;
         setSkills(characterJson.skills);
         resignationDeclined = typeof characterJson.resignationDeclined == "undefined" ? false : characterJson.resignationDeclined;
+        reserveYears = typeof characterJson.reserveYears == "undefined" ? {army:0,marine:0,navy:0} : characterJson.reserveYears;
         switch(characterJson.species){
             case "human":species = human; break;
             default: species = human;
