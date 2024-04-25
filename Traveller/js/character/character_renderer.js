@@ -124,7 +124,7 @@ function history(character, elements){
                     var isDeath = false, isAgingFail = false;
                     var isReady = eventText.indexOf("Ready to begin adventuring!") >=0;
                     var isDrafted = eventText.indexOf("] = RESERVES") >= 0;
-                    var isCalledUp = eventText.indexOf("Called up by the ") >= 0 || eventText.indexOf("Gained pension.") > 0;
+                    var isCalledUp = eventText.indexOf("Called up by the ") >= 0 || eventText.indexOf("Retired from the ") > 0;
                     if(isAging){
                         isAgingFail = eventText.indexOf("illness") >= 0;
                     }
