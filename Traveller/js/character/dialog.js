@@ -182,7 +182,7 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
             {name:"Medic",skill:"Medic",knowledge:undefined},
             {name:"Musician",skill:"Musician",knowledge:undefined},
 
-            {name:"Navigation",skill:"Navigation",knowledge:undefined},
+            {name:"Navigator",skill:"Navigator",knowledge:undefined},
 
             {name:"Photonics",skill:"Photonics",knowledge:undefined},
             {name:"Pilot(Small Craft)",skill:"Pilot",knowledge:"Small Craft"},
@@ -358,7 +358,7 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
                 {name:"Liaison",skill:"Liaison",knowledge:undefined},
 
                 {name:"Medic",skill:"Medic",knowledge:undefined},
-                {name:"Navigation",skill:"Navigation",knowledge:undefined},
+                {name:"Navigator",skill:"Navigator",knowledge:undefined},
                 
                 {name:"Pilot(Small Craft)",skill:"Pilot",knowledge:"Small Craft"},
                 
@@ -407,7 +407,7 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
                 {name:"Liaison",skill:"Liaison",knowledge:undefined},
 
                 {name:"Medic",skill:"Medic",knowledge:undefined},
-                {name:"Navigation",skill:"Navigation",knowledge:undefined},
+                {name:"Navigator",skill:"Navigator",knowledge:undefined},
                 
                 {name:"Pilot(Small Craft)",skill:"Pilot",knowledge:"Small Craft"},
                 
