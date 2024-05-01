@@ -6,13 +6,21 @@ import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills
 import { getDialog, dialogCallback, pickOption, pickSkill } from "./character/dialog.js";
 import { ENUM_CAREERS, getCCs, citizenLifeJob, CareerSkillTables, CareerBenefitTables, ServiceBranchMods} from "./character/careers.js";
 
-export function createCharacter(roller, species){
+export function createCharacter(roller, species, chosenGender){
     if(typeof roller === "undefined"){
         roller = getRollerFromSeed();
     }
     
     if(typeof species === "undefined"){
         species = human;
+    }
+    var genderKey = "random";
+    var genderRoll = roller.d6(2);
+    
+    if(typeof chosenGender == "undefined" || chosenGender == "random"){
+        genderKey = species.GenderTable[genderRoll.result-2];
+    }else{
+        genderKey = chosenGender;
     }
     var agingCrises = 0;
     var name = "J. Doe";
@@ -35,8 +43,7 @@ export function createCharacter(roller, species){
     skills[gunner] = {"Skill":-1,"Knowledge":{"Turrets":0}}; // Turrets (but not Gunner) is also a default skill
     var lang = {}; lang[nativeLanguage] = 0;
     skills[MasterSkills.Language] = {"Skill":-1,"Knowledge":lang};
-    var genderRoll = roller.d6(2), casteRoll = roller.d6(2);
-    var genderKey = species.GenderTable[genderRoll.result-2];
+    var casteRoll = roller.d6(2);
     var gender = species.Genders[genderKey];
     var casteKey = species.CasteTable[casteRoll.result-2];
     var caste = species.Castes[casteKey];
@@ -5162,6 +5169,10 @@ export function createCharacter(roller, species){
     function getGender(){
         return genderKey;
     }
+    function setGender(key){
+        genderKey = key;
+        gender = species.Genders[genderKey];
+    }
     function getSanity(){
         return sanity;
     }
@@ -5269,7 +5280,7 @@ export function createCharacter(roller, species){
         College:College, University:University, Masters:Masters, 
         Professors:Professors, MedicalSchool:MedicalSchool, LawSchool:LawSchool,
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
-        resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender,
+        resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender, setGender,
         getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter, fameMusterOutBonus, claimFameMusterOutBonus,
         resignFromReserves, getCraftsmanQualifications
     }

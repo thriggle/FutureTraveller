@@ -46,7 +46,12 @@ function onNavigate(e){
     }
 }
 document.getElementById("btnRandomName").addEventListener("click",()=>{
-    document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human"));
+    var chosenGender = document.getElementById("slctGender").value;
+    switch(chosenGender){
+        case "random": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human")); break;
+        case "M": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human.malefirstname") +" " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix") ); break;
+        case "F": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human.femalefirstname") +" " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix") ); break;
+    }
 });
 document.getElementById("btnApplyName").addEventListener("click",()=>{
     person.setName(document.getElementById("txtName").value);
@@ -519,7 +524,8 @@ document.getElementById("btnImportJSON").addEventListener("change", function () 
 });
 function newCharacter(){
     clear();
-    person = createCharacter(roller, human);
+    var chosenGender = document.getElementById("slctGender").value;
+    person = createCharacter(roller, human, chosenGender);
     
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if(document.getElementById("rdoAttributesNatural").checked){
@@ -555,9 +561,11 @@ function newCharacter(){
         person.initStats(attributes, genetics);
         // person.getCharacteristics() = person.getCharacteristics();
     }
+    
     if(document.getElementById("txtName").value){
         person.setName(document.getElementById("txtName").value);
     }else{
+        
         if(person.getGender() === "M"){
             person.setName(addCaps(nameGenerator.getRandomName("human.malefirstname") + " " + nameGenerator.getRandomName("human.lastname")+nameGenerator.getRandomName("human.suffix")));
         }else if(person.getGender() === "F"){
