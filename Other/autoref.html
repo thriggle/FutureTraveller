@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Ref</title>
+</head>
+<body>
+    <style>
+        .controls, .history{  border:1px solid black; text-align: left; padding:1rem; height:100%;}
+        .controls{ background-color:#dfdfdf; text-align: left;}
+        .historyContainer{ text-align: left;}
+        .history ol{ display:flex; flex-direction: column-reverse;margin-block-start:0px; padding-top:0px; margin-inline-start: 0px; padding-inline-start: 0px;}
+    </style>
+    <div class="root">
+        <div class="historyContainer">
+        <ol class="history"></ol>
+    </div>
+        <div class="controls">
+            <ol>
+                <li><b>Scene</b> <input type="button" id="btnRandomScene" value="random"><input type="button" id="describeScene" value="update scene description"><br/><textarea style="width:25rem;height:4rem;" name="txtScene" id="txtScene"></textarea></li>
+                <li><b>Threads</b> Current Thread <select name="thread" id="thread"></select>
+                    <ul id="threads">
+    
+                    </ul><input type="text" id="txtThread"> <input type="button" id="btnAddThread" value="add thread"></li>
+                <li><b>Where are we heading?</b> <select name="slctScene" id="scene">
+                    <option value="To Knowledge">To Knowledge</option>
+                    <option value="To Conflict">To Conflict</option>
+                    <option value="To Endings">To Endings</option>
+                </select></li>
+                <li><b>Oracle. Ask a yes/no question.</b> <input type="text" id="txtQuestion"/><input type="button" id="oracleButton" value="Ask">   </li>
+                <li><b>Surge Count:</b> <span id="surge">0</span></li>
+                
+            </ol>
+        </div>
+        
+    </div>
+    <script src="./resources/autoref.js" type="module"></script>
+</body>
+</html>
