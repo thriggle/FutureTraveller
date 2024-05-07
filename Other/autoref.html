@@ -7,23 +7,48 @@
 </head>
 <body>
     <style>
-        .controls, .history{  border:1px solid black; text-align: left; padding:1rem; height:100%;}
+        .controls, .history{  border:1px solid black; text-align: left; padding:1rem;}
         .controls{ background-color:#dfdfdf; text-align: left;}
         .historyContainer{ text-align: left;}
         .history ol{ display:flex; flex-direction: column-reverse;margin-block-start:0px; padding-top:0px; margin-inline-start: 0px; padding-inline-start: 0px;}
+        nav.menu{ display:block; }
+        nav.menu ul{ margin:0px; }
+        nav.menu li{display:inline-block;font-family: Bahnschrift; user-select: none; }
+        nav.menu li a{cursor:pointer; text-decoration: none; color:white; background-color:black; display:inline-block; 
+            padding:0.75rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; border:1px solid white; border-bottom:0px;}
+        nav.menu li a:hover{ color:black; background-color: rgb(198, 198, 198);}
+        nav.menu li a.selected{ color:black; background-color: white; border:1px solid black;}
+        [data-nav]{ display:none; border:1px solid gray;}
+        [data-nav='oracle']{display:block; }
+        input[type='number']{width:3em;}
+        #panel_numkeep{display:none;}
+        .die{ font-family:Consolas, Inconsolas, 'Courier New', monospace; padding-bottom:0.5em; padding-top:1.5em; padding-left:1em; padding-right:1em; min-width:2em; min-height:2em; text-align:center; border:1px solid black; background-color:#efefef; box-shadow:1px 1px 4px black;}
+        .die.discarded{ background-color:#ccc; box-shadow:none;}
+        .total{font-size:1.5em; font-weight:bold;}
+        #roll_history .roll_output{font-size:0.8em; font-style:italic; }
+        #roll_history .total{font-size:0.8em; font-weight:bold; }
+        [data-nav='roller'] div{
+            display: inline-block;
+            margin: 5px;
+        }
     </style>
     <div class="root">
         <div class="historyContainer">
         <ol class="history"></ol>
     </div>
-        <div class="controls">
+        <nav class="menu">
+            <ul>
+                <li><a data-tier="1" target="oracle" class="selected">Oracle</a></li>
+                <li><a data-tier="1" target="threads">Threads</a></li>
+                <li><a data-tier="1" target="characters">Characters</a></li>
+                <li><a data-tier="1" target="random">Random</a></li>
+                <li><a data-tier="1" target="roller">Roller</a></li>
+            </ul>
+        </nav>
+        <div class="oracle controls" data-nav="oracle">
             <ol>
                 <li><b>Scene</b> <input type="button" id="btnRandomScene" value="random"><input type="button" id="describeScene" value="update scene description"><br/><textarea style="width:25rem;height:4rem;" name="txtScene" id="txtScene"></textarea></li>
-                <li><b>Threads</b> Current Thread <select name="thread" id="thread"></select>
-                    <ul id="threads">
-    
-                    </ul><input type="text" id="txtThread"> <input type="button" id="btnAddThread" value="add thread"></li>
-                <li><b>Where are we heading?</b> <select name="slctScene" id="scene">
+                <li><b>Stage of the scene (Where are we heading?)</b> <select name="slctScene" id="scene">
                     <option value="To Knowledge">To Knowledge</option>
                     <option value="To Conflict">To Conflict</option>
                     <option value="To Endings">To Endings</option>
@@ -33,7 +58,117 @@
                 
             </ol>
         </div>
-        
+        <div class="controls" data-nav="threads">
+            <textarea name="threads" id="threads"></textarea>
+        </div>
+        <div class="controls" data-nav="characters">
+            <textarea name="characters" id="characters"></textarea>
+        </div>
+        <div class="controls" data-nav="random">
+            <fieldset>
+                <legend>T5 random stuff</legend>
+                <label for="slctType">Category</label> <select name="slctType" id="slctType">
+                    <option value="majortheme">Adventure Theme (Major)</option>
+                    <option value="theme">Adventure Theme (Any)</option>
+                    <option value="crime">Crime</option>
+                    <option value="devicedamagelocation">Damage Location (Thing/device)</option>
+                    <option value="tooldamagelocation">Damage Location (Thing/tool)</option>
+                    <option value="weapondamagelocation">Damage Location (Thing/weapon)</option>
+                    <option value="weapondamagelocation">Damage Location (Equipment/heavy weapon)</option>
+                    <option value="vehicledamagelocation">Damage Location (Equipment/vehicle)</option>
+                    <option value="anatomicaldamagelocation">Damage Location (Character/anatomical)</option>
+                    <option value="biologicaldamagelocation">Damage Location (Character/biological)</option>
+                    <option value="visibility">Visibility</option>
+                    <option value="temperature">Temperature</option>
+                    <option value="attitude">Attitude</option>
+                    <option value="typicaltech">Typical Tech</option>
+                    <option value="hightech">High Tech</option>
+                    <option value="Low">Low TL</option>
+                    <option value="Med">Med TL</option>
+                    <option value="High">High TL</option>
+                    <option value="VHigh">VHigh TL</option>
+                    <option value="XHigh">XHigh TL</option>
+                    <option value="UHigh">UHigh TL</option>
+                    <option value="Fantastic">Fantastic TL</option>
+                </select>
+                <input type="button" value="Get Random" id="btnGet">
+                <div id="output"></div>
+            </fieldset>
+            <fieldset>
+                <legend>MgT2 Random Stuff</legend>
+                <label for="slctMgT2Type">Category</label> <select name="slctMgT2Type" id="slctMgT2Type">
+                    <option value="AllyEnemy">Ally or Enemy</option>
+                    <option value="Passenger">Passenger</option>
+                    <option value="CharacterQuirk">Character Quirk</option>
+                    <option value="Patron">Mission Patron</option>
+                    <option value="Mission">Mission</option>
+                    <option value="Target">Mission Target</option>
+                    <option value="Opposition">Mission Opposition</option>
+                    <option value="Starport">Starport Encounter</option>
+                    <option value="Rural">Rural Encounter</option>
+                    <option value="Urban">Urban Encounter</option>
+                    <option value="CommonTradeGood">Common Trade Good</option>
+                    <option value="TradeGood">Trade Good</option>
+                </select>
+                <input type="button" value="Get Random" id="btnMgT2Get">
+                <div id="MgT2output"></div>
+            </fieldset>
+            <fieldset>
+                <legend>Universal NPC Emulator</legend>
+                <input type="button" id="btnUNE" value="Generate NPC"><br/><span style="font-weight:bold" id="une_npc"></span><br/>
+                Relationship: <select name="slctUNERelationship" id="slctUNERelationship">
+                    <option value="loved">loved</option>
+                    <option value="friendly">friendly</option>
+                    <option value="peaceful">peaceful</option>
+                    <option value="neutral" selected>neutral</option>
+                    <option value="distrustful">distrustful</option>
+                    <option value="hostile">hostile</option>
+                    <option value="hated">hated</option>
+                </select> <input type="button" id="btnUNEMood" value="Get Mood"> <span id="une_mood"></span><br/>
+                Bearing: <select name="slctUNEBearing" id="slctUNEBearing">
+                    <option value="random">random</option>
+                    <option value="scheming">scheming</option>
+                    <option value="insane">insane</option>
+                    <option value="friendly">friendly</option>
+                    <option value="hostile">hostile</option>
+                    <option value="inquisitive">inquisitive</option>
+                    <option value="knowing">knowing</option>
+                    <option value="mysterious">mysterious</option>
+                    <option value="prejudiced">prejudiced</option>
+                </select><input id="btnUNEBearing" type="button" value="Conversation"> &nbsp;<span id="une_bearing"></span>
+            </fieldset>
+        </div>
+        <div class="controls" data-nav="roller">
+            <div>
+                <label for="nD">Number of Dice</label> <input name="nD" id="nD" title="Number of Dice" alt="Number of Dice" type="number" value="2" />
+            </div>
+            <div>
+                <label for="slctMode">Mode</label> <select name="slctMode" id="slctMode" title="Dice Rolling Mode" alt="Choose dice rolling mode">
+                    <option value="normal">Normal (sum)</option>
+                    <option value="keephigh">Keep Highest</option>
+                    <option value="keeplow">Keep Lowest</option>
+                </select>
+                <span id="panel_numkeep">
+                    <label for="nKeep">Number to Keep</label> <input type="number" name="nKeep" id="nKeep" title="Number of dice to keep" alt="Number of dice to keep" value="2">
+                </span>
+            </div>
+            <br>
+            <div>
+                <input type="button" value="Roll" id="btnRoll">
+                <input type="button" value="Roll Flux" name="btnRollFlux" id="btnRollFlux">
+                <input type="button" value="Roll Good Flux" name="btnRollGoodFlux" id="btnRollGoodFlux">
+                <input type="button" value="Roll Bad Flux" name="btnRollBadFlux" id="btnRollBadFlux">
+                <input type="button" value="Clear Roll History" name="btnClearHistory" id="btnClearHistory">
+            </div>
+            <br>
+            <div id="outputrow">
+                <div class="roll_output">
+                    <div class="die">?</div>
+                </div>=<div class="total">Roll</div>
+            </div>
+            <br>
+            <div id="roll_history"></div>
+        </div>
     </div>
     <script src="./resources/autoref.js" type="module"></script>
 </body>
