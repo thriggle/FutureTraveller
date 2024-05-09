@@ -254,15 +254,15 @@
                         </select>
                     <br><br/>                         
                     Target Range: <select data-combat="range" name="" id="">
-                        <option value="0">Contact (0-3m)</option>
-                        <option value="1">VShort (3-25m)</option>
-                        <option selected value="2">Short (25-100m)</option>
-                        <option value="3">Medium (100-300m)</option>
-                        <option value="4">Long (300-750m)</option>
-                        <option value="5">VLong (750m-3km)</option>
-                        <option value="6">Distant (3-25km)</option>
-                        <option value="7">VDist (25-250km)</option>
-                        <option value="8">Orbit (250-2500km)</option>
+                        <option value="0">0 - Contact (0-3m)</option>
+                        <option value="1">1 - VShort (3-25m)</option>
+                        <option selected value="2">2 - Short (25-100m)</option>
+                        <option value="3">3 - Medium (100-300m)</option>
+                        <option value="4">4 - Long (300-750m)</option>
+                        <option value="5">5 - VLong (750m-3km)</option>
+                        <option value="6">6 - Distant (3-25km)</option>
+                        <option value="7">7 - VDist (25-250km)</option>
+                        <option value="8">8 - Orbit (250-2500km)</option>
                     </select>
                     Target Size: <select data-combat="size" name="" id="">
                         <option value="1">1 (Coin)</option>
@@ -298,6 +298,12 @@
                         <option value="4">4 -  Somewhat Hidden</option>
                         <option value="5">5 -  Hidden</option>
                         <option value="6">6 -  Completely Hidden</option>
+                    </select><br/>
+                    Target Action: <select data-combat="targetaction" name="" id="">
+                        <option value="0">Target did not attack</option>
+                        <option value="1">Target made an aimed attack</option>
+                        <option value="2">Target made a standard attack</option>
+                        <option value="3">Target made a snapfire attack</option>
                     </select><br>
                     <h1 data-formula="combat"></h1>
                     <h2 data-formula="targetsize"></h2>
