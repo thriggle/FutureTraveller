@@ -1754,11 +1754,11 @@ function composeTasks(){
     var characteristic = +(document.querySelector("[data-asset='characteristic']").value);
     var skill = +(document.querySelector("[data-asset='skill']").value);
     var other = +(document.querySelector("[data-asset='other']").value);
-    var attackerstatus = +(document.querySelector("[data-asset='attackerstatus']").value);
+   
     var equipmentquality = +(document.querySelector("[data-asset='equipmentquality']").value);
     var equipmentease = +(document.querySelector("[data-asset='equipmentease']").value);
     
-    var assetValue = characteristic + skill + other + attackerstatus + equipmentease + equipmentquality - 5;
+    var assetValue = characteristic + skill + other + equipmentease + equipmentquality - 5;
 
     var jot = +(document.querySelector("[data-asset='jot']").value);
     var strWakefulness = (document.querySelector("[data-asset='wakefulness']").value);
@@ -1779,6 +1779,8 @@ function composeTasks(){
     document.querySelector("[data-formula='task']").innerHTML = taskdifficulty + "D"+(tasktih ? "*" : "")+" <= " + tasktarget + " ("+getOdds(taskdifficulty,tasktarget)+"%)";
 
     var combattarget = assetValue;
+    var attackerstatus = +(document.querySelector("[data-asset='attackerstatus']").value);
+    combattarget += attackerstatus;
     var combatattackerspeed = +(document.querySelector("[data-combat='attackerspeed']").value);
     var combattargetspeed = +(document.querySelector("[data-combat='targetspeed']").value);
     var combatmode = document.querySelector("[data-combat='mode']").value;
@@ -1787,6 +1789,8 @@ function composeTasks(){
     var combatstance = +(document.querySelector("[data-combat='stance']").value);
     var combatcover = +(document.querySelector("[data-combat='cover']").value);
     var combatconcealment = +(document.querySelector("[data-combat='concealment']").value);
+    var combattargetaction = +(document.querySelector("[data-combat='targetaction']").value);
+    
     var combatdifficulty = combatrange;
     if(combatdifficulty == 0){combatdifficulty = 1;}
     var combattih = false;
@@ -1796,7 +1800,7 @@ function composeTasks(){
         case "Standard": break;
         case "Snapfire": combatdifficulty += 1; if(strWakefulness == "optimal"){ combattarget += 1; }else if(strWakefulness == "tired" || strWakefulness == "sleepy"){ combattarget -= 1;} break;
     }
-    var targeteffectivesize = Math.max(combatsize + combatstance - combatrange - combatcover - combatconcealment,0);
+    var targeteffectivesize = Math.max(combatsize + combatstance - combatrange - combatcover - combatconcealment + combattargetaction,0);
     combatdifficulty += combatattackerspeed;
     combatdifficulty += combattargetspeed;
     combattarget += targeteffectivesize;
