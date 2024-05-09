@@ -1770,10 +1770,10 @@ function composeTasks(){
     var tasktih = false;
     if(taskdifficulty > skill + jot){ taskdifficulty += 1; tasktih = true;}
     switch(taskhaste){
-        case "XHasty": taskdifficulty += 2; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired"){ tasktarget -= 1;} break;
-        case "Hasty": taskdifficulty += 1; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired"){ tasktarget -= 1;} break;
+        case "XHasty": taskdifficulty += 2; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired" || strWakefulness == "sleepy"){ tasktarget -= 1;} break;
+        case "Hasty": taskdifficulty += 1; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired" || strWakefulness == "sleepy"){ tasktarget -= 1;} break;
         case "Standard": break;
-        case "Cautious": taskdifficulty -=1; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired"){ tasktarget -= 1;} break;
+        case "Cautious": taskdifficulty -=1; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired" || strWakefulness == "sleepy"){ tasktarget -= 1;} break;
     }
     tasktarget += taskmods;
     document.querySelector("[data-formula='task']").innerHTML = taskdifficulty + "D"+(tasktih ? "*" : "")+" <= " + tasktarget + " ("+getOdds(taskdifficulty,tasktarget)+"%)";
@@ -1792,9 +1792,9 @@ function composeTasks(){
     var combattih = false;
     if(combatdifficulty > skill + jot){ combatdifficulty += 1; combattih = true;}
     switch(combatmode){
-        case "Aimed": combatdifficulty -= 1; if(strWakefulness == "optimal"){ combattarget += 1; }else if(strWakefulness == "tired"){ combattarget -= 1;} break;
+        case "Aimed": combatdifficulty -= 1; if(strWakefulness == "optimal"){ combattarget += 1; }else if(strWakefulness == "tired" || strWakefulness == "sleepy"){ combattarget -= 1;} break;
         case "Standard": break;
-        case "Snapfire": combatdifficulty += 1; if(strWakefulness == "optimal"){ combattarget += 1; }else if(strWakefulness == "tired"){ combattarget -= 1;} break;
+        case "Snapfire": combatdifficulty += 1; if(strWakefulness == "optimal"){ combattarget += 1; }else if(strWakefulness == "tired" || strWakefulness == "sleepy"){ combattarget -= 1;} break;
     }
     var targeteffectivesize = Math.max(combatsize + combatstance - combatrange - combatcover - combatconcealment,0);
     combatdifficulty += combatattackerspeed;
@@ -1803,6 +1803,8 @@ function composeTasks(){
 
     document.querySelector("[data-formula='combat']").innerHTML = (combatattackerspeed >= 2 && combatmode == "Aimed") ? "Cannot aim while running" : combatdifficulty + "D"+(combattih ? "*" : "")+" <= " + combattarget + " ("+getOdds(combatdifficulty,combattarget)+"%)";
     document.querySelector("[data-formula='targetsize']").innerHTML = "Target apparent size=" +  targeteffectivesize + (targeteffectivesize == 0 ? " (invisible)":"");
+    document.querySelector("[data-formula='taskwarning']").innerHTML = (tasktih ? "*This is Hard! " : "") + (strWakefulness === "sleepy" ? "Sleepy: Check C3 before any task." : "");
+    document.querySelector("[data-formula='combatwarning']").innerHTML = (combattih ? "*This is Hard! " : "") + (strWakefulness === "sleepy" ? "Sleepy: Check C3 before any task." : "");
 }
 function getOdds(numberOfDice,targetNumber){
     console.log(numberOfDice);

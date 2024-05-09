@@ -33,6 +33,7 @@
             display: inline-block;
             margin: 5px;
         }
+        h1,h2,h3{margin:0.5rem;}
     </style>
     <div class="root">
         
@@ -194,9 +195,9 @@
                 <legend>Tasks</legend>
                 <fieldset>
                     <legend>Assets</legend>
-                    Characteristic: <input data-asset="characteristic" type="number" value="7">&nbsp;
-                    Skill: <input data-asset="skill" type="number" value="1">&nbsp;
-                    JOT: <input data-asset="jot" type="number" value="0">
+                    Characteristic: <input data-asset="characteristic" min="0" type="number" value="7">&nbsp;
+                    Skill: <input data-asset="skill" min="0" type="number" value="1"><br/>
+                    JOT: <input data-asset="jot" min="0" type="number" value="0">
                     Other: <input data-asset="other" type="number" value="0"><br>
                     Wakefulness: <select data-asset="wakefulness" name="" id="">
                         <option value="optimal">Optimal</option>
@@ -204,15 +205,7 @@
                         <option value="tired">Tired</option>
                         <option value="sleepy">Sleepy</option>
                     </select> 
-                    Status (first round only): <select data-asset="attackerstatus" name="" id="">
-                        <option value="3">Forewarned</option>
-                        <option value="2">Prepared</option>
-                        <option value="1">Alert</option>
-                        <option selected value="0">Standard Fighting</option>
-                        <option value="-1">Inattentive</option>
-                        <option value="-2">Unaware</option>
-                        <option value="-3">Oblivious</option>
-                    </select><br>
+                    <br>
                     Equipment Quality: <input min="0" max="12" data-asset="equipmentquality" type="number" value="5"> &nbsp; Ease-of-Use: <input data-asset="equipmentease" type="number" min="-5" max="5" value="0">
                 </fieldset>
                 <fieldset>
@@ -237,6 +230,7 @@
                         Mods: <input data-task="mods" type="number" value="0">
                     </div>
                    <h1 data-formula="task"></h1>
+                   <h3 style="color:darkred" data-formula="taskwarning"> </h3>
                 </fieldset>
                 <fieldset>
                     <legend>Combat</legend>
@@ -248,8 +242,17 @@
                         <option value="0">0</option>
                         <option value="1">1</option>
                         <option value="2">2+</option>
+                        </select><br/>
+                        Attacker Status (first round only): <select data-asset="attackerstatus" name="" id="">
+                            <option value="3">Forewarned</option>
+                            <option value="2">Prepared</option>
+                            <option value="1">Alert</option>
+                            <option selected value="0">Standard Fighting</option>
+                            <option value="-1">Inattentive</option>
+                            <option value="-2">Unaware</option>
+                            <option value="-3">Oblivious</option>
                         </select>
-                    <br>                                    
+                    <br><br/>                         
                     Target Range: <select data-combat="range" name="" id="">
                         <option value="0">Contact (0-3m)</option>
                         <option value="1">VShort (3-25m)</option>
@@ -298,6 +301,7 @@
                     </select><br>
                     <h1 data-formula="combat"></h1>
                     <h2 data-formula="targetsize"></h2>
+                    <h3 style="color:darkred" data-formula="combatwarning"> </h3>
                 </fieldset>
             </fieldset>
         </div>
