@@ -1,7 +1,50 @@
 import { getRollerFromSeed } from "../../Traveller/js/rnd.js";
+import {NameGenerator, addCaps } from "../../Traveller/js/NameGeneratorModule.js";
+import { getNames } from "../../Traveller/js/namesModule.js"
 var roller = getRollerFromSeed();
 var historyContainer = document.querySelector(".history");
-
+var wordMaker;
+NameGenerator(getNames(),function(o){
+    wordMaker = o; 
+    var slctWordCategory = document.getElementById("slctWordCategory");
+    var slctSubWordCategory = document.getElementById("slctSubWordCategory");
+    var majorKeys = wordMaker.keys.filter((val)=>val.indexOf(".") === -1);
+    for(var i = 0, len = majorKeys.length; i < len; i++){
+        var key = majorKeys[i];
+        var option = slctWordCategory.appendChild(document.createElement("option"));
+        option.value = key; option.insertAdjacentHTML("beforeend",key);
+    }
+    slctWordCategory.addEventListener("change",randomWordCategoryChanged);
+    randomWordCategoryChanged();
+    function randomWordCategoryChanged(){
+        var subKeys = wordMaker.keys.filter((val)=>val.indexOf(slctWordCategory.value +".") === 0);
+        var keyDesc = slctWordCategory.value;
+        switch(slctWordCategory.value){
+            case "word": keyDesc = "Word"; break;
+            case "ept": keyDesc = "English Phonotactics"; break;
+            case "aslan": keyDesc = "Aslan Word"; break;
+            case "human": keyDesc = "Person Name"; break;
+            case "ship": keyDesc = "Starship Name"; break;
+            case "system": keyDesc = "Mainworld Name"; break;
+            case "animal": keyDesc = "Creature"; break;
+        }
+        document.getElementById("btnGetRandomWord").value = "Get " + keyDesc;
+        subKeys.sort();
+        while(slctSubWordCategory.childNodes.length > 0){
+            slctSubWordCategory.removeChild(slctSubWordCategory.childNodes[slctSubWordCategory.childNodes.length-1]);
+        }
+        for(var i = 0, len = subKeys.length; i < len; i++){
+            var key = subKeys[i];
+            var option = slctSubWordCategory.appendChild(document.createElement("option"));
+            option.value = key; option.insertAdjacentHTML("beforeend",key);
+        }
+        document.getElementById("random_word").innerHTML = "";
+        document.getElementById("random_subword").innerHTML = "";
+    }
+    slctSubWordCategory.addEventListener("change",()=>{document.getElementById("random_subword").innerHTML = "";});
+    document.getElementById("btnGetRandomWord").addEventListener("click", function(){ document.getElementById("random_word").innerHTML = addCaps(getWord(slctWordCategory.value));});
+    document.getElementById("btnGetRandomSubWord").addEventListener("click", function(){ document.getElementById("random_subword").innerHTML = addCaps(getWord(slctSubWordCategory.value));});
+},[],Math.random,true);
 var randomScene = getRandomScene();
 
 document.getElementById("txtScene").value = randomScene.description;
@@ -13,9 +56,6 @@ document.getElementById("oracleButton").addEventListener("click",consultOracle);
 document.getElementById("btnRandomScene").addEventListener("click",function(){
     var randomScene = getRandomScene();
     document.getElementById("txtScene").value = randomScene.description;
-});
-document.getElementById("describeScene").addEventListener("click",function(){
-    logHistory("SCENE: " + document.getElementById("txtScene").value)
 });
 var menus = document.querySelectorAll("nav.menu ul li a");
 for(var i = 0, len = menus.length; i < len; i++){
@@ -30,9 +70,161 @@ document.getElementById("btnMgT2Get").addEventListener("click", function() {
     var type = document.getElementById("slctMgT2Type").value;
     document.getElementById("MgT2output").innerHTML = getMgT2RandomThing(type);
 });
+var taskComponents = document.querySelectorAll("[data-asset],[data-task],[data-combat]");
+for(var i = 0, len = taskComponents.length; i < len; i++){
+    taskComponents[i].addEventListener("change",composeTasks);
+}
+composeTasks();
+var firstRoll = true;
+        updateRollButton();
+        document.getElementById("nD").addEventListener("change", updateRollButton);
+        document.getElementById("slctMode").addEventListener("change", function(){
+            if(document.getElementById("slctMode").value == "keephigh" || document.getElementById("slctMode").value == "keeplow"){
+                document.getElementById("panel_numkeep").style.display = "inline-block";
+                document.getElementById("nD").value = 3;
+                document.getElementById("nKeep").value = 2;
+            }else{
+                document.getElementById("panel_numkeep").style.display = "none";
+                document.getElementById("nD").value = 2;
+            }
+            updateRollButton();
+        });
+        document.getElementById("btnRollFlux").addEventListener("click", function(){
+            copyRoll();
+            var total = 0;
+            var roll = roller.d6().result;
+            var output = removeChildElements(document.querySelector("#outputrow .roll_output"));
+            var dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(roll));
+            dieblock.className = "die";
+            total += roll;
+            output.appendChild(document.createTextNode(" - "));
+            roll = roller.d6().result;
+            dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(roll));
+            dieblock.className = "die";
+            total -= roll;
+            document.querySelector("#outputrow .total").innerHTML = (total >= 0 ? "+" : "") + total;
+        });
+        document.getElementById("btnRollGoodFlux").addEventListener("click", function(){
+            copyRoll();
+            var total = 0;
+            var rolls = [];
+            var output = removeChildElements(document.querySelector("#outputrow .roll_output"));
+            for(var i = 0; i < 2; i++){
+                var roll = Math.floor(Math.random() * 6) + 1;
+                rolls.push(roll);
+            }
+            rolls.sort(function(a,b){return b-a});
+            var total = rolls[0] - rolls[1];
+            var dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(rolls[0]));
+            dieblock.className = "die";
+            output.appendChild(document.createTextNode(" - "));
+            dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(rolls[1]));
+            dieblock.className = "die";
+            document.querySelector("#outputrow .total").innerHTML = ("+") + total;
+        });
+        document.getElementById("btnClearHistory").addEventListener("click",function(){
+            removeChildElements(document.getElementById("roll_history"));
+            removeChildElements(document.getElementById("outputrow"));
+            document.getElementById("outputrow").insertAdjacentHTML("afterbegin","<div class=\"roll_output\"><div class=\"die\">?</div></div>=<div class=\"total\">Roll</div>");
+            firstRoll = true;
+        })
+        document.getElementById("btnRollBadFlux").addEventListener("click", function(){
+            copyRoll();
+            var total = 0;
+            var rolls = [];
+            var output = removeChildElements(document.querySelector("#outputrow .roll_output"));
+            for(var i = 0; i < 2; i++){
+                var roll = Math.floor(Math.random() * 6) + 1;
+                rolls.push(roll);
+            }
+            rolls.sort(function(a,b){return a-b});
+            var total = rolls[0] - rolls[1];
+            var dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(rolls[0]));
+            dieblock.className = "die";
+            output.appendChild(document.createTextNode(" - "));
+            dieblock = output.appendChild(document.createElement("div"));
+            dieblock.appendChild(document.createTextNode(rolls[1]));
+            dieblock.className = "die";
+            document.querySelector("#outputrow .total").innerHTML =  total;
+        });
+        document.getElementById("nKeep").addEventListener("change", updateRollButton);
+        document.getElementById("btnRoll").addEventListener("click",function(){
+            copyRoll();
+            var numDice = document.getElementById("nD").value;
+            var mode = document.getElementById("slctMode").value;
+            var output = removeChildElements(document.querySelector("#outputrow .roll_output"));
+            if(mode === "normal"){
+                var total = 0;
+                for(var i = 0; i < numDice; i++){
+                    var roll = Math.floor(Math.random() * 6) + 1;
+                    var dieblock = output.appendChild(document.createElement("div"));
+                    dieblock.appendChild(document.createTextNode(roll));
+                    dieblock.className = "die";
+                    total += roll;
+                }               
+            }else if(mode === "keephigh"){
+                var numKeep = document.getElementById("nKeep").value;
+                var rolls = [];
+                for(var i = 0; i < numDice; i++){
+                    var roll = Math.floor(Math.random() * 6) + 1;
+                    rolls.push(roll);
+                }
+                rolls.sort(function(a,b){return b-a});
+                var total = 0;
+                for(var i = 0; i < numDice; i++){
+                    var dieblock = output.appendChild(document.createElement("div"));
+                    dieblock.appendChild(document.createTextNode(rolls[i]));
+                    dieblock.className = "die";
+                    if(i < numKeep){
+                        total += rolls[i];
+                    }else{
+                        dieblock.classList.add("discarded");
+                    }
+                }
+            }else if(mode === "keeplow"){
+                var numKeep = document.getElementById("nKeep").value;
+                var rolls = [];
+                for(var i = 0; i < numDice; i++){
+                    var roll = Math.floor(Math.random() * 6) + 1;
+                    rolls.push(roll);
+                }
+                rolls.sort(function(a,b){return a-b});
+                var total = 0;
+                for(var i = 0; i < numDice; i++){
+                    var dieblock = output.appendChild(document.createElement("div"));
+                    dieblock.appendChild(document.createTextNode(rolls[i]));
+                    dieblock.className = "die";
+                    if(i < numKeep){
+                        total += rolls[i];
+                    }else{
+                        dieblock.classList.add("discarded");
+                    }
+                }
+            }
+            document.querySelector("#outputrow .total").innerHTML = total;
+        });
+        document.getElementById("btnUNE").addEventListener("click",function(){
+            document.getElementById("une_npc").innerHTML = une_npc();
+        });
+        document.getElementById("btnUNEMood").addEventListener("click",function(){
+            var relationship = document.getElementById("slctUNERelationship").value;
+            document.getElementById("une_mood").innerHTML = getUNEMood(relationship);
+        });
+        document.getElementById("btnUNEBearing").addEventListener("click",function(){
+            var bearing = document.getElementById("slctUNEBearing").value;
+            document.getElementById("une_bearing").innerHTML = getUNEBearing(bearing);
+        });
 function logHistory(msg){
     var record = historyContainer.appendChild(document.createElement("li"));
     record.insertAdjacentHTML("beforeend",msg);
+}
+function getWord(key){
+    return wordMaker.getRandomName(key);
 }
 function onNavigate(e){
     var target = e.target.getAttribute("target");
@@ -256,6 +448,119 @@ function negFlux(){
 }
 function getRandomThing(type){
     var val = "";
+    var list = {
+        "Range":{
+            "selection":"flux",
+            "options":[
+                "0 - Contact", "R - Reading", "T - Talking",
+                "1 - Vshort",  "2 - Short", "3 - Medium",
+                "4 - Long", "5 - Vlong", "6 - Distant",
+                "7 - Vdistant", "8 - Orbit"
+            ]
+        },
+        "Environ":{
+            "selection":"flux",
+            "options":[
+                "Frigid", "Vcold", "Cold",
+                "Chilly",  "Cool", 
+                "Nice",
+                "Warm", "VWarm", "Hot",
+                "Vhot", "Scalding"
+            ]
+        },
+        "Damage":{
+            "selection":"d6",
+            "options":[
+                "Slight 1D",
+                "Light 2D",
+                "Serious 3D",
+                "Critical 4D",
+                "Intense 5D",
+                "Disastrous 6D"
+            ]
+        },
+        "Diagnosis":{
+            "selection":"d6",
+            "options":[
+                "Ordinary 1D",
+                "Hard 2D",
+                "Difficult 3D",
+                "Obscure 4D",
+                "Very Obscure 5D",
+                "Hopeless 6D"
+            ]
+        },
+        "Comms":{
+            "selection":"flux",
+            "options":[
+                "Jammed", "Equip Fault", "Equip Glitch",
+                "Interference",  "Static", 
+                "Good",
+                "Very Good", "Excellent", "Clear",
+                "Very Clear", "Crystal Clear"
+            ]
+        },
+        "Nobility":{
+            "selection":"flux",
+            "options":[
+                "A - Gentleman", "B - Knight", "c - Baronet",
+                "C - Baron",  "D - Marquis", 
+                "e - Viscount",
+                "E - Count", "f - Minor Duke", "F - Duke",
+                "G - Archduke", "h - Imperial Family"
+            ]
+        },
+        "Friends":{
+            "selection":"flux",
+            "options":[
+                "Enemy", "Antagonist", "Adversary",
+                "Rival",  "Opponent", 
+                "Acquaintance",
+                "Contact", "Friend", "Companion",
+                "Fast Friend", "Best Friend"
+            ]
+        },
+        "Weather":{
+            "selection":"flux",
+            "options":[
+                "Extremely Bad", "Very Bad", "Worse",
+                "Bad",  "Inconvenient", 
+                "Neutral",
+                "Fortuitous", "Good", "Better",
+                "Very Good", "Extremely Good"
+            ]
+        },
+        "Supply":{
+            "selection":"flux",
+            "options":[
+                "-5 Ubiquitous", "-4 Abundant", "-3 Very Common",
+                "-2 Quite Common",  "-1 Common", 
+                "0 -Typical",
+                "+1 Uncommon", "+2 Scarce", "+3 Rare",
+                "+4 Quite Rare", "+5 -Truly Rare"
+            ]
+        },
+        "Demand":{
+            "selection":"flux",
+            "options":[
+                "-5 Very Low", "-4 Quite Low", "-3 Low",
+                "-2 Weak",  "-1 Less Ordinary", 
+                "0 Ordinary",
+                "+1 Good", "+2 Strong", "+3 High",
+                "+4 Quite High", "+5 Very High"
+            ]
+        },
+        "Respect":{
+            "selection":"flux",
+            "options":[
+                "Ignored", "Utter Contempt", "Contempt",
+                "Distaste",  "Tolerance", 
+                "Peer",
+                "Acknowledgement", "Respect", "Admiration",
+                "Absolute Respect", "Idolization"
+            ]
+        },
+    };
     switch(type){
         case "crime":
             val = getRandomCrime();
@@ -308,11 +613,27 @@ function getRandomThing(type){
         case "High":
         case "Med":
         case "Low":
+        case "VLow":
             val = type + " (" + getTL(type) + ")";
             break;
         case "Fantastic":
             val = type + " (" + getTL(d6() % 2 == 0 ? "Fantastic1" : "Fantastic2") + ")";
             break;
+        default:
+            if(typeof list[type] !== "undefined"){
+                var sublist = list[type];
+                var roll = 0;
+                var selectionMode = sublist["selection"];
+                if(selectionMode == "flux"){
+                    roll = roller.flux().result;
+                    roll += 5;
+                    roll = roll.toString();
+                }else if(selectionMode == "d6"){
+                    roll = roller.d6().result - 1;
+                    roll = roll.toString();
+                }
+                val = sublist["options"][roll]
+            }
     }
     return val;
 }
@@ -332,38 +653,7 @@ function getRandomAttitude(){
     ]
     return attitudes[flux()+5];
 }
-function getRandomVisibility(){
-    var visibilities = [
-        "0 Contact",
-        "R Reading",
-        "T Talking",
-        "1 Vshort",
-        "2 Short",
-        "3 Medium",
-        "4 Long",
-        "5 Vlong",
-        "6 Distant",
-        "7 Vdistant",
-        "8 Orbit"
-    ]
-    return visibilities[flux()+5];
-}
-function getRandomTemperature(){
-    var environs = [
-       "Frigid",
-       "Vcold",
-       "Cold",
-       "Chilly",
-       "Cool",
-       "Nice",
-       "Warm",
-       "Vwarm",
-       "Hot",
-       "Vhot",
-       "Scalding"
-    ]
-    return environs[flux()+5];
-}
+
 function getDeviceDamageLocation(){
     var locations = ["Case","Power","Input","Output","Controls","Processor"];
     return locations[d6()-1];
@@ -521,12 +811,12 @@ function getRandomTheme(){
 function getTypicalTechCategory(){
     var roll = posFlux();
     switch(roll){
-        case 0: var techCategory = "XHigh"; var tl = getTL(techCategory); break;
-        case 1: var techCategory = "VHigh"; var tl = getTL(techCategory); break;
-        case 2: var techCategory = "High"; var tl = getTL(techCategory); break;
-        case 3: var techCategory = "Med"; var tl = getTL(techCategory); break;
-        case 4: var techCategory = "Low"; var tl = getTL(techCategory); break;
-        case 5: var techCategory = "VLow"; var tl = getTL(techCategory); break;
+        case 0: var techCategory = "Med"; /*"XHigh"*/; var tl = getTL(techCategory); break;
+        case 1: var techCategory = "High";/* "VHigh"*/; var tl = getTL(techCategory); break;
+        case 2: var techCategory = "Low"; /*"High"*/; var tl = getTL(techCategory); break;
+        case 3: var techCategory = "VLow";/* "Med"*/; var tl = getTL(techCategory); break;
+        case 4: var techCategory = "VHigh"; /*"Low"*/; var tl = getTL(techCategory); break;
+        case 5: var techCategory = "XHigh";/* "VLow"*/; var tl = getTL(techCategory); break;
     }
     return techCategory + " (" + tl + ")";
 }
@@ -1078,527 +1368,472 @@ function getMgT2RandomThing(key){
     var value = list[roller.random()*list.length >> 0];
     return value;
 }
-var firstRoll = true;
-        updateRollButton();
-        document.getElementById("nD").addEventListener("change", updateRollButton);
-        document.getElementById("slctMode").addEventListener("change", function(){
-            if(document.getElementById("slctMode").value == "keephigh" || document.getElementById("slctMode").value == "keeplow"){
-                document.getElementById("panel_numkeep").style.display = "inline-block";
-                document.getElementById("nD").value = 3;
-                document.getElementById("nKeep").value = 2;
-            }else{
-                document.getElementById("panel_numkeep").style.display = "none";
-                document.getElementById("nD").value = 2;
-            }
-            updateRollButton();
-        });
-        document.getElementById("btnRollFlux").addEventListener("click", function(){
-            copyRoll();
-            var total = 0;
-            var roll = roller.d6().result;
-            var output = removeChildElements(document.querySelector("#outputrow .roll_output"));
-            var dieblock = output.appendChild(document.createElement("div"));
-            dieblock.appendChild(document.createTextNode(roll));
-            dieblock.className = "die";
-            total += roll;
-            output.appendChild(document.createTextNode(" - "));
-            roll = roller.d6().result;
-            dieblock = output.appendChild(document.createElement("div"));
-            dieblock.appendChild(document.createTextNode(roll));
-            dieblock.className = "die";
-            total -= roll;
-            document.querySelector("#outputrow .total").innerHTML = (total >= 0 ? "+" : "") + total;
-        });
-        document.getElementById("btnRollGoodFlux").addEventListener("click", function(){
-            copyRoll();
-            var total = 0;
-            var rolls = [];
-            var output = removeChildElements(document.querySelector("#outputrow .roll_output"));
-            for(var i = 0; i < 2; i++){
-                var roll = Math.floor(Math.random() * 6) + 1;
-                rolls.push(roll);
-            }
-            rolls.sort(function(a,b){return b-a});
-            var total = rolls[0] - rolls[1];
-            var dieblock = output.appendChild(document.createElement("div"));
-            dieblock.appendChild(document.createTextNode(rolls[0]));
-            dieblock.className = "die";
-            output.appendChild(document.createTextNode(" - "));
-            dieblock = output.appendChild(document.createElement("div"));
-            dieblock.appendChild(document.createTextNode(rolls[1]));
-            dieblock.className = "die";
-            document.querySelector("#outputrow .total").innerHTML = ("+") + total;
-        });
-        document.getElementById("btnClearHistory").addEventListener("click",function(){
-            removeChildElements(document.getElementById("roll_history"));
-            removeChildElements(document.getElementById("outputrow"));
-            document.getElementById("outputrow").insertAdjacentHTML("afterbegin","<div class=\"roll_output\"><div class=\"die\">?</div></div>=<div class=\"total\">Roll</div>");
-            firstRoll = true;
-        })
-        document.getElementById("btnRollBadFlux").addEventListener("click", function(){
-            copyRoll();
-            var total = 0;
-            var rolls = [];
-            var output = removeChildElements(document.querySelector("#outputrow .roll_output"));
-            for(var i = 0; i < 2; i++){
-                var roll = Math.floor(Math.random() * 6) + 1;
-                rolls.push(roll);
-            }
-            rolls.sort(function(a,b){return a-b});
-            var total = rolls[0] - rolls[1];
-            var dieblock = output.appendChild(document.createElement("div"));
-            dieblock.appendChild(document.createTextNode(rolls[0]));
-            dieblock.className = "die";
-            output.appendChild(document.createTextNode(" - "));
-            dieblock = output.appendChild(document.createElement("div"));
-            dieblock.appendChild(document.createTextNode(rolls[1]));
-            dieblock.className = "die";
-            document.querySelector("#outputrow .total").innerHTML =  total;
-        });
-        document.getElementById("nKeep").addEventListener("change", updateRollButton);
-        document.getElementById("btnRoll").addEventListener("click",function(){
-            copyRoll();
-            var numDice = document.getElementById("nD").value;
-            var mode = document.getElementById("slctMode").value;
-            var output = removeChildElements(document.querySelector("#outputrow .roll_output"));
-            if(mode === "normal"){
-                var total = 0;
-                for(var i = 0; i < numDice; i++){
-                    var roll = Math.floor(Math.random() * 6) + 1;
-                    var dieblock = output.appendChild(document.createElement("div"));
-                    dieblock.appendChild(document.createTextNode(roll));
-                    dieblock.className = "die";
-                    total += roll;
-                }               
-            }else if(mode === "keephigh"){
-                var numKeep = document.getElementById("nKeep").value;
-                var rolls = [];
-                for(var i = 0; i < numDice; i++){
-                    var roll = Math.floor(Math.random() * 6) + 1;
-                    rolls.push(roll);
-                }
-                rolls.sort(function(a,b){return b-a});
-                var total = 0;
-                for(var i = 0; i < numDice; i++){
-                    var dieblock = output.appendChild(document.createElement("div"));
-                    dieblock.appendChild(document.createTextNode(rolls[i]));
-                    dieblock.className = "die";
-                    if(i < numKeep){
-                        total += rolls[i];
-                    }else{
-                        dieblock.classList.add("discarded");
-                    }
-                }
-            }else if(mode === "keeplow"){
-                var numKeep = document.getElementById("nKeep").value;
-                var rolls = [];
-                for(var i = 0; i < numDice; i++){
-                    var roll = Math.floor(Math.random() * 6) + 1;
-                    rolls.push(roll);
-                }
-                rolls.sort(function(a,b){return a-b});
-                var total = 0;
-                for(var i = 0; i < numDice; i++){
-                    var dieblock = output.appendChild(document.createElement("div"));
-                    dieblock.appendChild(document.createTextNode(rolls[i]));
-                    dieblock.className = "die";
-                    if(i < numKeep){
-                        total += rolls[i];
-                    }else{
-                        dieblock.classList.add("discarded");
-                    }
-                }
-            }
-            document.querySelector("#outputrow .total").innerHTML = total;
-        });
-        function updateRollButton(){
-            var btn = document.getElementById("btnRoll");
-            var mode = document.getElementById("slctMode").value;
-            var numDice = document.getElementById("nD").value;
-            var numKeep =document.getElementById("nKeep").value;
-            if(numDice > 0){
-                btn.disabled = false;
-            }else{
-                btn.disabled = true;
-            }
-            var text = "Roll " + numDice + "d6";
-            if(mode == "keephigh"){
-                text += "k" + numKeep;
-            }else if(mode == "keeplow"){
-                text += "r" + (-1*(numKeep - numDice));
-            }
-            btn.value = text;
-        }
-        function removeChildElements(element){
-            while(element.childNodes.length > 0){
-                element.removeChild(element.childNodes[element.childNodes.length-1]);
-            }
-            return element;
-        }
-        function copyRoll(){
-            if(!firstRoll){
-                var history = document.getElementById("roll_history");
-                history.insertAdjacentHTML("afterbegin",document.getElementById("outputrow").innerHTML);
-                history.insertAdjacentHTML("afterbegin","<hr>");
-            }else{
-                firstRoll = false;
-            }
-        }
-        document.getElementById("btnUNE").addEventListener("click",function(){
-            document.getElementById("une_npc").innerHTML = une_npc();
-        });
-        document.getElementById("btnUNEMood").addEventListener("click",function(){
-            var relationship = document.getElementById("slctUNERelationship").value;
-            document.getElementById("une_mood").innerHTML = getUNEMood(relationship);
-        });
-        document.getElementById("btnUNEBearing").addEventListener("click",function(){
-            var bearing = document.getElementById("slctUNEBearing").value;
-            document.getElementById("une_bearing").innerHTML = getUNEBearing(bearing);
-        });
-        function une_npc(){
-            var modifiers = [
-                "superfluous",
-                "addicted",
-                "conformist",
-                "nefarious",
-                "sensible",
-                "untrained",
-                "romantic",
-                "unreasonable",
-                "skilled",
-                "neglectful",
-                "lively",
-                "forthright",
-                "idealistic",
-                "unsupportive",
-                "rational",
-                "coarse",
-                "foolish",
-                "cunning",
-                "delightful",
-                "miserly",
-                "inept",
-                "banal",
-                "logical",
-                "subtle",
-                "reputable",
-                "wicked",
-                "lazy",
-                "pessimistic",
-                "solemn",
-                "habitual",
-                "meek",
-                "helpful",
-                "unconcerned",
-                "generous",
-                "docile",
-                "cheery",
-                "pragmatic",
-                "serene",
-                "thoughtful",
-                "hopeless",
-                "pleasant",
-                "insensitive",
-                "titled",
-                "inexperienced",
-                "prying",
-                "oblivious",
-                "refined",
-                "indispensible",
-                "scholarly",
-                "conservative",
-                "uncouth",
-                "willful",
-                "indifferent",
-                "fickle",
-                "elderly",
-                "sinful",
-                "naive",
-                "privileged",
-                "glum",
-                "likable",
-                "lethargic",
-                "defiant",
-                "obnoxious",
-                "insightful",
-                "tactless",
-                "fanatic",
-                "plebeian",
-                "childish",
-                "pious",
-                "uneducated",
-                "inconsiderate",
-                "cultured",
-                "revolting",
-                "curious",
-                "touchy",
-                "needy",
-                "dignified",
-                "pushy",
-                "kind",
-                "corrupt",
-                "jovial",
-                "shrewd",
-                "compliant",
-                "destitute",
-                "conniving",
-                "careful",
-                "alluring",
-                "defective",
-                "optimistic",
-                "affluent",
-                "despondent",
-                "mindless",
-                "passionate",
-                "devoted",
-                "established",
-                "unseemly",
-                "dependable",
-                "righteous",
-                "confident"
-            ];
-        var nouns = [
-            "gypsy",
-            "witch",
-            "merchant",
-            "expert",
-            "commoner",
-            "judge",
-            "ranger",
-            "occultist",
-            "reverend",
-            "thug",
-            "drifter",
-            "journeyman",
-            "statesman",
-            "astrologer",
-            "duelist",
-            "jack-of-all-trades",
-            "aristocrat",
-            "preacher",
-            "artisan",
-            "rogue",
-            "missionary",
-            "outcast",
-            "caretaker",
-            "hermit",
-            "orator",
-            "chieftain",
-            "pioneer",
-            "burglar",
-            "vicar",
-            "officer",
-            "explorer",
-            "warden",
-            "outlaw",
-            "adept",
-            "bum",
-            "sorcerer",
-            "laborer",
-            "master",
-            "ascendant",
-            "villager",
-            "magus",
-            "conscript",
-            "worker",
-            "actor",
-            "herald",
-            "highwayman",
-            "fortune-hunter",
-            "governor",
-            "scrapper",
-            "monk",
-            "homemaker",
-            "recluse",
-            "steward",
-            "polymath",
-            "magician",
-            "traveler",
-            "vagrant",
-            "apprentice",
-            "politician",
-            "mediator",
-            "crook",
-            "civilian",
-            "activist",
-            "hero",
-            "champion",
-            "cleric",
-            "slave",
-            "gunman",
-            "clairvoyant",
-            "patriarch",
-            "shopkeeper",
-            "crone",
-            "adventurer",
-            "soldier",
-            "entertainer",
-            "craftsman",
-            "scientist",
-            "ascetic",
-            "superior",
-            "performer",
-            "magister",
-            "serf",
-            "brute",
-            "inqisitor",
-            "lord",
-            "villain",
-            "professor",
-            "servant",
-            "charmer",
-            "globetrotter",
-            "sniper",
-            "courtier",
-            "priest",
-            "tradesman",
-            "hitman",
-            "wizard",
-            "beggar",
-            "tradesman",
-            "warrior"
-        ];
-        var modifier = modifiers[roller.random() * modifiers.length >> 0];
-        var noun = nouns[roller.random() * nouns.length >> 0];
+        
+function updateRollButton(){
+    var btn = document.getElementById("btnRoll");
+    var mode = document.getElementById("slctMode").value;
+    var numDice = document.getElementById("nD").value;
+    var numKeep =document.getElementById("nKeep").value;
+    if(numDice > 0){
+        btn.disabled = false;
+    }else{
+        btn.disabled = true;
+    }
+    var text = "Roll " + numDice + "d6";
+    if(mode == "keephigh"){
+        text += "k" + numKeep;
+    }else if(mode == "keeplow"){
+        text += "r" + (-1*(numKeep - numDice));
+    }
+    btn.value = text;
+}
+function removeChildElements(element){
+    while(element.childNodes.length > 0){
+        element.removeChild(element.childNodes[element.childNodes.length-1]);
+    }
+    return element;
+}
+function copyRoll(){
+    if(!firstRoll){
+        var history = document.getElementById("roll_history");
+        history.insertAdjacentHTML("afterbegin",document.getElementById("outputrow").innerHTML);
+        history.insertAdjacentHTML("afterbegin","<hr>");
+    }else{
+        firstRoll = false;
+    }
+}
 
-        var motivations = [
-            ["advises","obtains","attempts","spoils","oppresses","interacts","creates","abducts","promotes","conceives","blights","progresses","distresses","possesses","records","embraces","contacts","pursues","associates","prepares"],
-            ["shepherds","abuses","indulges","chronicles","fulfills","drives","reviews","aids","follows","advances","guards","conquers","hinders","plunders","constructs","encourages","agonizes","comprehends","administers","relates"],
-            ["takes","discovers","deters","acquires","damages","publicizes","burdes","advocates","implements","understands","collaborates","strives","completes","compels","joins","assists","defiles","produces","institutes","accounts"],
-            ["works","accompanies","offends","guides","learns","persecutes","communicates","processes","reports","develops","steals","suggests","weakens","achieves","secures","informs","patronizes","depresses","determines","seeks"],
-            ["manages","suppresses","proclaims","operates","accesses","refines","composes","undermines","explains","discourages","attends","detects","executes","maintains","realizes","conveys","robs","establishes","overthrows","supports"]
-        ];
-        var motivationCol1 = roller.random() * motivations.length >> 0;
-        var motivationCol2 = roller.random() * motivations.length >> 0;
-        var motivationCol3 = roller.random() * motivations.length >> 0;
-        
-        var motiveVerb1 = motivations[motivationCol1][roller.random() * motivations[motivationCol1].length >> 0];
-        var motiveVerb2 = motivations[motivationCol2][roller.random() * motivations[motivationCol1].length >> 0];
-        var motiveVerb3 = motivations[motivationCol3][roller.random() * motivations[motivationCol1].length >> 0];
+function une_npc(){
+    var modifiers = [
+        "superfluous",
+        "addicted",
+        "conformist",
+        "nefarious",
+        "sensible",
+        "untrained",
+        "romantic",
+        "unreasonable",
+        "skilled",
+        "neglectful",
+        "lively",
+        "forthright",
+        "idealistic",
+        "unsupportive",
+        "rational",
+        "coarse",
+        "foolish",
+        "cunning",
+        "delightful",
+        "miserly",
+        "inept",
+        "banal",
+        "logical",
+        "subtle",
+        "reputable",
+        "wicked",
+        "lazy",
+        "pessimistic",
+        "solemn",
+        "habitual",
+        "meek",
+        "helpful",
+        "unconcerned",
+        "generous",
+        "docile",
+        "cheery",
+        "pragmatic",
+        "serene",
+        "thoughtful",
+        "hopeless",
+        "pleasant",
+        "insensitive",
+        "titled",
+        "inexperienced",
+        "prying",
+        "oblivious",
+        "refined",
+        "indispensible",
+        "scholarly",
+        "conservative",
+        "uncouth",
+        "willful",
+        "indifferent",
+        "fickle",
+        "elderly",
+        "sinful",
+        "naive",
+        "privileged",
+        "glum",
+        "likable",
+        "lethargic",
+        "defiant",
+        "obnoxious",
+        "insightful",
+        "tactless",
+        "fanatic",
+        "plebeian",
+        "childish",
+        "pious",
+        "uneducated",
+        "inconsiderate",
+        "cultured",
+        "revolting",
+        "curious",
+        "touchy",
+        "needy",
+        "dignified",
+        "pushy",
+        "kind",
+        "corrupt",
+        "jovial",
+        "shrewd",
+        "compliant",
+        "destitute",
+        "conniving",
+        "careful",
+        "alluring",
+        "defective",
+        "optimistic",
+        "affluent",
+        "despondent",
+        "mindless",
+        "passionate",
+        "devoted",
+        "established",
+        "unseemly",
+        "dependable",
+        "righteous",
+        "confident"
+    ];
+var nouns = [
+    "gypsy",
+    "witch",
+    "merchant",
+    "expert",
+    "commoner",
+    "judge",
+    "ranger",
+    "occultist",
+    "reverend",
+    "thug",
+    "drifter",
+    "journeyman",
+    "statesman",
+    "astrologer",
+    "duelist",
+    "jack-of-all-trades",
+    "aristocrat",
+    "preacher",
+    "artisan",
+    "rogue",
+    "missionary",
+    "outcast",
+    "caretaker",
+    "hermit",
+    "orator",
+    "chieftain",
+    "pioneer",
+    "burglar",
+    "vicar",
+    "officer",
+    "explorer",
+    "warden",
+    "outlaw",
+    "adept",
+    "bum",
+    "sorcerer",
+    "laborer",
+    "master",
+    "ascendant",
+    "villager",
+    "magus",
+    "conscript",
+    "worker",
+    "actor",
+    "herald",
+    "highwayman",
+    "fortune-hunter",
+    "governor",
+    "scrapper",
+    "monk",
+    "homemaker",
+    "recluse",
+    "steward",
+    "polymath",
+    "magician",
+    "traveler",
+    "vagrant",
+    "apprentice",
+    "politician",
+    "mediator",
+    "crook",
+    "civilian",
+    "activist",
+    "hero",
+    "champion",
+    "cleric",
+    "slave",
+    "gunman",
+    "clairvoyant",
+    "patriarch",
+    "shopkeeper",
+    "crone",
+    "adventurer",
+    "soldier",
+    "entertainer",
+    "craftsman",
+    "scientist",
+    "ascetic",
+    "superior",
+    "performer",
+    "magister",
+    "serf",
+    "brute",
+    "inqisitor",
+    "lord",
+    "villain",
+    "professor",
+    "servant",
+    "charmer",
+    "globetrotter",
+    "sniper",
+    "courtier",
+    "priest",
+    "tradesman",
+    "hitman",
+    "wizard",
+    "beggar",
+    "tradesman",
+    "warrior"
+];
+var modifier = modifiers[roller.random() * modifiers.length >> 0];
+var noun = nouns[roller.random() * nouns.length >> 0];
 
-        var motiveNouns = [
-            ["wealth","hardship","affluence","resources","prosperity","poverty","opulence","deprivation","success","distress","contraband","music","literature","technology","alcohol","medicines","beauty","strength","intelligence","force"],
-            ["the wealthy","the populace","enemies","the public","religion","the poor","family","the elite","academia","the forsaken","the law","the government","the oppressed","friends","criminals","allies","secret societies","the world","military","the church"],
-            ["dreams","discretion","love","freedom","pain","faith","slavery","enlightenment","racism","sensuality","dissonance","peace","discrimination","disbelief","pleasure","hate","happiness","servitude","harmony","justice"],
-            ["gluttony","lust","envy","greed","laziness","wrath","pride","purity","moderation","vigilance","zeal","composure","charity","modesty","atrocities","cowardice","narcissism","compassion","valor","patience"],
-            ["advice","propaganda","science","knowledge","communications","lies","myths","riddles","stories","legends","industry","new religions","progress","animals","ghosts","magic","nature","old religions","expertise","spirits"]
-        ]
-        var motiveNounCol1 = roller.random() * motivations.length >> 0;
-        var motiveNounCol2 = roller.random() * motivations.length >> 0;
-        var motiveNounCol3 = roller.random() * motivations.length >> 0;
-        
-        var motiveNoun1 = motiveNouns[motiveNounCol1][roller.random() * motivations[motiveNounCol1].length >> 0];
-        var motiveNoun2 = motiveNouns[motiveNounCol2][roller.random() * motivations[motiveNounCol1].length >> 0];
-        while(motiveNounCol2 == motiveNounCol1){ motiveNounCol2 = roller.random() * motivations.length >> 0; }
-        var motiveNoun3 = motiveNouns[motiveNounCol3][roller.random() * motivations[motiveNounCol1].length >> 0];
-        while(motiveNounCol3 == motiveNounCol1 || motiveNounCol3 == motiveNounCol2){ motiveNounCol3 = roller.random() * motivations.length >> 0; }
-        
-        return modifier + " " + noun + ", "
-         + motiveVerb1 + " " + motiveNoun1 + ", "
-         + motiveVerb2 + " " + motiveNoun2 + ", and "
-         + motiveVerb3 + " " + motiveNoun3 + ".";
+var motivations = [
+    ["advises","obtains","attempts","spoils","oppresses","interacts","creates","abducts","promotes","conceives","blights","progresses","distresses","possesses","records","embraces","contacts","pursues","associates with","prepares"],
+    ["shepherds","abuses","indulges","chronicles","fulfills","drives","reviews","aids","follows","advances","guards","conquers","hinders","plunders","constructs","encourages","agonizes","comprehends","administers","relates"],
+    ["takes","discovers","deters","acquires","damages","publicizes","burdens","advocates","implements","understands","collaborates","strives","completes","compels","joins","assists","defiles","produces","institutes","accounts"],
+    ["works","accompanies","offends","guides","learns","persecutes","communicates","processes","reports","develops","steals","suggests","weakens","achieves","secures","informs","patronizes","depresses","determines","seeks"],
+    ["manages","suppresses","proclaims","operates","accesses","refines","composes","undermines","explains","discourages","attends","detects","executes","maintains","realizes","conveys","robs","establishes","overthrows","supports"]
+];
+var motivationCol1 = roller.random() * motivations.length >> 0;
+var motivationCol2 = roller.random() * motivations.length >> 0;
+var motivationCol3 = roller.random() * motivations.length >> 0;
+
+var motiveVerb1 = motivations[motivationCol1][roller.random() * motivations[motivationCol1].length >> 0];
+var motiveVerb2 = motivations[motivationCol2][roller.random() * motivations[motivationCol1].length >> 0];
+var motiveVerb3 = motivations[motivationCol3][roller.random() * motivations[motivationCol1].length >> 0];
+
+var motiveNouns = [
+    ["wealth","hardship","affluence","resources","prosperity","poverty","opulence","deprivation","success","distress","contraband","music","literature","technology","alcohol","medicines","beauty","strength","intelligence","force"],
+    ["the wealthy","the populace","enemies","the public","religion","the poor","family","the elite","academia","the forsaken","the law","the government","the oppressed","friends","criminals","allies","secret societies","the world","military","the church"],
+    ["dreams","discretion","love","freedom","pain","faith","slavery","enlightenment","racism","sensuality","dissonance","peace","discrimination","disbelief","pleasure","hate","happiness","servitude","harmony","justice"],
+    ["gluttony","lust","envy","greed","laziness","wrath","pride","purity","moderation","vigilance","zeal","composure","charity","modesty","atrocities","cowardice","narcissism","compassion","valor","patience"],
+    ["advice","propaganda","science","knowledge","communications","lies","myths","riddles","stories","legends","industry","new religions","progress","animals","ghosts","magic","nature","old religions","expertise","spirits"]
+]
+var motiveNounCol1 = roller.random() * motivations.length >> 0;
+var motiveNounCol2 = roller.random() * motivations.length >> 0;
+var motiveNounCol3 = roller.random() * motivations.length >> 0;
+
+var motiveNoun1 = motiveNouns[motiveNounCol1][roller.random() * motivations[motiveNounCol1].length >> 0];
+var motiveNoun2 = motiveNouns[motiveNounCol2][roller.random() * motivations[motiveNounCol1].length >> 0];
+while(motiveNounCol2 == motiveNounCol1){ motiveNounCol2 = roller.random() * motivations.length >> 0; }
+var motiveNoun3 = motiveNouns[motiveNounCol3][roller.random() * motivations[motiveNounCol1].length >> 0];
+while(motiveNounCol3 == motiveNounCol1 || motiveNounCol3 == motiveNounCol2){ motiveNounCol3 = roller.random() * motivations.length >> 0; }
+
+return modifier + " " + noun + ", "
+    + motiveVerb1 + " " + motiveNoun1 + ", "
+    + motiveVerb2 + " " + motiveNoun2 + ", and "
+    + motiveVerb3 + " " + motiveNoun3 + ".";
+}
+function getUNEMood(relationship){
+    var moodRoll = roller.random()*100 + 1 >> 0;
+    var moodThresholds = [];
+    switch(relationship){
+        case "loved": moodThresholds = [1,6,16,31,70,85]; break;
+        case "friendly": moodThresholds = [2,8,20,40,76,89]; break;
+        case "peaceful": moodThresholds = [3,11,25,55,82,93]; break;
+        case "neutral": moodThresholds = [5,15,30,60,85,95]; break;
+        case "distrustful": moodThresholds = [7,18,46,76,90,97]; break;
+        case "hostile": moodThresholds = [11,24,61,81,93,98]; break;
+        case "hated": moodThresholds = [15,30,69,84,94,99]; break;
+    }
+    var mood = "";
+    if(moodRoll <= moodThresholds[0]){ mood = "withdrawn"; }
+    else if(moodRoll <= moodThresholds[1]){ mood = "guarded";}
+    else if(moodRoll <= moodThresholds[2]){ mood = "cautious";}
+    else if(moodRoll <= moodThresholds[3]){ mood = "neutral";}
+    else if(moodRoll <= moodThresholds[4]){ mood = "sociable";}
+    else if(moodRoll <= moodThresholds[5]){ mood = "helpful";}
+    else{ mood = "forthcoming";}
+    return mood;
+}
+function getUNEBearing(bearing){
+    if(typeof bearing == "undefined" || bearing == "random"){
+        var classRoll = roller.random() * 100 + 1 >> 0;
+        if(classRoll <= 12){ 
+            bearing = "scheming";
+        }else if(classRoll <= 24){
+            bearing = "insane";
+        }else if (classRoll <= 36){
+            bearing = "friendly";
+        }else if(classRoll <= 49){
+            bearing = "hostile";
+        }else if(classRoll <= 62){
+            bearing = "inquisitive";
+        }else if(classRoll <= 75){
+            bearing = "knowing";
+        }else if(classRoll <= 88){
+            bearing = "mysterious";
+        }else{
+            bearing = "prejudiced";
         }
-        function getUNEMood(relationship){
-            var moodRoll = roller.random()*100 + 1 >> 0;
-            var moodThresholds = [];
-            switch(relationship){
-                case "loved": moodThresholds = [1,6,16,31,70,85]; break;
-                case "friendly": moodThresholds = [2,8,20,40,76,89]; break;
-                case "peaceful": moodThresholds = [3,11,25,55,82,93]; break;
-                case "neutral": moodThresholds = [5,15,30,60,85,95]; break;
-                case "distrustful": moodThresholds = [7,18,46,76,90,97]; break;
-                case "hostile": moodThresholds = [11,24,61,81,93,98]; break;
-                case "hated": moodThresholds = [15,30,69,84,94,99]; break;
-            }
-            var mood = "";
-            if(moodRoll <= moodThresholds[0]){ mood = "withdrawn"; }
-            else if(moodRoll <= moodThresholds[1]){ mood = "guarded";}
-            else if(moodRoll <= moodThresholds[2]){ mood = "cautious";}
-            else if(moodRoll <= moodThresholds[3]){ mood = "neutral";}
-            else if(moodRoll <= moodThresholds[4]){ mood = "sociable";}
-            else if(moodRoll <= moodThresholds[5]){ mood = "helpful";}
-            else{ mood = "forthcoming";}
-            return mood;
-        }
-        function getUNEBearing(bearing){
-            if(typeof bearing == "undefined" || bearing == "random"){
-                var classRoll = roller.random() * 100 + 1 >> 0;
-                if(classRoll <= 12){ 
-                    bearing = "scheming";
-                }else if(classRoll <= 24){
-                    bearing = "insane";
-                }else if (classRoll <= 36){
-                    bearing = "friendly";
-                }else if(classRoll <= 49){
-                    bearing = "hostile";
-                }else if(classRoll <= 62){
-                    bearing = "inquisitive";
-                }else if(classRoll <= 75){
-                    bearing = "knowing";
-                }else if(classRoll <= 88){
-                    bearing = "mysterious";
-                }else{
-                    bearing = "prejudiced";
+    }
+    var bearingTopicRoll = roller.random() * 100 + 1 >> 0;
+    var bearingTopics = [];
+    switch(bearing){
+        case "scheming": bearingTopics = ["intent","bargain","means","proposition","plan","compromise","agenda","arrangement","negotiation","plot"]; break;
+        case "insane": bearingTopics = ["madness","fear","accident","chaos","idiocy","illusion","turmoil","confusion","facade","bewilderment"]; break;
+        case "friendly": bearingTopics = ["alliance","comfort","gratitude","shelter","happiness","support","promise","delight","aid","celebration"]; break;
+        case "hostile": bearingTopics = ["death","capture","judgment","combat","surrender","rage","resentment","submission","injury","destruction"]; break;
+        case "inquisitive": bearingTopics = ["questions","investigation","interest","demand","suspicion","request","curiosity","skepticism","command","petition"]; break;
+        case "knowing": bearingTopics = ["report","effects","examination","records","account","news","history","telling","discourse","speech"]; break;
+        case "mysterious": bearingTopics = ["rumor","uncertainty","secrets","misdirection","whispers","lies","shadows","enigma","obscurity","conundrum"]; break;
+        case "prejudiced": bearingTopics = ["reputation","doubt","bias","dislike","partiality","belief","view","discrimination","assessment","difference"]; break;
+    }
+    var bearingTopic = "";
+    if(bearingTopicRoll <= 10){ bearingTopic = bearingTopics[0]; }
+    else if(bearingTopicRoll <= 20){ bearingTopic = bearingTopics[1];}
+    else if(bearingTopicRoll <= 30){ bearingTopic = bearingTopics[2];}
+    else if(bearingTopicRoll <= 40){ bearingTopic = bearingTopics[3];}
+    else if(bearingTopicRoll <= 50){ bearingTopic = bearingTopics[4];}
+    else if(bearingTopicRoll <= 60){ bearingTopic = bearingTopics[5];}
+    else if(bearingTopicRoll <= 70){ bearingTopic = bearingTopics[6];}
+    else if(bearingTopicRoll <= 80){ bearingTopic = bearingTopics[7];}
+    else if(bearingTopicRoll <= 90){ bearingTopic = bearingTopics[8];}
+    else if(bearingTopicRoll <= 100){ bearingTopic = bearingTopics[9];}
+    var focusRoll = roller.random()*100 + 1 >> 0;
+    var topicFocus = "";
+    if(focusRoll <= 3){ topicFocus = "current scene"; }
+    else if(focusRoll <= 6){ topicFocus = "last story"; }
+    else if(focusRoll <= 9){ topicFocus = "equipment"; }
+    else if(focusRoll <= 12){ topicFocus = "parents"; }
+    else if(focusRoll <= 15){ topicFocus = "history"; }
+    else if(focusRoll <= 18){ topicFocus = "retainers"; }
+    else if(focusRoll <= 21){ topicFocus = "wealth"; }
+    else if(focusRoll <= 24){ topicFocus = "relics"; }
+    else if(focusRoll <= 27){ topicFocus = "last action"; }
+    else if(focusRoll <= 30){ topicFocus = "skills"; }
+    else if(focusRoll <= 33){ topicFocus = "superiors"; }
+    else if(focusRoll <= 36){ topicFocus = "fame"; }
+    else if(focusRoll <= 39){ topicFocus = "campaign"; }
+    else if(focusRoll <= 42){ topicFocus = "future action"; }
+    else if(focusRoll <= 45){ topicFocus = "friends"; }
+    else if(focusRoll <= 48){ topicFocus = "allies"; }
+    else if(focusRoll <= 51){ topicFocus = "last scene"; }
+    else if(focusRoll <= 54){ topicFocus = "contacts"; }
+    else if(focusRoll <= 57){ topicFocus = "flaws"; }
+    else if(focusRoll <= 60){ topicFocus = "antagonist"; }
+    else if(focusRoll <= 63){ topicFocus = "rewards"; }
+    else if(focusRoll <= 66){ topicFocus = "experience"; }
+    else if(focusRoll <= 69){ topicFocus = "knowledge"; }
+    else if(focusRoll <= 72){ topicFocus = "recent scene"; }
+    else if(focusRoll <= 75){ topicFocus = "community"; }
+    else if(focusRoll <= 78){ topicFocus = "treasure"; }
+    else if(focusRoll <= 81){ topicFocus = "the character"; }
+    else if(focusRoll <= 84){ topicFocus = "current story"; }
+    else if(focusRoll <= 87){ topicFocus = "family"; }
+    else if(focusRoll <= 90){ topicFocus = "power"; }
+    else if(focusRoll <= 93){ topicFocus = "weapons"; }
+    else if(focusRoll <= 96){ topicFocus = "previous scene"; }
+    else{ topicFocus = "enemy"; }
+    var topic = "speaks of " + bearingTopic + " regarding " + topicFocus;
+    return "<b>"+bearing+"</b>: " + topic;
+}
+function composeTasks(){
+    var characteristic = +(document.querySelector("[data-asset='characteristic']").value);
+    var skill = +(document.querySelector("[data-asset='skill']").value);
+    var other = +(document.querySelector("[data-asset='other']").value);
+    var attackerstatus = +(document.querySelector("[data-asset='attackerstatus']").value);
+    var equipmentquality = +(document.querySelector("[data-asset='equipmentquality']").value);
+    var equipmentease = +(document.querySelector("[data-asset='equipmentease']").value);
+    
+    var assetValue = characteristic + skill + other + attackerstatus + equipmentease + equipmentquality - 5;
+
+    var jot = +(document.querySelector("[data-asset='jot']").value);
+    var strWakefulness = (document.querySelector("[data-asset='wakefulness']").value);
+    
+    var tasktarget = assetValue;
+    var taskhaste = document.querySelector("[data-task='haste']").value;
+    var taskdifficulty = +(document.querySelector("[data-task='difficulty']").value);
+    var taskmods = +(document.querySelector("[data-task='mods']").value);
+    var tasktih = false;
+    if(taskdifficulty > skill + jot){ taskdifficulty += 1; tasktih = true;}
+    switch(taskhaste){
+        case "XHasty": taskdifficulty += 2; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired"){ tasktarget -= 1;} break;
+        case "Hasty": taskdifficulty += 1; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired"){ tasktarget -= 1;} break;
+        case "Standard": break;
+        case "Cautious": taskdifficulty -=1; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired"){ tasktarget -= 1;} break;
+    }
+    tasktarget += taskmods;
+    document.querySelector("[data-formula='task']").innerHTML = taskdifficulty + "D"+(tasktih ? "*" : "")+" <= " + tasktarget + " ("+getOdds(taskdifficulty,tasktarget)+"%)";
+
+    var combattarget = assetValue;
+    var combatattackerspeed = +(document.querySelector("[data-combat='attackerspeed']").value);
+    var combattargetspeed = +(document.querySelector("[data-combat='targetspeed']").value);
+    var combatmode = document.querySelector("[data-combat='mode']").value;
+    var combatsize = +(document.querySelector("[data-combat='size']").value);
+    var combatrange = +(document.querySelector("[data-combat='range']").value);
+    var combatstance = +(document.querySelector("[data-combat='stance']").value);
+    var combatcover = +(document.querySelector("[data-combat='cover']").value);
+    var combatconcealment = +(document.querySelector("[data-combat='concealment']").value);
+    var combatdifficulty = combatrange;
+    if(combatdifficulty == 0){combatdifficulty = 1;}
+    var combattih = false;
+    if(combatdifficulty > skill + jot){ combatdifficulty += 1; combattih = true;}
+    switch(combatmode){
+        case "Aimed": combatdifficulty -= 1; if(strWakefulness == "optimal"){ combattarget += 1; }else if(strWakefulness == "tired"){ combattarget -= 1;} break;
+        case "Standard": break;
+        case "Snapfire": combatdifficulty += 1; if(strWakefulness == "optimal"){ combattarget += 1; }else if(strWakefulness == "tired"){ combattarget -= 1;} break;
+    }
+    var targeteffectivesize = Math.max(combatsize + combatstance - combatrange - combatcover - combatconcealment,0);
+    combatdifficulty += combatattackerspeed;
+    combatdifficulty += combattargetspeed;
+    combattarget += targeteffectivesize;
+
+    document.querySelector("[data-formula='combat']").innerHTML = (combatattackerspeed >= 2 && combatmode == "Aimed") ? "Cannot aim while running" : combatdifficulty + "D"+(combattih ? "*" : "")+" <= " + combattarget + " ("+getOdds(combatdifficulty,combattarget)+"%)";
+    document.querySelector("[data-formula='targetsize']").innerHTML = "Target apparent size=" +  targeteffectivesize + (targeteffectivesize == 0 ? " (invisible)":"");
+}
+function getOdds(numberOfDice,targetNumber){
+    console.log(numberOfDice);
+    console.log(targetNumber);
+    // Initialize a 2D array to store probabilities
+    const dp = new Array(numberOfDice + 1).fill(0).map(() => new Array(targetNumber + 1).fill(0));
+
+    // Base case: If no dice, probability of sum <= 0 is 1
+    for (let i = 0; i <= targetNumber; i++) {
+        dp[0][i] = 1;
+    }
+
+    // Fill in the DP table
+    for (let i = 1; i <= numberOfDice; i++) {
+        for (let j = 1; j <= targetNumber; j++) {
+            // Probability of rolling 1 to 6 on the current die
+            for (let face = 1; face <= 6; face++) {
+                if (j - face >= 0) {
+                    dp[i][j] += dp[i - 1][j - face];
                 }
             }
-            var bearingTopicRoll = roller.random() * 100 + 1 >> 0;
-            var bearingTopics = [];
-            switch(bearing){
-                case "scheming": bearingTopics = ["intent","bargain","means","proposition","plan","compromise","agenda","arrangement","negotiation","plot"]; break;
-                case "insane": bearingTopics = ["madness","fear","accident","chaos","idiocy","illusion","turmoil","confusion","facade","bewilderment"]; break;
-                case "friendly": bearingTopics = ["alliance","comfort","gratitude","shelter","happiness","support","promise","delight","aid","celebration"]; break;
-                case "hostile": bearingTopics = ["death","capture","judgment","combat","surrender","rage","resentment","submission","injury","destruction"]; break;
-                case "inquisitive": bearingTopics = ["questions","investigation","interest","demand","suspicion","request","curiosity","skepticism","command","petition"]; break;
-                case "knowing": bearingTopics = ["report","effects","examination","records","account","news","history","telling","discourse","speech"]; break;
-                case "mysterious": bearingTopics = ["rumor","uncertainty","secrets","misdirection","whispers","lies","shadows","enigma","obscurity","conundrum"]; break;
-                case "prejudiced": bearingTopics = ["reputation","doubt","bias","dislike","partiality","belief","view","discrimination","assessment","difference"]; break;
-            }
-            var bearingTopic = "";
-            if(bearingTopicRoll <= 10){ bearingTopic = bearingTopics[0]; }
-            else if(bearingTopicRoll <= 20){ bearingTopic = bearingTopics[1];}
-            else if(bearingTopicRoll <= 30){ bearingTopic = bearingTopics[2];}
-            else if(bearingTopicRoll <= 40){ bearingTopic = bearingTopics[3];}
-            else if(bearingTopicRoll <= 50){ bearingTopic = bearingTopics[4];}
-            else if(bearingTopicRoll <= 60){ bearingTopic = bearingTopics[5];}
-            else if(bearingTopicRoll <= 70){ bearingTopic = bearingTopics[6];}
-            else if(bearingTopicRoll <= 80){ bearingTopic = bearingTopics[7];}
-            else if(bearingTopicRoll <= 90){ bearingTopic = bearingTopics[8];}
-            else if(bearingTopicRoll <= 100){ bearingTopic = bearingTopics[9];}
-            var focusRoll = roller.random()*100 + 1 >> 0;
-            var topicFocus = "";
-            if(focusRoll <= 3){ topicFocus = "current scene"; }
-            else if(focusRoll <= 6){ topicFocus = "last story"; }
-            else if(focusRoll <= 9){ topicFocus = "equipment"; }
-            else if(focusRoll <= 12){ topicFocus = "parents"; }
-            else if(focusRoll <= 15){ topicFocus = "history"; }
-            else if(focusRoll <= 18){ topicFocus = "retainers"; }
-            else if(focusRoll <= 21){ topicFocus = "wealth"; }
-            else if(focusRoll <= 24){ topicFocus = "relics"; }
-            else if(focusRoll <= 27){ topicFocus = "last action"; }
-            else if(focusRoll <= 30){ topicFocus = "skills"; }
-            else if(focusRoll <= 33){ topicFocus = "superiors"; }
-            else if(focusRoll <= 36){ topicFocus = "fame"; }
-            else if(focusRoll <= 39){ topicFocus = "campaign"; }
-            else if(focusRoll <= 42){ topicFocus = "future action"; }
-            else if(focusRoll <= 45){ topicFocus = "friends"; }
-            else if(focusRoll <= 48){ topicFocus = "allies"; }
-            else if(focusRoll <= 51){ topicFocus = "last scene"; }
-            else if(focusRoll <= 54){ topicFocus = "contacts"; }
-            else if(focusRoll <= 57){ topicFocus = "flaws"; }
-            else if(focusRoll <= 60){ topicFocus = "antagonist"; }
-            else if(focusRoll <= 63){ topicFocus = "rewards"; }
-            else if(focusRoll <= 66){ topicFocus = "experience"; }
-            else if(focusRoll <= 69){ topicFocus = "knowledge"; }
-            else if(focusRoll <= 72){ topicFocus = "recent scene"; }
-            else if(focusRoll <= 75){ topicFocus = "community"; }
-            else if(focusRoll <= 78){ topicFocus = "treasure"; }
-            else if(focusRoll <= 81){ topicFocus = "the character"; }
-            else if(focusRoll <= 84){ topicFocus = "current story"; }
-            else if(focusRoll <= 87){ topicFocus = "family"; }
-            else if(focusRoll <= 90){ topicFocus = "power"; }
-            else if(focusRoll <= 93){ topicFocus = "weapons"; }
-            else if(focusRoll <= 96){ topicFocus = "previous scene"; }
-            else{ topicFocus = "enemy"; }
-            var topic = "speaks of " + bearingTopic + " regarding " + topicFocus;
-            return "<b>"+bearing+"</b>: " + topic;
         }
+    }
+
+    // Calculate the overall probability
+    const totalOutcomes = Math.pow(6, numberOfDice);
+    const favorableOutcomes = dp[numberOfDice][targetNumber];
+    const probability = favorableOutcomes / totalOutcomes;
+
+    // Convert to percentage
+    const percentage = probability * 100;
+
+    return percentage.toFixed(2);
+}

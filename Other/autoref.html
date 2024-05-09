@@ -7,10 +7,12 @@
 </head>
 <body>
     <style>
-        .controls, .history{  border:1px solid black; text-align: left; padding:1rem;}
+        .controls{  border:1px solid black; text-align: left; padding:1rem;}
+        .history{ background-color:white;}
         .controls{ background-color:#dfdfdf; text-align: left;}
         .historyContainer{ text-align: left;}
-        .history ol{ display:flex; flex-direction: column-reverse;margin-block-start:0px; padding-top:0px; margin-inline-start: 0px; padding-inline-start: 0px;}
+        .history ol{ margin-block-start:0px; padding-top:0px; margin-inline-start: 0px; padding-inline-start: 0px;}
+
         nav.menu{ display:block; }
         nav.menu ul{ margin:0px; }
         nav.menu li{display:inline-block;font-family: Bahnschrift; user-select: none; }
@@ -33,21 +35,19 @@
         }
     </style>
     <div class="root">
-        <div class="historyContainer">
-        <ol class="history"></ol>
-    </div>
+        
+    
         <nav class="menu">
             <ul>
                 <li><a data-tier="1" target="oracle" class="selected">Oracle</a></li>
-                <li><a data-tier="1" target="threads">Threads</a></li>
-                <li><a data-tier="1" target="characters">Characters</a></li>
+                <li><a data-tier="1" target="notes">Notes</a></li>
                 <li><a data-tier="1" target="random">Random</a></li>
                 <li><a data-tier="1" target="roller">Roller</a></li>
             </ul>
         </nav>
         <div class="oracle controls" data-nav="oracle">
+            
             <ol>
-                <li><b>Scene</b> <input type="button" id="btnRandomScene" value="random"><input type="button" id="describeScene" value="update scene description"><br/><textarea style="width:25rem;height:4rem;" name="txtScene" id="txtScene"></textarea></li>
                 <li><b>Stage of the scene (Where are we heading?)</b> <select name="slctScene" id="scene">
                     <option value="To Knowledge">To Knowledge</option>
                     <option value="To Conflict">To Conflict</option>
@@ -55,22 +55,38 @@
                 </select></li>
                 <li><b>Oracle. Ask a yes/no question.</b> <input type="text" id="txtQuestion"/><input type="button" id="oracleButton" value="Ask">   </li>
                 <li><b>Surge Count:</b> <span id="surge">0</span></li>
-                
             </ol>
+            <div class="historyContainer">
+                <ol style="display:flex; flex-direction:column-reverse;" class="history"></ol>
+            </div>
         </div>
-        <div class="controls" data-nav="threads">
-            <textarea name="threads" id="threads"></textarea>
-        </div>
-        <div class="controls" data-nav="characters">
-            <textarea name="characters" id="characters"></textarea>
+        <div class="controls" data-nav="notes">
+            <textarea name="notes" id="notes" style="width:100%; height:100%;" rows="15"></textarea>
         </div>
         <div class="controls" data-nav="random">
+            <fieldset>
+                <legend>Words</legend>
+                <label for="slctWordCategory">Random Word: <select name="slctWordCategory" id="slctWordCategory"></select><input type="button" id="btnGetRandomWord" value="Get"></label>&nbsp;<span id="random_word"></span><br/>
+                <label for="slctSubWordCategory">Subfunction: <select name="slctSubWordCategory" id="slctSubWordCategory"></select><input type="button" id="btnGetRandomSubWord" value="Get"></label>&nbsp;<span id="random_subword"></span><br/>
+            </fieldset>
             <fieldset>
                 <legend>T5 random stuff</legend>
                 <label for="slctType">Category</label> <select name="slctType" id="slctType">
                     <option value="majortheme">Adventure Theme (Major)</option>
                     <option value="theme">Adventure Theme (Any)</option>
+                    <option value="attitude">Attitude</option>
+                    <option value="Comms">Comms</option>
                     <option value="crime">Crime</option>
+                    <option value="Damage">Damage</option>
+                    <option value="Diagnosis">Diagnosis</option>
+                    <option value="Supply">Economics - Supply</option>
+                    <option value="Demand">Economics - Demand</option>
+                    <option value="Environ">Environ - Temperature</option>
+                    <option value="Weather">Environ - Weather</option>
+                    <option value="Friends">Friends</option>
+                    <option value="Nobility">Nobility</option>
+                    <option value="Range">Range</option>
+                    <option value="Respect">Respect</option>
                     <option value="devicedamagelocation">Damage Location (Thing/device)</option>
                     <option value="tooldamagelocation">Damage Location (Thing/tool)</option>
                     <option value="weapondamagelocation">Damage Location (Thing/weapon)</option>
@@ -78,18 +94,16 @@
                     <option value="vehicledamagelocation">Damage Location (Equipment/vehicle)</option>
                     <option value="anatomicaldamagelocation">Damage Location (Character/anatomical)</option>
                     <option value="biologicaldamagelocation">Damage Location (Character/biological)</option>
-                    <option value="visibility">Visibility</option>
-                    <option value="temperature">Temperature</option>
-                    <option value="attitude">Attitude</option>
-                    <option value="typicaltech">Typical Tech</option>
-                    <option value="hightech">High Tech</option>
-                    <option value="Low">Low TL</option>
-                    <option value="Med">Med TL</option>
-                    <option value="High">High TL</option>
-                    <option value="VHigh">VHigh TL</option>
-                    <option value="XHigh">XHigh TL</option>
-                    <option value="UHigh">UHigh TL</option>
-                    <option value="Fantastic">Fantastic TL</option>
+                    <option value="typicaltech">TL Typical (VLow to XHigh)</option>
+                    <option value="hightech">TL High (High to Fantastic)</option>
+                    <option value="VLow">TL (VLow)</option>
+                    <option value="Low">TL (Low)</option>
+                    <option value="Med">TL (Med)</option>
+                    <option value="High">TL (High)</option>
+                    <option value="VHigh">TL (VHigh)</option>
+                    <option value="XHigh">TL (XHigh)</option>
+                    <option value="UHigh">TL (UHigh)</option>
+                    <option value="Fantastic">TL (Fantastic)</option>
                 </select>
                 <input type="button" value="Get Random" id="btnGet">
                 <div id="output"></div>
@@ -137,37 +151,155 @@
                     <option value="prejudiced">prejudiced</option>
                 </select><input id="btnUNEBearing" type="button" value="Conversation"> &nbsp;<span id="une_bearing"></span>
             </fieldset>
+            <fieldset>
+                <legend>Scene</legend>
+                <textarea style="width:25rem;height:4rem;" name="txtScene" id="txtScene"></textarea>
+                <input type="button" id="btnRandomScene" value="random">
+            </fieldset>
         </div>
         <div class="controls" data-nav="roller">
-            <div>
-                <label for="nD">Number of Dice</label> <input name="nD" id="nD" title="Number of Dice" alt="Number of Dice" type="number" value="2" />
-            </div>
-            <div>
-                <label for="slctMode">Mode</label> <select name="slctMode" id="slctMode" title="Dice Rolling Mode" alt="Choose dice rolling mode">
-                    <option value="normal">Normal (sum)</option>
-                    <option value="keephigh">Keep Highest</option>
-                    <option value="keeplow">Keep Lowest</option>
-                </select>
-                <span id="panel_numkeep">
-                    <label for="nKeep">Number to Keep</label> <input type="number" name="nKeep" id="nKeep" title="Number of dice to keep" alt="Number of dice to keep" value="2">
-                </span>
-            </div>
-            <br>
-            <div>
-                <input type="button" value="Roll" id="btnRoll">
-                <input type="button" value="Roll Flux" name="btnRollFlux" id="btnRollFlux">
-                <input type="button" value="Roll Good Flux" name="btnRollGoodFlux" id="btnRollGoodFlux">
-                <input type="button" value="Roll Bad Flux" name="btnRollBadFlux" id="btnRollBadFlux">
-                <input type="button" value="Clear Roll History" name="btnClearHistory" id="btnClearHistory">
-            </div>
-            <br>
-            <div id="outputrow">
-                <div class="roll_output">
-                    <div class="die">?</div>
-                </div>=<div class="total">Roll</div>
-            </div>
-            <br>
-            <div id="roll_history"></div>
+            <fieldset>
+                <legend>Dice</legend>
+                <div>
+                    <label for="nD">Number of Dice</label> <input name="nD" id="nD" title="Number of Dice" alt="Number of Dice" type="number" value="2" />
+                </div>
+                <div>
+                    <label for="slctMode">Mode</label> <select name="slctMode" id="slctMode" title="Dice Rolling Mode" alt="Choose dice rolling mode">
+                        <option value="normal">Normal (sum)</option>
+                        <option value="keephigh">Keep Highest</option>
+                        <option value="keeplow">Keep Lowest</option>
+                    </select>
+                    <span id="panel_numkeep">
+                        <label for="nKeep">Number to Keep</label> <input type="number" name="nKeep" id="nKeep" title="Number of dice to keep" alt="Number of dice to keep" value="2">
+                    </span>
+                </div>
+                <br>
+                <div>
+                    <input type="button" value="Roll" id="btnRoll">
+                    <input type="button" value="Roll Flux" name="btnRollFlux" id="btnRollFlux">
+                    <input type="button" value="Roll Good Flux" name="btnRollGoodFlux" id="btnRollGoodFlux">
+                    <input type="button" value="Roll Bad Flux" name="btnRollBadFlux" id="btnRollBadFlux">
+                    <input type="button" value="Clear Roll History" name="btnClearHistory" id="btnClearHistory">
+                </div>
+                <br>
+                <div id="outputrow">
+                    <div class="roll_output">
+                        <div class="die">?</div>
+                    </div>=<div class="total">Roll</div>
+                </div>
+                <br>
+                <div id="roll_history"></div>
+            </fieldset>
+            <fieldset>
+                <legend>Tasks</legend>
+                <fieldset>
+                    <legend>Assets</legend>
+                    Characteristic: <input data-asset="characteristic" type="number" value="7">&nbsp;
+                    Skill: <input data-asset="skill" type="number" value="1">&nbsp;
+                    JOT: <input data-asset="jot" type="number" value="0">
+                    Other: <input data-asset="other" type="number" value="0"><br>
+                    Wakefulness: <select data-asset="wakefulness" name="" id="">
+                        <option value="optimal">Optimal</option>
+                        <option selected value="ordinary">Ordinary</option>
+                        <option value="tired">Tired</option>
+                        <option value="sleepy">Sleepy</option>
+                    </select> 
+                    Status (first round only): <select data-asset="attackerstatus" name="" id="">
+                        <option value="3">Forewarned</option>
+                        <option value="2">Prepared</option>
+                        <option value="1">Alert</option>
+                        <option selected value="0">Standard Fighting</option>
+                        <option value="-1">Inattentive</option>
+                        <option value="-2">Unaware</option>
+                        <option value="-3">Oblivious</option>
+                    </select><br>
+                    Equipment Quality: <input min="0" max="12" data-asset="equipmentquality" type="number" value="5"> &nbsp; Ease-of-Use: <input data-asset="equipmentease" type="number" min="-5" max="5" value="0">
+                </fieldset>
+                <fieldset>
+                    <legend>General Task</legend>
+                    <div>
+                        Difficulty: <select data-task="difficulty" name="" id="">
+                            <option value="1">Easy 1D</option>
+                            <option selected value="2">Average 2D</option>
+                            <option value="3">Difficult 3D</option>
+                            <option value="4">Formidable 4D</option>
+                            <option value="5">Staggering 5D</option>
+                            <option value="6">Hopeless 6D</option>
+                            <option value="7">Impossible 7D</option>
+                            <option value="8">Beyond Impossible 8D</option>
+                        </select><br/>
+                        Haste/Caution: <select data-task="haste" name="" id="">
+                            <option value="XHasty">Extra Hasty</option>
+                            <option value="Hasty">Hasty</option>
+                            <option selected value="Standard">Standard</option>
+                            <option value="Cautious">Cautious</option>
+                        </select><br>
+                        Mods: <input data-task="mods" type="number" value="0">
+                    </div>
+                   <h1 data-formula="task"></h1>
+                </fieldset>
+                <fieldset>
+                    <legend>Combat</legend>
+                    Attack Mode: <select data-combat="mode" name="" id="">
+                        <option value="Aimed">Aimed (1 shot)</option>
+                        <option selected value="Standard">Standard (2 shots)</option>
+                        <option value="Snapfire">Snapfire (3 shots)</option>
+                    </select> Attacker Speed: <select data-combat="attackerspeed" name="" id="">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2+</option>
+                        </select>
+                    <br>                                    
+                    Target Range: <select data-combat="range" name="" id="">
+                        <option value="0">Contact (0-3m)</option>
+                        <option value="1">VShort (3-25m)</option>
+                        <option selected value="2">Short (25-100m)</option>
+                        <option value="3">Medium (100-300m)</option>
+                        <option value="4">Long (300-750m)</option>
+                        <option value="5">VLong (750m-3km)</option>
+                        <option value="6">Distant (3-25km)</option>
+                        <option value="7">VDist (25-250km)</option>
+                        <option value="8">Orbit (250-2500km)</option>
+                    </select>
+                    Target Size: <select data-combat="size" name="" id="">
+                        <option value="1">1 (Coin)</option>
+                        <option value="2">2 (Eye)</option>
+                        <option value="3">3 (Head)</option>
+                        <option value="4">4 (Rifle)</option>
+                        <option selected value="5">5 (Person)</option>
+                        <option value="6">6 (Vehicle)</option>
+                        <option value="7">7 (ACS)</option>
+                        <option value="8">8 (BCS)</option>
+                        <option value="9">9 (Moonlet)</option>
+                    </select><br>
+                    Target Speed (not toward/away): <input type="number" min="0" data-combat="targetspeed" value="0" /> &nbsp;    Target Stance: <select data-combat="stance" name="" id="">
+                        <option value="0">Normal</option>
+                        <option value="-1">Crouching</option>
+                        <option value="-2">Prone</option>
+                        <option value="-1">Evading</option>
+                    </select><br>
+                    Target Cover: <select data-combat="cover" name="" id="">
+                        <option value="0">0 - Unprotected</option>
+                        <option value="1">1 - Somewhat Covered</option>
+                        <option value="2">2 - Partially Covered</option>
+                        <option value="3">3 - Behind Cover</option>
+                        <option value="4">4 - Protected (Cannot Attack)</option>
+                        <option value="5">5 - Protected (Cannot Attack)</option>
+                        <option value="6">6 - Protected (Cannot Attack)</option>
+                    </select><br>
+                    Target Concealment: <select data-combat="concealment" name="" id="">
+                        <option value="0">0 -  Visible</option>
+                        <option value="1">1 -  Obscured</option>
+                        <option value="2">2 -  Camouflaged</option>
+                        <option value="3">3 -  Obscured</option>
+                        <option value="4">4 -  Somewhat Hidden</option>
+                        <option value="5">5 -  Hidden</option>
+                        <option value="6">6 -  Completely Hidden</option>
+                    </select><br>
+                    <h1 data-formula="combat"></h1>
+                    <h2 data-formula="targetsize"></h2>
+                </fieldset>
+            </fieldset>
         </div>
     </div>
     <script src="./resources/autoref.js" type="module"></script>
