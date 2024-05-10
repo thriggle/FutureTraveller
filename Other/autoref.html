@@ -45,7 +45,9 @@
         input[type='number']{ width:2rem;}
         .flexparent{display:flex; flex-wrap:wrap; padding:0.1rem;}
         .flexparent > div {padding-left:0.2rem; padding-bottom:0.1rem; margin-left:0.2rem; padding-right:0.1rem; margin-top:0.1rem; margin-bottom:0.1rem;}
-        [data-nav='task-combat'] .flexparent > div { padding-bottom:0.2rem; padding-top:0.2rem; line-height:1.2rem;}
+        [data-nav='task-combat'] .flexparent > div { padding-bottom:0.2rem; padding-top:0.2rem; line-height:1.2rem; max-width:100%; display:flex; flex-direction: column; align-items:stretch }
+        [data-nav='task-combat'] .flexparent > div input,[data-nav='task-combat'] .flexparent > div select{flex-grow:1; height:1.2rem;}
+        [data-nav='task-combat'] .flexparent > div > div { display:flex; min-height:1.3rem;}
     </style>
     <div class="root">
         <nav class="menu">
@@ -251,12 +253,16 @@
                     </div>
                     <div class="controls" data-nav="task-combat" data-tier="2">
                         <div class="flexparent">
-                            <div style="display:block">
-                                <div><label for="slct_attackmode">Attack Mode: </label><select id="slct_attackmode" data-combat="mode" name="" id="">
+                            <div >
+                                <div>
+                                    <label for="slct_attackmode">Attack Mode: </label>
+                                    <select id="slct_attackmode" data-combat="mode" name="" id="">
                                     <option value="Aimed">Aimed (1 shot)</option>
                                     <option selected value="Standard">Standard (2 shots)</option>
                                     <option value="Snapfire">Snapfire (3 shots)</option>
-                                </select></div>
+                                </select>
+                                </div>
+
                                 <div><label for="slct_attackspeed">Attacker Speed: </label><select id="slct_attackspeed" data-combat="attackerspeed" name="" id="">
                                     <option value="0">0</option>
                                     <option value="1">1</option>
@@ -274,8 +280,8 @@
                                     </select>
                                 </div>
                             </div>
-                            <div style="display:block">
-                                <div><label for="slct_combatrange">Target Range: </label><select id="slct_combatrange" data-combat="range" name="" id="">
+                            <div>
+                                <div><label style="font-weight:bold;" for="slct_combatrange">Target Range: </label><select id="slct_combatrange" data-combat="range" name="" id="">
                                     <option value="0">0 - Contact (0-3m)</option>
                                     <option value="1">1 - VShort (3-25m)</option>
                                     <option selected value="2">2 - Short (25-100m)</option>
@@ -286,7 +292,7 @@
                                     <option value="7">7 - VDist (25-250km)</option>
                                     <option value="8">8 - Orbit (250-2500km)</option>
                                 </select></div>
-                                <div><label for="slct_targetsize">Target Size: </label><select id="slct_targetsize" data-combat="size" name="" id="">
+                                <div><label style="font-weight:bold;" for="slct_targetsize">Target Size: </label><select id="slct_targetsize" data-combat="size" name="" id="">
                                     <option value="1">1 (Coin)</option>
                                     <option value="2">2 (Eye)</option>
                                     <option value="3">3 (Head)</option>
@@ -298,14 +304,8 @@
                                     <option value="9">9 (Moonlet)</option>
                                 </select></div>
                             </div>                         
-                           <div style="display:block">
-                            
-                            <div><label for="slct_targetstance">Target Stance: </label><select id="slct_targetstance" data-combat="stance" name="" id="">
-                                <option value="0">Normal</option>
-                                <option value="-1">Crouching</option>
-                                <option value="-2">Prone</option>
-                                <option value="-1">Evading</option>
-                            </select></div><div>
+                           <div>                            
+                            <div>
                             <label for="slct_targetcover">Target Cover: </label><select id="slct_targetcover" data-combat="cover" name="" id="">
                                 <option value="0">0 - Unprotected</option>
                                 <option value="1">1 - Somewhat Covered</option>
@@ -323,6 +323,12 @@
                                 <option value="4">4 -  Somewhat Hidden</option>
                                 <option value="5">5 -  Hidden</option>
                                 <option value="6">6 -  Completely Hidden</option>
+                            </select></div>
+                            <div><label for="slct_targetstance">Target Stance: </label><select id="slct_targetstance" data-combat="stance" name="" id="">
+                                <option value="0">Normal</option>
+                                <option value="-1">Crouching</option>
+                                <option value="-2">Prone</option>
+                                <option value="-1">Evading</option>
                             </select></div>
                             <div>
                             <label for="slct_targetaction">Target Action: </label><select id="slct_targetaction" data-combat="targetaction" name="" id="">
