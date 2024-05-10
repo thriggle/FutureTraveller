@@ -1781,7 +1781,7 @@ function composeTasks(){
         case "Cautious": taskdifficulty -=1; if(strWakefulness == "optimal"){ tasktarget += 1; }else if(strWakefulness == "tired" || strWakefulness == "sleepy"){ tasktarget -= 1;} break;
     }
     tasktarget += taskmods;
-    document.querySelector("[data-formula='task']").innerHTML = taskdifficulty + "D"+(tasktih ? "*" : "")+" &nbsp;≤&nbsp;  " + tasktarget + " &nbsp;("+getOdds(taskdifficulty,tasktarget)+"%)";
+    document.querySelector("[data-formula='task']").innerHTML = taskdifficulty + "D"+(tasktih ? "<span style='color:darkred'>*</span>" : "")+" &nbsp;≤&nbsp;  " + tasktarget + " &nbsp;("+getOdds(taskdifficulty,tasktarget)+"%)";
 
     var combattarget = assetValue;
     var attackerstatus = +(document.querySelector("[data-asset='attackerstatus']").value);
@@ -1810,7 +1810,7 @@ function composeTasks(){
     combatdifficulty += combattargetspeed;
     combattarget += targeteffectivesize;
 
-    document.querySelector("[data-formula='combat']").innerHTML = (combatattackerspeed >= 2 && combatmode == "Aimed") ? "Cannot aim while running" : combatdifficulty + "D"+(combattih ? "*" : "")+" &nbsp;≤&nbsp; " + combattarget + " &nbsp;("+getOdds(combatdifficulty,combattarget)+"%)";
+    document.querySelector("[data-formula='combat']").innerHTML = (combatattackerspeed >= 2 && combatmode == "Aimed") ? "Cannot aim while running" : combatdifficulty + "D"+(combattih ? "<span style='color:darkred'>*</span>" : "")+" &nbsp;≤&nbsp; " + combattarget + " &nbsp;("+getOdds(combatdifficulty,combattarget)+"%)";
     document.querySelector("[data-formula='targetsize']").innerHTML = "Target apparent size=" +  targeteffectivesize + (targeteffectivesize == 0 ? " (invisible)":"");
     document.querySelector("[data-formula='taskwarning']").innerHTML = (tasktih ? "*This is Hard! " : "") + (strWakefulness === "sleepy" ? "Sleepy: Check C3 before any task." : "");
     document.querySelector("[data-formula='combatwarning']").innerHTML = (combattih ? "*This is Hard! " : "") + (strWakefulness === "sleepy" ? "Sleepy: Check C3 before any task." : "");
