@@ -7,6 +7,10 @@
 </head>
 <body>
     <style>
+          @font-face {
+            font-family: Bahnschrift;
+            src: url(/Traveller/fonts/BAHNSCHRIFT.TTF);
+        }
         .controls{  border:1px solid black; text-align: left; padding:1rem;}
         .history{ background-color:white;}
         .controls{ background-color:#dfdfdf; text-align: left;}
@@ -35,9 +39,9 @@
         }
         [data-nav]{ display:none; border:1px solid gray;}
         [data-nav='roller'],[data-nav='task-general']{display:block; }
-        h1,h2,h3{margin:0.5rem;}
+        h1,h2,h3{margin:0.5rem;font-family: Bahnschrift; }
         nav.menu li a[data-tier='2']{ font-size:smaller;}
-        input[type='number']{ width:1.5rem;}
+        input[type='number']{ width:2rem;}
     </style>
     <div class="root">
         <nav class="menu">
