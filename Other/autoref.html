@@ -42,6 +42,8 @@
         h1,h2,h3{margin:0.5rem;font-family: Bahnschrift; }
         nav.menu li a[data-tier='2']{ font-size:smaller;}
         input[type='number']{ width:2rem;}
+        .flexparent{display:flex; flex-wrap:wrap; padding:0.1rem;}
+        .flexparent > div {padding:0.2rem; margin:0.2rem;}
     </style>
     <div class="root">
         <nav class="menu">
@@ -208,9 +210,7 @@
                         </ul>
                     </nav>
                     <div style="border:1px solid black;">
-                        
-                    
-                        <div style="display:flex; flex-wrap:wrap; padding:1rem; ">
+                        <div class="flexparent">
 
                         
                         <div>Characteristic: <input data-asset="characteristic" min="0" type="number" value="7">&nbsp;</div>
@@ -227,10 +227,9 @@
                             <option value="tired">Tired</option>
                             <option value="sleepy">Sleepy</option>
                         </select>&nbsp;</div>
-                        <div>
-                            Equipment Quality: <input min="0" max="12" data-asset="equipmentquality" type="number" value="5">&nbsp;Ease-of-Use: <input data-asset="equipmentease" type="number" min="-5" max="5" value="0">&nbsp;
-                        </div>
-                        </div>
+                        <div>Qrebs Quality: <input min="0" max="12" data-asset="equipmentquality" type="number" value="5">&nbsp;</div>
+                        <div>Ease-of-Use: <input data-asset="equipmentease" type="number" min="-5" max="5" value="0">&nbsp;</div>
+                    </div>
 
                     <div class="controls" data-nav="task-general" data-tier="2">
                         <div>
@@ -256,80 +255,94 @@
                        <h3 style="color:darkred" data-formula="taskwarning"> </h3>
                     </div>
                     <div class="controls" data-nav="task-combat" data-tier="2">
-                        Attack Mode: <select data-combat="mode" name="" id="">
-                            <option value="Aimed">Aimed (1 shot)</option>
-                            <option selected value="Standard">Standard (2 shots)</option>
-                            <option value="Snapfire">Snapfire (3 shots)</option>
-                        </select> Attacker Speed: <select data-combat="attackerspeed" name="" id="">
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2+</option>
-                            </select><br/>
-                            Attacker Status (first round only): <select data-asset="attackerstatus" name="" id="">
-                                <option value="3">Forewarned</option>
-                                <option value="2">Prepared</option>
-                                <option value="1">Alert</option>
-                                <option selected value="0">Standard Fighting</option>
-                                <option value="-1">Inattentive</option>
-                                <option value="-2">Unaware</option>
-                                <option value="-3">Oblivious</option>
-                            </select>
-                        <br><br/>                         
-                        Target Range: <select data-combat="range" name="" id="">
-                            <option value="0">0 - Contact (0-3m)</option>
-                            <option value="1">1 - VShort (3-25m)</option>
-                            <option selected value="2">2 - Short (25-100m)</option>
-                            <option value="3">3 - Medium (100-300m)</option>
-                            <option value="4">4 - Long (300-750m)</option>
-                            <option value="5">5 - VLong (750m-3km)</option>
-                            <option value="6">6 - Distant (3-25km)</option>
-                            <option value="7">7 - VDist (25-250km)</option>
-                            <option value="8">8 - Orbit (250-2500km)</option>
-                        </select>
-                        Target Size: <select data-combat="size" name="" id="">
-                            <option value="1">1 (Coin)</option>
-                            <option value="2">2 (Eye)</option>
-                            <option value="3">3 (Head)</option>
-                            <option value="4">4 (Rifle)</option>
-                            <option selected value="5">5 (Person)</option>
-                            <option value="6">6 (Vehicle)</option>
-                            <option value="7">7 (ACS)</option>
-                            <option value="8">8 (BCS)</option>
-                            <option value="9">9 (Moonlet)</option>
-                        </select><br>
-                        Target Speed (not toward/away): <input type="number" min="0" data-combat="targetspeed" value="0" /> &nbsp;    Target Stance: <select data-combat="stance" name="" id="">
-                            <option value="0">Normal</option>
-                            <option value="-1">Crouching</option>
-                            <option value="-2">Prone</option>
-                            <option value="-1">Evading</option>
-                        </select><br>
-                        Target Cover: <select data-combat="cover" name="" id="">
-                            <option value="0">0 - Unprotected</option>
-                            <option value="1">1 - Somewhat Covered</option>
-                            <option value="2">2 - Partially Covered</option>
-                            <option value="3">3 - Behind Cover</option>
-                            <option value="4">4 - Protected (Cannot Attack)</option>
-                            <option value="5">5 - Protected (Cannot Attack)</option>
-                            <option value="6">6 - Protected (Cannot Attack)</option>
-                        </select><br>
-                        Target Concealment: <select data-combat="concealment" name="" id="">
-                            <option value="0">0 -  Visible</option>
-                            <option value="1">1 -  Obscured</option>
-                            <option value="2">2 -  Camouflaged</option>
-                            <option value="3">3 -  Obscured</option>
-                            <option value="4">4 -  Somewhat Hidden</option>
-                            <option value="5">5 -  Hidden</option>
-                            <option value="6">6 -  Completely Hidden</option>
-                        </select><br/>
-                        Target Action: <select data-combat="targetaction" name="" id="">
-                            <option value="0">Target did not attack</option>
-                            <option value="1">Target made an aimed attack</option>
-                            <option value="2">Target made a standard attack</option>
-                            <option value="3">Target made a snapfire attack</option>
-                        </select><br>
-                        <h1 data-formula="combat"></h1>
-                        <h2 data-formula="targetsize"></h2>
-                        <h3 style="color:darkred" data-formula="combatwarning"> </h3>
+                        <div class="flexparent">
+                            <div style="display:block">
+                                <div>Attack Mode: <select data-combat="mode" name="" id="">
+                                    <option value="Aimed">Aimed (1 shot)</option>
+                                    <option selected value="Standard">Standard (2 shots)</option>
+                                    <option value="Snapfire">Snapfire (3 shots)</option>
+                                </select></div>
+                                <div>Attacker Speed: <select data-combat="attackerspeed" name="" id="">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2+</option>
+                                    </select></div>
+                                <div>
+                                    Attacker Status (first round only): <select data-asset="attackerstatus" name="" id="">
+                                        <option value="3">Forewarned</option>
+                                        <option value="2">Prepared</option>
+                                        <option value="1">Alert</option>
+                                        <option selected value="0">Standard Fighting</option>
+                                        <option value="-1">Inattentive</option>
+                                        <option value="-2">Unaware</option>
+                                        <option value="-3">Oblivious</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="display:block">
+                                <div>Target Range: <select data-combat="range" name="" id="">
+                                    <option value="0">0 - Contact (0-3m)</option>
+                                    <option value="1">1 - VShort (3-25m)</option>
+                                    <option selected value="2">2 - Short (25-100m)</option>
+                                    <option value="3">3 - Medium (100-300m)</option>
+                                    <option value="4">4 - Long (300-750m)</option>
+                                    <option value="5">5 - VLong (750m-3km)</option>
+                                    <option value="6">6 - Distant (3-25km)</option>
+                                    <option value="7">7 - VDist (25-250km)</option>
+                                    <option value="8">8 - Orbit (250-2500km)</option>
+                                </select></div>
+                                <div>Target Size: <select data-combat="size" name="" id="">
+                                    <option value="1">1 (Coin)</option>
+                                    <option value="2">2 (Eye)</option>
+                                    <option value="3">3 (Head)</option>
+                                    <option value="4">4 (Rifle)</option>
+                                    <option selected value="5">5 (Person)</option>
+                                    <option value="6">6 (Vehicle)</option>
+                                    <option value="7">7 (ACS)</option>
+                                    <option value="8">8 (BCS)</option>
+                                    <option value="9">9 (Moonlet)</option>
+                                </select></div>
+                            </div>                         
+                           <div style="display:block">
+                            <div>Target Speed (not toward/away): <input type="number" min="0" data-combat="targetspeed" value="0" /> </div>
+                            <div>Target Stance: <select data-combat="stance" name="" id="">
+                                <option value="0">Normal</option>
+                                <option value="-1">Crouching</option>
+                                <option value="-2">Prone</option>
+                                <option value="-1">Evading</option>
+                            </select></div><div>
+                            Target Cover: <select data-combat="cover" name="" id="">
+                                <option value="0">0 - Unprotected</option>
+                                <option value="1">1 - Somewhat Covered</option>
+                                <option value="2">2 - Partially Covered</option>
+                                <option value="3">3 - Behind Cover</option>
+                                <option value="4">4 - Protected (Cannot Attack)</option>
+                                <option value="5">5 - Protected (Cannot Attack)</option>
+                                <option value="6">6 - Protected (Cannot Attack)</option>
+                            </select></div><div>
+                            Target Concealment: <select data-combat="concealment" name="" id="">
+                                <option value="0">0 -  Visible</option>
+                                <option value="1">1 -  Obscured</option>
+                                <option value="2">2 -  Camouflaged</option>
+                                <option value="3">3 -  Obscured</option>
+                                <option value="4">4 -  Somewhat Hidden</option>
+                                <option value="5">5 -  Hidden</option>
+                                <option value="6">6 -  Completely Hidden</option>
+                            </select></div><div>
+                            Target Action: <select data-combat="targetaction" name="" id="">
+                                <option value="0">Target did not attack</option>
+                                <option value="1">Target made an aimed attack</option>
+                                <option value="2">Target made a standard attack</option>
+                                <option value="3">Target made a snapfire attack</option>
+                            </select></div>
+                           </div>
+                        </div>
+                        
+                        <div style="display:block;">
+                            <h1 data-formula="combat"></h1>
+                            <h2 data-formula="targetsize"></h2>
+                            <h3 style="color:darkred" data-formula="combatwarning"> </h3>
+                        </div>
                     </div>
                 </div>
             </div>
