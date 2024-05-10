@@ -229,11 +229,16 @@ function getWord(key){
 function onNavigate(e){
     var target = e.target.getAttribute("target");
     if(target){
-        var current = document.querySelector("nav.menu ul li a.selected");
+        var tier =e.target.getAttribute("data-tier");
+        var tierselector = "";
+        if(tier){
+            tierselector = "[data-tier='"+tier+"']";
+        }
+        var current = document.querySelector("nav.menu ul li a.selected"+tierselector);
         current.classList.remove(current.className);
         e.target.classList.add("selected");
-        document.querySelector("[data-nav='"+current.getAttribute("target")+"']").style.display = "none";
-        document.querySelector("[data-nav='"+target+"']").style.display = "block";
+        document.querySelector("[data-nav='"+current.getAttribute("target")+"']"+tierselector).style.display = "none";
+        document.querySelector("[data-nav='"+target+"']"+tierselector).style.display = "block";
     }
 }
 function getScene(){
