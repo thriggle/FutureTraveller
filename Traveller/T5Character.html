@@ -211,8 +211,16 @@
                     <fieldset>
                         <legend>Origin</legend>
                         
-                        <label for="txtName">Name: <input type="text" id="txtName" /><button id="btnRandomName">roll</button><button id="btnApplyName">apply</button> </label><br/>
-                        <label for="slctNativeLanguage">Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
+                        <label for="txtName">Name: <input type="text" id="txtName" /><button id="btnRandomName">roll</button><button id="btnApplyName">apply</button> </label><br/>         
+                        <label style="white-space: nowrap;" for="txtHomeworldTradeCodes">Homeworld Trade Codes: <input type="text" style="width:5rem;" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" /><input type="button" id="btnRandomHWTCs" value="Random HW"></label><br/>
+                        <label style="white-space: nowrap;" for="slctSpecies">Species: <select name="slctSpecies" id="slctSpecies">
+                            <option value="human">Humaniti</option>
+                        </select></label> 
+                        <label style="white-space: nowrap;" for="slctGender">Sex: <select name="slctGender" id="slctGender">
+                            <option value="random">Random</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select></label> <label style="white-space: nowrap;" for="slctNativeLanguage">Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
                             <option value="!kee">!kee</option>
                             <option selected="selected" value="Anglic">Anglic</option>
                             <option value="Vilani">Vilani</option>
@@ -224,15 +232,6 @@
                             <option value="Tezapet">Tezapet</option>
                             <option value="Trokh">Trokh</option>
                             <option value="Zdetl">Zdetl</option>             
-                        </select></label><br/>
-                        <label for="txtHomeworldTradeCodes">Homeworld Trade Codes: <input type="text" style="width:5rem;" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" /></label><input type="button" id="btnRandomHWTCs" value="Random HW"><br/>
-                        <label for="slctSpecies">Species: <select name="slctSpecies" id="slctSpecies">
-                            <option value="human">Humaniti</option>
-                        </select></label><br/>
-                        <label for="slctGender">Sex: <select name="slctGender" id="slctGender">
-                            <option value="random">Random</option>
-                            <option value="M">Male</option>
-                            <option value="F">Female</option>
                         </select></label>
                     </fieldset>
                 <fieldset>
