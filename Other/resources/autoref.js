@@ -1762,10 +1762,10 @@ function composeTasks(){
    
     var equipmentquality = +(document.querySelector("[data-asset='equipmentquality']").value);
     var equipmentease = +(document.querySelector("[data-asset='equipmentease']").value);
-    
-    var assetValue = characteristic + skill + other + equipmentease + equipmentquality - 5;
-
     var jot = +(document.querySelector("[data-asset='jot']").value);
+    
+    if(skill === 0 && jot >= 3){ skill = Math.min(characteristic,jot-2);}
+    var assetValue = characteristic + skill + other + equipmentease + equipmentquality - 5;
     var strWakefulness = (document.querySelector("[data-asset='wakefulness']").value);
     
     var tasktarget = assetValue;
