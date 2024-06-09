@@ -1860,6 +1860,7 @@ export function createCharacter(roller, species, chosenGender){
                 musterOutSpecificCareer(careerIndex,careers[careerIndex].numRolls,updateFunc,musterContinue);
             }else{
                 if(calculateFame() >= 19 && !fameMusterOutBonus){
+                    fameMusterOutBonus = true;
                     claimFameMusterOutBonus(updateFunc,true,function(){
                         record("Ready to begin adventuring!");
                         updateFunc();
@@ -5228,7 +5229,10 @@ export function createCharacter(roller, species, chosenGender){
         careers = characterJson.careers;
         CCs = characterJson.CCs;
         if(typeof characterJson.fameMusterOutBonus !== "undefined"){
-            fameMusterOutBonus = characterJson.fameMusterOutBonus;}else{fameMusterOutBonus = false;}
+            fameMusterOutBonus = characterJson.fameMusterOutBonus;
+        }else{
+            fameMusterOutBonus = true;
+        }
         setCharacteristics(characterJson.characteristics);
         credits = characterJson.credits;
         edu_waivers = characterJson.edu_waivers;
