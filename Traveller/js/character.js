@@ -4028,6 +4028,7 @@ export function createCharacter(roller, species, chosenGender){
         var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
         if(priorCareers == 0 || careers[priorCareers - 1].active == false){
             // apply for career
+            var appliedSuccessfully = false;
             pickOption(["Begin as 4th Officer","Begin as Spacehand","Begin as Temp"],"Enlisting in merchant service...",function(enlistChoice){
                 if(enlistChoice === "Begin as 4th Officer"){
                     var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
@@ -4039,10 +4040,11 @@ export function createCharacter(roller, species, chosenGender){
                         gainSkillOrKnowledge(ENUM_SKILLS.Steward,undefined,false,"Joined Merchants as Fourth Officer.");
                         updateFunc();
                     }else{
-                        enlistChoice = "Begin as Spacehand";
+                        record("Failed to join Merchant career as an Officer.");
+                        advanceAge(1);
                     }
-                }
-                if(enlistChoice === "Begin as Spacehand"){
+                    appliedSuccessfully = beginRoll.success;
+                }else if(enlistChoice === "Begin as Spacehand"){
                     var numDice = species.Characteristics[1].nD + gender.Characteristics[1].nD + caste.Characteristics[1].nD;
                     var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.DEX,numDice,0,"Begin Merchant spacehand vs Dex");
                     record(beginRoll.remarks);
@@ -4052,21 +4054,26 @@ export function createCharacter(roller, species, chosenGender){
                         record("Joined Merchants as Spacehand.");
                         updateFunc();
                     }else{
-                        enlistChoice = "Begin as Temp";
+                        record("Failed to join Merchant career as a Spacehand.");
+                        advanceAge(1);
                     }
-                }
-                if(enlistChoice == "Begin as Temp"){
+                    appliedSuccessfully = beginRoll.success;
+                }else if(enlistChoice == "Begin as Temp"){
                     record("Joined Merchants as Temp.");
                     careers.push({career:career,terms:1,active:true,rank:{label:"RX Temp",officer:0,enlisted:-1},schools:[],awards:[]});
                     updateFunc();
+                    appliedSuccessfully = true;
                 }
-                pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
-                    CC = selectedCC;
-                    CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
-                    // proceed with R&R, +4 years of skills, promotion/commission
-                    advanceAndGetSkills();
-                },true,undefined,CCDescriptions);
-                
+                if(appliedSuccessfully){
+                    pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                        CC = selectedCC;
+                        CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                        // proceed with R&R, +4 years of skills, promotion/commission
+                        advanceAndGetSkills();
+                    },true,undefined,CCDescriptions);
+                }else{
+                    updateFunc();
+                }         
             },true,"Begin as 4th Officer",["Roll vs Int","Roll vs Dex","Automatic"]);
             return;
         }else{
