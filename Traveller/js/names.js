@@ -651,7 +651,6 @@ export function getNames(){
         ],
         "lastname": [
             "100:{human.popularuslastname}",
-            "1:{human.meuxsurnames}",
             "bin {human.firstname}|ben {human.firstname}|bin {human.popularuslastname}|ben {human.popularuslastname}",
             "von {human.firstname}|von {human.popularuslastname}",
             "{system.realplace}|von {system.realplace}|de {system.realplace}",
@@ -689,7 +688,6 @@ export function getNames(){
             "craw",
             "cunning",
             "danz",
-            "des",
             "dun",
             "east",
             "eddle",
@@ -717,7 +715,6 @@ export function getNames(){
             "keif",
             "knud",
             "kor",
-            "krus",
             "kling",
             "laid",
             "lime",
@@ -728,7 +725,6 @@ export function getNames(){
             "mat",
             "meit",
             "memme",
-            "michel",
             "mil",
             "mittel",
             "nichol",
@@ -737,15 +733,12 @@ export function getNames(){
             "peter",
             "pitt",
             "put",
-            "reine",
-            "rop",
             "robin",
             "selis",
             "silver",
             "stanis",
             "stell",
             "stil",
-            "stone",
             "stre",
             "strom",
             "tace",
@@ -819,7 +812,6 @@ export function getNames(){
             "tag",
             "thorn|thron",
             "2:ton",
-            "tree",
             "treser",
             "uszak",
             "veld",
@@ -834,76 +826,9 @@ export function getNames(){
             "worth",
             "yard"
         ],
-        "meuxsurnames":[
-            "Alexander",
-            "Baudhuin",
-            "Below",
-            "Bertrand",
-            "Besaw",
-            "Beulanger",
-            "Bini",
-            "Bonpere",
-            "Bouche",
-            "Buornoville",
-            "Chaudoir",
-            "Cletenne",
-            "Dachelet",
-            "Deconesse",
-            "Dehaubut",
-            "Delerzy",
-            "Delfosse",
-            "Delveaux",
-            "Demoulin",
-            "Denamour",
-            "Destree",
-            "Dupont",
-            "Englebert",
-            "Falish",
-            "Fehl",
-            "Frisque",
-            "Gerondale",
-            "Gilson",
-            "Hammer",
-            "Hendricks",
-            "Herlache",
-            "Maedke",
-            "Marquardt",
-            "Mauermann",
-            "Monfils",
-            "Mottet",
-            "Jadin",
-            "Janquart|Jeanquart",
-            "Jauquet",
-            "Jenquin",
-            "Kehl",
-            "Kinnard",
-            "Kohrn",
-            "Kovin",
-            "Lardinois",
-            "Lampereux",
-            "Leannes",
-            "Lefevre",
-            "Leroy",
-            "Malcore",
-            "Molzohn",
-            "Morien",
-            "Paye",
-            "Pinchart",
-            "Rankin",
-            "Radelet",
-            "Regan",
-            "Rollin",
-            "Sapin",
-            "Sacotte",
-            "Sinzdar",
-            "Stelp",
-            "Tebon",
-            "Vetter",
-            "Wenninger",
-        ],
         "popularuslastname":[
             "Abbott","Acevedo","Acosta","Adams","Adkins","Aguilar","Aguirre","Albert","Alexander","Alford","Allen","Allison","Alston","Alvarado","Alvarez","Anderson","Andrews","Anthony","Armstrong","Arnold","Ashley","Atkins","Atkinson","Austin","Avery","Avila","Ayala","Ayers",
-            "Bailey","Baird","Baker","Baldwin","Ball","Ballard","Banks","Banta","Barber","Barker","Barlow","Barnes","Barnett","Barr","Barrera","Barrett","Barron","Barry","Bartlett","Barton","Bass","Bates","Battle","Bauer","Baxter","Beach","Bean","Beard","Beasley","Beck","Becker","Bell","Bender","Benjamin","Bennett","Benson","Bentley","Benton","Berg","Berger","Bernard","Berry","Best","Bird","Bishop","Black","Blackburn","Blackwell","Blair","Blake","Blanchard","Blankenship","Blevins","Bolton","Bond","Bonner","Booker","Boone","Booth","Bowen","Bowers","Bowman","Boyd","Boyer","Boyle","Bradford","Bradley","Bradshaw","Brady","Branch","Bray","Brennan","Brewer","Bridges","Briggs","Bright","Britt","Brock","Brooks","Brown","Browning","Bruce","Bryan","Bryant","Buchanan","Buck","Buckley","Buckner","Bullock","Bunker","Burch","Burgess","Burke","Burks","Burnett","Burns","Burris","Burt","Burton","Bush","Butler","Byers","Byrd",
+            "Bailey","Baird","Baker","Baldwin","Ball","Ballard","Banks","Banta","Barber","Barker","Barlow","Barnes","Barnett","Barr","Barrera","Barrett","Barron","Barry","Bartlett","Barton","Bass","Bates","Battle","Bauer","Baxter","Beach","Bean","Beard","Beasley","Beck","Becker","Bell","Bender","Benjamin","Bennett","Benson","Bentley","Benton","Berg","Berger","Bernard","Berry","Best","Bird","Bishop","Black","Blackburn","Blackwell","Blair","Blake","Blanchard","Blankenship","Blevins","Bolton","Bond","Bonner","Booker","Boone","Booth","Bowen","Bowers","Bowman","Boyd","Boyer","Boyle","Bradford","Bradley","Bradshaw","Brady","Branch","Bray","Brennan","Brewer","Bridges","Briggs","Bright","Britt","Brock","Brooks","Brown","Browning","Bruce","Bryan","Bryant","Buchanan","Buck","Buckley","Buckner","Bullock","Burch","Burgess","Burke","Burks","Burnett","Burns","Burris","Burt","Burton","Bush","Butler","Byers","Byrd",
             "Cabrera","Cain","Calderon","Caldwell","Calhoun","Callahan","Calvert","Camacho","Cameron","Campbell","Campos","Cannon","Cantrell","Cantu","Cardenas","Carey","Carlson","Carney","Carpenter","Carr","Carrillo","Carroll","Carson","Carter","Carver","Case","Casey","Cash","Castaneda","Castillo","Castro","Cervantes","Chambers","Chan","Chandler","Chaney","Chang","Chapman","Charles","Chase","Chavez","Chen","Cherry","Christensen","Christian","Church","Clark","Clarke","Clay","Clayton","Clements","Clemons","Cleveland","Cline","Cobb","Cochran","Coffey","Cohen","Cole","Coleman","Collier","Collins","Colon","Combs","Compton","Conley","Conner","Conrad","Contreras","Conway","Cook","Cooke","Cooley","Cooper","Copeland","Cortez","Cote","Cotton","Cox","Craft","Craig","Crane","Crawford","Crosby","Cross","Crump","Cruz","Cummings","Cunningham","Curry","Curtis",
             "Dahlen","Dahlgren","Dale","Dalton","Daniel","Daniels","Daugherty","Davenport","David","Davidson","Davis","Dawson","Day","Dean","Decker","Dejesus","Delacruz","Delaney","Deleon","Delgado","Dennis","Dias|Diaz","Dickerson","Dickson","Dillard","Dillon","Dixon","Dodson","Dominguez","Donaldson","Donovan","Dorsey","Dotson","Douglas","Downs","Doyle","Drake","Dudley","Duffy","Duke","Duncan","Dunlap","Dunn","Duran","Durham","Dvorak","Dyer",
             "Eaton","Edwards","Elliott","Ellis","Ellison","Emerson","England","English","Erickson","Espinoza","Estes","Estrada","Evans","Everett","Ewing",
@@ -1885,659 +1810,6 @@ export function getNames(){
             // 32: cvc vc vc vc vc
             "32:{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.vc}{aslan.vc}"            
         ],
-        "6sylword":["{aslan.syllable}{aslan.syllable}{aslan.syllable}{aslan.syllable}{aslan.syllable}{aslan.syllable}"],
-        "v6":[
-            // 243: v v v v v v
-            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // 243: v v v v v cv
-            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cv}",          
-            // 162: v v v v v vc
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // 162: v v v v v cvc
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cvc}", 
-            // 243: v v v v cv v
-            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}<!3>{aslan.v}",
-            // 243: v v v v cv cv
-            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cv}",            
-            // 162: v v v v cv vc
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.initialConsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // 162: v v v v cv cvc
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cvc}",
-            // 162: v v v v vc v
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // 108: v v v v vc vc
-            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // 162: v v v v cvc v
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.v}",
-            // 108: v v v v cvc vc
-            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.vc}",
-            // 243: v v v cv v v
-            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialConsonant}{aslan.v}<!4>{aslan.v}<!5>{aslan.v}",
-            // 243: v v v cv v cv
-            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialConsonant}{aslan.v}<!4>{aslan.v}{aslan.cv}",
-            // 162: v v v cv v vc
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialConsonant}{aslan.v}<!4>{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // 162: v v v cv v cvc
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialConsonant}{aslan.v}<!4>{aslan.v}{aslan.cvc}",
-            // 243: v v v cv cv v
-            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.initialConsonant}{aslan.v}<!5>{aslan.v}",
-            // 243: v v v cv cv cv
-            "243:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cv}{aslan.cv}",
-            // 162: v v v cv cv vc
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.initialConsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // 162: v v v cv cv cvc
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cv}{aslan.cvc}",
-            // 162: v v v cv vc v
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // 108: v v v cv vc vc
-            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // 162: v v v cv cvc v
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}",
-            // 108: v v v cv cvc vc
-            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cvc}{aslan.vc}",
-            // 162: v v v vc v v
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}",
-            // 162: v v v vc v cv
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}",
-            // 108: v v v vc v vc
-            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // 108: v v v vc v cvc
-            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}",
-            // 108: v v v vc cv v
-            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.initialConsonant}{aslan.v}<6>{aslan.v}",
-            // 108: v v v vc vc v
-            "108:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}",
-            // 72: v v v vc vc vc
-            "72:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}",
-            // 162: v v v cvc v v
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.v}<!4>{aslan.v}",
-            // 162: v v v cvc v cv
-            "162:{aslan.v}<!0>{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.v}<!4>{aslan.v}{aslan.cv}"
-            // // 162: v v cvc v cv
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.cvc}{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 108: v v cvc v vc
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.cvc}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 108: v v cvc v cvc
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.cvc}{aslan.v}{aslan.cvc}",
-            // // 108: v v cvc vc v
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.cvc}{aslan.vc}{aslan.v}",
-            // // 72: v v cvc vc vc
-            // "72:{aslan.v}<!0>{aslan.v}{aslan.cvc}{aslan.vc}{aslan.vc}",
-            // // 243: v cv v v v
-            // "243:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // // 243: v cv v v cv
-            // "243:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 162: v cv v v vc
-            // "162:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: v cv v v cvc
-            // "162:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cvc}",
-            // // 243: v cv v cv v
-            // "243:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}",
-            // // 243: v cv v cv cv
-            // "243:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 162: v cv v cv vc
-            // "162:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 162: v cv v cv cvc
-            // "162:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 162: v cv v vc v
-            // "162:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 108: v cv v vc vc
-            // "108:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 162: v cv v cvc v
-            // "162:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 108: v cv v cvc vc
-            // "108:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 243: v cv cv v v
-            // "243:{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // // 243: v cv cv v cv
-            // "243:{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 162: v cv cv v vc
-            // "162:{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: v cv cv v cvc
-            // "162:{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cvc}",
-            // // v cv cv cv v
-            // "243:{aslan.v}{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 243: v cv cv cv cv
-            // "243:{aslan.v}{aslan.cv}{aslan.cv}{aslan.cv}{aslan.cv}",
-            // // 162: v cv cv cv vc
-            // "162:{aslan.v}{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: v cv cv cv cvc
-            // "162:{aslan.v}{aslan.cv}{aslan.cv}{aslan.cv}{aslan.cvc}",
-            // // 162: v cv cv vc v
-            // "162:{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 108: v cv cv vc vc
-            // "108:{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 162: v cv cv cvc v
-            // "162:{aslan.v}{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.v}",
-            // // 108: v cv cv cvc vc
-            // "108:{aslan.v}{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.vc}",
-            // // 162: v cv vc v v
-            // "162:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}",
-            // // 162: v cv vc v cv
-            // "162:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}",
-            // // 108: v cv vc v vc
-            // "108:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 108: v cv vc v cvc
-            // "108:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}",
-            // // 108: v cv vc vc v
-            // "108:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}",
-            // // 72: v cv vc vc vc
-            // "72:{aslan.v}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}", 
-            // // 162: v cv cvc v v
-            // "162:{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}<!3>{aslan.v}",
-            // // 162: v cv cvc v cv
-            // "162:{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}{aslan.cv}",
-            // // 108: v cv cvc v vc
-            // "108:{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 108: v cv cvc v cvc
-            // "108:{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}{aslan.cvc}",
-            // // 108: v cv cvc vc v
-            // "108:{aslan.v}{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.v}",
-            // // 72: v cv cvc vc vc
-            // "72:{aslan.v}{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.vc}",
-            // // 162: v vc v v v
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // // 162: v vc v v cv
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 108: v vc v v vc
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: v vc v v cvc
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}<!3>{aslan.v}{aslan.cvc}",
-            // // 162: v vc v cv v
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}",
-            // // 162: v vc v cv cv
-            // "162:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 108: v vc v cv vc
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 108: v vc v cv cvc
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 108: v vc v vc v
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 72: v vc v vc vc
-            // "72:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 108: v vc v cvc v
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 72: v vc v cvc vc
-            // "72:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 108: v vc vc v v
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}<!4>{aslan.v}",
-            // // 108: v vc vc v cv
-            // "108:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}{aslan.cv}",
-            // // 72: v vc vc v vc
-            // "72:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 72: v vc vc v cvc
-            // "72:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}{aslan.cvc}",
-            // // 72: v vc vc vc v
-            // "72:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}{aslan.v}",
-            // // 48: v vc vc vc vc
-            // "48:{aslan.v}<!0>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}{aslan.vc}",
-            // // 162: v cvc v v v
-            // "162:{aslan.v}{aslan.cvc}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}",
-            // // 162: v cvc v v cv
-            // "162:{aslan.v}{aslan.cvc}{aslan.v}<!2>{aslan.v}{aslan.cv}",
-            // // 108: v cvc v v vc
-            // "108:{aslan.v}{aslan.cvc}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 162: v cvc v cv v
-            // "162:{aslan.v}{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 162: v cvc v cv cv
-            // "162:{aslan.v}{aslan.cvc}{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 108: v cvc v cv vc
-            // "108:{aslan.v}{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: v cvc v cv cvc
-            // "108:{aslan.v}{aslan.cvc}{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 108: v cvc v vc v
-            // "108:{aslan.v}{aslan.cvc}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 72: v cvc v vc vc
-            // "72:{aslan.v}{aslan.cvc}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 108: v cvc v cvc v
-            // "108:{aslan.v}{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 72: v cvc v cvc vc
-            // "72:{aslan.v}{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 108: v cvc vc v v
-            // "108:{aslan.v}{aslan.cvc}{aslan.vc}{aslan.v}<!3>{aslan.v}",
-            // // 108: v cvc vc v cv
-            // "108:{aslan.v}{aslan.cvc}{aslan.vc}{aslan.v}{aslan.cv}",
-            // // 72: v cvc vc v vc
-            // "72:{aslan.v}{aslan.cvc}{aslan.vc}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 72: v cvc vc v cvc
-            // "72:{aslan.v}{aslan.cvc}{aslan.vc}{aslan.v}{aslan.cvc}",
-            // // 72: v cvc vc vc v
-            // "72:{aslan.v}{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.v}",
-            // // 48: v cvc vc vc vc
-            // "48:{aslan.v}{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.vc}",
-            // // 243: cv v v v v
-            // "243:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // // 243: cv v v v cv
-            // "243:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 162: cv v v v vc
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: cv v v v cvc
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cvc}",
-            // // 243: cv v v cv v
-            // "243:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}",
-            // // 243: cv v v cv cv
-            // "243:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 162: cv v v cv vc
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 162: cv v v cv cvc
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 162: cv v v vc v
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 108: cv v v vc vc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 162: cv v v cvc v
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 108: cv v v cvc vc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 243: cv v cv v v
-            // "243:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}<!5>{aslan.v}",
-            // // 243: cv v cv v cv
-            // "243:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.cv}",
-            // // 162: cv v cv v vc
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 162: cv v cv v cvc
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.cvc}",
-            // // 243: cv v cv cv v
-            // "243:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}",
-            // // 243: cv v cv cv cv
-            // "243:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cv}{aslan.cv}",
-            // // 162: cv v cv cv vc
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 162: cv v cv cv cvc
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cv}{aslan.cvc}",
-            // // 162: cv v cv vc v
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 108: cv v cv vc vc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 162: cv v cv cvc v
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}",
-            // // 108: cv v cv cvc vc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cvc}{aslan.vc}",
-            // // 162: cv v vc v v
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}",
-            // // 162: cv v vc v cv
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}",
-            // // 108: cv v vc v vc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cv v vc v cvc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}",
-            // // 108: cv v vc vc v
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}",
-            // // 72: cv v vc vc vc
-            // "72:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}", 
-            // // 162: cv v cvc v v
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}",
-            // // 162: cv v cvc v cv
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.v}<!4>{aslan.v}{aslan.cv}",
-            // // 108: cv v cvc v vc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cv v cvc v cvc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.v}{aslan.cvc}",
-            // // 108: cv v cvc vc v
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.vc}{aslan.v}",
-            // // 72: cv v cvc vc vc
-            // "72:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.vc}{aslan.vc}",
-            // // 243: cv cv v v v
-            // "243:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // // 243: cv cv v v cv
-            // "243:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 162: cv cv v v vc
-            // "162:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: cv cv v v cvc
-            // "162:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.cvc}",
-            // // 243: cv cv v cv v
-            // "243:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}",
-            // // 243: cv cv v cv cv
-            // "243:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 162: cv cv v cv vc
-            // "162:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.initialconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 162: cv cv v cv cvc
-            // "162:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 162: cv cv v vc v
-            // "162:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 108: cv cv v vc vc
-            // "108:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 162: cv cv v cvc v
-            // "162:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 108: cv cv v cvc vc
-            // "108:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 243: cv cv cv v v
-            // "243:{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // // 243: cv cv cv v cv
-            // "243:{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 162: cv cv cv v vc
-            // "162:{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: cv cv cv v cvc
-            // "162:{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cvc}",
-            // // 243: cv cv cv cv v
-            // "243:{aslan.cv}{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 243: cv cv cv cv cv
-            // "243:{aslan.cv}{aslan.cv}{aslan.cv}{aslan.cv}",
-            // // 162: cv cv cv cv vc
-            // "162:{aslan.cv}{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 162: cv cv cv cv cvc
-            // "162:{aslan.cv}{aslan.cv}{aslan.cv}{aslan.cvc}",
-            // // 162: cv cv cv vc v
-            // "162:{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 108: cv cv cv vc vc
-            // "108:{aslan.cv}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 162: cv cv cv cvc v
-            // "162:{aslan.cv}{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.v}", 
-            // // 108: cv cv cv cvc vc
-            // "108:{aslan.cv}{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.vc}",
-            // // 162: cv cv vc v v
-            // "162:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}",
-            // // 162: cv cv vc v cv
-            // "162:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}",
-            // // 108: cv cv vc v vc
-            // "108:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cv cv vc v cvc
-            // "108:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}",
-            // // 108: cv cv vc vc v
-            // "108:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}",
-            // // 72: cv cv vc vc vc
-            // "72:{aslan.cv}{aslan.initialconsonant}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}",
-            // // 162: cv cv cvc v v
-            // "162:{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.v}<!3>{aslan.v}",
-            // // 162: cv cv cvc v cv
-            // "162:{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.v}{aslan.cv}",
-            // // 108: cv cv cvc v vc
-            // "108:{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cv cv cvc v cvc
-            // "108:{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.v}{aslan.cvc}",
-            // // 108: cv cv cvc vc v
-            // "108:{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.v}",
-            // // 72: cv cv cvc vc vc
-            // "72:{aslan.cv}{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.vc}",
-            // // 162: cv vc v v v
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}<!5>{aslan.v}",
-            // // 162: cv vc v v cv
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}{aslan.cv}",
-            // // 108: cv vc v v vc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cv vc v v cvc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}{aslan.cvc}",
-            // // 162: cv vc v cv v
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.initialconsonant}{aslan.v}<!6>{aslan.v}",
-            // // 162: cv vc v cv cv
-            // "162:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 108: cv vc v cv vc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.initialconsonant}{aslan.v}<!6>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cv vc v cv cvc
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 108: cv vc v vc v
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 72: cv vc v vc vc
-            // "72:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 108: cv vc v cvc v
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 72: cv vc v cvc vc
-            // "72:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 108: cv vc vc v v
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}<!5>{aslan.v}",
-            // // 108: cv vc vc v cv
-            // "108:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}{aslan.cv}",
-            // // 72: cv vc vc v vc
-            // "72:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}<!5>{aslan.v}{aslan.finalconsonant}",
-            // // 72: cv vc vc v cvc
-            // "72:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}{aslan.cvc}",
-            // // 72: cv vc vc vc v
-            // "72:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}{aslan.v}",
-            // // 48: cv vc vc vc vc
-            // "48:{aslan.initialconsonant}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}{aslan.vc}",
-            // // 162: cv cvc v v v
-            // "162:{aslan.cv}{aslan.cvc}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}",
-            // // 162: cv cvc v v cv
-            // "162:{aslan.cv}{aslan.cvc}{aslan.v}<!2>{aslan.v}{aslan.cv}",
-            // // 108: cv cvc v v vc
-            // "108:{aslan.cv}{aslan.cvc}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cv cvc v v cvc
-            // "108:{aslan.cv}{aslan.cvc}{aslan.v}<!2>{aslan.v}{aslan.cvc}",
-            // // 162: cv cvc v cv v
-            // "162:{aslan.cv}{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 162: cv cvc v cv cv
-            // "162:{aslan.cv}{aslan.cvc}{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 108: cv cvc v cv vc
-            // "108:{aslan.cv}{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cv cvc v cv cvc
-            // "108:{aslan.cv}{aslan.cvc}{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 108: cv cvc v vc v
-            // "108:{aslan.cv}{aslan.cvc}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}", 
-            // // 72: cv cvc v vc vc
-            // "72:{aslan.cv}{aslan.cvc}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 108: cv cvc v cvc v
-            // "108:{aslan.cv}{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 72: cv cvc v cvc vc
-            // "72:{aslan.cv}{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 108: cv cvc vc v v
-            // "108:{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.v}<!3>{aslan.v}",
-            // // 108: cv cvc vc v cv
-            // "108:{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.v}{aslan.cv}",
-            // // cv cvc vc v vc
-            // "72:{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 72: cv cvc vc v cvc
-            // "72:{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.v}{aslan.cvc}",
-            // // 72: cv cvc vc vc v
-            // "72:{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.v}",
-            // // 48: cv cvc vc vc vc
-            // "48:{aslan.cv}{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.vc}",
-            // // 162: vc v v v v
-            // "162:{aslan.vc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}",
-            // // 162: vc v v v cv
-            // "162:{aslan.vc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}",
-            // // 108: vc v v v vc
-            // "108:{aslan.vc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 108: vc v v v cvc
-            // "108:{aslan.vc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cvc}",
-            // // 162: vc v v cv v
-            // "162:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 162: vc v v cv cv
-            // "162:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 108: vc v v cv vc
-            // "108:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: vc v v cv cvc
-            // "108:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 108: vc v v vc v
-            // "108:{aslan.vc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 72: vc v v vc vc
-            // "72:{aslan.vc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 108: vc v v cvc v
-            // "108:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 72: vc v v cvc vc
-            // "72:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 162: vc v cv v v
-            // "162:{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // // 162: vc v cv v cv
-            // "162:{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 108: vc v cv v vc
-            // "108:{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: vc v cv v cvc
-            // "108:{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cvc}",
-            // // 162: vc v cv cv v
-            // "162:{aslan.vc}{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 162: vc v cv cv cv
-            // "162:{aslan.vc}{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 108: vc v cv cv vc
-            // "108:{aslan.vc}{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: vc v cv cv cvc
-            // "108:{aslan.vc}{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 108: vc v cv vc v
-            // "108:{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 72: vc v cv vc vc
-            // "72:{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 108: vc v cv cvc v
-            // "108:{aslan.vc}{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}",
-            // // 72: vc v cv cvc vc
-            // "72:{aslan.vc}{aslan.v}{aslan.cv}{aslan.cvc}{aslan.vc}",
-            // // 108: vc v vc v v
-            // "108:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 108: vc v vc v cv
-            // "108:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}",
-            // // 72: vc v vc v vc
-            // "72:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 72: vc v vc v cvc
-            // "72:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}",
-            // // 72: vc v vc vc v
-            // "72:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}",
-            // // 48: vc v vc vc vc
-            // "48:{aslan.vc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}",
-            // // 108: vc v cvc v v
-            // "108:{aslan.vc}{aslan.v}{aslan.cvc}{aslan.v}<!3>{aslan.v}",
-            // // 108: vc v cvc v cv
-            // "108:{aslan.vc}{aslan.v}{aslan.cvc}{aslan.v}{aslan.cv}", 
-            // // 72: vc v cvc v vc
-            // "72:{aslan.vc}{aslan.v}{aslan.cvc}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 72: vc v cvc v cvc
-            // "72:{aslan.vc}{aslan.v}{aslan.cvc}{aslan.v}{aslan.cvc}",
-            // // 72: vc v cvc vc v
-            // "72:{aslan.vc}{aslan.v}{aslan.cvc}{aslan.vc}{aslan.v}",
-            // // 48: vc v cvc vc vc
-            // "48:{aslan.vc}{aslan.v}{aslan.cvc}{aslan.vc}{aslan.vc}",
-            // // 108: vc vc v v v
-            // "108:{aslan.vc}{aslan.vc}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}",
-            // // 108: vc vc v v cv
-            // "108:{aslan.vc}{aslan.vc}{aslan.v}<!2>{aslan.v}{aslan.cv}",
-            // // 72: vc vc v v vc
-            // "72:{aslan.vc}{aslan.vc}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 72: vc vc v v cvc
-            // "72:{aslan.vc}{aslan.vc}{aslan.v}<!2>{aslan.v}{aslan.cvc}",
-            // // 108: vc vc v cv v
-            // "108:{aslan.vc}{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 108: vc vc v cv cv 
-            // "108:{aslan.vc}{aslan.vc}{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 72: vc vc v cv vc
-            // "72:{aslan.vc}{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 72: vc vc v cv cvc
-            // "72:{aslan.vc}{aslan.vc}{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 72: vc vc v vc v
-            // "72:{aslan.vc}{aslan.vc}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 48: vc vc v vc vc
-            // "48:{aslan.vc}{aslan.vc}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 72: vc vc v cvc v
-            // "72:{aslan.vc}{aslan.vc}{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 48: vc vc v cvc vc
-            // "48:{aslan.vc}{aslan.vc}{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 72: vc vc vc v v
-            // "72:{aslan.vc}{aslan.vc}{aslan.vc}{aslan.v}<!3>{aslan.v}",
-            // // 72: vc vc vc v cv
-            // "72:{aslan.vc}{aslan.vc}{aslan.vc}{aslan.v}{aslan.cv}",
-            // // 48: vc vc vc v vc
-            // "48:{aslan.vc}{aslan.vc}{aslan.vc}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 48: vc vc vc v cvc
-            // "48:{aslan.vc}{aslan.vc}{aslan.vc}{aslan.v}{aslan.cvc}",
-            // // 48: vc vc vc vc v
-            // "48:{aslan.vc}{aslan.vc}{aslan.vc}{aslan.vc}{aslan.v}",
-            // // 32: vc vc vc vc vc
-            // "32:{aslan.vc}{aslan.vc}{aslan.vc}{aslan.vc}",
-            // // 162: cvc v v v v
-            // "162:{aslan.cvc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}",
-            // // 162: cvc v v v cv
-            // "162:{aslan.cvc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cv}",
-            // // 108: cvc v v v vc
-            // "108:{aslan.cvc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cvc v v v cvc
-            // "108:{aslan.cvc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.cvc}",
-            // // 162: cvc v v cv v
-            // "162:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 162: cvc v v cv cv
-            // "162:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 108: cvc v v cv vc
-            // "108:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cvc v v cv cvc
-            // "108:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 108: cvc v v vc v
-            // "108:{aslan.cvc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 72: cvc v v vc vc
-            // "72:{aslan.cvc}{aslan.v}<!1>{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 108: cvc v v cvc v
-            // "108:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 72: cvc v v cvc vc
-            // "72:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 162: cvc v cv v v
-            // "162:{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}",
-            // // 162: cvc v cv v cv
-            // "162:{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cv}",
-            // // 108: cvc v cv v vc
-            // "108:{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cvc v cv v cvc
-            // "108:{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.cvc}",
-            // // 162: cvc v cv cv v
-            // "162:{aslan.cvc}{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 162: cvc v cv cv cv
-            // "162:{aslan.cvc}{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 108: cvc v cv cv vc
-            // "108:{aslan.cvc}{aslan.v}{aslan.cv}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 108: cvc v cv cv cvc
-            // "108:{aslan.cvc}{aslan.v}{aslan.cv}{aslan.cvc}",
-            // // 108: cvc v cv vc v
-            // "108:{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 72: cvc v cv vc vc
-            // "72:{aslan.cvc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 108: cvc v cv cvc v
-            // "108:{aslan.cvc}{aslan.v}{aslan.cv}{aslan.cvc}{aslan.v}",
-            // // 72: cvc v cv cvc vc
-            // "72:{aslan.cvc}{aslan.v}{aslan.cv}{aslan.cvc}{aslan.vc}",
-            // // 108: cvc v vc v v
-            // "108:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 108: cvc v vc v cv
-            // "108:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cv}",
-            // // 72: cvc v vc v vc
-            // "72:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 72: cvc v vc v cvc
-            // "72:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.v}{aslan.cvc}",
-            // // 72: cvc v vc vc v
-            // "72:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.v}",
-            // // 48: cvc v vc vc vc
-            // "48:{aslan.cvc}{aslan.v}<!1>{aslan.v}{aslan.finalconsonant}{aslan.vc}{aslan.vc}",
-            // // 108: cvc v cvc v v
-            // "108:{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.v}<!3>{aslan.v}",
-            // // 108: cvc v cvc v cv
-            // "108:{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.v}{aslan.cv}",
-            // // 72: cvc v cvc v vc
-            // "72:{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 72: cvc v cvc v cvc
-            // "72:{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.v}{aslan.cvc}",
-            // // 72: cvc v cvc vc v
-            // "72:{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.vc}{aslan.v}",
-            // // 48: cvc v cvc vc vc
-            // "48:{aslan.cvc}{aslan.v}{aslan.cvc}{aslan.vc}{aslan.vc}",
-            // // 108: cvc vc v v v
-            // "108:{aslan.cvc}{aslan.vc}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}",
-            // // 108: cvc vc v v cv
-            // "108:{aslan.cvc}{aslan.vc}{aslan.v}<!2>{aslan.v}{aslan.cv}",
-            // // 72: cvc vc v v vc
-            // "72:{aslan.cvc}{aslan.vc}{aslan.v}<!2>{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 72: cvc vc v v cvc
-            // "72:{aslan.cvc}{aslan.vc}{aslan.v}<!2>{aslan.v}{aslan.cvc}",
-            // // 108: cvc vc v cv v       
-            // "108:{aslan.cvc}{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}",
-            // // 108: cvc vc v cv cv
-            // "108:{aslan.cvc}{aslan.vc}{aslan.v}{aslan.cv}{aslan.cv}",
-            // // 72: cvc vc v cv vc
-            // "72:{aslan.cvc}{aslan.vc}{aslan.v}{aslan.initialconsonant}{aslan.v}<!4>{aslan.v}{aslan.finalconsonant}",
-            // // 72: cvc vc v cv cvc
-            // "72:{aslan.cvc}{aslan.vc}{aslan.v}{aslan.cvc}{aslan.cvc}",
-            // // 72: cvc vc v vc v
-            // "72:{aslan.cvc}{aslan.vc}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.v}",
-            // // 48: cvc vc v vc vc
-            // "48:{aslan.cvc}{aslan.vc}{aslan.v}<!2>{aslan.v}{aslan.finalconsonant}{aslan.vc}",
-            // // 72: cvc vc v cvc v
-            // "72:{aslan.cvc}{aslan.vc}{aslan.v}{aslan.cvc}{aslan.v}",
-            // // 48: cvc vc v cvc vc
-            // "48:{aslan.cvc}{aslan.vc}{aslan.v}{aslan.cvc}{aslan.vc}",
-            // // 72: cvc vc vc v v
-            // "72:{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.v}<!3>{aslan.v}",
-            // // 72: cvc vc vc v cv
-            // "72:{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.v}{aslan.cv}",
-            // // 48: cvc vc vc v vc
-            // "48:{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.v}<!3>{aslan.v}{aslan.finalconsonant}",
-            // // 48: cvc vc vc v cvc
-            // "48:{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.v}{aslan.cvc}",
-            // // 48: cvc vc vc vc v
-            // "48:{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.vc}{aslan.v}",
-            // // 32: cvc vc vc vc vc
-            // "32:{aslan.cvc}{aslan.vc}{aslan.vc}{aslan.vc}{aslan.vc}"     
-        ],
         "syllable":[
             "3:{aslan.v}",
             "3:{aslan.cv}",
@@ -2734,10 +2006,9 @@ export function getNames(){
         ],
         "liquidanimalpart":[
             "blood",
-            "gurry",
             "milk",
             "lymph",
-            "mucus",
+            "mucus"
         ],
         "liquidmaterial":[
             "muck",
@@ -2745,7 +2016,6 @@ export function getNames(){
             "silt",
             "slime",
             "sludge",
-            "slurry",
             "slush",
             "tar"
         ],
@@ -2865,7 +2135,6 @@ export function getNames(){
             "buzzard",
             "caiman",
             "camel",
-            "capybara",
             "caribou",
             "cat",
             "centipede",
@@ -2962,7 +2231,6 @@ export function getNames(){
             "mamba",
             "manatee",
             "mantis",
-            "marmot",
             "markhor",
             "marten",
             "mayfly",
@@ -3050,7 +2318,6 @@ export function getNames(){
             "whimbrel",
             "wildebeest",
             "willet",
-            "woggin",
             "4:wolf",
             "wolverine",
             "wombat",
@@ -3306,6 +2573,267 @@ export function getNames(){
             "200:{ship.nopun}",
             "2:{ship.yacht}", "{ship.yacht} {ship.numeral}"
         ],
+        "nopun":[
+            "10:{ship.purple}",
+            "9:{word}","{word} {ship.numeral}",
+            "2:{word.2sylword}","{word.2sylword} {ship.numeral}",
+            "4:{ship.color} {word.2sylword|human.lastname|ship.noble}","{ship.color} {word.2sylword|human.lastname|ship.noble} {ship.numeral}",
+            "6:{aslan}","{aslan} {ship.numeral}",
+            "10:{human}","{human} {ship.numeral}",
+            "4:{human.lastname}",
+            "2:{ship.noncoloradjective}|{ship.bigadjective}","{ship.noncoloradjective} {ship.numeral}|{ship.bigadjective} {ship.numeral}",
+            "9:{human.firstname}'s {ship.noun|ship.noun|system.noun}|{human.lastname}'s {ship.noun|ship.noun|system.noun}",
+            "6:{ship.nature|ship.vicevirtue|ship.bigidea|ship.person}'s <!0>{ship.noun}","{ship.nature|ship.vicevirtue|ship.bigidea|ship.person}'s <!0>{ship.noun} {ship.numeral}",
+            "6:{human.femalefirstname}", "{human.femalefirstname} {ship.numeral}",
+            "3:Pride of {system}|{ship.virtue} of {system}",
+            "2:{ship.noun} of <!0>{system.mythologicalname|human.lastname|human.firstname|ship.noun}|{system.mythologicalname|human.lastname|human.firstname|ship.noun}'s <!0>{ship.noun}",
+            "1:{ship.adjective} {ship.noun} of <!1>{system.mythologicalname|human.lastname|human.firstname|ship.noun}|{system.mythologicalname|human.lastname|human.firstname|ship.noun}'s {ship.adjective} <!0>{ship.noun}",
+            "6:{system.mythologicalfigure}", "{system.mythologicalfigure} {ship.numeral}",
+            "4:{ship.adjective} {system.mythologicalfigure}","{ship.adjective} {system.mythologicalfigure} {ship.numeral}",
+            "16:{system.mythologicalname}", "{system.mythologicalname} {ship.numeral}",
+            "16:{ship.animal}","{ship.animal} {ship.numeral}",
+            "4:{ship.natureadjective} {ship.nature}|{ship.bigadjective|ship.gerund} {ship.nature}",
+            "5:{ship.adjective} {ship.animal}","{ship.adjective} {ship.animal} {ship.numeral}",
+            "4:{ship.gerund} {ship.animal}","{ship.gerund} {ship.animal} {ship.numeral}",
+            "2:{ship.spaceword} {ship.animal}","{ship.spaceword} {ship.animal} {ship.numeral}",
+            "2:{ship.spaceword} {system.mythologicalfigure}","{ship.spaceword} {system.mythologicalfigure} {ship.numeral}",
+            "4:{ship.gerund|ship.adjective} {ship.noun}","{ship.gerund|ship.adjective} {ship.noun} {ship.numeral}",
+            "6:{ship.bigadjective} {ship.bigidea}","{ship.bigadjective} {ship.bigidea} {ship.numeral}",
+            "4:{ship.adjective|ship.gerund} {ship.person}|The {ship.adjective|ship.gerund} {ship.person}","{ship.adjective|ship.gerund} {ship.person} {ship.numeral}",
+            "9:{ship.bigadjective|ship.bigidea|ship.person}","{ship.bigadjective|ship.bigidea|ship.person} {ship.numeral}",
+            "12:{ship.navalname}","{ship.navalname} {ship.numeral}", 
+            "8:{ship.combo}","{ship.combo} {ship.numeral}",
+            "3:{system.realplace}","{system.realplace} {ship.numeral}",
+            "4:{ship.mnoble} {human.malefirstname}|{ship.mnoble} {human.malefirstname}|{ship.mnoble} {human.malefirstname} {system.numeral}",
+            "4:{ship.fnoble} {human.femalefirstname}|{ship.fnoble} {human.femalefirstname}|{ship.fnoble} {human.femalefirstname} {system.numeral}",
+            "4:{ship.noble} {human.lastname}",
+            "1:{ship.noble} {word}",
+            "1:{ship.butterfly}"
+        ],
+        "yacht":[
+            "A Freight Not",
+            "Aboat Time",
+            "Anchoragement",
+            "Barge Right In",
+            "Barging About",
+            "Barging In",
+            "Better Safe Than Starry",
+            "Buoys and Galleys",
+            "Call The Dock",
+            "Cargo Vroom",
+            "Comet Me, Bro",
+            "Constellation Prize",
+            "Crewed Joke",
+            "Docked and Loaded",
+            "Drive Envy",
+            "Drivin' Me Nuts|Drivin' Me Crazy",
+            "Gift Horse",
+            "Goin' Broke",
+            "Going to Hull",
+            "Life's a Gas Giant",
+            "Livin' Space",
+            "Freight Fest",
+            "Fried Beacon",
+            "Hangar On",
+            "Happy Berth Day",
+            "Happy Landings",
+            "Harbor No Grudges",
+            "Hull in a Handbasket",
+            "Hulled Up",
+            "I Needed The Space",
+            "I Shipped Myself",
+            "In Decent Sea",
+            "Jump Right In",
+            "Jumpin' Jehosaphat",
+            "Kids' Inheritance",
+            "Launch Break",
+            "Love You Moor",
+            "Lunar Tick",
+            "Moor Often Than Not",
+            "No Port of It",
+            "Orbituary",
+            "Out Of This World",
+            "Over The Moon",
+            "Passing Wind",
+            "Pier Pressure",
+            "Quay to My Heart",
+            "Retirement Plan",
+            "Rocket To Sleep",
+            "Schooner or Later",
+            "See You In Hull",
+            "Ship For Brains",
+            "Shipfaced",
+            "Shore Thing",
+            "Space to Breathe",
+            "Stellar Decision",
+            "Stellar Life Choice|Stellar Life Choices",
+            "Tanks For The Memories",
+            "Tanks To You",
+            "Thanks A Yacht",
+            "Totally Tanked",
+            "Tugging Your Heartstrings",
+            "Wharf Air",
+            "Yeah Buoy"
+        ],
+        "purple":[
+            "{ship.item} of {ship.ideastate}",
+            "{ship.ideastate}"
+        ],
+        "ideastate":[
+            "25:{ship.posidea} {ship.posstate}",
+            "20:{ship.posstate} {ship.posidea}",
+            "12:{ship.negidea} {ship.negstate}",
+            "12:{ship.negstate} {ship.negidea}",
+            "6:{ship.idea} {ship.state}",
+            "6:{ship.state} {ship.idea}",
+            "{ship.idea}"
+        ],
+        "item":[
+            "Celebration",
+            "Chronicle",
+            "Dance",
+            "Dream",
+            "Echo",
+            "Embodiment",
+            "Gift",
+            "Glimmer",
+            "Hand",
+            "Journey",
+            "Legacy",
+            "Legend",
+            "Master",
+            "Miracle",
+            "Mistress",
+            "Paradox",
+            "Pursuit",
+            "Quest",
+            "Riddle",
+            "Satisfaction",
+            "Shadow",
+            "Spirit",
+            "Tale",
+            "Whisper",
+        ],
+        "idea":[
+            "{ship.neutralidea}",
+            "{ship.posidea}",
+            "{ship.negidea}"
+        ],
+        "neutralidea":[
+            "Pride",
+            "Retribution",
+            "Revenge",
+            "Vengeance",
+        ],
+        "posidea":[
+            "Achievement",
+            "Adventure",
+            "Answers",
+            "Benefits",
+            "Brotherhood|Sisterhood",
+            "Creation",
+            "Creativity",
+            "Dreams",
+            "Eternity",
+            "Fellowship",
+            "Fortune",
+            "Forgiveness",
+            "Freedom",
+            "Friendship",
+            "Generosity",
+            "Glory",
+            "Grace",
+            "Happiness",
+            "Honor|Honour",
+            "Horizons",
+            "Humility",
+            "Infinity",
+            "Innocence",
+            "Harmony",
+            "Joy",
+            "Justice",
+            "Kindness",
+            "Knowledge",
+            "Love",
+            "Marvels",
+            "Melodies",
+            "Mystery",
+            "Prosperity",
+            "Riches",
+            "Treasure",
+            "Truth",
+            "Unity",
+            "Valour",
+            "Victory",
+            "Virtue",
+            "Wisdom",
+            "Zeniths"
+        ],
+        "negidea":[
+            "Blunders",
+            "Corruption",
+            "Crimes",
+            "Destruction",
+            "Errors",
+            "Evils",
+            "Failure",
+            "Fear",
+            "Folly",
+            "Hate",
+            "Injuries",
+            "Loss",
+            "Misery",
+            "Nightmares",
+            "Poverty",
+            "Regrets",
+            "Sickness",
+            "Sorrow",
+            "Tragedy",
+            "Tyranny",
+            "Wrongs",
+        ],
+        "state":[
+            "{ship.posstate}",
+            "{ship.negstate}"
+        ],
+        "posstate":[
+            "Achieved",
+            "Celebrated",
+            "Cherished",
+            "Discovered",
+            "Earned",
+            "Embraced",
+            "Found",
+            "Gained",
+            "Realized",
+            "Recovered",
+            "Remembered",
+            "Treasured",
+            "Unbound",
+            "Unchained",
+            "Unearthed",
+            "Unfettered",
+            "Unleashed",
+            "Unlocked",
+            "Unsullied",
+        ],
+        "negstate":[
+            "Avoided",
+            "Defeated",
+            "Discarded",
+            "Diminished",
+            "Exposed",
+            "Forgiven",
+            "Forgotten",
+            "Lost",
+            "Neglected",
+            "Overcome",
+            "Overthrown",
+            "Punished",
+            "Stifled",
+            "Suppressed",
+            "Trampled",
+        ],
         "noble":[
             "{ship.mnoble}","{ship.fnoble}"
         ],
@@ -3357,42 +2885,6 @@ export function getNames(){
             "Queen",
             "Dowager",
             "{ship.neutraltitle}"
-        ],
-        "nopun":[
-            "9:{word}","{word} {ship.numeral}",
-            "2:{word.2sylword}","{word.2sylword} {ship.numeral}",
-            "4:{ship.color} {word.2sylword|human.lastname|ship.noble}","{ship.color} {word.2sylword|human.lastname|ship.noble} {ship.numeral}",
-            "6:{aslan}","{aslan} {ship.numeral}",
-            "10:{human}","{human} {ship.numeral}",
-            "4:{human.lastname}",
-            "2:{ship.noncoloradjective}|{ship.bigadjective}","{ship.noncoloradjective} {ship.numeral}|{ship.bigadjective} {ship.numeral}",
-            "9:{human.firstname}'s {ship.noun|ship.noun|system.noun}|{human.lastname}'s {ship.noun|ship.noun|system.noun}",
-            "6:{ship.nature|ship.vicevirtue|ship.bigidea|ship.person}'s <!0>{ship.noun}","{ship.nature|ship.vicevirtue|ship.bigidea|ship.person}'s <!0>{ship.noun} {ship.numeral}",
-            "6:{human.femalefirstname}", "{human.femalefirstname} {ship.numeral}",
-            "3:Pride of {system}|{ship.virtue} of {system}",
-            "2:{ship.noun} of <!0>{system.mythologicalname|human.lastname|human.firstname|ship.noun}|{system.mythologicalname|human.lastname|human.firstname|ship.noun}'s <!0>{ship.noun}",
-            "1:{ship.adjective} {ship.noun} of <!1>{system.mythologicalname|human.lastname|human.firstname|ship.noun}|{system.mythologicalname|human.lastname|human.firstname|ship.noun}'s {ship.adjective} <!0>{ship.noun}",
-            "6:{system.mythologicalfigure}", "{system.mythologicalfigure} {ship.numeral}",
-            "4:{ship.adjective} {system.mythologicalfigure}","{ship.adjective} {system.mythologicalfigure} {ship.numeral}",
-            "16:{system.mythologicalname}", "{system.mythologicalname} {ship.numeral}",
-            "16:{ship.animal}","{ship.animal} {ship.numeral}",
-            "4:{ship.natureadjective} {ship.nature}|{ship.bigadjective|ship.gerund} {ship.nature}",
-            "5:{ship.adjective} {ship.animal}","{ship.adjective} {ship.animal} {ship.numeral}",
-            "4:{ship.gerund} {ship.animal}","{ship.gerund} {ship.animal} {ship.numeral}",
-            "2:{ship.spaceword} {ship.animal}","{ship.spaceword} {ship.animal} {ship.numeral}",
-            "2:{ship.spaceword} {system.mythologicalfigure}","{ship.spaceword} {system.mythologicalfigure} {ship.numeral}",
-            "4:{ship.gerund|ship.adjective} {ship.noun}","{ship.gerund|ship.adjective} {ship.noun} {ship.numeral}",
-            "6:{ship.bigadjective} {ship.bigidea}","{ship.bigadjective} {ship.bigidea} {ship.numeral}",
-            "4:{ship.adjective|ship.gerund} {ship.person}|The {ship.adjective|ship.gerund} {ship.person}","{ship.adjective|ship.gerund} {ship.person} {ship.numeral}",
-            "9:{ship.bigadjective|ship.bigidea|ship.person}","{ship.bigadjective|ship.bigidea|ship.person} {ship.numeral}",
-            "12:{ship.navalname}","{ship.navalname} {ship.numeral}", 
-            "8:{ship.combo}","{ship.combo} {ship.numeral}",
-            "3:{system.realplace}","{system.realplace} {ship.numeral}",
-            "4:{ship.mnoble} {human.malefirstname}|{ship.mnoble} {human.malefirstname}|{ship.mnoble} {human.malefirstname} {system.numeral}",
-            "4:{ship.fnoble} {human.femalefirstname}|{ship.fnoble} {human.femalefirstname}|{ship.fnoble} {human.femalefirstname} {system.numeral}",
-            "4:{ship.noble} {human.lastname}",
-            "1:{ship.noble} {word}",
-            "1:{ship.butterfly}"
         ],
         "navalname":[
             "{ship.royalnavy}",
@@ -3601,7 +3093,7 @@ export function getNames(){
             "Kale","Kalgoorlie","Kampar","Kandahar","Kangaroo","Karakatta","Karanja","Karrakatta","Kashmir","Katherine","Katherine Bark","Katherine Breton","Katherine Fortileza","Katherine Galley","Katoomba","Keats","Kedleston","Keith","Kelana","Kellett","Kellington","Kelly","Kelvin","Kemerton","Kempenfelt","Kempthorne","Kempton","Kendal","Kenilworth Castle","Kennet","Kennington","Kennymore","Kent","Kentish","Kenya","Keppel","Keren","Kertch","Keryado","Kestrel","Kew","Khartoum","Khedive","Kiawo","Kilbane","Kilbarchan","Kilbeggan","Kilberry","Kilbirnie","Kilbrachan","Kilbride","Kilbrittain","Kilburn","Kilby","Kilcar","Kilcavan","Kilchattan","Kilchreest","Kilchrenan","Kilchvan","Kilclare","Kilcolgan","Kilconnan","Kilconnel","Kilcoole","Kilcornie","Kilcot","Kilcreggan","Killcullen","Kilcurrig","Kildale","Kildarton","Kildary","Kildavin","Kildimo","Kildonan Castle","Kildorough","Kildorry","Kildpart","Kildress","Kildwick","Kilfenora","Kilfinny","Kilfree","Kilfullert","Kilgarvan","Kilglass","Kilgobnet","Kilgowan","Kilham","Kilhampton","Kilkee","Kilkeel","Kilkenny","Kilkenzie","Kilkerrin","Kilkhampton","Killadoon","Killaloo","Killane","Killarney","Killary","Killegan","Killegar","Killena","Killerig","Killiecrankie","Killeney","Killour","Killowen","Killybegs","Killygordon","Kilmacrennan","Kilmaine","Kilmalcolm","Kilmallock","Kilmanahan","Kilmarnock","Kilmartin","Kilmead","Kilmelford","Kilmersdon","Kilmington","Kilmore","Kilmorey","Kilmuckridge","Kilmun","Kimberley","Kincardine","King Alfred","King David","King Edward","King George","King Henry","King of Prussia","King Orry","King Sol","Kingcup","Kingfish","Kingfisher","Kingham","Kingsale","Kingsford","Kingsmill","Kingston","Kingston Alalite","Kingston Beryl","Kingston Cairngorm","Kingston Cornelian","Kingston Galena","Kingston Onyx","Kingston Sapphire","Kingussie","Kinnairds Head","Kinross","Kinsale","Kinsha","Kipling","Kirkliston","Kistna","Kitchen","Kite","Kittiwake","Knaresborough Castle","Knight of Malta","Knole","Kopanes","Kos XXII","Kos XXIII","Krakowiak","Kronprincen","Kronprincessen","Kudat","Kujawiak","Kung Wo"
         ],
         "royalnavyl":[
-            "La Capricieuse","La Chieftain","La Combatante","La Cordeliere","La Flore","La Hulloise","La Loire","La Malbai","La Malouine","La Melpomene","La Moqueuse","L'Abondance","Labuan","Laburnum","Lacedaemonian","Lachine","Lachlan","Lachute","Ladas","Ladava","Lady Canning","Lady Elsa","Lady Falkland","Lady Hogarth","Lady Lilian","Lady Loch","Lady Madeleine","Lady Nelson","Lady Philomena","Lady Prevost","Lady Shirley","Lady Slater","Lady Somers","Lady Taylor","Ladybird","Lae","Laertes","Laforey","Lagan","L'Aglaia","Laird's Isle","Lal","Laleston","Lalmourn","Lamerton","Lamport","Lanark","Lancaster","Lancaster Castle","Lance","Landguard","Landrail","Land Tortoise","Langport","Lantau","Lanton","Lapwing","Largo Bay","Largs","Lark","Larke","Larkspur","Larne","Lasalle","Lasham","Lassoo","Latona","Latrobe","Lauderdale","Launceston","Launceston Castle","Laura","Laurel","Laurestinus","Lauzon","Lavender","Laverock","Lavinia","Lawford","Lawrence","Lawson","Laymoor","Le Havre","Le Robecque","Le Triomphant","Leamington","Leander","Leaside","Leda","Ledbury","Ledsham","Lee","Leeds Castle","Leeds","Leeuwin","Legere","Legion","L'Egyptienne","Leicester","Leighton","Leith","Lennox","Lenox","Leocadia","Leonidas","Leopard","Leopard's Whelp","Lethbridge","L'Etoile","Letterston","Levant","Leven","Leveret","Leverton","Leviathan","Levis","Lewes","Lewiston","Leyden","L'Hercule","Li Wo","Liberty","Lichfield","Lichfield Prize","Licorne","Liddesdale","Liffey","Ligaera","Ligonier","Lightfoot","Lightning","Lilac","Lily","Limbourne","L'Impassable","Linaria","Lincoln","L'Incomprise","Lindisfarne","Lindsey","Ling","Linganbar","Lingfield","Linnet","Lion","Lioness","Lion's Whelp","Lisburne","Lismore","Liston","Listowel","Lithgow","Little Belt","Little Charity","Little London","Little Unicorn","Little Victory","Littleham","Lively","Liverpool","Lizard","Llandaff","Llandudno","Llewellyn","Lobelia",
+            "La Capricieuse","La Chieftain","La Combatante","La Cordeliere","La Flore","La Hulloise","La Loire","La Malbai","La Malouine","La Melpomene","La Moqueuse","L'Abondance","Labuan","Laburnum","Lacedaemonian","Lachine","Lachlan","Lachute","Ladas","Ladava","Lady Canning","Lady Elsa","Lady Falkland","Lady Hogarth","Lady Lilian","Lady Loch","Lady Madeleine","Lady Nelson","Lady Philomena","Lady Prevost","Lady Shirley","Lady Slater","Lady Somers","Lady Taylor","Ladybird","Lae","Laertes","Laforey","Lagan","L'Aglaia","Laird's Isle","Lal","Laleston","Lalmourn","Lamerton","Lamport","Lanark","Lancaster","Lancaster Castle","Lance","Landguard","Landrail","Land Tortoise","Langport","Lantau","Lanton","Lapwing","Largo Bay","Largs","Lark","Larke","Larkspur","Larne","Lasalle","Lasham","Lassoo","Latona","Latrobe","Lauderdale","Launceston","Launceston Castle","Laura","Laurel","Laurestinus","Lauzon","Lavender","Laverock","Lavinia","Lawford","Lawrence","Lawson","Laymoor","Le Havre","Le Robecque","Le Triomphant","Leamington","Leander","Leaside","Leda","Ledbury","Ledsham","Lee","Leeds Castle","Leeds","Leeuwin","Legere","Legion","L'Egyptienne","Leicester","Leighton","Leith","Lennox","Lenox","Leocadia","Leonidas","Leopard","Leopard's Whelp","Lethbridge","L'Etoile","Letterston","Levant","Leven","Leveret","Leverton","Leviathan","Levis","Lewes","Lewiston","Leyden","L'Hercule","Li Wo","Liberty","Lichfield","Lichfield Prize","Licorne","Liddesdale","Liffey","Ligaera","HMS Ligonier","Lightfoot","Lightning","Lilac","Lily","Limbourne","L'Impassable","Linaria","Lincoln","L'Incomprise","Lindisfarne","Lindsey","Ling","Linganbar","Lingfield","Linnet","Lion","Lioness","Lion's Whelp","Lisburne","Lismore","Liston","Listowel","Lithgow","Little Belt","Little Charity","Little London","Little Unicorn","Little Victory","Littleham","Lively","Liverpool","Lizard","Llandaff","Llandudno","Llewellyn","Lobelia",
             "Loch Achanault","Loch Achray","Loch Affric","Loch Alvie","Loch Ard","Loch Arkaig","Loch Arklet","Loch Arnish","Loch Assynt","Loch Awe","Loch Badcall","Loch Boisdale","Loch Bracadale","Loch Carloway","Loch Caroy","Loch Carron","Loch Clunie","Loch Coulside","Loch Craggie","Loch Cree","Loch Creran","Loch Doine","Loch Doon","Loch Dunvegan","Loch Earn","Loch Eck","Loch Eil","Loch Enock","Loch Ericht","Loch Erisort","Loch Eye","Loch Eynort","Loch Fada","Loch Fannich","Loch Fionn","Loch Frisa","Loch Fyne","Loch Garasdale","Loch Garve","Loch Glashan","Loch Glendhu","Loch Goil","Loch Gorm","Loch Griam","Loch Harport","Loch Harray","Loch Heilen","Loch Hourne","Loch Inchard","Loch Insh","Loch Katrine","Loch Ken","Loch Kilbirnie","Loch Killin","Loch Killisport","Loch Kirbister","Loch Kirkaig","Loch Kishorn","Loch Knockie","Loch Laro","Loch Laxford","Loch Linfern","Loch Linnhe","Loch Lomond","Loch Lubnaig","Loch Lurgain","Loch Lydoch","Loch Lyon","Loch Maberry","Loch Maddy","Loch Minnick","Loch Mochrum","Loch More","Loch Morlich","Loch Muick","Loch Nell","Loch Odairn","Loch Ossain","Loch Quoich","Loch Roan","Loch Ronald","Loch Ruthven","Loch Ryan","Loch Scamdale","Loch Scavaig","Loch Scridain","Loch Seaforth","Loch Sheallag","Loch Sheil","Loch Shin","Loch Skaig","Loch Skerrow","Loch Stemster","Loch Stenness","Loch Striven","Loch Sunart","Loch Swannay","Loch Swin","Loch Tanna","Loch Tarbert","Loch Tilt","Loch Torridon","Loch Tralaig","Loch Tummel","Loch Urigill","Loch Vanavie","Loch Vennachar","Loch Veyatie","Loch Watten","Lochinvar","Lochy","Lockeport","Locust","Lofoten","London","Londonderry","Longbow","Longbranch","Longford","Longueuil","Lonsdale","Looe","Lookout","Loosestrife","Lord Clive","Lord Eldon","Lord Howe","Lord Melville","Lord Mulgrave","Lord Nelson","Lord Nuffield","Lord Raglan","Lord Roberts","Lord Warden","Loring","Lossie","Lothian","Lotus","Louis","Louisa","Louisburg","Loup Cervier","Louvain","Love and Friendship","Lowestoffe","Lowestoffe Prize","Lowestoft","Loyal","Loyal Chancellor","Loyal Example","Loyal Exploit","Loyal Explorer","Loyal Express","Loyal London","Loyal Watcher","Loyalist","Loyalty","Luce Bay","Lucia","Lucifer","Ludham","Ludlow","Ludlow Castle","Lullington","Lulworth","Lunenburg","Lupin","Lurcher","Lusitania","Lutin","Lutine","Lychnis","Lydd","Lydiard","Lydney","Lyemun","Lyme","Lyme Regis","Lynn","Lynx","Lyon","Lyra","Lys","Lysander"
         ],
         "royalnavym":[
@@ -3615,7 +3107,7 @@ export function getNames(){
             "Oak","Oakham Castle","Oakington","Oakley","Obdurate","Obedient","Oberon","Observateur","Observer","Ocean","Oceanic","Oceanway","Ocelot","Ockham","Octavia","Odiham","Odin","Odzani","Offa","Ogre","Oiseau","Okehampton","Old Francis","Old James","Old Lawrence","Old President","Old Roebuck","Old Success","Old Truelove","Old Warwick","Olive Branch","Olympia","Olympus","Omdurman","Onondaga","Onslaught","Onslow","Ontario","Onyx","Opal","Ophelia","Opossum","Opportune","Oracle","Orange","Orange Tree","Orangeville","Orby","Orcadia","Orchis","Oreste","Orestes","Orford","Orford Ness","Orford Prize","Oriana","Oribi","Oriflamme","Orilla","Oriole","Orion","Orissa","Orkan","Orkney","Orlando","Orlionoch","Ormonde","Ornen","Oronoque","Orontes","Oroonoko","Orpheus","Orquijo","Ortenzia","Orwell","Oryx","Osborne","Osiris","Osprey","Ossington","Ossory","Ostend","Ostrich","Oswald","Oswego","Oswestry Castle","Otranto","Otter","Otus","Oudenarde","Oulston","Oundle","Ouragan","Ouse","Overton","Overyssel","Owen","Owen Glendower","Owl","Owners Adventure","Owners Goodwill","Owners Love","Oxford","Oxford Castle","Oxlip"
         ],
         "royalnavyp":[
-            "Pacific","Packahunta","Packington","Pactolus","Padstow","Padstow Bay","Pagham","Pakenham","Paladin","Palinurus","Pallas","Palliser","Palm Tree","Palma","Palomares","Paluma","Pandora","Pandour","Pangbourne","Panglima","Pansy","Pantaloon","Panther","Papillon","Papua","Paradox","Paragon","Paramour","Parapet","Paris","Parker","Parkes","Parret","Parrot","Parrsboro","Parry Sound","Parthian","Partridge","Pasley","Pat Barton","Pathan","Pathfinder","Patrician","Patrick","Patriot","Patrol","Patroller","Patton","Paul","Paulina","Pauncey","Paz","Peace","Peacock","Peard","Pearl","Pearl Prize","Pearlen","Pedro","Pegase","Pegasus","Peggy","Pegwell Bay","Pelargonium","Pelican","Pelican Prize","Pellew","Pelorus","Pelter","Pembroke","Pembroke Castle","Pembroke Prize","Penang","Pendennis","Pendennis Castle","Penelope","Penetang","Penguin","Penlee Point","Penn","Pennywort","Pentstemon","Penston","Penylan","Penzance","Peony","Pera","Perdrix","Peregrine","Peregrine Galley","Peregrine Prize","Perim","Periwinkle","Perlen","Persephone","Perseus","Perseverance","Persian","Persimmon","Persistent","Pert","Perth","Peruvian","Pesaquid","Pet","Petard","Peter Pomegranate","Peter","Peterborough","Peterel","Peterell","Peterhead","Peterman","Petersfield","Petersham","Petite Victoire","Petrel","Petrolla","Petulant","Petunia","Pevensey Castle","Peyton","Phaeton","Pheasant","Philip","Philip & Mary","Phillimore","Philoctetes","Philomel","Phipps","Phlegethon","Phlox","Phoebe","Phoenix","Phosphorus","Pickle","Picotee","Picton","Pictou","Piemontaise","Piercer","Pigeon","Pigmy","Pigot","Pike","Pilchard","Pilford","Pilot","Pilote","Pimpernel","Pincher","Pineham","Pink","Pinner","Pintail","Pioneer","Piorun","Pique","Pirie","Pirouette","Pitcairn","Pitt","Pittington","Placentia","Planet","Plantagenet","Plassy","Platy Prize","Platypus","Plessisville","Plover","Plucky","Plumper","Plumpton","Pluto","Plym","Plymouth","Plymouth Prize","Plymouth Transport","Pocahontas","Pochard","Podargus","Poictiers","Pointe Claire","Polacca","Polar Circle","Polaris","Polecat","Pollington","Pollux","Polperro","Polruan","Polsham","Polyanthus","Polyphemus","Pomona","Pomone","Pompee","Pondicherry","Pontypool","Poole","Popham","Popinjay","Poppy","Porcupine","Porgey","Porlock","Porlock Bay","Porpoise",
+            "Pacific","Packahunta","Packington","Pactolus","Padstow","Padstow Bay","Pagham","Pakenham","Paladin","Palinurus","Pallas","Palliser","Palm Tree","Palma","Palomares","Paluma","Pandora","Pandour","Pangbourne","Panglima","Pansy","Pantaloon","Panther","Papillon","Papua","Paradox","Paragon","Paramour","Parapet","Paris","Parker","Parkes","Parret","Parrot","Parrsboro","Parry Sound","Parthian","Partridge","Pasley","Pat Barton","Pathan","Pathfinder","Patrician","Patrick","Patriot","Patrol","Patroller","Patton","Paul","Paulina","Pauncey","Paz","PC42","PC43","PC44","PC51","PC55","PC56","PC60","PC61","PC62","PC63","PC65","PC66","PC67","PC68","PC69","PC70","PC71","PC72","PC73","PC74","Peace","Peacock","Peard","Pearl","Pearl Prize","Pearlen","Pedro","Pegase","Pegasus","Peggy","Pegwell Bay","Pelargonium","Pelican","Pelican Prize","Pellew","Pelorus","Pelter","Pembroke","Pembroke Castle","Pembroke Prize","Penang","Pendennis","Pendennis Castle","Penelope","Penetang","Penguin","Penlee Point","Penn","Pennywort","Pentstemon","Penston","Penylan","Penzance","Peony","Pera","Perdrix","Peregrine","Peregrine Galley","Peregrine Prize","Perim","Periwinkle","Perlen","Persephone","Perseus","Perseverance","Persian","Persimmon","Persistent","Pert","Perth","Peruvian","Pesaquid","Pet","Petard","Peter Pomegranate","Peter","Peterborough","Peterel","Peterell","Peterhead","Peterman","Petersfield","Petersham","Petite Victoire","Petrel","Petrolla","Petulant","Petunia","Pevensey Castle","Peyton","Phaeton","Pheasant","Philip","Philip & Mary","Phillimore","Philoctetes","Philomel","Phipps","Phlegethon","Phlox","Phoebe","Phoenix","Phosphorus","Pickle","Picotee","Picton","Pictou","Piemontaise","Piercer","Pigeon","Pigmy","Pigot","Pike","Pilchard","Pilford","Pilot","Pilote","Pimpernel","Pincher","Pineham","Pink","Pinner","Pintail","Pioneer","Piorun","Pique","Pirie","Pirouette","Pitcairn","Pitt","Pittington","Placentia","Planet","Plantagenet","Plassy","Platy Prize","Platypus","Plessisville","Plover","Plucky","Plumper","Plumpton","Pluto","Plym","Plymouth","Plymouth Prize","Plymouth Transport","Pocahontas","Pochard","Podargus","Poictiers","Pointe Claire","Polacca","Polar Circle","Polaris","Polecat","Pollington","Pollux","Polperro","Polruan","Polsham","Polyanthus","Polyphemus","Pomona","Pomone","Pompee","Pondicherry","Pontypool","Poole","Popham","Popinjay","Poppy","Porcupine","Porgey","Porlock","Porlock Bay","Porpoise",
             "Port Antonio","Port Arthur","Port Colborne","Port d'Espagne","Port Hope","Port Mahon","Port Morant","Port Royal","Port Wespagne","Portage","Portchester Castle","Portcullis","Porthleven","Portia","Portisham","Portland","Portland Bill","Portland Prize","Porto","Portreath","Portsmouth","Portsmouth Prize","Portsmouth Shallop","Portway","Poseidon","Post","Postboy","Postillion","Potentilla","Poulette","Poulmic","Pouncer","Poundmaker","Powderham","Powerful","Pozarica","Premier","Prescott","President","Prestatyn","Preston","Prestonian","Prevention","Prevost","Prevoyante","Primrose","Primula","Prince","Prince Albert","Prince Arthur","Prince Augustus Frederick","Prince Charles","Prince Consort","Prince de Neuchatel","Prince Edward","Prince Eugene","Prince Frederick","Prince George","Prince Henry","Prince Leopold","Prince of Orange","Prince of Wales","Prince Regent","Prince Royal","Prince Rupert","Prince William","Princess","Princess Alice","Princess Amelia","Princess Anne","Princess Augusta","Princess Carolina","Princess Caroline","Princess Charlotte","Princess Ena","Princess Irene","Princess Iris","Princess Louisa","Princess Margaret","Princess Maria","Princess Mary","Princess of Orange","Princess Royal","Princess Sophia Frederica","Princessa","Princesse","Prins Albert","Prinses Astrid","Prinses Beatrix","Privet","Prize","Procris","Proctor","Prodigal","Progresso","Prohibition","Project","Prometheus","Prompt Prize","Prompt","Prompte","Proselyte","Proserpine","Prosperity","Prospero","Prosperous","Protea","Protector","Proteus","Prothee","Providence","Providence Prize","Provo","Prowse","Prudent","Prudente","Psyche","Puck","Puckeridge","Puffin","Puissant","Pulham","Pultusk","Puma","Pumba","Puncher","Puncheston","Punjab","Punjabi","Punjaub","Puntoone","Pursuer","Puttenham","Pyl","Pylades","Pyramus","Pyrrhus","Pytchley","Python"
         ],
         "royalnavyq":[
@@ -3644,71 +3136,6 @@ export function getNames(){
             "Xenophon",
             "yarmouth","yarnton","yaxham","yealmpton","yeoman","yeovil","york","york castle","young hebe","young hoblin","young king","young lady","young lion","young prince","young shish","young spragge","ypres",
             "zambesi","zanzibar","zealandia","zealand","zealous","zebra","zeebrugge","zenith","zenobia","zephyr","zest","zetland","zingarella","zinnia","zodiac","zubian","zulu","zylpha"
-        ],
-        "yacht":[
-            "A Freight Not",
-            "Aboat Time",
-            "Anchoragement",
-            "Barge Right In",
-            "Barging About",
-            "Barging In",
-            "Better Safe Than Starry",
-            "Buoys and Galleys",
-            "Call The Dock",
-            "Cargo Vroom",
-            "Comet Me, Bro",
-            "Constellation Prize",
-            "Crewed Joke",
-            "Docked and Loaded",
-            "Drive Envy",
-            "Drivin' Me Nuts|Drivin' Me Crazy",
-            "Gift Horse",
-            "Goin' Broke",
-            "Going to Hull",
-            "Life's a Gas Giant",
-            "Livin' Space",
-            "Freight Fest",
-            "Fried Beacon",
-            "Hangar On",
-            "Happy Berth Day",
-            "Happy Landings",
-            "Harbor No Grudges",
-            "Hull in a Handbasket",
-            "Hulled Up",
-            "I Needed The Space",
-            "I Shipped Myself",
-            "In Decent Sea",
-            "Jump Right In",
-            "Jumpin' Jehosaphat",
-            "Kids' Inheritance",
-            "Launch Break",
-            "Love You Moor",
-            "Lunar Tick",
-            "Moor Often Than Not",
-            "No Port of It",
-            "Orbituary",
-            "Out Of This World",
-            "Over The Moon",
-            "Passing Wind",
-            "Pier Pressure",
-            "Quay to My Heart",
-            "Retirement Plan",
-            "Rocket To Sleep",
-            "Schooner or Later",
-            "See You In Hull",
-            "Ship For Brains",
-            "Shipfaced",
-            "Shore Thing",
-            "Space to Breathe",
-            "Stellar Decision",
-            "Stellar Life Choice|Stellar Life Choices",
-            "Tanks For The Memories",
-            "Tanks To You",
-            "Thanks A Yacht",
-            "Totally Tanked",
-            "Tugging Your Heartstrings",
-            "Wharf Air",
-            "Yeah Buoy"
         ],
         "numeral": [
             "3:1|I",
@@ -4678,6 +4105,7 @@ export function getNames(){
             "honor",
             "independence",
             "industry",
+            "innocence",
             "innovation",
             "justice",
             "knowledge",
@@ -4968,6 +4396,7 @@ export function getNames(){
             "drought",
             "feast",
             "fire",
+            "flood",
             "fun",
             "gold",
             "horizon",
@@ -4989,7 +4418,8 @@ export function getNames(){
             "sun",
             "thrill",
             "tide",
-            "void"
+            "void",
+            "wealth"
         ],
         "combo2":[
             "bringer",
@@ -5001,6 +4431,7 @@ export function getNames(){
             "eater",
             "ender",
             "farer",
+            "finder",
             "hopper",
             "harvester",
             "hunter",
