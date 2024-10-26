@@ -2570,11 +2570,11 @@ export function getNames(){
     },
     "ship":{
         "patterns":[
-            "200:{ship.nopun}",
+            "205:{ship.nopun}",
             "2:{ship.yacht}", "{ship.yacht} {ship.numeral}"
         ],
         "nopun":[
-            "10:{ship.purple}",
+            "10:{ship.purple}","{ship.purple} {ship.numeral}",
             "9:{word}","{word} {ship.numeral}",
             "2:{word.2sylword}","{word.2sylword} {ship.numeral}",
             "4:{ship.color} {word.2sylword|human.lastname|ship.noble}","{ship.color} {word.2sylword|human.lastname|ship.noble} {ship.numeral}",
@@ -2676,7 +2676,8 @@ export function getNames(){
             "Yeah Buoy"
         ],
         "purple":[
-            "{ship.item} of {ship.ideastate}",
+            "{ship.item} of {ship.idea}",
+            "2:{ship.item} of {ship.ideastate}",
             "{ship.ideastate}"
         ],
         "ideastate":[
