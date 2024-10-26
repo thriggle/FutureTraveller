@@ -2574,7 +2574,7 @@ export function getNames(){
             "2:{ship.yacht}", "{ship.yacht} {ship.numeral}"
         ],
         "nopun":[
-            "10:{ship.purple}","{ship.purple} {ship.numeral}",
+            "16:{ship.purple}","{ship.purple} {ship.numeral}",
             "9:{word}","{word} {ship.numeral}",
             "2:{word.2sylword}","{word.2sylword} {ship.numeral}",
             "4:{ship.color} {word.2sylword|human.lastname|ship.noble}","{ship.color} {word.2sylword|human.lastname|ship.noble} {ship.numeral}",
