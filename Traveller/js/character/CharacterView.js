@@ -52,15 +52,52 @@ document.getElementById("btnRandomName").addEventListener("click",()=>{
         case "M": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human.malefirstname") +" " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix") ); break;
         case "F": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human.femalefirstname") +" " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix") ); break;
     }
+    onNameFieldValueChange();
 });
 document.getElementById("btnApplyName").addEventListener("click",()=>{
     person.setName(document.getElementById("txtName").value);
+    onNameFieldValueChange();
     redraw();
 });
+document.getElementById("btnClearName").addEventListener("click",()=>{
+    document.getElementById("txtName").value = "";
+    onNameFieldValueChange();
+});
+document.getElementById("txtName").addEventListener("keyup",onNameFieldValueChange);
+function onNameFieldValueChange(){
+    var nameFieldValue = document.getElementById("txtName").value;
+    if(nameFieldValue.length > 0){
+        document.getElementById("btnClearName").style.display = "inherit";
+        if(nameFieldValue == person.getName()){
+            document.getElementById("btnApplyName").style.display = "none";
+        }else{
+            document.getElementById("btnApplyName").style.display = "inherit";
+        }
+    }else{
+        document.getElementById("btnApplyName").style.display = "none";
+        document.getElementById("btnClearName").style.display = "none";
+    }
+}
 document.getElementById("btnReset").addEventListener("click",newCharacter);
 document.getElementById("btnRandomHWTCs").addEventListener("click",function(){
     document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
-})
+    onHWTCFieldValueChange();
+});
+document.getElementById("txtHomeworldTradeCodes").addEventListener("keyup",function(){
+    onHWTCFieldValueChange();
+});
+document.getElementById("btnClearHWTCs").addEventListener("click",()=>{
+    document.getElementById("txtHomeworldTradeCodes").value = "";
+    document.getElementById("btnClearHWTCs").style.display = "none";
+});
+function onHWTCFieldValueChange(){
+    var HWTCs = document.getElementById("txtHomeworldTradeCodes").value;
+    if(HWTCs.length > 0){
+        document.getElementById("btnClearHWTCs").style.display = "inherit";
+    }else{
+        document.getElementById("btnClearHWTCs").style.display = "none";
+    }
+}
 document.getElementById("btnED5").addEventListener("click",()=>{log(person.ED5()); document.getElementById("btnED5").setAttribute("disabled",true); redraw(); });
 document.getElementById("btnApprenticeship").addEventListener("click",function(){
     pickOption(["Begin","Nevermind"],getCareerDescription("Apprenticeship",true),(choice)=>{

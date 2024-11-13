@@ -65,7 +65,7 @@ export function getDialog(){
     }else{
         var dialog = document.body.appendChild(document.createElement("dialog")); dialog.id = "dialog"; dialog.style.position = "absolute"; dialog.style.top = "0px";
         var dialogHandle = dialog.appendChild(document.createElement("div"));
-        dialogHandle.style.cursor = "move"; dialogHandle.style.backgroundColor = "black"; dialogHandle.style.borderTop = "1rem solid black"; dialogHandle.style.marginTop="0px";
+        dialogHandle.style.cursor = "move"; dialogHandle.style.backgroundColor = "#455151"; dialogHandle.style.borderTop = "1rem solid #455151"; dialogHandle.style.marginTop="0px";
         var dialogText = dialog.appendChild(document.createElement("div")); dialogText.id = "txtDialog";
         var selector = dialog.appendChild(document.createElement("select")); selector.id = "slctDialog";
         var dlgBtn = dialog.appendChild(document.createElement("input")); dlgBtn.setAttribute("type","button"); dlgBtn.setAttribute("value","OK"); dlgBtn.id = "dlgBtn";
