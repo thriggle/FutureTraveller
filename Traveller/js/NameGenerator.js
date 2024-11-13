@@ -182,23 +182,31 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
         var currentText = "";
         var references = [];
         var checkNot = -1;
+        var capitalize = false;
         for (var i = 0, len = phrase.length; i < len; i++) { // process each segment of the selected phrase
             var segment = phrase[i];
             var piece = "";
             if (segment.text) {
                 piece = segment.text;                
                 if(piece.endsWith(">") && references.length > 0){
-                var matches = piece.match(/<!\d>/g);
-                   if(matches.length > 0){
+                    var matches = piece.match(/<!\d>/g);
+                    if(matches != null && matches.length > 0){
                         var number = +(matches[matches.length-1].match(/\d/)[0]);
                         checkNot = number;
                         var regex = new RegExp("<!"+number.toString() + ">","g");
                         piece = piece.replace(regex,"");
-                   }else{
-                       checkNot = -1;
-                   }
+                        capitalize = false;
+                    }else{
+                        checkNot = -1;
+                        var matches = piece.match(/<c>/g);
+                        if(matches != null && matches.length > 0){
+                            capitalize = true;
+                            piece = piece.replace(/<c>/g,"");
+                        }
+                    }
                 }else{
                     checkNot = -1;
+                    capitalize = false;
                 }
                 currentText += piece;
             } else if (segment.reference) {
@@ -207,6 +215,9 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
                     while(piece == references[checkNot]){
                         piece = this.getRandomName(segment.reference,bannedWords,false);
                     }
+                }
+                if(capitalize){
+                    piece = addCaps(piece);
                 }
                 currentText += piece;
                 references.push(piece);
@@ -217,6 +228,9 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
                     while(piece == references[checkNot]){
                         piece = this.getRandomName(ref,bannedWords,false);
                     }
+                }
+                if(capitalize){
+                    piece = addCaps(piece);
                 }
                 currentText += piece;
                 references.push(piece);

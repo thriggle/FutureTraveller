@@ -6753,6 +6753,194 @@ export function getNames(){
             "wraith",
             "wreckage"
         ]
+    },
+    "festival":{
+        "patterns":[
+            "{festival.title} is held {festival.reason}. It is observed {festival.timing} by {festival.practice}." 
+        ],
+        "title":[
+            "The {festival.festival} of <c>{word}"
+        ],
+        "festival":[
+            "Day",
+            "Feast",
+            "Festival",
+            "Night"
+        ],
+        "reason":[
+            "in celebration of an historic military victory",
+            "{festival.inremembranceof} {festival.disaster}",
+            "{festival.incelebrationof} {festival.victory}"
+        ],
+        "incelebrationof":[
+            "in celebration of",
+            "to celebrate"
+        ],
+        "victory":[
+            "the {festival.goodtime} of {festival.abeloved} {festival.martyr}",
+            "an historic military victory",
+            "the foundation of a local {festival.political} institution",
+            "the {festival.badtime} of {festival.ahated} {festival.villain}",
+            "{festival.naturalvictory}"
+        ],
+        "naturalvictory":[
+            "the extinction of a native predator",
+            "the elimination of a deadly virus",
+        ],
+        "ahated":[
+            "an infamous",
+            "a villainous",
+            "a hated",
+        ],
+        "villain":[
+            "tyrant",
+            "criminal"
+        ],
+        "disaster":[
+            "{festival.naturaldisaster}",
+            "a great disaster",
+            "an historical plague",
+            "the {festival.badtime} of {festival.abeloved} {festival.martyr}",
+        ],
+        "naturaldisaster":[
+            "the extinction of a native life form",
+
+        ],
+        "badtime":[
+            "death",
+            "imprisonment",
+        ],
+        "goodtime":[
+            "birth",
+            "rise",
+            "ascension",
+            "revelation",
+        ],
+        "figure":[
+            "{festival.abeloved} {festival.martyr}",
+            "{festival.ahated} {festival.villain}"
+        ],
+        "abeloved":[
+            "a famous",
+            "a beloved",
+            "a celebrated",
+            "a renowned",
+            "an obscure",
+            "a legendary"
+        ],
+        "political":[
+            "2:political","2:religious","scientific","military"
+        ],
+        "martyr":[
+            "{festival.political} figure",
+            "martyr",
+            "{festival.political} rebel",
+            "{festival.political} activist",
+            "{festival.political} leader",
+            "{festival.political} thinker",
+            "artist|{festival.political} artist"
+        ],
+        "inremembranceof":[
+            "in remembrance of",
+            "to mourn",
+            "to commemorate",
+        ],
+        "timing":[
+            "once on the same day every year",
+            "every month",
+            "every other year",
+            "every {festival.plural} years"
+        ],
+        "plural":[
+            "two","three","four","five","six","seven","eight","nine","ten",
+            "thirteen","twenty","fifty","hundred"
+        ],
+        "practice":[
+            "{festival.location}",
+            "{festival.location}, as well as by <!0>{festival.location} while {festival.activity}",
+            "{festival.location}, as well as by <!0>{festival.location}",
+            "{festival.location}, as well as by {festival.activity}",
+            "{festival.activity}",
+            "{festival.activity}, as well as by {festival.location} while <!0>{festival.activity}",
+            "{festival.activity}, as well as by <!0>{festival.activity}",
+            "{festival.activity}, as well as by {festival.location}",
+            "{festival.location} while {festival.activity}",
+            "{festival.location} while {festival.activity}, as well as by <!1>{festival.activity}",
+            "{festival.location} while {festival.activity}, as well as by <!0>{festival.location}",
+            "{festival.location} while {festival.activity}, as well as by <!0>{festival.location} while <!1>{festival.activity}",
+        ],
+        "location":[
+            "traveling door-to-door throughout the neighborhood",
+            "marching through the city streets",
+            "gathering around {festival.monument} erected in {festival.place}",
+        ],
+        "activity":[
+            "asking for {festival.giveaways}",
+            "handing out {festival.giveaways}",
+            "exchanging {festival.giveaways}",
+            "singing carols",
+            "wearing outlandish costumes"
+        ],
+        "monument":[
+            "a statue of {festival.figure}",
+            "an evergreen tree",
+            "a bonfire",
+            "a pole decorated with ribbons",
+            "an effigy of a historical figure"
+        ],
+        "place":[
+            "a public square",
+            "a garden",
+            "a wild area",
+            "a cemetery",
+            "each family's home"
+        ],
+        "giveaways":[
+            "alcoholic beverages",
+            "candy",
+            "cards with {festival.sentimental} messages",
+            "gifts",
+            "handshakes",
+            "kisses",
+        ],
+        "sentimental":[
+            "creepy",
+            "cryptic",
+            "complimentary",
+            "heartfelt",
+            "humorous",
+            "insulting",
+            "lascivious",
+            "mysterious",
+            "personal",
+            "poetic",
+            "puzzling",
+            "sarcastic",
+            "sentimental",
+            "spooky",
+            "uplifting",
+        ],
+        "foods":[
+            "fruits",
+            "{festival.meats}",
+            "{festival.meatprep} {festival.meats}",
+            "pastries",
+            "vegetables"
+        ],
+        "meatprep":[
+            "boiled",
+            "dried",
+            "fried",
+            "grilled",
+            "pickled",
+            "smoked",
+        ],
+        "meats":[
+            "meats",
+            "fish",
+            "poultry",
+            "arthropods"
+        ]
     }
 };
 }
