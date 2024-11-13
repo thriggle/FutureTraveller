@@ -159,6 +159,11 @@
         <legend>Animal Names</legend>
         <input type="button" id="btnAnimal" name="btnAnimal" value="Animal Name" data-key="animal" /> 
         <span data-for="btnAnimal" >Generate an animal name</span>
+    </fieldset><br/>
+    <fieldset class="collapsed">
+        <legend>Festivals</legend>
+        <input type="button" id="btnFestival" name="btnFestival" value="Festival Name" data-key="festival" data-caps="false" /> 
+        <span data-for="btnFestival" >Generate an festival name</span>
     </fieldset>
 </div>
 </div>
@@ -188,18 +193,24 @@
             for(var i = 0, len = buttons.length; i < len; i++){
                 var button = buttons[i];
                 button.addEventListener("click",function(e){
+                    var localAddCaps = addCaps;
                     var key = e.srcElement.getAttribute("data-key");
+                    if(e.srcElement.getAttribute("data-caps")){
+                        if(e.srcElement.getAttribute("data-caps") === "false"){
+                            localAddCaps = function(x){return x;};
+                        }
+                    }
                     var value = generator.getRandomName(key);
                     var btnName = e.srcElement.getAttribute("name");
                     var label = document.querySelector("span[data-for=\""+btnName+"\"]");
-                    label.innerText = addCaps(value);
+                    label.innerText = localAddCaps(value);
                     var sidebar = document.querySelector(".sidebar");
                     removeChildElements(sidebar);
                     sidebar.appendChild(document.createTextNode("More " + e.srcElement.value + " Examples"));
                     var ol = sidebar.appendChild(document.createElement("ol"));
-                    ol.appendChild(document.createElement("li")).appendChild(document.createTextNode(addCaps(value)));
+                    ol.appendChild(document.createElement("li")).appendChild(document.createTextNode(localAddCaps(value)));
                     for(var i = 0; i < 9; i++){
-                        ol.appendChild(document.createElement("li")).appendChild(document.createTextNode(addCaps(generator.getRandomName(key))));
+                        ol.appendChild(document.createElement("li")).appendChild(document.createTextNode(localAddCaps(generator.getRandomName(key))));
                     }
                 });
             }
