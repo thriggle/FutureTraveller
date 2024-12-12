@@ -345,7 +345,7 @@ export var CareerSkillTables = {
         "General":["Survey","Survival","Hostile Environ","Animals","Bureaucrat","Navigator"],
         "Business":["Broker","Trader","Advocate","Liaison","Diplomat","Bureaucrat"],
         "Vocation":["Broker","One Art","Language","Admin","One Art","Bureaucrat"],
-        "Avocation":["one Art","One Art","One Trade","Athlete","Medic","One Trade"]
+        "Avocation":["One Art","One Art","One Trade","Athlete","Medic","One Trade"]
     },
     "Scout":{ // Career 05
         "Tables":["Personal","Academic","Courier","Exploration","Business","Vocation","Avocation"],
@@ -716,7 +716,7 @@ export var CareerBenefitTables = {
             {label:"C5 +1",type:"characteristic",characteristic:"C5"},
             {label:"C5 +1",type:"characteristic",characteristic:"C5"},
             {label:"Wafer Jack",type:"award"},
-            {label:"Edu +1",type:"characteristic",characteristic:"C5"},
+            {label:"C5 +1",type:"characteristic",characteristic:"C5"},
             {label:"Str +1",type:"characteristic",characteristic:"C1"},
             {label:"C2 +1",type:"characteristic",characteristic:"C2"},
             {label:"C3 +1",type:"characteristic",characteristic:"C3"},

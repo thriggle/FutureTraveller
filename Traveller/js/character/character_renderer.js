@@ -181,6 +181,10 @@ function statBlock(character,element){
     statHTML += "<hr/><span>Genetics: " + character.getGenetics().join(",")+"</span>";
     var fame = character.calculateFame();
     statHTML += "<hr/><span>Fame-" + (fame >= 0 ? fame : ("("+fame+")")) +"</span>";
+    var talent = character.getTalent();
+    if(talent.value > 0){
+        statHTML += "<hr/><span>Talent("+talent.name+")-"+talent.value+"</span>";
+    }
     element.insertAdjacentHTML("beforeend",statHTML);
 }
 function skillBlock(character,element){
