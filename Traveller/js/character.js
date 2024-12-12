@@ -2032,6 +2032,7 @@ export function createCharacter(roller, species, chosenGender){
                                     case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
                                     case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
                                     case "ship": shipShares += 1; record("Gained " + chosenBenefit.label); break;
+                                    case "fame": if(!career.fame){ career.fame = 0; } career.fame += chosenBenefit.amount; record(career.career + " Fame increased by " + chosenBenefit.amount + " to " + career.fame); break;
                                 }
                                 if(keepGoing){
                                     updateFunc();
@@ -2058,6 +2059,7 @@ export function createCharacter(roller, species, chosenGender){
                                 case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
                                 case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
                                 case "ship": shipShares += 1; record("Gained " + chosenBenefit.label); break;
+                                case "fame": if(!career.fame){ career.fame = 0; } career.fame += chosenBenefit.amount; record(career.career + " Fame increased by " + chosenBenefit.amount + " to " + career.fame); break;
                             }
                             if(keepGoing){
                                 updateFunc();
@@ -2143,26 +2145,54 @@ export function createCharacter(roller, species, chosenGender){
                                 var fameAndTalentRoll = roller.d6(2)
                                 record("Comeback! Reset fame: ["+fameAndTalentRoll.rolls+ "]= "+fameAndTalentRoll.result);
                                 careers[careers.length-1].fame = fameAndTalentRoll.result;
+                                updateFunc();
+                                gainTermSkills(termSkillTables,ENUM_CAREERS.Entertainer,updateFunc,()=>{
+                                    updateFunc(); 
+                                    promptContinue(ENUM_CAREERS.Entertainer,updateFunc);
+                                });
                             }else{
                                 if(thirdFameRollChoice == "Apply Third Flux Roll"){
                                     var thirdFameChangeResult = roller.flux();
                                     record("Fame flux (x3): ["+thirdFameChangeResult.rolls+"]="+thirdFameChangeResult.result);
                                     fameChangeTotal += thirdFameChangeResult.result;
-                                }
-                                careers[careers.length-1].fame += fameChangeTotal;
-                                record("Fame changed by " + fameChangeTotal + ". New entertainer fame="+careers[careers.length-1].fame);
-                                if(fameChangeTotal > 0){
-                                    setTalentValue(getTalent().value + 1);
-                                    record(getTalent().name + " Talent Increased by 1");
-                                    termSkillTables.push({age:false});
-                                    termSkillTables.push({age:false});
+                                    pickOption(["Accept","Attempt Comeback"],"Current Fame change: " + fameChangeTotal,function(finalFameRollChoice){
+                                        if(finalFameRollChoice === "Accept"){
+                                            careers[careers.length-1].fame += fameChangeTotal;
+                                            record("Fame changed by " + fameChangeTotal + ". New entertainer fame="+careers[careers.length-1].fame);
+                                            if(fameChangeTotal > 0){
+                                                setTalentValue(getTalent().value + 1);
+                                                record(getTalent().name + " Talent Increased by 1");
+                                                termSkillTables.push({age:false});
+                                                termSkillTables.push({age:false});
+                                            }
+                                        }else{
+                                            var fameAndTalentRoll = roller.d6(2)
+                                            record("Comeback! Reset fame: ["+fameAndTalentRoll.rolls+ "]= "+fameAndTalentRoll.result);
+                                            careers[careers.length-1].fame = fameAndTalentRoll.result;
+                                        }
+                                        updateFunc();
+                                        gainTermSkills(termSkillTables,ENUM_CAREERS.Entertainer,updateFunc,()=>{
+                                            updateFunc(); 
+                                            promptContinue(ENUM_CAREERS.Entertainer,updateFunc);
+                                        });
+                                    },true,"Accept",["Modify Fame by " + fameChangeTotal,"Reset Fame to 2D"]);
+                                }else{                                
+                                    careers[careers.length-1].fame += fameChangeTotal;
+                                    record("Fame changed by " + fameChangeTotal + ". New entertainer fame="+careers[careers.length-1].fame);
+                                    if(fameChangeTotal > 0){
+                                        setTalentValue(getTalent().value + 1);
+                                        record(getTalent().name + " Talent Increased by 1");
+                                        termSkillTables.push({age:false});
+                                        termSkillTables.push({age:false});
+                                    }
+                                    updateFunc();
+                                    gainTermSkills(termSkillTables,ENUM_CAREERS.Entertainer,updateFunc,()=>{
+                                        updateFunc(); 
+                                        promptContinue(ENUM_CAREERS.Entertainer,updateFunc);
+                                    });
                                 }
                             }                            
-                            updateFunc();
-                            gainTermSkills(termSkillTables,ENUM_CAREERS.Entertainer,updateFunc,()=>{
-                                updateFunc(); 
-                                promptContinue(ENUM_CAREERS.Entertainer,updateFunc);
-                            });
+                            
                             
                         },true,"Accept",["Modify Fame by " + fameChangeTotal,"Change by an additional [1d6 - 1d6]","Reset Fame to 2D"]);
                     }else if(secondFameRollChoice == "Attempt Comeback"){
