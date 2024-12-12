@@ -108,6 +108,28 @@ export var SoldierSkills = [
 ];
 
 export var Knowledges = {}
+/*Knowledges[ENUM_SKILLS.Musician] = [
+    "Voice",
+    "Banjo",
+    "Cello",
+    "Didgeridoo",
+    "Drums",
+    "Guitar",
+    "Harmonica",
+    "Kalimba",
+    "Keyboard",
+    "Mandolin",
+    "Mouth harp",
+    "Pan flute",
+    "Piano",
+    "Theremin",
+    "Trombone",
+    "Trumpet",
+    "Tuba",
+    "Violin",
+    "Viola",
+    "Woodwind"
+];*/
 Knowledges[ENUM_SKILLS.Animals] = ["Rider","Teamster","Trainer"];
 Knowledges[ENUM_SKILLS.Driver] = ["Automotive","ACV","Grav","Legged","Mole","Tracked","Wheeled"];
 Knowledges[ENUM_SKILLS.Engineer] = ["Jump Drives","Life Support","Maneuver Drive","Power Systems"];

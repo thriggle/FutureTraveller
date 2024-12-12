@@ -49,7 +49,7 @@ export function createCharacter(roller, species, chosenGender){
     var caste = species.Castes[casteKey];
     var age = 0, isForcedGrowthClone = false;
     var careers = [], CCs = [];
-    var fame = 0, credits = 0, fameFluxApplied = false, finalFameRoll = false;
+    var fame = 0, credits = 0, fameFluxApplied = false, finalFameRoll = false, talent={name:"undefined",value:0};
     var merchantShipShareReceiptLevel = 1, shipShares = 0;
     var job = {skill:undefined,knowledge:undefined}, hobby = {skill:undefined,knowledge:undefined}, lastCitLifeReceipt = undefined;
     var statRollResults = rollStats();
@@ -57,6 +57,15 @@ export function createCharacter(roller, species, chosenGender){
     var fameMusterOutBonus = false;
     var fameFlux = 0;
     var resignationDeclined = false;
+    function setTalentValue(num){
+        talent.value = num;
+    }
+    function setTalentName(name){
+        talent.name = name;
+    }
+    function getTalent(){
+        return talent;
+    }
     function resetVariables(){
         careers = [], CCs = []; edu_waivers = 0; 
         fame = 0, credits = 0; languageReceipts = 0;
@@ -189,6 +198,9 @@ export function createCharacter(roller, species, chosenGender){
                         }
                         careerFame += career.shipfame;
                     }
+                    break;
+                case ENUM_CAREERS.Entertainer:
+                    careerFame += career.fame;
                     break;
             }
             if(careerFame > highestSourceOfFame){
@@ -1690,6 +1702,9 @@ export function createCharacter(roller, species, chosenGender){
                 case ENUM_CAREERS.Scout:
                     continueTarget = characteristics[3].value;
                     break;
+                case ENUM_CAREERS.Entertainer:
+                    continueTarget = calculateFame();
+                    break;
             }
             pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
                 var switchCareer = switchCareerChoice === "Switch to a new career";
@@ -1774,6 +1789,12 @@ export function createCharacter(roller, species, chosenGender){
                             case ENUM_CAREERS.Scout:
                                 passedContinueRoll = continueResult.result <= characteristics[3].value;
                                 record("Continue as Scout: [" + continueResult.rolls.join(",") + "] < Int ("+characteristics[3].value+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
+                                updateFunc();
+                                break;
+                            case ENUM_CAREERS.Entertainer:
+                                var currFame = calculateFame();
+                                passedContinueRoll = continueResult.result <= currFame;
+                                record("Continue as Entertainer: [" + continueResult.rolls.join(",") + "] < Fame ("+currFame+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
                                 updateFunc();
                                 break;
                         }
@@ -1928,6 +1949,11 @@ export function createCharacter(roller, species, chosenGender){
                     moneyMod = career.terms;
                     bennyMod = calculateFame() / 2;
                     break;
+                case ENUM_CAREERS.Entertainer:
+                    moneyMod = calculateFame() / 3;
+                    bennyMod = career.terms;
+                    break;
+
             }
             possibleMonies = CareerBenefitTables[career.career]["Money"].map((val)=>val.label);
             possibleBennies = CareerBenefitTables[career.career]["Benefits"].map((val)=>{
@@ -2086,6 +2112,164 @@ export function createCharacter(roller, species, chosenGender){
         careers[index].active = true;
         var svcCareers = careers.splice(index,1);
         careers.push(svcCareers[0]);
+    }
+    function resolveEntertainer(career, updateFunc){
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+        }
+        var priorCareers = careers.length;
+        var advanceAndGetSkills = function(checkFame){
+            updateFunc();
+            var termSkillTables = [
+                {age:true},
+                {age:true},
+                {age:true},
+                {age:true},
+            ];
+            if(checkFame){
+                var fameChangeResult = roller.flux();
+                var fameChangeTotal = fameChangeResult.result
+                record("Fame flux: ["+fameChangeResult.rolls+"]="+fameChangeResult.result);
+                updateFunc();
+                pickOption(["Accept","Apply Second Flux Roll","Attempt Comeback"],"Current Fame change: " + fameChangeTotal,function(secondFameRollChoice){
+                    if(secondFameRollChoice == "Apply Second Flux Roll"){
+                        var secondFameChangeResult = roller.flux();
+                        record("Fame flux (x2): ["+secondFameChangeResult.rolls+"]="+secondFameChangeResult.result);
+                        fameChangeTotal += secondFameChangeResult.result;
+                        updateFunc();
+                        pickOption(["Accept","Apply Third Flux Roll","Attempt Comeback"],"Current Fame change: " + fameChangeTotal,function(thirdFameRollChoice){
+                            if(thirdFameRollChoice == "Attempt Comeback"){
+                                var fameAndTalentRoll = roller.d6(2)
+                                record("Comeback! Reset fame: ["+fameAndTalentRoll.rolls+ "]= "+fameAndTalentRoll.result);
+                                careers[careers.length-1].fame = fameAndTalentRoll.result;
+                            }else{
+                                if(thirdFameRollChoice == "Apply Third Flux Roll"){
+                                    var thirdFameChangeResult = roller.flux();
+                                    record("Fame flux (x3): ["+thirdFameChangeResult.rolls+"]="+thirdFameChangeResult.result);
+                                    fameChangeTotal += thirdFameChangeResult.result;
+                                }
+                                careers[careers.length-1].fame += fameChangeTotal;
+                                record("Fame changed by " + fameChangeTotal + ". New entertainer fame="+careers[careers.length-1].fame);
+                                if(fameChangeTotal > 0){
+                                    setTalentValue(getTalent().value + 1);
+                                    record(getTalent().name + " Talent Increased by 1");
+                                    termSkillTables.push({age:false});
+                                    termSkillTables.push({age:false});
+                                }
+                            }                            
+                            updateFunc();
+                            gainTermSkills(termSkillTables,ENUM_CAREERS.Entertainer,updateFunc,()=>{
+                                updateFunc(); 
+                                promptContinue(ENUM_CAREERS.Entertainer,updateFunc);
+                            });
+                            
+                        },true,"Accept",["Modify Fame by " + fameChangeTotal,"Change by an additional [1d6 - 1d6]","Reset Fame to 2D"]);
+                    }else if(secondFameRollChoice == "Attempt Comeback"){
+                        var fameAndTalentRoll = roller.d6(2)
+                        record("Comeback! Reset fame: ["+fameAndTalentRoll.rolls+ "]= "+fameAndTalentRoll.result);
+                        careers[careers.length-1].fame = fameAndTalentRoll.result;
+                        updateFunc();
+                        gainTermSkills(termSkillTables,ENUM_CAREERS.Entertainer,updateFunc,()=>{
+                            updateFunc(); 
+                            promptContinue(ENUM_CAREERS.Entertainer,updateFunc);
+                        });
+                    }else{
+                        careers[careers.length-1].fame += fameChangeTotal;
+                        record("Fame changed by " + fameChangeTotal + ". New entertainer fame="+careers[careers.length-1].fame);
+                        if(fameChangeTotal > 0){
+                            setTalentValue(getTalent().value + 1);
+                            record(getTalent().name + " Talent Increased by 1");
+                            termSkillTables.push({age:false});
+                            termSkillTables.push({age:false});
+                        }
+                        updateFunc();
+                        gainTermSkills(termSkillTables,ENUM_CAREERS.Entertainer,updateFunc,()=>{
+                            updateFunc(); 
+                            promptContinue(ENUM_CAREERS.Entertainer,updateFunc);
+                        });
+                    }
+                    
+                },true,"Accept",["Modify Fame by " + fameChangeTotal,"Change by an additional [1d6 - 1d6]","Reset Fame to 2D"]);
+            }else{
+                gainTermSkills(termSkillTables,ENUM_CAREERS.Entertainer,updateFunc,()=>{
+                    updateFunc(); 
+                    promptContinue(ENUM_CAREERS.Entertainer,updateFunc);
+                });
+            }
+
+        };
+
+        if(priorCareers == 0 || careers[priorCareers - 1].active == false){
+            // apply for career
+            var fameAndTalentRoll = roller.d6(2)
+            
+            record("Initial fame and talent for entertainer career: ["+fameAndTalentRoll.rolls+ "]="+fameAndTalentRoll.result);
+            
+            updateFunc();
+            var entertainerOptions = ["Actor","Artist","Author","Dancer","Musician","Chef"];
+            var entertainerOptionPreviews = ["Roll vs C2 or C3","Roll vs C3 or Int","Roll vs Int or C5","Roll vs C2 or C3","Roll vs C2 or C3","Roll vs C2 or Int"];
+            pickOption(entertainerOptions,"Choose an entertainment profession...",
+                function(enlistChoice){
+                    
+                    var availableStatIndices = [
+                        [1,2], // actor
+                        [2,3],// artist
+                        [3,4],// author
+                        [1,2],// dancer
+                        [1,2],// musican
+                        [1,3],// chef
+                    ];
+                    var availableStatNames = [
+                        ["C2","C3"],
+                        ["C3","Int"],
+                        ["Int","C5"],
+                        ["C2","C3"],
+                        ["C2","C3"],
+                        ["C2","Int"],
+                    ];
+                    var availableStatNumDice = [];
+                    for(var i = 0, len = availableStatIndices.length; i < len; i++){
+                        availableStatNumDice.push(
+                            [   species.Characteristics[availableStatIndices[i][0]].nD + gender.Characteristics[availableStatIndices[i][0]].nD + caste.Characteristics[availableStatIndices[i][0]].nD,
+                                species.Characteristics[availableStatIndices[i][1]].nD + gender.Characteristics[availableStatIndices[i][1]].nD + caste.Characteristics[availableStatIndices[i][1]].nD
+                            ]
+                        );
+                    }
+                    var availableStatDescriptions = [];
+                    for(var i = 0, len = availableStatIndices.length; i < len; i++){
+                        availableStatDescriptions.push(
+                            [   "Check "+characteristics[availableStatIndices[i][0]].name +": "+ availableStatNumDice[i][0] + "D < " + characteristics[availableStatIndices[i][0]].value,
+                                "Check "+characteristics[availableStatIndices[i][1]].name +": "+ availableStatNumDice[i][1] + "D < " + characteristics[availableStatIndices[i][1]].value,
+                            ]
+                        );
+                    }
+                    var choiceIndex = entertainerOptions.indexOf(enlistChoice);
+                    pickOption(availableStatNames[choiceIndex],"Check vs Characteristic to begin career",function(statChoice){
+                        var statChoiceIndex = availableStatNames[choiceIndex].indexOf(statChoice);
+                        var statIndex = availableStatIndices[choiceIndex][statChoiceIndex];
+                        var numDice = availableStatNumDice[choiceIndex][statChoiceIndex];
+                        var beginRoll = checkCharacteristic("C"+(availableStatIndices[choiceIndex][statChoiceIndex]+1),numDice,0,"Begin Entertainer/"+ enlistChoice + " vs " + characteristics[statIndex].name);
+                        record(beginRoll.remarks);
+                        updateFunc();
+                        if(beginRoll.success){
+                            setTalentValue(fameAndTalentRoll.result);
+                            setTalentName(enlistChoice);
+                            careers.push({career:career,terms:1,active:true,fame:fameAndTalentRoll.result,talent:fameAndTalentRoll.result,schools:[],awards:[enlistChoice+" Talent"]});
+                            advanceAndGetSkills(false);
+                        }else{
+                            record("Failed to begin Entertainer career.");
+                            advanceAge(1);
+                            updateFunc();
+                        }
+                    },true,availableStatNames[choiceIndex][0],availableStatDescriptions[choiceIndex]);
+                     
+            },true,"Musician",entertainerOptionPreviews);
+            return;
+        }else{
+            careers[careers.length-1].terms += 1;
+           advanceAndGetSkills(true);
+        }
     }
     function resolveCitizen(career,updateFunc){
         var hasBeen = canResumeFromService(career);
@@ -4862,6 +5046,7 @@ export function createCharacter(roller, species, chosenGender){
         q.Spacer = availability && (careers.length == 0 || (!hasBeen[ENUM_CAREERS.Spacer] || isNow[ENUM_CAREERS.Spacer]));
         q.Marine = availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Marine] || isNow[ENUM_CAREERS.Marine]));
         q.Scout = availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Scout] || isNow[ENUM_CAREERS.Scout]));
+        q.Entertainer = availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Entertainer] || isNow[ENUM_CAREERS.Entertainer]));
         var navyCommission = awards.indexOf("Navy Officer1") >= 0,
             armyCommission = awards.indexOf("Army Officer1") >= 0,
             marineCommission = awards.indexOf("Marine Officer1") >= 0;
@@ -5293,6 +5478,6 @@ export function createCharacter(roller, species, chosenGender){
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender, setGender,
         getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter, fameMusterOutBonus, claimFameMusterOutBonus,
-        resignFromReserves, getCraftsmanQualifications
+        resignFromReserves, getCraftsmanQualifications, getTalent
     }
 }
