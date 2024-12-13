@@ -1703,7 +1703,7 @@ export function createCharacter(roller, species, chosenGender){
                     continueTarget = characteristics[3].value;
                     break;
                 case ENUM_CAREERS.Entertainer:
-                    continueTarget = calculateFame();
+                    continueTarget = careers[careers.length-1].fame;
                     break;
             }
             pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
@@ -1792,7 +1792,7 @@ export function createCharacter(roller, species, chosenGender){
                                 updateFunc();
                                 break;
                             case ENUM_CAREERS.Entertainer:
-                                var currFame = calculateFame();
+                                var currFame = careers[careers.length-1].fame;
                                 passedContinueRoll = continueResult.result <= currFame;
                                 record("Continue as Entertainer: [" + continueResult.rolls.join(",") + "] < Fame ("+currFame+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
                                 updateFunc();
@@ -2294,7 +2294,7 @@ export function createCharacter(roller, species, chosenGender){
                         }
                     },true,availableStatNames[choiceIndex][0],availableStatDescriptions[choiceIndex]);
                      
-            },true,"Musician",entertainerOptionPreviews);
+            },true,"Actor",entertainerOptionPreviews);
             return;
         }else{
             careers[careers.length-1].terms += 1;
@@ -5084,7 +5084,8 @@ export function createCharacter(roller, species, chosenGender){
         
         if(navyCommission || armyCommission || marineCommission){
             q.Citizen = false, q.Spacer = false, q.Soldier = false, q.Marine = false, q.Merchant = false, q.Scout = false;
-            q.Craftsman = false;
+            q.Craftsman = false; q.Entertainer = false; q.Scholar = false; q.Noble = false; 
+            q.Agent = false; q.Rogue = false; q.Functionary = false;
             q.BA = false;
             if(navyCommission){ q.Spacer = true;}
             if(armyCommission){ q.Soldier = true;}
