@@ -707,6 +707,9 @@ function getCareerDescription(career,isSchool){
             skillDesc += "</ul>"
             desc += "<ul><li>Begin: Auto (if 2x Skill-6 and Craftsman-1)</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Masterpiece: 9D < Master Points (min 40)</li><li>CC + Craftsman + Up to 5 Skill/Knowl at 6+</li><li>Qualifying Skills ("+masterPoints+"):"+skillDesc+"</li><li>Continue: Craftsman x2 ("+(2*person.getSkills()["Craftsman"].Skill)+")</li></ul>";
             break;
+        case "Entertainer":
+            desc += "<ul><li>Begin: Check C2, C3, Int, or C5</li><li>Initial Fame/Talent = 2D</li><li>Fame changes by 1-3 Flux rolls every subsequent term</li><li>If Fame increases, Talent +1</li><li>Comeback: Reset fame to 2D</li><li>Check Fame to continue</li></ul>";
+            break;
         case "Citizen":
             desc += "<ul><li>Begin: Automatic (1st career only)</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Continue: 10-</li></ul>";
             break;

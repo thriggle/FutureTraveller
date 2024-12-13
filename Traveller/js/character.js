@@ -5410,6 +5410,7 @@ export function createCharacter(roller, species, chosenGender){
             awards:getAwards(),
             careers:getCareers(),
             CCs:CCs,
+            talent:getTalent(),
             characteristics:getCharacteristics(),
             credits:credits,  
             edu_waivers:edu_waivers,
@@ -5454,6 +5455,13 @@ export function createCharacter(roller, species, chosenGender){
             fameMusterOutBonus = characterJson.fameMusterOutBonus;
         }else{
             fameMusterOutBonus = true;
+        }
+        if(typeof characterJson.talent !== "undefined"){
+            setTalentName(characterJson.talent.name);
+            setTalentValue(characterJson.talent.value);
+        }else{
+            setTalentName("Undefined");
+            setTalentValue(0);
         }
         setCharacteristics(characterJson.characteristics);
         credits = characterJson.credits;
