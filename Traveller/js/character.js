@@ -1536,6 +1536,7 @@ export function createCharacter(roller, species, chosenGender){
             if(tables.Tables.indexOf("MAJOR") >= 0){
                 var major = careers[careers.length-1].major.label
                 tables["MAJOR"] = [ major, major, major, major, major, major ];
+                defaultValue = "Personal";
             }
             if(tables.Tables.indexOf("MINOR") >= 0){
                 var minor = careers[careers.length-1].minor.label;
@@ -2199,6 +2200,10 @@ export function createCharacter(roller, species, chosenGender){
                         record(riskResult.remarks);
                         updateFunc();
                         if(!riskResult.success){ riskResult.success = promptEducationWaiver("Failed Research attempt").success; }
+                        else{
+                            gainSkillOrKnowledge(careers[careers.length-1].major.skill,careers[careers.length-1].major.knowledge,true); 
+                            gainSkillOrKnowledge(careers[careers.length-1].major.skill,careers[careers.length-1].major.knowledge,true); 
+                        }
                         updateFunc();
                         if(riskResult.success){
                             record("Successfully conducted research.");
