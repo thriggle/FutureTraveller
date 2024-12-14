@@ -148,6 +148,7 @@ export function createCharacter(roller, species, chosenGender){
         for(var i = 0, len = careers.length; i < len; i++){
             var career = careers[i];
             var careerFame = 0;
+            if(career.bonusfame && career.bonusfame > 0){ careerFame += career.bonusfame;}
             switch(career.career){
                 case ENUM_CAREERS.Scout:
                     for(var j = 0, jlen = career.awards.length; j < jlen; j++){
@@ -2075,7 +2076,7 @@ export function createCharacter(roller, species, chosenGender){
                                     case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
                                     case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
                                     case "ship": shipShares += 1; record("Gained " + chosenBenefit.label); break;
-                                    case "fame": if(!career.fame){ career.fame = 0; } career.fame += chosenBenefit.amount; record(career.career + " Fame increased by " + chosenBenefit.amount + " to " + career.fame); break;
+                                    case "fame": if(!career.bonusfame){ career.bonusfame = 0; } career.bonusfame += chosenBenefit.amount; calculateFame(); record(career.career + " Fame increased by " + chosenBenefit.amount + " to " + career.fame); break;
                                 }
                                 if(keepGoing){
                                     updateFunc();
@@ -2102,7 +2103,7 @@ export function createCharacter(roller, species, chosenGender){
                                 case "award": awards.push(chosenBenefit.label); career.awards.push(chosenBenefit.label); record("Gained " + chosenBenefit.label); break;
                                 case "characteristic": musterOutStatBonus(chosenBenefit.characteristic); break;
                                 case "ship": shipShares += 1; record("Gained " + chosenBenefit.label); break;
-                                case "fame": if(!career.fame){ career.fame = 0; } career.fame += chosenBenefit.amount; record(career.career + " Fame increased by " + chosenBenefit.amount + " to " + career.fame); break;
+                                case "fame": if(!career.bonusfame){ career.bonusfame = 0; } career.bonusfame += chosenBenefit.amount; calculateFame(); record(career.career + " Fame increased by " + chosenBenefit.amount + " to " + career.fame); break;
                             }
                             if(keepGoing){
                                 updateFunc();
@@ -2254,7 +2255,7 @@ export function createCharacter(roller, species, chosenGender){
                                 if(!qualifiesForPromotion){ qualifiesForPromotion = promptEducationWaiver("Tenure is required for promotion.").success; updateFunc();}
                             }
                             
-                            if(meetsEducationMinimum && careers[careers.length-1].rank.level == 3 && !qualifiesForTenure){ qualifiesForTenure = promptEducationWaiver("Insufficient EDU to qualify for tenure.").success;  updateFunc();}
+                            
                             if(qualifiesForPromotion){
                                 var intDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
                                 var promoResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,intDice,careers[careers.length-1].publications,"Scholar promotion vs INT");
@@ -2285,6 +2286,7 @@ export function createCharacter(roller, species, chosenGender){
                                 record(careers[careers.length-1].rank.label + " is ineligible for promotion."); updateFunc();
                             }
                             var qualifiesForTenure = !careers[careers.length-1].tenured && careers[careers.length-1].rank.level == 3 && meetsCharacteristicRequirements && characteristics[4].value >= 10;
+                            if(meetsEducationMinimum && careers[careers.length-1].rank.level == 3 && !qualifiesForTenure){ qualifiesForTenure = promptEducationWaiver("Insufficient EDU to qualify for tenure.").success;  updateFunc();}
                             if(qualifiesForTenure){
                                 var countPubs = careers[careers.length-1].publications;
                                 var tenureResult = check(countPubs * 3,2,0,"Apply for Tenure 2D vs 3x Publications");
@@ -2392,7 +2394,7 @@ export function createCharacter(roller, species, chosenGender){
                         }
                         if(!minors || minors.length == 0){addMinor(minorChoice.skill,minorChoice.knowledge);}
                         record("Selected "+minorChoice.label+" as companion field of study"); updateFunc();
-                        careers.push({career:career,fame:0,terms:1,tenured:false,active:true,rank:rank,schools:[],publications:0,awards:[],major:majorChoice,minor:minorChoice});
+                        careers.push({career:career,bonusfame:0,terms:1,tenured:false,active:true,rank:rank,schools:[],publications:0,awards:[],major:majorChoice,minor:minorChoice});
                         updateFunc();
                         advanceAndGetSkills();
                     });
@@ -2581,7 +2583,7 @@ export function createCharacter(roller, species, chosenGender){
                         if(beginRoll.success){
                             setTalentValue(fameAndTalentRoll.result);
                             setTalentName(enlistChoice);
-                            careers.push({career:career,terms:1,active:true,fame:fameAndTalentRoll.result,talent:fameAndTalentRoll.result,schools:[],awards:[enlistChoice+" Talent"]});
+                            careers.push({career:career,terms:1,active:true,bonusfame:0,fame:fameAndTalentRoll.result,talent:fameAndTalentRoll.result,schools:[],awards:[enlistChoice+" Talent"]});
                             advanceAndGetSkills(false);
                         }else{
                             record("Failed to begin Entertainer career.");
@@ -4831,7 +4833,7 @@ export function createCharacter(roller, species, chosenGender){
                             record(beginRoll.remarks);
                             updateFunc();
                             if(beginRoll.success){ // joined successfully
-                                careers.push({career:career,terms:1,active:true,awards:[]});
+                                careers.push({career:career,bonusfame:0,terms:1,active:true,awards:[]});
                                 record("Joined Scouts.");
                                 updateFunc();
                                 pickOption(["Explorer Duty","Courier Duty"],"Do you wish to explore/survey or volunteer for courier duty?",(dutyChoice)=>{
