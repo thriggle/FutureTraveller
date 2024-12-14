@@ -328,7 +328,9 @@ export var CareerSkillTables = {
         "Avocation":["Animals","One Art","One Science","Athlete","Medic","One Trade"]
     },
     "Scholar":{ // Career 02
-        "Tables":["Personal","Academic","Travel","General","Conflict","Vocation","Avocation"],
+        "Tables":["MAJOR","MINOR","Personal","Academic","Travel","General","Conflict","Vocation","Avocation"],
+        "MAJOR":["Major","Major","Major","Major","Major","Major"],
+        "MINOR":["Minor","Minor","Minor","Minor","Minor","Minor"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
         "Travel":["Seafarer","Navigator","Hostile Environ","Flyer","Driver","Vacc Suit"],

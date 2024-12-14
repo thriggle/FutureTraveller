@@ -43,6 +43,9 @@ function careers(character,element){
                     rank = (careers[i].rank.officer>0 ? "M"+careers[i].rank.officer : ("R"+(careers[i].rank.enlisted < 0 ? "X" : careers[i].rank.enlisted)));
                     rank = "-"+rank;
                     break;
+                case ENUM_CAREERS.Scholar:
+                    rank = "-"+careers[i].rank.label;
+                    break;
             }
         }
         var awards = "";

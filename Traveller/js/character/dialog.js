@@ -435,6 +435,137 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
             {name:"Diplomat",skill:"Diplomat",knowledge:undefined},
         ];
         break;
+        case "Any":
+            skills = [
+                {name:"Actor",skill:"Actor",knowledge:undefined},
+                {name:"Admin",skill:"Admin",knowledge:undefined},
+                {name:"Advocate",skill:"Advocate",knowledge:undefined},
+                {name:"Animals(Rider)",skill:"Animals",knowledge:"Rider"},
+                {name:"Animals(Teamster)",skill:"Animals",knowledge:"Teamster"},
+                {name:"Animals(Trainer)",skill:"Animals",knowledge:"Trainer"},
+                {name:"Artist",skill:"Artist",knowledge:undefined},
+                {name:"Astrogator",skill:"Astrogator",knowledge:undefined},
+                {name:"Athlete",skill:"Athlete",knowledge:undefined},
+                {name:"Author",skill:"Author",knowledge:undefined},
+
+                {name:"Biologics",skill:"Biologics",knowledge:undefined},
+                {name:"Broker",skill:"Broker",knowledge:undefined},
+                {name:"Bureaucrat",skill:"Bureaucrat",knowledge:undefined},
+
+                {name:"Chef",skill:"Chef",knowledge:undefined},
+                {name:"Comms",skill:"Comms",knowledge:undefined},
+                {name:"Computer",skill:"Computer",knowledge:undefined},
+                {name:"Counsellor",skill:"Counsellor",knowledge:undefined},
+                {name:"Craftsman",skill:"Craftsman",knowledge:undefined},
+                
+                {name:"Dancer",skill:"Dancer",knowledge:undefined},
+                {name:"Designer",skill:"Designer",knowledge:undefined},
+                {name:"Diplomat",skill:"Diplomat",knowledge:undefined},
+                {name:"Driver(ACV)",skill:"Driver",knowledge:"ACV"},
+                {name:"Driver(Automotive)",skill:"Driver",knowledge:"Automotive"},
+                {name:"Driver(Grav)",skill:"Driver",knowledge:"Grav"},
+                {name:"Driver(Legged)",skill:"Driver",knowledge:"Legged"},
+                {name:"Driver(Mole)",skill:"Driver",knowledge:"Mole"},
+                {name:"Driver(Tracked)",skill:"Driver",knowledge:"Tracked"},
+                {name:"Driver(Wheeled)",skill:"Driver",knowledge:"Wheeled"},
+                
+                {name:"Electronics",skill:"Electronics",knowledge:undefined},
+                {name:"Engineer(Jump Drives)",skill:"Engineer",knowledge:"Jump Drives"},
+                {name:"Engineer(Life Support)",skill:"Engineer",knowledge:"Life Support"},
+                {name:"Engineer(Maneuver Drive)",skill:"Engineer",knowledge:"Maneuver Drive"},
+                {name:"Engineer(Power Systems)",skill:"Engineer",knowledge:"Power Systems"},
+                {name:"Explosives",skill:"Explosives",knowledge:undefined},
+
+                {name:"Fighter(Battle Dress)",skill:"Fighter",knowledge:"Battle Dress"},
+                {name:"Fighter(Beams)",skill:"Fighter",knowledge:"Beams"},
+                {name:"Fighter(Blades)",skill:"Fighter",knowledge:"Blades"},
+                {name:"Fighter(Exotics)",skill:"Fighter",knowledge:"Exotics"},
+                {name:"Fighter(Slug Throwers)",skill:"Fighter",knowledge:"Slug Throwers"},
+                {name:"Fighter(Sprays)",skill:"Fighter",knowledge:"Sprays"},
+                {name:"Fighter(Unarmed)",skill:"Fighter",knowledge:"Unarmed"},
+                {name:"Fleet Tactics",skill:"Fleet Tactics",knowledge:undefined},
+                {name:"Fluidics",skill:"Fluidics",knowledge:undefined},
+                {name:"Flyer(Aeronautics)",skill:"Flyer",knowledge:"Aeronautics"},
+                {name:"Flyer(Grav)",skill:"Flyer",knowledge:"Grav"},
+                {name:"Flyer(LTA)",skill:"Flyer",knowledge:"LTA"},
+                {name:"Flyer(Rotor)",skill:"Flyer",knowledge:"Rotor"},
+                {name:"Flyer(Winged)",skill:"Flyer",knowledge:"Winged"},
+                {name:"Fwd Obs",skill:"Forward Observer",knowledge:undefined},
+                {name:"Forensics",skill:"Forensics",knowledge:undefined},
+                
+                {name:"Gambler",skill:"Gambler",knowledge:undefined},
+                {name:"Gravitics",skill:"Gravitics",knowledge:undefined},
+                {name:"Gunner(Bay Weapons)",skill:"Gunner",knowledge:"Bay Weapons"},
+                {name:"Gunner(Ortillery)",skill:"Gunner",knowledge:"Ortillery"},
+                {name:"Gunner(Screens)",skill:"Gunner",knowledge:"Screens"},
+                {name:"Gunner(Spines)",skill:"Gunner",knowledge:"Screens"},
+                {name:"Gunner(Turrets)",skill:"Gunner",knowledge:"Turrets"},
+
+                {name:"Heavy Weapons(Artillery)",skill:"Heavy Weapons",knowledge:"Artillery"},
+                {name:"Heavy Weapons(Launcher)",skill:"Heavy Weapons",knowledge:"Launcher"},
+                {name:"Heavy Weapons(Ordnance)",skill:"Heavy Weapons",knowledge:"Ordnance"},
+                {name:"Heavy Weapons(WMD)",skill:"Heavy Weapons",knowledge:"WMD"},
+                {name:"High-G",skill:"High-G",knowledge:undefined},
+                {name:"Hostile Environ",skill:"Hostile Environ",knowledge:undefined},
+
+                {name:"Language",skill:"Language",knowledge:undefined},
+                {name:"Leader",skill:"Leader",knowledge:undefined},
+                {name:"Liaison",skill:"Liaison",knowledge:undefined},
+                
+                {name:"Magnetics",skill:"Magnetics",knowledge:undefined},
+                {name:"Mechanic",skill:"Mechanic",knowledge:undefined},
+                {name:"Medic",skill:"Medic",knowledge:undefined},
+                {name:"Musician",skill:"Musician",knowledge:undefined},
+                
+                {name:"Naval Architect",skill:"Naval Architect",knowledge:undefined},
+                {name:"Navigator",skill:"Navigator",knowledge:undefined},
+
+                {name:"Photonics",skill:"Photonics",knowledge:undefined},
+                {name:"Pilot(Small Craft)",skill:"Pilot",knowledge:"Small Craft"},
+                {name:"Pilot(ACS)",skill:"Pilot",knowledge:"ACS"},
+                {name:"Pilot(BCS)",skill:"Pilot",knowledge:"BCS"},
+                {name:"Polymers",skill:"Polymers",knowledge:undefined},
+                {name:"Programmer",skill:"Programmer",knowledge:undefined},
+                
+                {name:"Recon",skill:"Recon",knowledge:undefined},
+
+                {name:"Sapper",skill:"Sapper",knowledge:undefined},
+                {name:"Seafarer(Aquanautics)",skill:"Seafarer",knowledge:"Aquanautics"},
+                {name:"Science(Archeology)",skill:"Science",knowledge:"Archeology"},
+                {name:"Science(Biology)",skill:"Science",knowledge:"Biology"},
+                {name:"Science(Chemistry)",skill:"Science",knowledge:"Chemistry"},
+                {name:"Science(History)",skill:"Science",knowledge:"History"},
+                {name:"Science(Linguistics)",skill:"Science",knowledge:"Linguistics"},
+                {name:"Science(Philosophy)",skill:"Science",knowledge:"Philosophy"},
+                {name:"Science(Physics)",skill:"Science",knowledge:"Physics"},
+                {name:"Science(Planetology)",skill:"Science",knowledge:"Planetology"},
+                {name:"Science(Psionicology)",skill:"Science",knowledge:"Psionicology"},
+                {name:"Science(Psychohistory)",skill:"Science",knowledge:"Psychohistory"},
+                {name:"Science(Psychology)",skill:"Science",knowledge:"Psychology"},
+                {name:"Science(Robotics)",skill:"Science",knowledge:"Robotics"},
+                {name:"Science(Sophontology)",skill:"Science",knowledge:"Sophontology"},
+                {name:"Seafarer(Aquanautics)",skill:"Seafarer",knowledge:"Aquanautics"},
+                {name:"Seafarer(Boat)",skill:"Seafarer",knowledge:"Boat"},
+                {name:"Seafarer(Grav)",skill:"Seafarer",knowledge:"Grav"},
+                {name:"Seafarer(Ship)",skill:"Seafarer",knowledge:"Ship"},
+                {name:"Seafarer(Sub)",skill:"Seafarer",knowledge:"Sub"},
+                {name:"Sensors",skill:"Sensors",knowledge:undefined},
+                {name:"Stealth",skill:"Stealth",knowledge:undefined},
+                {name:"Steward",skill:"Steward",knowledge:undefined},
+                {name:"Strategy",skill:"Strategy",knowledge:undefined},
+                {name:"Streetwise",skill:"Streetwise",knowledge:undefined},
+                {name:"Survey",skill:"Survey",knowledge:undefined},
+                {name:"Survival",skill:"Survival",knowledge:undefined},
+
+                {name:"Tactics",skill:"Tactics",knowledge:undefined},
+                {name:"Teacher",skill:"Teacher",knowledge:undefined},
+                {name:"Trader",skill:"Trader",knowledge:undefined},
+
+                {name:"Vacc Suit",skill:"Vacc Suit",knowledge:undefined},
+
+                {name:"Zero-G",skill:"Zero-G",knowledge:undefined}
+            ]
+            break;
         }
     var hasExcludedChoice = typeof excludedChoice !== "undefined",
         hasPreferredChoice = typeof preferredChoice !== "undefined";
@@ -443,6 +574,7 @@ export function pickSkill(category, prompt, callback, excludedChoice, preferredC
             var skill = skills[i];
             if(skill.name == excludedChoice.name){
                 skills.splice(i,1);
+                console.log(i);
                 break;
             } 
         }

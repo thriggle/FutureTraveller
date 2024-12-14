@@ -1505,7 +1505,15 @@ export function createCharacter(roller, species, chosenGender){
                 };
                 for(var i = 0, len = tableHeaders.length; i < len; i++){
                     tables.Tables.push(tableHeaders[i]);
-                    tables[tableHeaders[i]] = CareerSkillTables[career][tableHeaders[i]];
+                    if(tableHeaders[i] == "MAJOR"){
+                        var major = careers[careers.length-1].major.label;
+                        tables[tableHeaders[i]] = [ major, major, major, major, major, major ];
+                    }else if(tableHeaders[i] == "MINOR"){
+                        var minor = careers[careers.length-1].minor.label;
+                        tables[tableHeaders[i]] = [ minor, minor, minor, minor, minor, minor ];
+                    }else{
+                        tables[tableHeaders[i]] = CareerSkillTables[career][tableHeaders[i]];
+                    }
                     if(typeof currentTablesObject.note !== "undefined" &&  currentTablesObject.note.length > 0 &&(
                         currentTablesObject.note.indexOf(tableHeaders[i]) == 0 ||
                         tableHeaders[i].indexOf(currentTablesObject.note.split(" ")[0]) == 0
@@ -1513,6 +1521,14 @@ export function createCharacter(roller, species, chosenGender){
                         defaultValue = tableHeaders[i];
                     }
                 }
+            }
+            if(tables.Tables.indexOf("MAJOR") >= 0){
+                var major = careers[careers.length-1].major.label;
+                tables["MAJOR"] = [ major, major, major, major, major, major ];
+            }
+            if(tables.Tables.indexOf("MINOR") >= 0){
+                var minor = careers[careers.length-1].minor.label;
+                tables["MINOR"] = [ minor, minor, minor, minor, minor, minor ];
             }
             if(typeof currentTablesObject.schooling !== "undefined"){
                 //{receipts:2,skill:sk1.skill,knowledge:sk1.knowledge,isEducation:true,note:"ANM School",termIndex:skillAcquisitionIndex}
@@ -1705,6 +1721,10 @@ export function createCharacter(roller, species, chosenGender){
                 case ENUM_CAREERS.Entertainer:
                     continueTarget = careers[careers.length-1].fame;
                     break;
+                case ENUM_CAREERS.Scholar:
+                    continueTarget = characteristics[4].value;
+                    break;
+
             }
             pickOption(["Continue or Muster Out","Switch to a new career"],"Completed " + careers[careers.length-1].terms + " term"+(careers[careers.length-1].terms == 1 ? "":"s")+" as a " + career+".<br/>Do you want to switch from "+career+" to a different career?",(switchCareerChoice)=>{
                 var switchCareer = switchCareerChoice === "Switch to a new career";
@@ -1796,6 +1816,12 @@ export function createCharacter(roller, species, chosenGender){
                                 passedContinueRoll = continueResult.result <= currFame;
                                 record("Continue as Entertainer: [" + continueResult.rolls.join(",") + "] < Fame ("+currFame+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
                                 updateFunc();
+                                break;
+                            case ENUM_CAREERS.Scholar:
+                                passedContinueRoll = continueResult.result < characteristics[4].value;
+                                record("Continue as Scholar: [" + continueResult.rolls.join(",") + "] < "+characteristics[4].name+" ("+characteristics[4].value+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
+                                updateFunc();
+                                if(!passedContinueRoll){ passedContinueRoll = promptEducationWaiver("Failed "+characteristics[4].name+" check to continue as Scholar.").result; updateFunc(); }
                                 break;
                         }
                         if(passedContinueRoll){
@@ -1951,6 +1977,10 @@ export function createCharacter(roller, species, chosenGender){
                     break;
                 case ENUM_CAREERS.Entertainer:
                     moneyMod = calculateFame() / 3;
+                    bennyMod = career.terms;
+                    break;
+                case ENUM_CAREERS.Scholar:
+                    moneyMod = career.rank.level > 0 ? career.rank.level : 0;
                     bennyMod = career.terms;
                     break;
 
@@ -2115,6 +2145,255 @@ export function createCharacter(roller, species, chosenGender){
         var svcCareers = careers.splice(index,1);
         careers.push(svcCareers[0]);
     }
+    function resolveScholar(career, updateFunc){
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+        }
+        var priorCareers = careers.length;
+        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false){
+            CCs = getCCs(career);
+        }
+        var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
+        
+        var advanceAndGetSkills = function(){
+            var termSkillTables = [
+                {age:true},
+                {age:true},
+                {age:true},
+                {age:true},
+            ];
+            pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                var defaultValue = 0;
+                var ccIndex = +(selectedCC.substring(1))-1;
+                var ccValue = characteristics[ccIndex].value;
+                if(ccValue > 12){
+                    defaultValue = ccValue - 12;
+                }
+                CCs.splice(CCs.indexOf(selectedCC),1);
+                var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
+                var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll > " + (val+ccValue),"Published if Reward roll < " + (-val+ccValue)]);
+                
+                pickOption(cautionBraveryOptions,
+                    "Select caution(+) or bravery(-) mod.<br/>" +
+                    "Target " + selectedCC + "=" + ccValue + "<br/>"+
+                    "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
+                    (selectedMod)=>{
+                        var caution = +(selectedMod);
+                        var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                        var riskResult = checkCharacteristic(selectedCC,numDice,caution,"Risk Roll");
+                        record(riskResult.remarks);
+                        updateFunc();
+                        if(!riskResult.success){ riskResult.success = promptEducationWaiver("Failed Research attempt").success; }
+                        updateFunc();
+                        if(riskResult.success){
+                            record("Successfully conducted research.");
+                            updateFunc();
+                            var rewardResult = checkCharacteristic(selectedCC,numDice,-caution,"Reward Roll");
+                            record(rewardResult.remarks);
+                            if(!rewardResult.success){ rewardResult.success = promptEducationWaiver("Publication was rejected").success; }
+                            updateFunc();
+                            if(rewardResult.success){
+                                
+                                if(rewardResult.result+4 <= ccValue){
+                                    record("Published award-winning research!"); 
+                                    careers[careers.length-1].publications += 2;
+                                }else{
+                                    record("Successfully published research.");
+                                    careers[careers.length-1].publications += 1;
+                                }
+                                updateFunc();
+                            }
+                        }else{
+                            record("Failed to complete research.");
+                            updateFunc();
+                            var penalty = 0;
+                            if(caution < 0){ penalty += caution;}
+                            var fresult = roller.flux().result;
+                            penalty += fresult;
+                            record("Attribute Damage = " + (caution < 0 ? " [" + (caution) + " bravery] + " : "") + " [" + fresult + " flux] = " + penalty)
+                            if(penalty < 0){
+                                decreaseCharacteristic(selectedCC,-penalty,"Injury!");
+                                if(characteristics[ccIndex].value <= 0){ 
+                                    record("This character has died. Please create a new character.");
+                                    updateFunc();
+                                    return;
+                                }
+                                updateFunc();
+                                if(penalty <= -4){
+                                    careers[careers.length-1].awards.push("Disabled");
+                                }
+                            }else{
+                                record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
+                            }
+                        }
+                        // check promotion
+                        if(careers[careers.length-1].rank.level == 6){
+                            record("Distinguished Professor is ineligible for further promotion."); updateFunc();
+                        }else{
+                            var meetsCharacteristicRequirements = characteristics[4].name === ENUM_CHARACTERISTICS.EDU;
+                            if(!meetsCharacteristicRequirements){ meetsCharacteristicRequirements = promptEducationWaiver("Non-Traditional Scholar is ineligible for promotion.").success;  updateFunc();}
+                            var meetsEducationMinimum = meetsCharacteristicRequirements && characteristics[4].value >= 8;
+                            if(meetsCharacteristicRequirements && !meetsEducationMinimum){ meetsEducationMinimum = promptEducationWaiver("Amateur Scholar is ineligible for promotion.").success;  updateFunc();}
+                            var qualifiesForPromotion = meetsCharacteristicRequirements && meetsEducationMinimum;
+                            if(careers[careers.length-1].rank.level == 3 && qualifiesForPromotion){
+                                qualifiesForPromotion = careers[careers.length-1].tenured;
+                                if(!qualifiesForPromotion){ qualifiesForPromotion = promptEducationWaiver("Tenure is required for promotion.").success; updateFunc();}
+                            }
+                            var qualifiesForTenure = careers[careers.length-1].rank.level == 3 && meetsCharacteristicRequirements && characteristics[4].value >= 10;
+                            if(meetsEducationMinimum && careers[careers.length-1].rank.level == 3 && !qualifiesForTenure){ qualifiesForTenure = promptEducationWaiver("Insufficient EDU to qualify for tenure.").success;  updateFunc();}
+                            if(qualifiesForPromotion){
+                                var intDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
+                                var promoResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,intDice,careers[careers.length-1].publications,"Scholar promotion");
+                                record(promoResult.remarks);
+                                if(!promoResult.success){
+                                    promoResult.success = promptEducationWaiver("Failed to achieve promotion.").success;
+                                    updateFunc();
+                                }
+                                if(promoResult.success){
+                                    var level = careers[careers.length-1].rank.level; 
+                                    level += 1;
+                                    careers[careers.length-1].rank.level = level;
+                                    var newLabel = "";
+                                    switch(level){
+                                        case 1: newLabel = "1 Lecturer"; break;
+                                        case 2: newLabel = "2 Instructor"; break;
+                                        case 3: newLabel = "3 Assistant Professor"; break;
+                                        case 4: newLabel = "4 Associate Professor"; break;
+                                        case 5: newLabel = "5 Professor"; break;
+                                        case 6: newLabel = "6 Distinguished Professor"; break;
+                                    }
+                                    termSkillTables.push({age:false});
+                                }
+                            }
+                            if(!qualifiesForPromotion){
+                                record(careers[careers.length-1].rank.label + " is ineligible for promotion."); updateFunc();
+                            }
+                            if(qualifiesForTenure){
+                                var tenureResult = check(careers[careers.length-1].publications * 3,2,0,"Apply for Tenure 2D vs 3x Publications");
+                                record(tenureResult.remarks); updateFunc();
+                                if(!tenureResult.success){
+                                    tenureResult.success = promptEducationWaiver("Character failed to earn tenure.").success;
+                                    updateFunc();
+                                }
+                                if(tenureResult.success){
+                                    record("Character was awarded tenure."); 
+                                    careers[careers.length-1].awards.push("Tenure");
+                                    updateFunc();
+                                    careers[careers.length-1].tenured = true;
+                                }
+                            }
+                        }
+                        // gain skills
+                        gainTermSkills(termSkillTables,ENUM_CAREERS.Scholar,updateFunc,()=>{
+                            updateFunc();
+                            promptContinue(ENUM_CAREERS.Scholar,updateFunc);
+                        });
+                    },true,defaultValue,cautionBraveryPreviews,false);
+            },true,undefined,CCDescriptions);
+        }
+
+        if(priorCareers == 0 || careers[priorCareers - 1].active == false){
+            console.log("Starting Scholar career...");
+            var rank = {label:"Non-Traditional Scholar",level:-1};
+            var beginSuccessful = false;
+            // apply for career
+            if(characteristics[4].name == ENUM_CHARACTERISTICS.EDU && characteristics[4].value >= 8){
+                console.log("Auto succeed...");
+                // automatic begin as Scholar1 if Edu 8+
+                rank = {label:"1 Lecturer",level:1};
+                beginSuccessful = true;
+                
+            }else{
+                console.log("Will check EDU...")
+                // otherwise, check Edu or Tra to begin as Scholar0
+                var beginResult = checkCharacteristic(5,2,0,"Begin Scholar vs "+characteristics[4].name);
+                record(beginResult.remarks);
+                updateFunc();
+                if(!beginResult.success){
+                    beginResult.success = promptEducationWaiver("Failed to begin Scholar career").success;
+                }
+                if(beginResult.success){
+                    beginSuccessful = true;
+                    if(characteristics[4].name == ENUM_CHARACTERISTICS.EDU){
+                        rank = {label:"Amateur",level:0};
+                    }else{
+                        rank = {label:"Non-Traditional",level:-1};
+                    }
+                }
+            }
+            if(beginSuccessful){
+                record("Began Scholar career as "+rank.label + ".");
+                updateFunc();
+                // choose major for career
+                var pickMajorFunction = function(prompt,callback){ pickSkill("Any",prompt,callback,undefined,undefined,true); };
+                if(majors.length > 0){
+                    var getDegreeLabel = (x,i,ar)=>{return x.label;};
+                    var choices = removeDuplicates(majors.map(getDegreeLabel));
+                    pickMajorFunction = function(prompt,callback){ pickOption(choices,prompt,function(majorLabel){
+                        var selectedMajorIndex = -1;
+                        for(var i = 0, len = majors.length; i < len; i++){
+                            if(majors[i].label === majorLabel){
+                                selectedMajorIndex = i;
+                                break;
+                            }
+                        }
+                        callback(majors[selectedMajorIndex]);
+                    },true); };
+                }
+                pickMajorFunction("Choose your Major area of interest.",function(majorChoice){
+                    if(typeof majorChoice.knowledge == "undefined"){
+                        majorChoice.label = majorChoice.skill;
+                    }else{
+                        majorChoice.label = majorChoice.skill+"("+majorChoice.knowledge+")";
+                    }
+                    if(!majors || majors.length == 0){addMajor(majorChoice.label);}
+                    record("Selected "+majorChoice.label+" as primary field of study"); updateFunc();
+                    var pickMinorFunction = function(prompt,callback){ pickSkill("Any",prompt,callback,majorChoice,undefined,true); };
+                    if(minors.length > 0){
+                        var choices = removeDuplicates(minors.map(getDegreeLabel));
+                        if(choices.indexOf(majorChoice.label) >= 0){
+                            choices.splice(choices.indexOf(majorChoice.label));
+                        }
+                        pickMinorFunction = function(prompt,callback){ 
+                            pickOption(choices,prompt,function(minorLabel){
+                                var selectedMinorIndex = -1;
+                                for(var i = 0, len = minors.length; i < len; i++){
+                                    if(minors[i].label === minorLabel){
+                                        selectedMinorIndex = i;
+                                        break;
+                                    }
+                                }
+                                callback(minors[selectedMinorIndex]);
+                            },true); 
+                        };
+                    }
+                    pickMinorFunction("Choose your Minor area of interest.",function(minorChoice){
+                        if(typeof minorChoice.knowledge == "undefined"){
+                            minorChoice.label = minorChoice.skill;
+                        }else{
+                            minorChoice.label = minorChoice.skill+"("+minorChoice.knowledge+")";
+                        }
+                        if(!minors || minors.length == 0){addMinor(minorChoice.label);}
+                        record("Selected "+minorChoice.label+" as companion field of study"); updateFunc();
+                        careers.push({career:career,terms:1,tenured:false,active:true,rank:rank,schools:[],publications:0,awards:[],major:majorChoice,minor:minorChoice});
+                        updateFunc();
+                        advanceAndGetSkills();
+                    });
+
+                });
+
+            }else{
+                record("Failed to begin Scholar career.");
+                advanceAge(1);
+                updateFunc();
+            }
+        }else{
+            
+            careers[careers.length-1].terms += 1;
+            advanceAndGetSkills();
+        }
+    }
     function resolveEntertainer(career, updateFunc){
         var hasBeen = canResumeFromService(career);
         if(hasBeen.canResume){
@@ -2154,6 +2433,7 @@ export function createCharacter(roller, species, chosenGender){
                                 if(thirdFameRollChoice == "Apply Third Flux Roll"){
                                     var thirdFameChangeResult = roller.flux();
                                     record("Fame flux (x3): ["+thirdFameChangeResult.rolls+"]="+thirdFameChangeResult.result);
+                                    updateFunc();
                                     fameChangeTotal += thirdFameChangeResult.result;
                                     pickOption(["Accept","Attempt Comeback"],"Current Fame change: " + fameChangeTotal,function(finalFameRollChoice){
                                         if(finalFameRollChoice === "Accept"){
@@ -2232,7 +2512,7 @@ export function createCharacter(roller, species, chosenGender){
 
         if(priorCareers == 0 || careers[priorCareers - 1].active == false){
             // apply for career
-            var fameAndTalentRoll = roller.d6(2)
+            var fameAndTalentRoll = roller.d6(2);
             
             record("Initial fame and talent for entertainer career: ["+fameAndTalentRoll.rolls+ "]="+fameAndTalentRoll.result);
             
@@ -5077,6 +5357,7 @@ export function createCharacter(roller, species, chosenGender){
         q.Marine = availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Marine] || isNow[ENUM_CAREERS.Marine]));
         q.Scout = availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Scout] || isNow[ENUM_CAREERS.Scout]));
         q.Entertainer = availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Entertainer] || isNow[ENUM_CAREERS.Entertainer]));
+        q.Scholar = characteristics[4].name !== ENUM_CHARACTERISTICS.INS && availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Scholar] || isNow[ENUM_CAREERS.Scholar]));
         var navyCommission = awards.indexOf("Navy Officer1") >= 0,
             armyCommission = awards.indexOf("Army Officer1") >= 0,
             marineCommission = awards.indexOf("Marine Officer1") >= 0;
