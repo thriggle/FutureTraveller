@@ -710,6 +710,9 @@ function getCareerDescription(career,isSchool){
         case "Entertainer":
             desc += "<ul><li>Begin: Check C2, C3, Int, or C5</li><li>Initial Fame/Talent = 2D</li><li>Fame changes by 1-3 Flux rolls every subsequent term</li><li>If Fame increases, Talent +1</li><li>Comeback: Reset fame to 2D</li><li>Check Fame to continue</li></ul>";
             break;
+        case "Scholar":
+            desc += "<ul><li>Begin: Automatic if Edu 8+, otherwise check Edu or Tra</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Promotion: Int (only if Edu 8+)</li><li>Check Edu or Tra to continue</li></ul>";
+            break;
         case "Citizen":
             desc += "<ul><li>Begin: Automatic (1st career only)</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Continue: 10-</li></ul>";
             break;
