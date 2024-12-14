@@ -641,6 +641,7 @@ function validateQualifications(){
     if(qual.Scout){ document.getElementById("btnScout").removeAttribute("disabled"); }else{ document.getElementById("btnScout").setAttribute("disabled","");}
     if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
     if(qual.Entertainer){ document.getElementById("btnEntertainer").removeAttribute("disabled");}else{document.getElementById("btnEntertainer").setAttribute("disabled","");}
+    if(qual.Scholar){ document.getElementById("btnScholar").removeAttribute("disabled");}else{document.getElementById("btnScholar").setAttribute("disabled","");}
     var baOptions = document.querySelectorAll("[data-qualify=\"BA\"]");
     if(qual.BA){ 
         for(var i = 0, len = baOptions.length; i < len; i++){
