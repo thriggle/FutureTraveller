@@ -591,7 +591,7 @@ export var CareerBenefitTables = {
             {label:"Ship Share",type:"ship"},
             {label:"Life Insur",type:"award"},
             {label:"TAS Fellow",type:"award"},
-            {label:"Fame +2",type:"award"}, //not sure what type to use.
+            {label:"Fame +2",type:"fame",amount:2},
             {label:"Knighthood",type:"award"},
         ]
     },
