@@ -487,7 +487,7 @@ export function createCharacter(roller, species, chosenGender){
                 case "Ri": promptfunc = gainSkillWithPromptForCategory; skill = "ART"; note += "an art skill";break;
                 case "Tr": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
                 case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Survival; note += skill; break;
-                case "Tu": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
+                case "Tz": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Driver; note += skill; break;
                 case "Va": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.VaccSuit; note += skill; break;
                 case "Wa": promptfunc = gainSkillWithPromptForKnowledge; skill = ENUM_SKILLS.Seafarer; note += skill; break;
                 default: note += "no skills"; promptfunc = (n,s,next,ns)=>{ record(n); next(); }; break; 
