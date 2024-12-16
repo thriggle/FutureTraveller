@@ -204,7 +204,7 @@ export function createCharacter(roller, species, chosenGender){
                     careerFame += career.fame;
                     break;
                 case ENUM_CAREERS.Scholar:
-                    careerFame += (career.rank.level > 0 ? career.rank.level : 0) + career.publications;
+                    careerFame += (career.rank.level > 0 ? career.rank.level : 0) + career.publications + 2*career.majorpublications;
                     break;
             }
             if(careerFame > highestSourceOfFame){
@@ -2216,7 +2216,7 @@ export function createCharacter(roller, species, chosenGender){
                                 
                                 if(rewardResult.result+4 <= ccValue){
                                     record("Published award-winning research!"); 
-                                    careers[careers.length-1].publications += 2;
+                                    careers[careers.length-1].majorpublications += 1;
                                 }else{
                                     record("Successfully published research.");
                                     careers[careers.length-1].publications += 1;
@@ -2263,7 +2263,7 @@ export function createCharacter(roller, species, chosenGender){
                             
                             if(qualifiesForPromotion){
                                 var intDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
-                                var promoResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,intDice,careers[careers.length-1].publications,"Scholar promotion vs INT");
+                                var promoResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,intDice,careers[careers.length-1].publications+(2*careers[careers.length-1].majorpublications),"Scholar promotion vs INT");
                                 record(promoResult.remarks);
                                 if(!promoResult.success){
                                     promoResult.success = promptEducationWaiver("Failed to achieve promotion.").success;
@@ -2293,7 +2293,7 @@ export function createCharacter(roller, species, chosenGender){
                             var qualifiesForTenure = !careers[careers.length-1].tenured && careers[careers.length-1].rank.level == 3 && meetsCharacteristicRequirements && characteristics[4].value >= 10;
                             if(meetsEducationMinimum && careers[careers.length-1].rank.level == 3 && !qualifiesForTenure){ qualifiesForTenure = promptEducationWaiver("Insufficient EDU to qualify for tenure.").success;  updateFunc();}
                             if(qualifiesForTenure){
-                                var countPubs = careers[careers.length-1].publications;
+                                var countPubs = careers[careers.length-1].publications + 2*careers[careers.length-1].majorpublications;
                                 var tenureResult = check(countPubs * 3,2,0,"Apply for Tenure 2D vs 3x Publications");
                                 record(tenureResult.remarks); updateFunc();
                                 if(!tenureResult.success){
@@ -2399,7 +2399,7 @@ export function createCharacter(roller, species, chosenGender){
                         }
                         if(!minors || minors.length == 0){addMinor(minorChoice.skill,minorChoice.knowledge);}
                         record("Selected "+minorChoice.label+" as companion field of study"); updateFunc();
-                        careers.push({career:career,bonusfame:0,terms:1,tenured:false,active:true,rank:rank,schools:[],publications:0,awards:[],major:majorChoice,minor:minorChoice});
+                        careers.push({career:career,bonusfame:0,terms:1,tenured:false,active:true,rank:rank,schools:[],publications:0,majorpublications:0,awards:[],major:majorChoice,minor:minorChoice});
                         updateFunc();
                         advanceAndGetSkills();
                     });
