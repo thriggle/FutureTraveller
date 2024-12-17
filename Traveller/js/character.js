@@ -130,7 +130,7 @@ export function createCharacter(roller, species, chosenGender){
             }else{
                 record("Fame increased by " + change+".");
                 updateFunc();
-                if(fameWasLessThanNineteen && calculateFame() >= 19 && musteredOut){
+                if(fameWasLessThanNineteen && calculateFame() >= 19 && musteredOut && !fameMusterOutBonus){
                     claimFameMusterOutBonus(updateFunc,true,function(){
                         record("Ready to begin adventuring!");
                         updateFunc();
