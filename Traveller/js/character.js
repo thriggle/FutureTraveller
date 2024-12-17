@@ -27,12 +27,13 @@ export function createCharacter(roller, species, chosenGender){
     var majors = [], minors = [], history = [];
     var nativeLanguage = "Anglic";
     var languageReceipts = 0; var edu_waivers = 0; var awards = [];
-    var sanity = 0;
+    var sanity = 0, psi = undefined;
+    var sanityGene = undefined, psiGene = undefined;
     var musteredOut = false;
     var reserveYears = {army:0,marine:0,navy:0};
    var defaultSkills = [
         MasterSkills.Actor, MasterSkills.Artist, MasterSkills.Athlete, 
-        MasterSkills.Author, MasterSkills.Comms, MasterSkills.Computer, 
+        MasterSkills.Author, MasterSkills.Comms, 
         MasterSkills.Driver, MasterSkills.Fighter, MasterSkills.Mechanic, 
         MasterSkills.Steward, MasterSkills.VaccSuit];
     var skills = {};
@@ -74,7 +75,7 @@ export function createCharacter(roller, species, chosenGender){
         age = 0; musteredOut = false; agingCrises = 0;
         fameFluxApplied = false, finalFameRoll = false;
         fameMusterOutBonus = false, fameFlux = 0;
-        resignationDeclined = false;
+        resignationDeclined = false; 
         reserveYears = {army:0,marine:0,navy:0};
     }
     function addToReserves(service){
@@ -104,6 +105,7 @@ export function createCharacter(roller, species, chosenGender){
             statRolls[2].rolls[0],
             statRolls[3].rolls[0],
         ];
+        sanityGene = undefined; psiGene = undefined;
         sanity = undefined; //statRolls[6].result;
         if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.INS){ genetics.push(statRolls[4].rolls[0]);}
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
@@ -251,7 +253,8 @@ export function createCharacter(roller, species, chosenGender){
     function record(message){
         history.push("Age " + age+ ": " + message);
     }
-    function rollStatsFromGenes(genes){
+    function rollStatsFromGenes(genes,geneticSanity,geneticPsionics){
+        sanity = undefined; psi = undefined;
         var gene_statRolls = [];
         genetics = [];
         for(var i = 0, len = genes.length; i < len; i++){
@@ -274,6 +277,13 @@ export function createCharacter(roller, species, chosenGender){
                 genetics.push(gene_statRolls[i].rolls[0])
             }
         }
+        sanity = undefined; //roller.d6(2).result;
+        sanityGene = undefined; psiGene = undefined;
+        if(typeof geneticSanity === "undefined" || geneticSanity === "Random"){
+        }else{ sanityGene = +(geneticSanity);setSanityGene(sanityGene); }
+        if(typeof geneticPsionics === "undefined" || geneticPsionics === "Random"){ }
+        else{ psiGene = +(geneticPsionics); var psiRoll = roller.d6(1); psi = psiRoll.result + psiGene; setPsiGene(psiGene); setPsi(psi);}
+       
         var gene_characteristics = [
             {name:species.Characteristics[0].name,value:gene_statRolls[0].result + gender.Characteristics[0].Mod + caste.Characteristics[0].Mod},
             {name:species.Characteristics[1].name,value:gene_statRolls[1].result + gender.Characteristics[1].Mod + caste.Characteristics[1].Mod},
@@ -286,7 +296,6 @@ export function createCharacter(roller, species, chosenGender){
             characteristics[i].value = gene_characteristics[i].value
             characteristics[i].name = gene_characteristics[i].name
         }
-        sanity = undefined; //roller.d6(2).result;
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         record("Initial UPP: "+ characteristics[0].value + "," +  characteristics[1].value + "," + characteristics[2].value + "," + 
             characteristics[3].value + "," + characteristics[4].value + "," + characteristics[5].value
@@ -443,7 +452,12 @@ export function createCharacter(roller, species, chosenGender){
        record(remarks);
         return remarks;
     }
-    function gainSkillsFromHomeworldTradeCodes(codes, callback, index, notes){
+    function gainSkillsFromHomeworldTradeCodes(codes, callback, index, notes, isLowTech){
+        if(isLowTech==false){
+            var skills = getSkills();
+            skills[ENUM_SKILLS.Computer] = {"Skill":0,"Knowledge":{}};
+            setSkills(skills);
+        }
         var codeArray = typeof codes == "string" ? codes.split(" ") : codes;
         if(codes == "" && typeof index == "undefined"){ notes = "No skills received from homeworld.";record(notes);}
         if(typeof index === "undefined"){ index = 0;}
@@ -495,6 +509,7 @@ export function createCharacter(roller, species, chosenGender){
             note += ".";
             notes += note + "<br/>";
             var nextMethod = gainSkillsFromHomeworldTradeCodes(codeArray, callback, index + 1, notes);
+            
             return function(){
                 var text = promptfunc(note, skill, nextMethod, notes);
                 notes += text;
@@ -5037,6 +5052,10 @@ export function createCharacter(roller, species, chosenGender){
     }
     function setAge(newAge){age = newAge;}
     function getAge(){return age;}
+    function setPsiGene(newPsiGene){psiGene = newPsiGene;}
+    function getPsiGene(){return psiGene;}
+    function setPsi(newPsi){psi = newPsi;}
+    function getPsi(){return psi;}
     function getGenetics(){ return genetics; }
     function getNativeLanguage(){ return nativeLanguage;}
     function setNativeLanguage(newLanguage){
@@ -5240,10 +5259,17 @@ export function createCharacter(roller, species, chosenGender){
                     special = true;
                     characteristicName = "Sanity";
                     if(typeof getSanity() == "undefined"){
-                        var sanityRoll = roller.d6(2);
-                        record("Roll for Sanity: ["+sanityRoll.rolls.join(",")+"]");
-                        console.log(sanityRoll.result);
-                        setSanity(sanityRoll.result);
+                        var geneticSanity = getSanityGene();
+                        if(typeof geneticSanity === "undefined"){
+                            var sanityRoll = roller.d6(2);
+                            record("Roll for Sanity: ["+sanityRoll.rolls.join(",")+"]");
+                            setSanityGene(sanityRoll.rolls[0]);
+                            setSanity(sanityRoll.result);
+                        }else{
+                            var sanityRoll = roller.d6(1);
+                            record("Roll for Sanity: ["+geneticSanity + ","+sanityRoll.result+"]");
+                            setSanity(geneticSanity + sanityRoll.result);
+                        }
                     }
                     setSanity(getSanity() + amount);
                     
@@ -5712,6 +5738,8 @@ export function createCharacter(roller, species, chosenGender){
     function setSanity(newValue){
         sanity = newValue;
     }
+    function setSanityGene(newSanityGene){sanityGene = newSanityGene;}
+    function getSanityGene(){return sanityGene;}
     function exportCharacter(){
         var character = {
             age:age,
@@ -5740,6 +5768,9 @@ export function createCharacter(roller, species, chosenGender){
             nativeLanguage:getNativeLanguage(),
             musteredOut:musteredOut,
             sanity:getSanity(),
+            psi:getPsi(),
+            sanityGene:getSanityGene(),
+            psiGene:getPsiGene(),
             shipShares:getShipShares(),
             skills:skills,
             species:species,
@@ -5793,6 +5824,9 @@ export function createCharacter(roller, species, chosenGender){
         nativeLanguage = characterJson.nativeLanguage;
         musteredOut = characterJson.musteredOut;
         setSanity(characterJson.sanity);
+        setPsi(characterJson.psi);
+        setSanityGene(characterJson.sanityGene);
+        setPsiGene(characterJson.psiGene);
         shipShares = characterJson.shipShares;
         setSkills(characterJson.skills);
         resignationDeclined = typeof characterJson.resignationDeclined == "undefined" ? false : characterJson.resignationDeclined;
@@ -5809,6 +5843,8 @@ export function createCharacter(roller, species, chosenGender){
         return characteristics;
     }
     return {
+        setSanityGene,getSanityGene,
+        setPsiGene,getPsiGene,setPsi,getPsi,
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, getCharacteristics,
         getSkills, getGenetics:getGenetics, species:species,

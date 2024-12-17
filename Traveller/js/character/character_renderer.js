@@ -192,6 +192,8 @@ function statBlock(character,element){
     }
     statHTML += "</ul>";
     statHTML += "<hr/><span>Genetics: " + character.getGenetics().join(",")+"</span>";
+    if(typeof character.getSanityGene() !== "undefined"){ statHTML += " <span>San-" + character.getSanityGene()+"</span>";}
+    if(typeof character.getPsiGene() !== "undefined"){ statHTML += " <span>Psi-" + character.getPsiGene()+"</span>";}
     var fame = character.calculateFame();
     statHTML += "<hr/><span>Fame-" + (fame >= 0 ? fame : ("("+fame+")")) +"</span>";
     var talent = character.getTalent();

@@ -166,7 +166,8 @@
         nav.menu li a:hover{ color:black; background-color: rgb(198, 198, 198);}
         nav.menu li a.selected{ color:black; background-color: white; border:1px solid black;}
         [data-nav]{ display:none; border:1px solid gray;}
-        [data-nav='create'], [data-nav='background']{display:block; }
+        [data-nav='create']{display:block; }
+        [data-nav='background']{display:block;}
         nav.menu a[data-tier='2']{ font-size:smaller}
         #rdoAttributesClone:checked ~ #divGeneticDice{  display:flex; flex-direction: row; flex-wrap: wrap; }
         #rdoAttributesCustom:checked ~ #divAttributeValues{ display:flex; flex-direction: row; flex-wrap: wrap;}
@@ -234,37 +235,42 @@
             
             <div style="display:flex">
                 <div style="flex:2">
-                    <fieldset>
-                        <legend>Origin</legend>
-                        
-                        <label for="txtName">Name: <input type="text" id="txtName" /><button style="cursor:pointer" id="btnRandomName" title="Random name">🎲</button><button style="cursor:pointer;display:none;" title="Apply name to existing character" id="btnApplyName">💾</button><button style="cursor:pointer;display:none;" id="btnClearName">❌</button></label><br/>         
-                        <label style="white-space: nowrap;" for="txtHomeworldTradeCodes">Homeworld Codes: <input type="text" style="width:6rem;" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" /><button type="button" id="btnRandomHWTCs" title="Random trade codes" value="🌏">🌏</button><button type="button" style="cursor:pointer;display:none;" id="btnClearHWTCs">❌</button></label><br/>
-                        <label style="white-space: nowrap;" for="slctSpecies">Species: <select name="slctSpecies" id="slctSpecies">
-                            <option value="human">Humaniti</option>
-                        </select></label> 
-                        <label style="white-space: nowrap;" for="slctGender">Sex: <select name="slctGender" id="slctGender">
-                            <option value="random">Random</option>
-                            <option value="M">Male</option>
-                            <option value="F">Female</option>
-                        </select></label> <label style="white-space: nowrap;" for="slctNativeLanguage">Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
-                            <option value="!kee">!kee</option>
-                            <option selected="selected" value="Anglic">Anglic</option>
-                            <option value="Vilani">Vilani</option>
-                            <option value="Battle">Battle</option>
-                            <option value="Gonk">Gonk</option>
-                            <option value="Gvegh">Gvegh</option>
-                            <option value="Oynprith">Oynprith</option>
-                            <option value="Sagamaal">Sagamaal</option>
-                            <option value="Tezapet">Tezapet</option>
-                            <option value="Trokh">Trokh</option>
-                            <option value="Zdetl">Zdetl</option>             
-                        </select></label>
-                    </fieldset>
+                
                 <fieldset>
-                    <legend>Attributes</legend>
-                    <label for="rdoAttributesNatural"> <input type="radio" checked="checked" name="rdoAttributes" id="rdoAttributesNatural" value="Natural">Random</label><br/>
+                    <legend>Origin</legend>
+                    <label style="white-space: nowrap;" for="txtHomeworldTradeCodes">Homeworld Codes: <input type="text" style="width:6rem;" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" /><button type="button" id="btnRandomHWTCs" title="Random trade codes" value="🌏">🌏</button><button type="button" style="cursor:pointer;display:none;" id="btnClearHWTCs">❌</button></label><br/>
+                        <label style="white-space: nowrap;" for="slctNativeLanguage">Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
+                        <option value="!kee">!kee</option>
+                        <option selected="selected" value="Anglic">Anglic</option>
+                        <option value="Vilani">Vilani</option>
+                        <option value="Battle">Battle</option>
+                        <option value="Gonk">Gonk</option>
+                        <option value="Gvegh">Gvegh</option>
+                        <option value="Oynprith">Oynprith</option>
+                        <option value="Sagamaal">Sagamaal</option>
+                        <option value="Tezapet">Tezapet</option>
+                        <option value="Trokh">Trokh</option>
+                        <option value="Zdetl">Zdetl</option>             
+                    </select></label><br/>
+                    <label for="chkLowTechHW" title="Excludes Computer from default skills"><input type="checkbox" id="chkLowTechHW" >Low Tech (TL6-) Homeworld</label>
+                </fieldset>
+                <fieldset>
+                    <legend>Identity</legend>
+                    <label for="txtName">Name: <input type="text" placeholder="Random name" id="txtName" /><button style="cursor:pointer" id="btnRandomName" title="Random name">🎲</button><button style="cursor:pointer;display:none;" title="Apply name to existing character" id="btnApplyName">💾</button><button style="cursor:pointer;display:none;" id="btnClearName">❌</button></label><br/>         
+                    <label style="white-space: nowrap;" for="slctGender">Sex: <select name="slctGender" id="slctGender">
+                        <option value="random">Random</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select></label>
+                </fieldset>
+                <fieldset class="collapsed">
+                    <legend>Characteristics</legend>
+                    <label style="white-space: nowrap;" for="slctSpecies">Species: <select name="slctSpecies" id="slctSpecies">
+                        <option value="human">Humaniti</option>
+                    </select></label><br/>
+                    <label for="rdoAttributesNatural"> <input type="radio" checked="checked" name="rdoAttributes" id="rdoAttributesNatural" value="Natural">Random Characteristics</label><br/>
                     <input type="radio" name="rdoAttributes" id="rdoAttributesClone" value="Clone"><label for="rdoAttributesClone">Predefined Genetics</label><br/>
-                     <input type="radio" name="rdoAttributes" id="rdoAttributesCustom" value="Custom"><label for="rdoAttributesCustom">Custom</label>
+                     <input type="radio" name="rdoAttributes" id="rdoAttributesCustom" value="Custom"><label for="rdoAttributesCustom">Custom Characteristics</label>
                      <div id="divGeneticDice">
                         <label class="genetics">C1:<select id="slctGeneticC1">
                             <option value="Random">?</option>
@@ -307,7 +313,24 @@
                             <option value="4">4</option>
                             <option value="5">5</option>
                             <option value="6">6</option>
-                        </select>
+                        </select>  <label class="genetics" for="slctGeneticCS">CS:<select id="slctGeneticCS">
+                            <option value="Random">?</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select></label>
+                        <label class="genetics" for="slctGeneticCP">CP:<select id="slctGeneticCP">
+                            <option value="Random">?</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select></label>
                     </div>
                     <div id="divAttributeValues">
                         <label for="txtCustomC1">C1:<input id="txtCustomC1" type="number" min="1" value="3"/><input id="txtCustomC1b" type="number" min="0" value="4"/></label>
@@ -318,7 +341,7 @@
                         <label for="txtCustomC6">C6:<input id="txtCustomC6" type="number" min="1" value="4"/><input id="txtCustomC6b" type="number" min="0" value="3"/></label>
                     </div>
                 </fieldset>
-                <fieldset>
+                <fieldset class="collapsed">
                     <legend>Cloning</legend>
                     <label for="isNotForcedGrowthClone"><input type="radio" id="isNotForcedGrowthClone" checked="checked" name="isForcedGrowthClone">Natural Born</label>
                     <label for="isForcedGrowthClone" title="Forced growth clones experience accelerated aging and may suffer aging effects beginning at life stage 4"><input type="radio" name="isForcedGrowthClone" id="isForcedGrowthClone" >Forced Growth Clone</label>

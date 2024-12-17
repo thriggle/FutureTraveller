@@ -574,8 +574,9 @@ function newCharacter(){
             document.getElementById("slctGeneticC3").value,
             document.getElementById("slctGeneticC4").value,
             document.getElementById("slctGeneticC5").value,
+            ,
         ];
-        person.rollStatsFromGenes(genes);
+        person.rollStatsFromGenes(genes,document.getElementById("slctGeneticCS").value,document.getElementById("slctGeneticCP").value);
         //person.characteristics = person.getCharacteristics();
     }else if(document.getElementById("rdoAttributesCustom").checked){
         // TODO
@@ -618,7 +619,7 @@ function newCharacter(){
     );
     log(person.setNativeLanguage(document.getElementById("slctNativeLanguage").value));
     log(person.advanceAge(human.getFirstYearOfStage(3)));
-    log(person.gainSkillsFromHomeworldTradeCodes(document.getElementById("txtHomeworldTradeCodes").value, log)());
+    log(person.gainSkillsFromHomeworldTradeCodes(document.getElementById("txtHomeworldTradeCodes").value, log, undefined,undefined, document.getElementById("chkLowTechHW").checked)());
     renderCharacter(person, document.body);
     enableControls();
 
