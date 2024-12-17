@@ -58,6 +58,10 @@ function careers(character,element){
             if(careers[i].awards && careers[i].awards.length > 0){
                 awards += "<li>" + careers[i].awards.join("</li><li>") + "</li>";
             }
+            if(careers[i].major && careers[i].minor){
+                awards += "<li>Major: " + careers[i].major.label + "</li>";
+                awards += "<li>Minor: " + careers[i].minor.label + "</li>";
+            }
             if(careers[i].publications && careers[i].publications > 0){
                 awards += "<li>" + careers[i].publications + " Publications</li>";
             }
