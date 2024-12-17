@@ -1988,10 +1988,14 @@ export function createCharacter(roller, species, chosenGender){
                 break;
                 case ENUM_CAREERS.Scout:
                     moneyMod = career.terms;
-                    bennyMod = calculateFame() / 2;
+                    //bennyMod = calculateFame() / 2;
+                    calculateFame();
+                    bennyMod = career.fame / 2;
                     break;
                 case ENUM_CAREERS.Entertainer:
-                    moneyMod = calculateFame() / 3;
+                    //moneyMod = calculateFame() / 3;
+                    calculateFame();
+                    moneyMod = career.fame / 3;
                     bennyMod = career.terms;
                     break;
                 case ENUM_CAREERS.Scholar:
@@ -2199,21 +2203,22 @@ export function createCharacter(roller, species, chosenGender){
                         var riskResult = checkCharacteristic(selectedCC,numDice,caution,"Risk Roll");
                         record(riskResult.remarks);
                         updateFunc();
-                        if(!riskResult.success){ riskResult.success = promptEducationWaiver("Failed Research attempt").success; }
+                        if(!riskResult.success){ riskResult.success = promptEducationWaiver("Failed Research attempt.").success; 
+                            if(riskResult.success){ record("Used social influence to collect research."); }
+                        }
                         else{
+                            record("Successfully conducted research.");
                             gainSkillOrKnowledge(careers[careers.length-1].major.skill,careers[careers.length-1].major.knowledge,true); 
                             gainSkillOrKnowledge(careers[careers.length-1].major.skill,careers[careers.length-1].major.knowledge,true); 
                         }
                         updateFunc();
-                        if(riskResult.success){
-                            record("Successfully conducted research.");
+                        if(riskResult.success){                            
                             updateFunc();
                             var rewardResult = checkCharacteristic(selectedCC,numDice,-caution,"Reward Roll");
                             record(rewardResult.remarks);
                             if(!rewardResult.success){ rewardResult.success = promptEducationWaiver("Publication was rejected").success; }
                             updateFunc();
-                            if(rewardResult.success){
-                                
+                            if(rewardResult.success){                                
                                 if(rewardResult.result+4 <= ccValue){
                                     record("Published award-winning research!"); 
                                     careers[careers.length-1].majorpublications += 1;
