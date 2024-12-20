@@ -912,6 +912,8 @@
                         <input type="button" value="Export to Excel-friendly .tsv" id="btnExportExcel" />
                         <input type="button" value="Export to .txt" id="btnExportTxt" />
                         <input type="button" value="Export to .png Poster from TravellerMap.com" id="btnTravellerMapPoster" />
+                        <br/><label for="btnImportBasicTSV">Import UWPs from file: </label><input type="file" Text="Import TSV"
+                            id="btnImportBasicTSV" accept="text/*,.tsv" /><label for="chkUseImportedFileNameForSeed"><input id="chkUseImportedFileNameForSeed" name="chkUseImportedFileNameForSeed" checked="checked" type="checkbox">Get Seed from Filename</label>
                     </fieldset>
                     <fieldset class="collapsed">
                         <legend>JSON</legend>
@@ -926,6 +928,8 @@
 
                     <input type="button" value="Save" onclick="document.getElementById('btnExportJSON').click();"/>
                     <input type="button" value="Load" onclick="document.getElementById('btnImportJSON').click();"/>
+                    <input type="button" value="Fill from UWPs" onclick="document.getElementById('btnImportBasicTSV').click();"/>
+                    
                 </fieldset>
             </div>
         </div>
@@ -1619,8 +1623,7 @@
             </div>
         </fieldset>
     </div>
-    <div class="footer">The Traveller game in all forms is owned by Far Future Enterprises. Copyright © 1977 – 2023 <a
-        href="http://www.farfuture.net/" target="_blank">Far Future Enterprises</a>.</div>
+    <div class="footer">The Traveller game in all forms is owned by Mongoose Publishing. Copyright 1977 - 2024 Mongoose Publishing.</div>
         <script src="js/NameGenerator.js" type="module"></script>
         <script src="js/names.js" type="module"></script>
     <script>
@@ -2284,6 +2287,24 @@
 
                     }
                 });
+                document.getElementById("btnImportBasicTSV").addEventListener("change", function () {
+                    var curFiles = document.getElementById("btnImportBasicTSV").files;
+                    if (curFiles.length > 0) {
+                        var reader = new FileReader();
+                        if(document.getElementById("chkUseImportedFileNameForSeed").checked){
+                            document.getElementById("txtSeed").value = (curFiles[0].name.replace(/\.[^/.]+$/, ""));
+                            MathRandom = pseudoRandomNumberGenerator(document.getElementById("txtSeed"));
+                            wordMaker.setRandom(MathRandom);
+                        }
+                        reader.onload = function (event) {
+                            document.getElementById("sectordata").value = event.target.result;
+                            populateSubsectorFromSectorData(event.target.result);
+                            document.getElementById("btnImportBasicTSV").value = "";
+                        }
+                        reader.readAsText(curFiles[0]);
+
+                    }
+                });
                 document.getElementById("btnSaveImg").addEventListener("click", function () {
                     var a = document.createElement("a");
                     a.href = canvas.toDataURL("image/png");
@@ -2628,6 +2649,158 @@
                     hex.selected = false;
                     drawMap(mapContent);
                 }
+            }
+            function populateSubsectorFromSectorData(importedData){
+                var importedRows = importedData.split(/\r?\n/);
+                NIL = [];
+                document.getElementById("SystemDetailsContainer").style.display = "none";
+                document.getElementById("AddSystemContainer").style.display = "none";
+                var useRandomSeed = document.getElementById("chkUseRandom").checked;
+                var seed;
+                if (useRandomSeed) {
+                    seed1 = Math.floor(Math.random() * 1000000);
+                    seed = addCaps(wordMaker.getRandomName("system") + seed1);
+                    document.getElementById("txtSeed").value = seed;
+
+                } else {
+                    seed = document.getElementById("txtSeed").value
+                }
+
+                var $density = document.getElementById("slctStellarDensity").value
+                var sizeSelector = document.getElementById("slctMapSize");
+                var $size = sizeSelector.value
+                var sizeOption = sizeSelector.querySelectorAll("option")[sizeSelector.selectedIndex];
+                var $rules = document.getElementById("slctMainworldRules").value;
+                SUBSECTOR_X_OFFSET = +(sizeOption.getAttribute("data-subsectorxoffset"));
+                SUBSECTOR_Y_OFFSET = +(sizeOption.getAttribute("data-subsectoryoffset"));
+                window.location.hash = "$seed=" + encodeURI(seed) + "&$density=" + $density + "&$size=" + $size + "&$rules=" + $rules;
+
+                MathRandom = pseudoRandomNumberGenerator(seed.toString());
+                wordMaker.setRandom(MathRandom);
+
+                var ggFrequency = document.getElementById("slctGGFrequency").value;
+                var density = document.getElementById("slctStellarDensity").value;
+                var permitDieback = document.getElementById("chkPermitDieback").checked;
+                var maxTechLevel = document.getElementById("slctMaxTechLevel").value;
+                var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                var systems = {};
+                var namesSoFar = {};
+                systemArray = [];
+                var permitDieback = document.getElementById("chkPermitDieback").checked,
+                mainworldRules =  document.getElementById("slctMainworldRules").value,
+                applyHillSphereLimits = document.getElementById("chkApplyHillSphereLimits").checked,
+                allowInnerWhiteDwarfs = document.getElementById("chkAllowInnerWhiteDwarfs").checked,
+                populateNonMainworlds = document.getElementById("chkPopulateNonMainworlds").checked;
+                var firstRow = importedRows[0];
+                var headerCells = firstRow.split(/\t/g);
+                var hexIndex = -1, nameIndex = -1, uwpIndex = -1, basesIndex = -1;
+                var mins = [-1, -1, -1, -1, -1, -1, -1, -1, -3, -1, -1], maxes = [0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0];
+                for(var i = 0, len = headerCells.length; i < len; i++){
+                    switch(headerCells[i].toLowerCase()){
+                        case "hex": hexIndex = i; break;
+                        case "name": nameIndex = i; break;
+                        case "uwp": uwpIndex = i; break;
+                        case "bases": basesIndex = i; break;
+                    }
+                }
+                if(hexIndex == -1){ alert("Imported file is missing Hex column."); }
+                for(var rowIndex = 1, numRows = importedRows.length; rowIndex < numRows; rowIndex++){
+                    var row = importedRows[rowIndex];
+                    var cells = row.split(/\t/g);
+                    var tcoord = cells[hexIndex];
+                    if(tcoord == ""){ break; }
+                    var xycoords = TCoordToXYCoord(tcoord);
+                    var x = xycoords.x, y = xycoords.y;
+                            var name = tcoord; if(nameIndex >= 0){ name = cells[nameIndex]; }
+                            var predefinedUwp = undefined;
+                            if(uwpIndex >= 0){ predefinedUwp = cells[uwpIndex]; }
+                            var bases = undefined; if(basesIndex >= 0){ bases = cells[basesIndex]; }
+                            var details = 
+                            generateSystemDetails(tcoord, 
+                                ggFrequency, 
+                                permitDieback, 
+                                maxTechLevel, 0, 
+                                mainworldRules, 
+                                populateNonMainworlds, 
+                                applyHillSphereLimits, 
+                                allowInnerWhiteDwarfs,
+                                predefinedUwp,
+                                bases);
+                            for (var i = 0, len = mins.length; i < len; i++) {
+                                var currValue;
+                                if (i < 8) {
+                                    currValue = details.mainworld[labels[i]];
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if (currValue < currMin) { mins[i] = currValue; }
+                                    if (currValue > currMax) { maxes[i] = currValue; }
+                                }
+                                else if (i === 8) {
+                                    currValue = details.importance.extension;
+                                } else if (i === 9) {
+                                    currValue = details.totalpop;
+                                    if (currValue > 0) { currValue = Math.round(Math.log10(currValue)); }
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if (currValue < currMin) { mins[i] = currValue; }
+                                    if (currValue > currMax) { maxes[i] = currValue; }
+                                } else if (i === 10) {
+                                    currValue = details.economics.RU;
+                                    var currMin = mins[i], currMax = maxes[i];
+                                    if (currValue < currMin) { mins[i] = currValue; }
+                                    if (currValue > currMax) { maxes[i] = currValue; }
+                                }
+                            }
+                            var system = {
+                                name: addCaps(name),
+                                mainworld: details.mainworld,
+                                uwp: details.uwp.toUpperCase(),
+                                gg: details.gg,
+                                isAsteroidBelt: details.mainworld.isAsteroidBelt,
+                                planetoidBelts: details.planetoidBelts,
+                                bases: details.bases,
+                                stars: details.stars,
+                                economics: details.economics,
+                                importance: details.importance,
+                                totalpop: details.totalpop,
+                                tcoord: tcoord,
+                                pbg: details.pbg,
+                                allegiance: details.allegiance,
+                                isRed: false,
+                                isAmber: false,
+                                nobility: details.nobility,
+                                sysArrayIndex:systemArray.length,
+                                worldcount: details.worldcount
+                            };
+                            systems[tcoord] = system;
+                            systemArray.push(system);
+                            namesSoFar[name] = { hexlocation: tcoord, x: x, y: y };
+                }
+                if(nameIndex == -1){
+                    for (var i = 0, len = systemArray.length; i < len; i++) {
+                    var name = wordMaker.getRandomName("system");
+                    while (Object.keys(namesSoFar).indexOf(name) >= 0) {
+                        console.log(name + " was already taken...")
+                        name = wordMaker.getRandomName("system");
+                    }
+                    name = addCaps(name);
+                    var system = systemArray[i];
+                    system.name = name;
+                    systems[system.tcoord].name = name;
+                    namesSoFar[name] = { hexlocation: tcoord, x: x, y: y };
+                }
+                }
+                mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
+                applyTravelCodes(mapContent);
+                analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                document.getElementById("data").value = JSON.stringify(systems);
+                document.getElementById("sectordata").value = getSectorData(mapContent);
+                if (document.getElementById("chkGenerateNatives").checked) {
+                    generateNatives(mapContent, document.getElementById("slctNativeLikelihood").value);
+                }else{
+                    renderNILSummary([]);
+                }
+                determinePopulaceBreakdown(systemArray);
+                drawMap(mapContent);
             }
             function populateSubsector() {
                 NIL = [];
@@ -5701,7 +5874,7 @@
                 }
                 renderSystem(mapContent[index].system);                
             }
-            function rerollSystemWithPredefinedUWP(uwp){
+            function rerollSystemWithPredefinedUWP(uwp, baseCodes){
                 var tcoord = lastSelectedHex.system.tcoord;
                 var xycoord = TCoordToXYCoord(tcoord);
                 var index = XYtoIndex(xycoord.x,xycoord.y);
@@ -5723,7 +5896,7 @@
                                 mainworldRules, 
                                 populateNonMainworlds, 
                                 applyHillSphereLimits, 
-                                allowInnerWhiteDwarfs,uwp);
+                                allowInnerWhiteDwarfs,uwp,typeof baseCodes === "undefined" ? undefined : baseCodes);
                 for (var i = 0, len = mins.length; i < len; i++) {
                     var currValue;
                     if (i < 8) {

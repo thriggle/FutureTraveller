@@ -236,13 +236,52 @@ function updateTradeCodes(system, rules) {
     system.importance = { weeklytraffic: weeklyships, dailytraffic: dailyships, isImportant: isImportant, isUnimportant: isUnimportant, extension: importance, description: importanceDesc };
     return system;
 }
-function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel, diebackPenalty, ruleset, allowNonMWPops, applyHillSphereLimit, allowInnerWhiteDwarfs, predefinedUWP) {
+function getBasesFromBaseCodes(baseCodes){
+    var bases = [];
+    for(var i = 0, len = baseCodes.length; i < len; i++){
+        var code = baseCodes[i];
+        switch(code){
+            case "N":
+            case "K":
+            case "Naval":
+                bases.push("Naval"); break;
+            case "S":
+            case "Scout":
+                bases.push("Scout"); break; 
+            case "D":
+            case "Depot":
+                bases.push("Naval Depot"); break;
+            case "W":
+            case "Waystation":
+                bases.push("Way Station"); break;
+            case "C":
+                bases.push("Corsair"); break;
+            case "R":
+                bases.push("Research"); break;
+            case "A":
+                bases.push("Military"); break;
+            case "P":
+                bases.push("Pirate"); break;
+            case "E":
+                bases.push("Embassy"); break; 
+            case "R":
+                bases.push("Clan"); break;
+            case "T":
+                bases.push("Tlaukhu"); break;
+            case "V": 
+                bases.push("Exploration"); break;
+        }
+    }
+    return bases;
+}
+function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLevel, diebackPenalty, ruleset, allowNonMWPops, applyHillSphereLimit, allowInnerWhiteDwarfs, predefinedUWP, baseCodes) {
     if (typeof ruleset === "undefined") { ruleset = "T5"; }
     if (typeof diebackPenalty === "undefined") { diebackPenalty = 2; }
     if (typeof allowNonMWPops === "undefined") { allowNonMWPops = true; }
     if (typeof applyHillSphereLimit === "undefined") { applyHillSphereLimit = true; }
     if (typeof allowInnerWhiteDwarfs === "undefined") { allowInnerWhiteDwarfs = true; }
     if (typeof predefinedUWP === "undefined") { predefinedUWP = false; }
+    if(typeof baseCodes === "undefined"){ baseCodes = false; }
     var planetoidBelts = Math.max(d6() - 3, 0);
     var gg = d6(2) <= gasGiantFrequency ? Math.max(((d6(2) / 2) >> 0) - 2, 1) : 0;
     var roll;
@@ -502,7 +541,11 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             case "CE":
                 var CESystem = getCepheusEngineUWP(stars.primary.HZOrbit - MWOrbit, maxTechLevel);
                 predefinedUWP = CESystem.uwp;
-                bases = CESystem.bases; basesPopulated = true;
+                if(!baseCodes){
+                    bases = CESystem.bases; basesPopulated = true;
+                }else{
+                    bases = getBasesFromBaseCodes(baseCodes); basesPopulated=true;
+                }
                 pop2 = revExt(predefinedUWP[4]);
                 highport = CESystem.highport;
                 break;
@@ -510,7 +553,11 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
                 var MongooseSystem = getMgT2UWP(stars.primary.HZOrbit - MWOrbit, maxTechLevel);
                 predefinedUWP = MongooseSystem.uwp;
                 pop2 = revExt(predefinedUWP[4]);
-                bases = MongooseSystem.bases; basesPopulated=true;
+                if(!baseCodes){
+                    bases = MongooseSystem.bases; basesPopulated=true;
+                }else{
+                    bases = getBasesFromBaseCodes(baseCodes); basesPopulated=true;
+                }
                 climate = MongooseSystem.temp;
                 highport = MongooseSystem.hasHighPort;
                 break;
@@ -533,38 +580,43 @@ function generateSystemDetails(name, gasGiantFrequency, permitDieback, maxTechLe
             popdigit = d19();
         }
         if (!basesPopulated) {
-            if (ruleset === "T5") {
-                switch (starport) {
-                    case "A":
-                        if (d6(2) <= 6) { bases.push("Naval"); };
-                        if (d6(2) <= 4) { bases.push("Scout"); }
-                        break;
-                    case "B":
-                        if (d6(2) <= 5) { bases.push("Naval"); }
-                        if (d6(2) <= 5) { bases.push("Scout"); }
-                        break;
-                    case "C":
-                        if (d6(2) <= 6) { bases.push("Scout"); }
-                        break;
-                    case "D":
-                        if (d6(2) <= 7) { bases.push("Scout"); }
-                        break;
-                    case "E":
-                        break;
-                    case "X":
-                        break;
-                    default: console.log("Invalid starport in UWP: " + starport); break;
-                }
+            if(baseCodes){
+                bases = getBasesFromBaseCodes(baseCodes);
             } else{
-                var basesAndHighport = getBasesAndHighport(starport, pop, law, tech, ruleset);
-                bases = basesAndHighport.bases;
-                highport = basesAndHighport.highport
-                
-            } 
-            if (pop === 0) {
-                bases = [];
-                popdigit = 0;
-            } 
+
+                if (ruleset === "T5") {
+                    switch (starport) {
+                        case "A":
+                            if (d6(2) <= 6) { bases.push("Naval"); };
+                            if (d6(2) <= 4) { bases.push("Scout"); }
+                            break;
+                        case "B":
+                            if (d6(2) <= 5) { bases.push("Naval"); }
+                            if (d6(2) <= 5) { bases.push("Scout"); }
+                            break;
+                        case "C":
+                            if (d6(2) <= 6) { bases.push("Scout"); }
+                            break;
+                        case "D":
+                            if (d6(2) <= 7) { bases.push("Scout"); }
+                            break;
+                        case "E":
+                            break;
+                        case "X":
+                            break;
+                        default: console.log("Invalid starport in UWP: " + starport); break;
+                    }
+                } else{
+                    var basesAndHighport = getBasesAndHighport(starport, pop, law, tech, ruleset);
+                    bases = basesAndHighport.bases;
+                    highport = basesAndHighport.highport
+                    
+                } 
+                if (pop === 0) {
+                    bases = [];
+                    popdigit = 0;
+                } 
+            }
             uwp = starport + ext(size) + ext(atmo) + ext(hydro) + ext(pop) + ext(gov) + ext(law) + "-" + ext(tech);
         }
     } else {
