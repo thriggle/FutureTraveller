@@ -2293,13 +2293,15 @@
                         var reader = new FileReader();
                         if(document.getElementById("chkUseImportedFileNameForSeed").checked){
                             document.getElementById("txtSeed").value = (curFiles[0].name.replace(/\.[^/.]+$/, ""));
-                            MathRandom = pseudoRandomNumberGenerator(document.getElementById("txtSeed"));
-                            wordMaker.setRandom(MathRandom);
+                            //MathRandom = pseudoRandomNumberGenerator(document.getElementById("txtSeed"));
+                            //wordMaker.setRandom(MathRandom);
+                            document.getElementById("chkUseRandom").checked = false;
                         }
                         reader.onload = function (event) {
                             document.getElementById("sectordata").value = event.target.result;
                             populateSubsectorFromSectorData(event.target.result);
                             document.getElementById("btnImportBasicTSV").value = "";
+                            populateSubsectorFromSectorData(document.getElementById("sectordata").value);
                         }
                         reader.readAsText(curFiles[0]);
 
@@ -2655,17 +2657,7 @@
                 NIL = [];
                 document.getElementById("SystemDetailsContainer").style.display = "none";
                 document.getElementById("AddSystemContainer").style.display = "none";
-                var useRandomSeed = document.getElementById("chkUseRandom").checked;
-                var seed;
-                if (useRandomSeed) {
-                    seed1 = Math.floor(Math.random() * 1000000);
-                    seed = addCaps(wordMaker.getRandomName("system") + seed1);
-                    document.getElementById("txtSeed").value = seed;
-
-                } else {
-                    seed = document.getElementById("txtSeed").value
-                }
-
+                seed = document.getElementById("txtSeed").value;
                 var $density = document.getElementById("slctStellarDensity").value
                 var sizeSelector = document.getElementById("slctMapSize");
                 var $size = sizeSelector.value
@@ -2775,20 +2767,22 @@
                             systemArray.push(system);
                             namesSoFar[name] = { hexlocation: tcoord, x: x, y: y };
                 }
-                if(nameIndex == -1){
-                    for (var i = 0, len = systemArray.length; i < len; i++) {
+               
+                for (var i = 0, len = systemArray.length; i < len; i++) {
                     var name = wordMaker.getRandomName("system");
                     while (Object.keys(namesSoFar).indexOf(name) >= 0) {
                         console.log(name + " was already taken...")
                         name = wordMaker.getRandomName("system");
                     }
-                    name = addCaps(name);
-                    var system = systemArray[i];
-                    system.name = name;
-                    systems[system.tcoord].name = name;
-                    namesSoFar[name] = { hexlocation: tcoord, x: x, y: y };
+                    if(nameIndex == -1){
+                        name = addCaps(name);
+                        var system = systemArray[i];
+                        system.name = name;
+                        systems[system.tcoord].name = name;
+                        namesSoFar[name] = { hexlocation: tcoord, x: x, y: y };
+                    }
                 }
-                }
+                
                 mapContent = generateHexes(SUBSECTOR_WIDTH, SUBSECTOR_HEIGHT, systems);
                 applyTravelCodes(mapContent);
                 analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
