@@ -2310,8 +2310,14 @@ export function createCharacter(roller, species, chosenGender){
                             if(!qualifiesForPromotion){
                                 record(careers[careers.length-1].rank.label + " is ineligible for promotion."); updateFunc();
                             }
-                            var qualifiesForTenure = !careers[careers.length-1].tenured && careers[careers.length-1].rank.level == 3 && meetsCharacteristicRequirements && characteristics[4].value >= 10;
-                            if(meetsEducationMinimum && careers[careers.length-1].rank.level == 3 && !qualifiesForTenure){ qualifiesForTenure = promptEducationWaiver("Insufficient EDU to qualify for tenure.").success;  updateFunc();}
+                            var qualifiesForTenure = !careers[careers.length-1].tenured 
+                                && meetsCharacteristicRequirements
+                                && careers[careers.length-1].rank.level == 3  
+                                && characteristics[4].value >= 10;
+                            if(careers[careers.length-1].rank.level == 3 && !careers[careers.length-1].tenured && !qualifiesForTenure){ 
+                                console.log("EDU = " + characteristics[4].value);
+                                qualifiesForTenure = promptEducationWaiver("Insufficient EDU to qualify for tenure.").success;  updateFunc();
+                            }
                             if(qualifiesForTenure){
                                 var countPubs = careers[careers.length-1].publications + 2*careers[careers.length-1].majorpublications;
                                 var tenureResult = check(countPubs * 3,2,0,"Apply for Tenure 2D vs 3x Publications");
