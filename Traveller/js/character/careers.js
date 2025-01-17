@@ -28,7 +28,7 @@ export function getCCs(career){
         case ENUM_CAREERS.Spacer: ccs = ["C1","C2","C4"]; break;
         case ENUM_CAREERS.Soldier: ccs = ["C1","C3","C4"]; break;
         case ENUM_CAREERS.Agent: ccs = ["C1","C2","C3","C4"]; break;
-        case ENUM_CAREERS.Noble: ccs = ["C1","C2","C3","C4"]; break;
+        case ENUM_CAREERS.Noble: ccs = ["C2","C3","C4","C5"]; break;
         case ENUM_CAREERS.Marine: ccs = ["C1","C4"]; break;
         case ENUM_CAREERS.Functionary: ccs = ["C2","C3","C4","C5"]; break;
     }

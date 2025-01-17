@@ -643,6 +643,7 @@ function validateQualifications(){
     if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
     if(qual.Entertainer){ document.getElementById("btnEntertainer").removeAttribute("disabled");}else{document.getElementById("btnEntertainer").setAttribute("disabled","");}
     if(qual.Scholar){ document.getElementById("btnScholar").removeAttribute("disabled");}else{document.getElementById("btnScholar").setAttribute("disabled","");}
+    if(qual.Noble){ document.getElementById("btnNoble").removeAttribute("disabled");}else{document.getElementById("btnNoble").setAttribute("disabled","");}
     var baOptions = document.querySelectorAll("[data-qualify=\"BA\"]");
     if(qual.BA){ 
         for(var i = 0, len = baOptions.length; i < len; i++){
