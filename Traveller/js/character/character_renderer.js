@@ -46,6 +46,9 @@ function careers(character,element){
                 case ENUM_CAREERS.Scholar:
                     rank = "-"+careers[i].rank.label;
                     break;
+                case ENUM_CAREERS.Noble:
+                    rank = "-"+careers[i].rank.label;
+                    break;
             }
         }
         var awards = "";
