@@ -47,7 +47,8 @@ function careers(character,element){
                     rank = "-"+careers[i].rank.label;
                     break;
                 case ENUM_CAREERS.Noble:
-                    rank = "-"+careers[i].rank.label;
+                    var nobility = character.getNobleRank();
+                    rank = "-"+nobility.code + " ("+nobility.title+")";
                     break;
             }
         }
@@ -176,6 +177,14 @@ function awards(character,element){
     var shares = character.getShipShares();
     if(shares > 0){
         element.insertAdjacentHTML("beforeend","<hr/><div> Ship Shares: " + shares +"</div>");
+    }
+    var proxies = character.getProxies();
+    if(proxies > 0){
+        element.insertAdjacentHTML("beforeend","<hr/><div> Proxies: " + proxies +"</div>");
+    }
+    var landGrants = character.getLandGrants();
+    if(landGrants.length > 0){
+        element.insertAdjacentHTML("beforeend","<hr/><div> Land Grants: " + landGrants +"</div>");
     }
     
 }
