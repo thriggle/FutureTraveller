@@ -72,6 +72,14 @@ function careers(character,element){
             if(careers[i].majorpublications && careers[i].majorpublications > 0){
                 awards += "<li>" + careers[i].majorpublications + " Award-Winning Publications</li>";
             }
+            if(careers[i].career == ENUM_CAREERS.Noble){
+                var nobleIntrigue = character.getNobleIntrigue();
+                awards += "<li>Successful Intrigues: " + nobleIntrigue.successfulIntrigues + "</li>";
+                awards += "<li>Exiled: " + nobleIntrigue.timesExiled + " time"+(nobleIntrigue.timesExiled !== 1 ? "s":"")+"</li>";
+                if(nobleIntrigue.isInExile){
+                    awards += "<li>Currently in Exile</li>";
+                }
+            }
             awards += "</ul>";
         }
         
