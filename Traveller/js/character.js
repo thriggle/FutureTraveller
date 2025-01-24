@@ -5354,7 +5354,7 @@ export function createCharacter(roller, species, chosenGender){
             if(characteristics[5].name === ENUM_CHARACTERISTICS.SOC && characteristics[5].value >= 11){
                 setNobleRankBySoc();
                 careers.push({career:career,terms:1,active:true,awards:[],rank:{label:getNobleRank().code + " (" + getNobleRank().title + ")"}});
-                record("Joined Nobility.");
+                record("Joined Nobility as " + getNobleRank().title + " (" + getNobleRank().code + ")");
                 updateFunc();
                 resolveElevation();
             }else{
@@ -6069,6 +6069,9 @@ export function createCharacter(roller, species, chosenGender){
     function setSanity(newValue){
         sanity = newValue;
     }
+    function getNobleIntrigue(){
+        return {successfulIntrigues:successfulIntrigues, timesExiled:timesExiled, proxies:proxies, nobleRank:nobleRank, isInExile:isInExile, elevationFluxUsed:elevationFluxUsed};
+    }
     function setSanityGene(newSanityGene){sanityGene = newSanityGene;}
     function getSanityGene(){return sanityGene;}
     function exportCharacter(){
@@ -6212,6 +6215,6 @@ export function createCharacter(roller, species, chosenGender){
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender, setGender,
         getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter, fameMusterOutBonus, claimFameMusterOutBonus,
-        resignFromReserves, getCraftsmanQualifications, getTalent, getNobleRank, getProxies, getLandGrants
+        resignFromReserves, getCraftsmanQualifications, getTalent, getNobleRank, getProxies, getLandGrants, getNobleIntrigue 
     }
 }
