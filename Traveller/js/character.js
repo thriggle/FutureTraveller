@@ -27,6 +27,7 @@ export function createCharacter(roller, species, chosenGender){
     var majors = [], minors = [], history = [];
     var nativeLanguage = "Anglic";
     var languageReceipts = 0; var edu_waivers = 0; var awards = [], successfulIntrigues = 0, timesExiled = 0, proxies = 0;
+    var landGrants = [];
     var sanity = 0, psi = undefined;
     var sanityGene = undefined, psiGene = undefined;
     var musteredOut = false;
@@ -78,6 +79,7 @@ export function createCharacter(roller, species, chosenGender){
         resignationDeclined = false, isInExile = false;
         reserveYears = {army:0,marine:0,navy:0};
         successfulIntrigues = 0, timesExiled = 0, elevationFluxUsed = false, nobleRank = 0, proxies = 0;
+        landGrants = [];
     }
     function addToReserves(service){
         var reserve = service + " Reserves";
@@ -1593,11 +1595,15 @@ export function createCharacter(roller, species, chosenGender){
                     var note = "("+table + ": " + newSkill+")";
                     if(table === "Personal"){
                         var index = +(newSkill.substring(1));
-                        gainCharacteristic(index,1,note);
-                        // if current career is Noble and characteristic is SOC, set noble rank by soc
-                        if(career == ENUM_CAREERS.Noble && index == 5){
-                            setNobleRankBySoc();
-                            record("Elevated to " + getNobleRank().title);
+                        
+                        // if current career is Noble and characteristic is SOC, set increase noble rank and update Soc if necessary
+                        if(career == ENUM_CAREERS.Noble && index == 6){
+                            var oldTitle = getNobleRank().title;
+                            increaseNobleRank();
+                            setSocByNobleRank();
+                            record("(Personal: C6) Elevated from "+oldTitle+" to " + getNobleRank().title);
+                        }else{
+                            gainCharacteristic(index,1,note);
                         }
                         nextSteps(tablesPerTerm,getOlder);
                     }else if(newSkill === "Major"){
@@ -1875,8 +1881,8 @@ export function createCharacter(roller, species, chosenGender){
                                 }
                                 break;
                             case ENUM_CAREERS.Noble:
-                                passedContinueRoll = continueResult.result == 7;
-                                record("Continue as Noble: [" + continueResult.rolls.join(",") + "] = 7 ? " + (passedContinueRoll ? "PASS":"FAIL"));
+                                passedContinueRoll = continueResult.result <= 7;
+                                record("Continue as Noble: [" + continueResult.rolls.join(",") + "] < 7 ? " + (passedContinueRoll ? "PASS":"FAIL"));
                                 updateFunc();
                                 break;
                         }
@@ -2194,10 +2200,10 @@ export function createCharacter(roller, species, chosenGender){
                                     case "4": proxies +=1;
                                     case "3": proxies +=1;
                                     case "2": proxies +=1; 
-                                    case "1": proxies +=1; record("Gained " + chosenBenefit.value + (chosenBenefit.value == 1 ? "proxy.": "proxies.")); break;
+                                    case "1": proxies +=1; record("Gained " + chosenBenefit.value + (chosenBenefit.value == 1 ? " proxy.": " proxies.")); break;
                                     case "2D": 
                                         var proxyResult = roller.d6(2).result; 
-                                        record( "Gained " + proxyResult + (proxyResult == 1 ? "proxy.": "proxies.")); 
+                                        record( "Gained " + proxyResult + (proxyResult == 1 ? " proxy.": " proxies.")); 
                                         proxies += proxyResult; 
                                         break;
                                 }
@@ -2212,10 +2218,10 @@ export function createCharacter(roller, species, chosenGender){
                                 case "4": proxies +=1;
                                 case "3": proxies +=1;
                                 case "2": proxies +=1; 
-                                case "1": proxies +=1; record("Gained " + chosenBenefit.value + (chosenBenefit.value == 1 ? "proxy.": "proxies.")); break;
+                                case "1": proxies +=1; record("Gained " + chosenBenefit.value + (chosenBenefit.value == 1 ? " proxy.": " proxies.")); break;
                                 case "2D": 
                                     var proxyResult = roller.d6(2).result; 
-                                    record( "Gained " + proxyResult + (proxyResult == 1 ? "proxy.": "proxies.")); 
+                                    record( "Gained " + proxyResult + (proxyResult == 1 ? " proxy.": " proxies.")); 
                                     proxies += proxyResult; 
                                     break;
                             }
@@ -5136,18 +5142,42 @@ export function createCharacter(roller, species, chosenGender){
         },true,undefined,CCDescriptions);
         
     }
+    function setNobleRank(num){
+        nobleRank = num;
+    }
+    function increaseNobleRank(){
+        nobleRank += 1;
+    }
+    function setSocByNobleRank(){
+        var nR = getNobleRank().rank;
+        if(nR >= 11){
+            switch(nR){
+                case 11: characteristics[5].value = 11; break; //knight B
+                case 12:  // baronet c
+                case 13: characteristics[5].value = 12; break; // baron C
+                case 14: characteristics[5].value = 13; break; // marquis D
+                case 15:   // Viscount e
+                case 16: characteristics[5].value = 14; break; // Count E
+                case 17:  // Duke f
+                case 18: characteristics[5].value = 15; break; // Duke F
+                case 19: characteristics[5].value = 16; break; // Archduke G
+            }
+        }
+    }
     function setNobleRankBySoc(){
         var soc = characteristics[5].value;
-        if(soc <= 11){nobleRank = soc;} // Knight and below
-        else if(soc == 12){
-            nobleRank = 12; // Baronet 
+        if(soc <= 11){ // knight and below
+            setNobleRank(soc);
+        }else if(soc == 12){
+            setNobleRank(12); // Baronet
         }else if(soc == 13){ // skip soc 12 nR 13 Baron
-            nobleRank = 14; // Marquis
+            setNobleRank(14); // Marquis
         }else if(soc == 14){
-            nobleRank = 15; // Viscount
+            setNobleRank(15); // Viscount
         }else if(soc == 15){
-            nobleRank = 17; // Duke
+            setNobleRank(17); // Duke
         }
+        
     }
     function getNobleRank(){
         var soc = characteristics[5].value;
@@ -5155,6 +5185,7 @@ export function createCharacter(roller, species, chosenGender){
             return {title:"No Title",rank:soc,code:soc.toString()};
         }else{
             if(nobleRank < soc){
+                console.log("Assigning Noble Rank based on SOC.");
                 setNobleRankBySoc();
             }
             switch(nobleRank){
@@ -6155,6 +6186,12 @@ export function createCharacter(roller, species, chosenGender){
     function getCharacteristics(){
         return characteristics;
     }
+    function getProxies(){
+        return proxies;
+    }
+    function getLandGrants(){
+        return landGrants;
+    }
     return {
         setSanityGene,getSanityGene,
         setPsiGene,getPsiGene,setPsi,getPsi,
@@ -6175,6 +6212,6 @@ export function createCharacter(roller, species, chosenGender){
         NavalAcademy:NavalAcademy, MilitaryAcademy:MilitaryAcademy,getSanity, getHistory, initStats, getCharacteristics,
         resolveCareer, getCareers, getName, setName, getCredits, getQualifications, musterOut, getGender, setGender,
         getPlayabilityScore, getShipShares, calculateFame, fameFluxEvent, exportCharacter, importCharacter, fameMusterOutBonus, claimFameMusterOutBonus,
-        resignFromReserves, getCraftsmanQualifications, getTalent
+        resignFromReserves, getCraftsmanQualifications, getTalent, getNobleRank, getProxies, getLandGrants
     }
 }
