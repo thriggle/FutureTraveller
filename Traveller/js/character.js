@@ -1872,7 +1872,7 @@ export function createCharacter(roller, species, chosenGender){
                                 updateFunc();
                                 break;
                             case ENUM_CAREERS.Scholar:
-                                passedContinueRoll = continueResult.result < characteristics[4].value;
+                                passedContinueRoll = continueResult.result <= characteristics[4].value;
                                 record("Continue as Scholar: [" + continueResult.rolls.join(",") + "] < "+characteristics[4].name+" ("+characteristics[4].value+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
                                 updateFunc();
                                 if(!passedContinueRoll){ 
@@ -2243,10 +2243,25 @@ export function createCharacter(roller, species, chosenGender){
             case "C3": gainCharacteristic(3,1,"Mustering Out: "); break;
             case "C4": gainCharacteristic(4,1,"Mustering Out: "); break;
             case "C5": gainCharacteristic(5,1,"Mustering Out: "); break;
-            case "C6": gainCharacteristic(6,1,"Mustering Out: "); break;
+            case "C6": 
+                if(species.Characteristics[5].name == ENUM_CHARACTERISTICS.SOC && getNobleRank().rank >= 11){
+                    // increase noble rank and update SOC if applicable
+                    increaseNobleRank();
+                    setSocByNobleRank();
+                    record("Noble rank increased to " + getNobleRank().rank + " (Social Standing = " + characteristics[5].value + ").");
+                }else{
+                    gainCharacteristic(6,1,"Mustering Out: "); break;
+                }
             case "Soc": 
-            if(species.Characteristics[5].name == ENUM_CHARACTERISTICS.SOC){ gainCharacteristic(ENUM_CHARACTERISTICS.SOC,1,"Mustering Out: ");}
-            else{ record("Character does not have Social Standing so the Soc increase benefit was lost.");}
+                if(species.Characteristics[5].name == ENUM_CHARACTERISTICS.SOC){ 
+                    if(getNobleRank().rank >= 11){
+                        increaseNobleRank();
+                        setSocByNobleRank();
+                        record("Noble rank increased to " + getNobleRank().rank + " (Social Standing = " + characteristics[5].value + ").");
+                    }else{
+                        gainCharacteristic(ENUM_CHARACTERISTICS.SOC,1,"Mustering Out: ");
+                    }
+                } else{ record("Character does not have Social Standing so the Soc increase benefit was lost.");}
              break;
         }
     }
@@ -3392,7 +3407,9 @@ export function createCharacter(roller, species, chosenGender){
                         rollForBranch(()=>{
                             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                 CC = selectedCC;
-                                CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                                CCs.splice(CCs.indexOf(selectedCC),1);
+                                var termNumber = careers[careers.length-1].terms;
+                                record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                 // proceed with R&R, +4 years of skills, promotion/commission
                                 advanceAndGetSkills();
                             },true,undefined,CCDescriptions);
@@ -3416,7 +3433,8 @@ export function createCharacter(roller, species, chosenGender){
                                     rollForBranch(()=>{
                                         pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                             CC = selectedCC;
-                                            CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                                            CCs.splice(CCs.indexOf(selectedCC),1);
+                                            var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                             // proceed with R&R, +4 years of skills, promotion/commission
                                             advanceAndGetSkills();
                                         },true,undefined,CCDescriptions);
@@ -3438,7 +3456,9 @@ export function createCharacter(roller, species, chosenGender){
                     careers[careers.length-1].terms += 1;
                     pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                         CC = selectedCC;
-                        CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                        CCs.splice(CCs.indexOf(selectedCC),1);
+                        var termNumber = careers[careers.length-1].terms;
+                        record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                         // proceed with R&R, +4 years of skills, promotion/commission
                         advanceAndGetSkills();
                         
@@ -3448,7 +3468,9 @@ export function createCharacter(roller, species, chosenGender){
                 careers[careers.length-1].terms += 1;
                 pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                     CC = selectedCC;
-                    CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                    CCs.splice(CCs.indexOf(selectedCC),1);
+                    var termNumber = careers[careers.length-1].terms;
+                    record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                     // proceed with R&R, +4 years of skills, promotion/commission
                     advanceAndGetSkills();
                     
@@ -3898,7 +3920,8 @@ export function createCharacter(roller, species, chosenGender){
                         rollForBranch(()=>{
                             pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                 CC = selectedCC;
-                                CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                                CCs.splice(CCs.indexOf(selectedCC),1);
+                                var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                 // proceed with R&R, +4 years of skills, promotion/commission
                                 advanceAndGetSkills();
                             },true,undefined,CCDescriptions);
@@ -3922,7 +3945,8 @@ export function createCharacter(roller, species, chosenGender){
                                     rollForBranch(()=>{
                                         pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                             CC = selectedCC;
-                                            CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;
+                                            CCs.splice(CCs.indexOf(selectedCC),1);
+                                            var termNumber = careers[careers.length-1].terms;
                                             record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                             // proceed with R&R, +4 years of skills, promotion/commission
                                             advanceAndGetSkills();
@@ -3945,7 +3969,9 @@ export function createCharacter(roller, species, chosenGender){
                     careers[careers.length-1].terms += 1;
                     pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                         CC = selectedCC;
-                        CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                        CCs.splice(CCs.indexOf(selectedCC),1);
+                        var termNumber = careers[careers.length-1].terms;
+                        record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                         // proceed with R&R, +4 years of skills, promotion/commission
                         advanceAndGetSkills();
                         
@@ -3955,7 +3981,9 @@ export function createCharacter(roller, species, chosenGender){
                 careers[careers.length-1].terms += 1;
                 pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                     CC = selectedCC;
-                    CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                    CCs.splice(CCs.indexOf(selectedCC),1);
+                    var termNumber = careers[careers.length-1].terms;
+                    record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                     // proceed with R&R, +4 years of skills, promotion/commission
                     advanceAndGetSkills();
                     
@@ -4932,7 +4960,9 @@ export function createCharacter(roller, species, chosenGender){
                     if(dutyChoice === "Explorer Duty"){
                         pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                             CC = selectedCC;
-                            CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                            CCs.splice(CCs.indexOf(selectedCC),1);
+                            var termNumber = careers[careers.length-1].terms;
+                            record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                             // proceed with R&R, +4 years of skills, promotion/commission
                             careers[careers.length-1].duty = "Explorer";
                             advanceAndGetSkills(true);
@@ -4969,7 +4999,8 @@ export function createCharacter(roller, species, chosenGender){
                                     if(dutyChoice === "Explorer Duty"){
                                         pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                                             CC = selectedCC;
-                                            CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                                            CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;
+                                            record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                                             // proceed with R&R, +4 years of skills, promotion/commission
                                             careers[careers.length-1].duty = "Explorer";
                                             advanceAndGetSkills(true);
@@ -5000,7 +5031,8 @@ export function createCharacter(roller, species, chosenGender){
                 if(dutyChoice === "Explorer Duty"){
                     pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
                         CC = selectedCC;
-                        CCs.splice(CCs.indexOf(selectedCC),1);var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
+                        CCs.splice(CCs.indexOf(selectedCC),1);
+                        var termNumber = careers[careers.length-1].terms;record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                         careers[careers.length-1].duty = "Explorer";
                         advanceAndGetSkills(true);
                     },true,undefined,CCDescriptions);
@@ -5203,10 +5235,6 @@ export function createCharacter(roller, species, chosenGender){
         }
     }
     function resolveNoble(career,updateFunc){
-        // TODO
-        // Need to elevate title when Soc increases from Personal Development table (lowest applicable noble rank for given Soc score)
-        // Do not allow pursuing any career if you've served any terms in Noble
-        // Need to update Continue logic to ensure continue is only successful on exactly 7 (or 2 with mandatory continue)
         var hasBeen = canResumeFromService(career);
         if(hasBeen.canResume){
             swapCareerIndices(hasBeen.prevCareerIndex);
