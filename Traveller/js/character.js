@@ -518,7 +518,7 @@ export function createCharacter(roller, species, chosenGender){
             var nextMethod = gainSkillsFromHomeworldTradeCodes(codeArray, callback, index + 1, notes);
             
             return function(){
-                var text = promptfunc(note, skill, nextMethod, notes);
+                var text = promptfunc(note, skill, nextMethod, false);
                 notes += text;
             }
         }
@@ -1994,10 +1994,8 @@ export function createCharacter(roller, species, chosenGender){
             case 3: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Stealth,callback,false); break;
             case 4: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Explosives,callback,false); break;
             case 5: 
-                gainSkillOrKnowledge(ENUM_SKILLS.HeavyWeapons,"WMD",false,prompt);
-                callback();
-                break;
-                case 6: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Programmer,callback,false); break;
+                gainSkillOrKnowledge(ENUM_SKILLS.HeavyWeapons,"WMD",false,prompt); callback(); break;
+            case 6: gainSkillWithPromptForKnowledge(prompt,ENUM_SKILLS.Programmer,callback,false); break;
             }
     }
     function musterOutSpecificCareer(careerIndex,rollsRemaining,updateFunc,callback){
