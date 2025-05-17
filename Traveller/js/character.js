@@ -1872,7 +1872,7 @@ export function createCharacter(roller, species, chosenGender){
                                 updateFunc();
                                 break;
                             case ENUM_CAREERS.Scholar:
-                                passedContinueRoll = continueResult.result < characteristics[4].value;
+                                passedContinueRoll = continueResult.result <= characteristics[4].value;
                                 record("Continue as Scholar: [" + continueResult.rolls.join(",") + "] < "+characteristics[4].name+" ("+characteristics[4].value+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
                                 updateFunc();
                                 if(!passedContinueRoll){ 
