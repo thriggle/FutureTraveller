@@ -70,7 +70,14 @@ export function getDialog(){
         var selector = dialog.appendChild(document.createElement("select")); selector.id = "slctDialog";
         var dlgBtn = dialog.appendChild(document.createElement("input")); dlgBtn.setAttribute("type","button"); dlgBtn.setAttribute("value","OK"); dlgBtn.id = "dlgBtn";
         selector.addEventListener("keypress",(ev)=>{if(ev.key === "Enter"){ ev.preventDefault(); dlgBtn.click();}});
+        
         var cancelDlgBtn = dialog.appendChild(document.createElement("input")); cancelDlgBtn.setAttribute("type","button"); cancelDlgBtn.setAttribute("value","Cancel"); cancelDlgBtn.id = "cancelDlgBtn";
+        var rndBtn = dialog.appendChild(document.createElement("input")); rndBtn.setAttribute("type","button"); rndBtn.setAttribute("value","🎲"); rndBtn.id = "rndBtn";
+        rndBtn.addEventListener("click",function(){
+            var options = selector.options;
+            var randomIndex = Math.floor(Math.random() * options.length);
+            selector.selectedIndex = randomIndex;
+        });
         dialog.appendChild(document.createElement("br"));
         var dlgPreviewText = dialog.appendChild(document.createElement("div")); dlgPreviewText.id = "txtDialogPreview";
         dlgBtn.addEventListener("click",() =>{ dialog.style.top = "0px"; dialog.close(selector.value); dialogCallback(selector.value); });
