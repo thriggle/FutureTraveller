@@ -77,6 +77,8 @@ export function getDialog(){
             var options = selector.options;
             var randomIndex = Math.floor(Math.random() * options.length);
             selector.selectedIndex = randomIndex;
+            selector.dispatchEvent(new Event("change"));
+
         });
         dialog.appendChild(document.createElement("br"));
         var dlgPreviewText = dialog.appendChild(document.createElement("div")); dlgPreviewText.id = "txtDialogPreview";
