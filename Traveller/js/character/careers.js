@@ -611,7 +611,7 @@ export var CareerBenefitTables = {
             {label:"Cr 800,000",type:"money",amount:800000},
         ],
         "Benefits":[
-            {label:"Forbidden K",type:"knoweldge"},
+            {label:"Forbidden K",type:"knowledge"},
             {label:"Str +1",type:"characteristic",characteristic:"C1"},
             {label:"Wafer Jack",type:"award"},
             {label:"C5 +1",type:"characteristic",characteristic:"C5"},
