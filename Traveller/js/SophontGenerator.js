@@ -490,6 +490,12 @@ function generateRandomAlien(species,rand){
             }
         }
     }
+    function shuffleArray(inputArray){
+        for (let i = inputArray.length - 1; i > 0; i--) {
+            const j = Math.floor(rand() * (i + 1));
+            [inputArray[i], inputArray[j]] = [inputArray[j], inputArray[i]];
+        }
+    }
     function setGender(){
         species.genderProbabilities = {};
        
@@ -514,6 +520,7 @@ function generateRandomAlien(species,rand){
             species.dna = "3NA";
             species.genderstructure = "EAB";
             species.genders = ["Egg Donor","Activator","Bearer"];
+            shuffleArray(species.genders);
             species.gender2 = species.genders[0];
             species.gender3 = species.genders[1];
             species.gender4 = pickRandom(species.genders);
@@ -540,6 +547,7 @@ function generateRandomAlien(species,rand){
             species.dna = "2NA";
             species.genderstructure = "Dual";
             species.genders = ["Female","Male"];
+            shuffleArray(species.genders);
             species.gender2 = species.genders[0];
             species.gender3 = species.genders[1];
             species.gender4 = pickRandom(species.genders);
@@ -566,7 +574,9 @@ function generateRandomAlien(species,rand){
         }else if(roll <= 3){
             species.dna = "2NA";
             species.genderstructure = "FMN";
-            species.genders = ["Female","Male","Neuter"];
+            species.genders = ["Female","Male"];
+            shuffleArray(species.genders);
+            species.genders.push("Neuter");
             species.gender2 = species.genders[0];
             species.gender3 = species.genders[1];
             species.gender4 = pickRandom(species.genders);
@@ -1806,6 +1816,7 @@ function generateRandomAlien(species,rand){
         }
     }
     function setBodyStructure(){
+        var forelimbgroups = 0, rearlimbgroups = 0;
         species.bodystructure = "A-B-CD-EF-G";
         species.head = "A"; species.torso = "B"; species.frontlimbs = "CD"; species.rearlimbs = "EF"; species.tail = "G";
         species.frontlimbs1 = 0;
@@ -1903,6 +1914,7 @@ function generateRandomAlien(species,rand){
                 case -5: 
                 case -4:
                     species.frontlimbs = "WW"; 
+                    forelimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -1913,6 +1925,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -3:
                         species.frontlimbs = "WA"; 
+                        forelimbgroups = 1;
                         if(species.symmetry === "Asymmetrical"){
                             species.frontlimbs1 = d6();
                             species.frontlimbs2 = d6();
@@ -1924,6 +1937,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -2:
                     species.frontlimbs = "WN"; 
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -1935,6 +1949,7 @@ function generateRandomAlien(species,rand){
                 case 0:
                 case 1:
                     species.frontlimbs = "WL"; 
+                    forelimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -1946,6 +1961,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 2:
                     species.frontlimbs = "WN"; 
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -1956,6 +1972,7 @@ function generateRandomAlien(species,rand){
                 case 3:
                 case 4:
                     species.frontlimbs = "AN"; 
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -1966,6 +1983,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 5: 
                     species.frontlimbs = "AA"; 
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -1981,6 +1999,7 @@ function generateRandomAlien(species,rand){
             switch(roll){
                 case -5: 
                     species.rearlimbs = "WW"; 
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -1988,11 +2007,12 @@ function generateRandomAlien(species,rand){
                         species.rearlimbs1 = limbsPerGroup;
                         species.rearlimbs2 = limbsPerGroup;
                     }
-                    species.stance = "Horizontal";
+                    
                     break;
                 case -4:
                     species.rearlimbs = "WM"; 
                     species.rearlimbgroups2 = posFlux()+2;
+                    rearlimbgroups = 1 + species.rearlimbgroups2
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = 0;
@@ -2006,6 +2026,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -3:
                     species.rearlimbs = "WL";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2017,17 +2038,19 @@ function generateRandomAlien(species,rand){
                 case -2:     
                 case -1:
                     species.rearlimbs = "WN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
                         species.rearlimbs1 = limbsPerGroup;
                     }
-                    species.stance = "Horizontal";
+                    
                     break;
                 case 0:
                 case 1:
                 case 2: 
                     species.rearlimbs = "LN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2037,6 +2060,7 @@ function generateRandomAlien(species,rand){
                 case 3:
                     species.rearlimbs = "LM";
                     species.rearlimbgroups2 = posFlux()+2;
+                    rearlimbgroups = 1 + species.rearlimbgroups2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = 0;
@@ -2052,6 +2076,7 @@ function generateRandomAlien(species,rand){
                     species.rearlimbs = "MM";
                     species.rearlimbgroups1 = posFlux()+2;
                     species.rearlimbgroups2 = posFlux()+2;
+                    rearlimbgroups = species.rearlimbgroups1 + species.rearlimbgroups2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = 0;
                         for(var i = 0; i < species.rearlimbgroups1; i++){
@@ -2068,7 +2093,8 @@ function generateRandomAlien(species,rand){
                     break;
                 case 5:
                     species.rearlimbs = "NN";
-                    species.stance = "Horizontal";
+                    rearlimbgroups = 0;
+                    
 
             }
         }else if(species.locomotion === "Walker"){
@@ -2078,6 +2104,7 @@ function generateRandomAlien(species,rand){
                 case -5:
                 case -4:
                     species.frontlimbs = "AA";
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2090,6 +2117,7 @@ function generateRandomAlien(species,rand){
                 case -3:
                 case -2:
                     species.frontlimbs = "AN";
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -2101,6 +2129,7 @@ function generateRandomAlien(species,rand){
                 case 0:
                 case 1:
                     species.frontlimbs = "LL";
+                    forelimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2112,6 +2141,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 2:
                     species.frontlimbs = "LN";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -2122,6 +2152,7 @@ function generateRandomAlien(species,rand){
                 case 3:
                 case 4:
                     species.frontlimbs = "AL";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2133,6 +2164,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 5:
                     species.frontlimbs = "AN";
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -2147,6 +2179,7 @@ function generateRandomAlien(species,rand){
                 case -5:
                 case -4:
                     species.rearlimbs = "LL";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2162,6 +2195,7 @@ function generateRandomAlien(species,rand){
                 case 1: 
                 case 2: 
                     species.rearlimbs = "LN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2171,6 +2205,7 @@ function generateRandomAlien(species,rand){
                 case 3:
                     species.rearlimbs = "LM";
                     species.rearlimbgroups2 = posFlux()+2;
+                    rearlimbgroups = 1 + species.rearlimbgroups2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = 0;
@@ -2186,6 +2221,7 @@ function generateRandomAlien(species,rand){
                     species.rearlimbs = "MM";
                     species.rearlimbgroups1 = posFlux()+2;
                     species.rearlimbgroups2 = posFlux()+2;
+                    rearlimbgroups = species.rearlimbgroups1 + species.rearlimbgroups2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = 0;
                         for(var i = 0; i < species.rearlimbgroups1; i++){
@@ -2202,7 +2238,8 @@ function generateRandomAlien(species,rand){
                     break;
                 case 5:
                     species.rearlimbs = "NN";
-                    species.stance = "Horizontal";
+                    rearlimbgroups = 0;
+                    
                     break;
             }
         }
@@ -2213,6 +2250,7 @@ function generateRandomAlien(species,rand){
                 case -5:
                 case -4:
                     species.frontlimbs = "AA";
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2224,6 +2262,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -3:
                     species.frontlimbs = "AF";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2235,6 +2274,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -2:
                     species.frontlimbs = "AN";
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -2246,6 +2286,7 @@ function generateRandomAlien(species,rand){
                 case 0:
                 case 1: 
                     species.frontlimbs = "AL";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2257,6 +2298,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 2:
                     species.frontlimbs = "AW";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2269,6 +2311,7 @@ function generateRandomAlien(species,rand){
                 case 3:
                 case 4:
                     species.frontlimbs = "AF";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2280,6 +2323,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 5: 
                     species.frontlimbs = "AN";
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -2293,6 +2337,7 @@ function generateRandomAlien(species,rand){
             switch(roll){
                 case -5:
                     species.rearlimbs = "FF";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2303,6 +2348,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -4:
                     species.rearlimbs = "LF";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2313,6 +2359,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -3:
                     species.rearlimbs = "LL";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2323,6 +2370,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -2:
                     species.rearlimbs = "LN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2332,6 +2380,7 @@ function generateRandomAlien(species,rand){
                 case -1:
                 case 0:
                     species.rearlimbs = "FN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2340,6 +2389,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 1:
                     species.rearlimbs = "LN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2348,6 +2398,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 2:
                     species.rearlimbs = "WL";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2358,6 +2409,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 3:
                     species.rearlimbs = "WF";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2369,6 +2421,7 @@ function generateRandomAlien(species,rand){
                 case 4:
                     species.rearlimbs = "FM";
                     species.rearlimbgroups2 = posFlux()+2;
+                    rearlimbgroups = 1 + species.rearlimbgroups2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = 0;
@@ -2384,6 +2437,7 @@ function generateRandomAlien(species,rand){
                     species.rearlimbs = "MM";
                     species.rearlimbgroups1 = posFlux()+2;
                     species.rearlimbgroups2 = posFlux()+2;
+                    rearlimbgroups = species.rearlimbgroups1 + species.rearlimbgroups2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = 0;
                         species.rearlimbs2 = 0;
@@ -2406,6 +2460,7 @@ function generateRandomAlien(species,rand){
                 case -5: 
                 case -4:
                     species.frontlimbs = "AA";
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2418,6 +2473,7 @@ function generateRandomAlien(species,rand){
                 case -3:
                 case -2:
                     species.frontlimbs = "AF";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2431,6 +2487,7 @@ function generateRandomAlien(species,rand){
                 case 0:
                 case 1: 
                     species.frontlimbs = "AL";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2442,6 +2499,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 2:
                     species.frontlimbs = "FF";
+                    forelimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2453,6 +2511,7 @@ function generateRandomAlien(species,rand){
                 case 3:
                 case 4:
                     species.frontlimbs = "AF";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2464,6 +2523,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 5:
                     species.frontlimbs = "AN";
+                    forelimbgroups = 0;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -2478,6 +2538,7 @@ function generateRandomAlien(species,rand){
             switch(roll){
                 case -5:
                     species.rearlimbs = "FF";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2488,6 +2549,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -4:
                     species.rearlimbs = "LF";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2498,6 +2560,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -3:
                     species.rearlimbs = "LL";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2508,6 +2571,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -2:
                     species.rearlimbs = "LN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2517,6 +2581,7 @@ function generateRandomAlien(species,rand){
                 case -1:
                 case 0:
                     species.rearlimbs = "FN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2525,6 +2590,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 1:
                     species.rearlimbs = "LN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2534,6 +2600,7 @@ function generateRandomAlien(species,rand){
                 case 2:
                 case 3: 
                     species.rearlimbs = "FF";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2545,6 +2612,7 @@ function generateRandomAlien(species,rand){
                     case 4:
                         species.rearlimbs = "FM";
                         species.rearlimbgroups2 = posFlux()+2;
+                        rearlimbgroups = 1 + species.rearlimbgroups2;
                         if(species.symmetry === "Asymmetrical"){
                             species.rearlimbs1 = d6();
                             species.rearlimbs2 = 0;
@@ -2560,6 +2628,7 @@ function generateRandomAlien(species,rand){
                         species.rearlimbs = "MM";
                         species.rearlimbgroups1 = posFlux()+2;
                         species.rearlimbgroups2 = posFlux()+2;
+                        rearlimbgroups = species.rearlimbgroups1 + species.rearlimbgroups2;
                         if(species.symmetry === "Asymmetrical"){
                             species.rearlimbs1 = 0;
                             species.rearlimbs2 = 0;
@@ -2582,6 +2651,7 @@ function generateRandomAlien(species,rand){
             switch(roll){
                 case -5:
                     species.frontlimbs = "FF";
+                    forelimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2592,6 +2662,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -4:
                     species.frontlimbs = "WW"; 
+                    forelimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2603,6 +2674,7 @@ function generateRandomAlien(species,rand){
                 case -3:
                 case -2:
                         species.frontlimbs = "WA"; 
+                        forelimbgroups = 1;
                         if(species.symmetry === "Asymmetrical"){
                             species.frontlimbs1 = d6();
                             species.frontlimbs2 = d6();
@@ -2616,6 +2688,7 @@ function generateRandomAlien(species,rand){
                 case 0:
                 case 1:
                     species.frontlimbs = "WL"; 
+                    forelimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2627,6 +2700,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 2: 
                     species.frontlimbs = "WN"; 
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -2637,6 +2711,7 @@ function generateRandomAlien(species,rand){
                 case 3:
                 case 4: 
                     species.frontlimbs = "FN";
+                    forelimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                     }else{
@@ -2645,6 +2720,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case 5: 
                     species.frontlimbs = "FF";
+                    forelimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.frontlimbs1 = d6();
                         species.frontlimbs2 = d6();
@@ -2660,6 +2736,7 @@ function generateRandomAlien(species,rand){
             switch(roll){
                 case -5:
                     species.rearlimbs = "FF";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2671,6 +2748,7 @@ function generateRandomAlien(species,rand){
                 case -4:
                     species.rearlimbs = "FM";
                     species.rearlimbgroups2 = posFlux()+2;
+                    rearlimbgroups = 1 + species.rearlimbgroups2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = 0;
@@ -2684,6 +2762,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -3:
                     species.rearlimbs = "FL";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2694,6 +2773,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -2:
                     species.rearlimbs = "FN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2702,6 +2782,7 @@ function generateRandomAlien(species,rand){
                     break;
                 case -1:
                     species.rearlimbs = "FF";
+                    rearlimbgroups = 2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = d6();
@@ -2715,6 +2796,7 @@ function generateRandomAlien(species,rand){
                 case 2:
                 case 3:
                     species.rearlimbs = "FN";
+                    rearlimbgroups = 1;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                     }else{
@@ -2724,6 +2806,7 @@ function generateRandomAlien(species,rand){
                 case 4:
                     species.rearlimbs = "FM";
                     species.rearlimbgroups2 = posFlux()+2;
+                    rearlimbgroups = 1 + species.rearlimbgroups2;
                     if(species.symmetry === "Asymmetrical"){
                         species.rearlimbs1 = d6();
                         species.rearlimbs2 = 0;
@@ -2737,11 +2820,16 @@ function generateRandomAlien(species,rand){
                     break;
                 case 5:
                     species.rearlimbs = "NN";
-                    species.stance = "Horizontal";
+                    rearlimbgroups = 0;
+                    
                     break;
             }
         }
-        
+        if(rearlimbgroups === 0 || forelimbgroups > rearlimbgroups){
+            species.stance = "Horizontal";
+        }else{
+            species.stance = "Vertical";
+        }
         // tail
         species.nonstandardmanipulators = 0;
         roll = d6() - d6() + structureMod; if(roll > 5){ roll = 5;}else if(roll < -5){ roll = -5;}
