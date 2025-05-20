@@ -490,6 +490,12 @@ function generateRandomAlien(species,rand){
             }
         }
     }
+    function shuffleArray(inputArray){
+        for (let i = inputArray.length - 1; i > 0; i--) {
+            const j = Math.floor(rand() * (i + 1));
+            [inputArray[i], inputArray[j]] = [inputArray[j], inputArray[i]];
+        }
+    }
     function setGender(){
         species.genderProbabilities = {};
        
@@ -514,6 +520,7 @@ function generateRandomAlien(species,rand){
             species.dna = "3NA";
             species.genderstructure = "EAB";
             species.genders = ["Egg Donor","Activator","Bearer"];
+            shuffleArray(species.genders);
             species.gender2 = species.genders[0];
             species.gender3 = species.genders[1];
             species.gender4 = pickRandom(species.genders);
@@ -540,6 +547,7 @@ function generateRandomAlien(species,rand){
             species.dna = "2NA";
             species.genderstructure = "Dual";
             species.genders = ["Female","Male"];
+            shuffleArray(species.genders);
             species.gender2 = species.genders[0];
             species.gender3 = species.genders[1];
             species.gender4 = pickRandom(species.genders);
@@ -566,7 +574,9 @@ function generateRandomAlien(species,rand){
         }else if(roll <= 3){
             species.dna = "2NA";
             species.genderstructure = "FMN";
-            species.genders = ["Female","Male","Neuter"];
+            species.genders = ["Female","Male"];
+            shuffleArray(species.genders);
+            species.genders.push("Neuter");
             species.gender2 = species.genders[0];
             species.gender3 = species.genders[1];
             species.gender4 = pickRandom(species.genders);
