@@ -119,10 +119,11 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
     this.templates = {};
     this.unpackStringTemplate = unpackStringTemplate;
     var UnpackedStringTemplates = { names: {} };
+    this.getRandomNameAndPattern = getRandomNameAndPattern;
     if(fromObject){
         templates = getWeightedPatternsFromJSON({}, sourceJson);
         var keys = Object.keys(templates);
-        var generator = {templates:templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
+        var generator = {templates:templates,keys:keys,getRandomName:getRandomName,getRandomNameAndPattern:getRandomNameAndPattern, setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
         callback(generator);
     }else{
         var xhr = new XMLHttpRequest();
@@ -131,7 +132,7 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
             var rawJson = xhr.responseText;
             templates = getWeightedPatternsFromJSON({}, JSON.parse(JSON.minify(rawJson)));
             var keys = Object.keys(templates);
-            var generator = {templates:templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom, unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
+            var generator = {templates:templates,keys:keys,getRandomName:getRandomName,setRandom:setRandom,getRandomNameAndPattern:getRandomNameAndPattern,unpackStringTemplate:unpackStringTemplate, setSeed:setSeed};
             callback(generator);
         });
         xhr.send();
@@ -149,20 +150,133 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
     function restoreDefaultForbiddenWords(){
         forbiddenWords = defaultForbiddenWords;
     }
-    function getRandomSubKey(key, minDepth, maxDepth){
-        if(typeof minDepth === "undefined"){ minDepth = 0;}
-        if(typeof maxDepth === "undefined"){ maxDepth = 2;}
-        if(typeof key === "undefined"){ key = "system"; }
-        var templatesSubset = this.templates[key];
-        var outKey = key;
-        var stop = false;
-        while (minDepth < maxDepth && stop === false){
-            var templatesSubset = this.templates[key];
-            var templateRoll =(templatesSubset.length * MathRandom()) >>> 0 ;
-            var template = templatesSubset[templateRoll];
-            var phrases = this.unpackStringTemplate(template);
+    function getRandomNameAndPattern(key,forbiddenWords){
+        var getNameWithChain = getRandomNameAndPattern;
+        var boundGetNameWithChain = getNameWithChain.bind(this);
+        var result = boundGetNameWithChain(boundGetNameWithChain, key,forbiddenWords);
+
+        return {name:result.piece, pattern:result.templatePiece};
+
+        
+        function getRandomNameAndPattern(self, key, bannedWords,depth) {
+            if(typeof bannedWords === "undefined"){
+                bannedWords = self.forbiddenWords;
+                if(typeof forbiddenWords === "undefined" || forbiddenWords === null){
+                    bannedWords = [];
+                }
+            }
+            if(typeof depth === "undefined"){
+                depth = 1;
+            }
+            if(key.indexOf("{") == -1){
+                var templatesSubset = this.templates[key];
+                var templateRoll =(templatesSubset.length * MathRandom()) >>> 0 ;
+                var template = templatesSubset[templateRoll];
+            }else{
+                template = key;
+            }     
+
+            var phrases = this.unpackStringTemplate(template); // convert string into array of phrase objects with child segments
+            var phraseRoll = (phrases.length * MathRandom()) >>> 0
+            var phrase = phrases[ phraseRoll ];
+            var currentText = "";
+            var currentTemplate = "";
+            var references = [];
+            var checkNot = -1;
+            var capitalize = false;
+            
+            var phraseContainsAnyReferences = false;
+            for (var i = 0, len = phrase.length; i < len; i++) {
+                var segment = phrase[i];
+                if (segment.reference || segment.references) {
+                    phraseContainsAnyReferences = true;
+                    break;   
+                }
+            }
+            for (var i = 0, len = phrase.length; i < len; i++) { // process each segment of the selected phrase
+                var segment = phrase[i];
+                var piece = "";
+                var pieceWithChain = {};
+                if (segment.text) {
+                    piece = segment.text;                
+                    if(piece.endsWith(">") && references.length > 0){
+                        var matches = piece.match(/<!\d>/g);
+                        if(matches != null && matches.length > 0){
+                            var number = +(matches[matches.length-1].match(/\d/)[0]);
+                            checkNot = number;
+                            var regex = new RegExp("<!"+number.toString() + ">","g");
+                            piece = piece.replace(regex,"");
+                            capitalize = false;
+                        }else{
+                            checkNot = -1;
+                            var matches = piece.match(/<c>/g);
+                            if(matches != null && matches.length > 0){
+                                capitalize = true;
+                                piece = piece.replace(/<c>/g,"");
+                            }
+                        }
+                    }else{
+                        checkNot = -1;
+                        capitalize = false;
+                    }
+                    currentText += piece;
+                    if(phraseContainsAnyReferences){ currentTemplate += piece; }else{ currentTemplate += "{"+key+"}"; }
+                    
+                } else if (segment.reference) {
+                    pieceWithChain = self(self,segment.reference,bannedWords,depth+1);
+                    piece = pieceWithChain.piece;
+                    if(checkNot >= 0){
+                        while(piece == references[checkNot]){
+                            pieceWithChain = self(self,segment.reference,bannedWords,depth+1);
+                            piece = pieceWithChain.piece;
+                        }
+                    }
+                    if(capitalize){
+                        piece = addCaps(piece);
+                    }
+                    currentText += piece;
+                    currentTemplate += pieceWithChain.templatePiece;
+                    references.push(piece);
+
+                } else if (segment.references) {
+                    var refIndex = (segment.references.length * MathRandom()) >>> 0;
+                    var ref = segment.references[refIndex];
+                    pieceWithChain = self(self,ref,bannedWords,depth);
+                    piece = pieceWithChain.piece;
+                    if(checkNot >= 0){
+                        while(piece == references[checkNot]){
+                            pieceWithChain = self(self,ref,bannedWords,depth)
+                            piece = pieceWithChain.piece;
+                        }
+                    }
+                    if(capitalize){
+                        piece = addCaps(piece);
+                    }
+                    currentText += piece;
+                    currentTemplate += pieceWithChain.templatePiece;
+                    references.push(piece);
+                }
+            }
+            if(currentText.indexOf("<") > 0 && currentText.indexOf("&") > 0 && currentText.indexOf(">") > 0){
+                for(var i = 0, len = references.length; i < len; i++){
+                    var regex = new RegExp("\<\&"+i+">","g");
+                    currentText = currentText.replace(regex,references[i]);
+                }
+            }
+            if(bannedWords.indexOf(currentText) >= 0){
+                var currentTextWithChain = self(self,key, bannedWords,true);
+                currentText = currentTextWithChain.piece;
+            }
+            currentText = currentText.replace(/\s+/g," ");
+
+            return {piece:currentText, templatePiece:currentTemplate};
         }
+
     }
+
+    
+
+
     function getRandomName(key, bannedWords, topLevel) {
         var extraLogs = false;
         if(typeof bannedWords === "undefined"){
@@ -171,11 +285,13 @@ export function NameGenerator(sourceJson,callback,forbiddenWords,randomizer,from
         if(typeof topLevel === "undefined"){
             topLevel = true;
             extraLogs = true;
+            //getRandomNameWithKeyChain(key, bannedWords, topLevel, []);
         }
         var templatesSubset = this.templates[key];
         var templateRoll =(templatesSubset.length * MathRandom()) >>> 0 ;
         var template = templatesSubset[templateRoll];
         var phrases = this.unpackStringTemplate(template); // convert string into array of phrase objects with child segments
+        // e.g. [{reference:"ship.navalname"}] or [{references:["ship.navalname","system.name"]}] or [{text:"a"}]
         UnpackedStringTemplates.names[key] = phrases;
         var phraseRoll = (phrases.length * MathRandom()) >>> 0
         var phrase = phrases[ phraseRoll ];
