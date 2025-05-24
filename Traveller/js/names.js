@@ -4691,7 +4691,7 @@ export function getNames(){
             "22:{word}'s {system.noun}",
             "4:{system.mythologicalname}",
             "4:{ship.navalname}",
-            "14:{system.systemwithoutinventedwords}",
+            "54:{system.systemwithoutinventedwords}",
             "5:{system.pastoral}",
             "16:{system.propernounprefix} {word}",
             "1:{system.propernounprefix} {word}'s",
