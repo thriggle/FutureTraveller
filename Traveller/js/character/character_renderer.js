@@ -72,6 +72,9 @@ function careers(character,element){
             if(careers[i].majorpublications && careers[i].majorpublications > 0){
                 awards += "<li>" + careers[i].majorpublications + " Award-Winning Publications</li>";
             }
+            if(careers[i].commendations){ 
+                awards += "<li>Total Commendations: " + careers[i].commendations + "</li>";
+            }
             if(careers[i].career == ENUM_CAREERS.Noble){
                 var nobleIntrigue = character.getNobleIntrigue();
                 awards += "<li>Successful Intrigues: " + nobleIntrigue.successfulIntrigues + "</li>";

@@ -633,6 +633,7 @@ function enableControls(){
 }
 function validateQualifications(){
     var qual = person.getQualifications();
+    if(qual.Agent){ document.getElementById("btnAgent").removeAttribute("disabled"); }else{ document.getElementById("btnAgent").setAttribute("disabled","");}
     if(qual.Merchant){ document.getElementById("btnMerchant").removeAttribute("disabled"); }else{ document.getElementById("btnMerchant").setAttribute("disabled","");}
     if(qual.Citizen){ document.getElementById("btnCitizen").removeAttribute("disabled"); }else{ document.getElementById("btnCitizen").setAttribute("disabled","");}
     if(qual.Craftsman){ document.getElementById("btnCraftsman").removeAttribute("disabled"); }else{ document.getElementById("btnCraftsman").setAttribute("disabled","");}
@@ -699,6 +700,9 @@ function getCareerDescription(career,isSchool){
     if(typeof isSchool === "undefined"){ isSchool = false;}
     var desc = isSchool ? "<div>Enroll in " + career + "?</div>" : "<div><strong>Begin a "+career+" career?</strong></div>";
     switch(career){
+        case "Agent":
+            desc += "<ul><li>Begin: C3</li><li>Controlling Characteristics: C1, C2, C3, C4</li><li>Continue: Str + Terms</li></ul>";
+            break;
         case "Craftsman":
             var craftsmanQualifications = person.getCraftsmanQualifications();
             var masterPoints = craftsmanQualifications.masterPoints;

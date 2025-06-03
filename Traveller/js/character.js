@@ -1687,8 +1687,11 @@ export function createCharacter(roller, species, chosenGender){
                         gainSkillWithPromptForCategory(note,"SHIP",()=>{nextSteps(tablesPerTerm,getOlder);});
                         })(tablesPerTerm,getOlder);
                     }else if(newSkill === "Any Knowledge"){
-                        record("Would gain "+newSkill+" from " + table + " here.");
-                        nextSteps(tablesPerTerm,getOlder);
+                        pickSkill("Any","Choose any knowledge",(sk)=>{
+                            gainSkillOrKnowledge(sk.skill, sk.knowledge,false,note);
+                            updateFunc();
+                            nextSteps(tablesPerTerm,getOlder);
+                        },true);
                     }else if(newSkill === "Capital"){ // noble
                         // world knowledge of world of highest held noble land grant, value = 1D
                         var numRanks = roller.d6().result;
@@ -1771,6 +1774,9 @@ export function createCharacter(roller, species, chosenGender){
                     break;
                 case ENUM_CAREERS.Noble:
                     continueTarget = 7;
+                    break;
+                case ENUM_CAREERS.Agent:
+                    continueTarget = characteristics[0].value;
                     break;
 
             }
@@ -1885,6 +1891,9 @@ export function createCharacter(roller, species, chosenGender){
                                 record("Continue as Noble: [" + continueResult.rolls.join(",") + "] < 7 ? " + (passedContinueRoll ? "PASS":"FAIL"));
                                 updateFunc();
                                 break;
+                            case ENUM_CAREERS.Agent:
+                                passedContinueRoll = continueResult.result <= characteristics[0].value;
+                                record("Continue as Agent: [" + continueResult.rolls.join(",") + "] < Str ("+characteristics[0].value+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
                         }
                         if(passedContinueRoll){
                             pickOption(["Continue with this career","Muster Out"],"Continue Roll was successful. <br/> Do wish to continue this career or start adventuring?",(choice)=>{
@@ -2022,6 +2031,10 @@ export function createCharacter(roller, species, chosenGender){
                     moneyMod = career.terms + career.benefitDM; 
                     bennyMod = career.rank.officer + career.benefitDM;
                 break;
+                case ENUM_CAREERS.Agent:
+                    moneyMod = career.terms;
+                    bennyMod = career.commendations;
+                    break;
                 case ENUM_CAREERS.Spacer:
                 case ENUM_CAREERS.Marine:
                 case ENUM_CAREERS.Soldier:
@@ -2550,6 +2563,165 @@ export function createCharacter(roller, species, chosenGender){
             }
         }else{
             
+            careers[careers.length-1].terms += 1;
+            advanceAndGetSkills();
+        }
+    }
+    function resolveAgent(career, updateFunc){
+        var hasBeen = canResumeFromService(career);
+        if(hasBeen.canResume){
+            swapCareerIndices(hasBeen.prevCareerIndex);
+        }
+        var priorCareers = careers.length;
+        var rollForUndercoverAssignment = function(){
+            var rollOne = roller.d6().result;
+            while(rollOne > 3){ rollOne = roller.d6().result; } 
+            var rollTwo = roller.d6().result;;
+            var rollThree = roller.d6().result;
+            while (rollThree > 3){ rollThree = roller.d6().result; }
+            var jobOrHobbyResult = citizenLifeJob(roller); // returns {rolls:[roll1.result,roll2.result,roll3.result],job:{skill:ENUM_SKILLS.Driver,knowledge:"ACV"}};
+            var jobText =(jobOrHobbyResult.job.knowledge ? jobOrHobbyResult.job.knowledge : jobOrHobbyResult.job.skill);
+            var assignments = [
+                [
+                    {label:"Army Enlistment", career:ENUM_CAREERS.Soldier,assignments:["Private","Corporal","Sergeant"]},
+                    {label:"Army Officer", career:ENUM_CAREERS.Soldier,assignments:["First Lieutenant","Captain","Major"]},
+                    {label:"Marine Enlisted", career:ENUM_CAREERS.Marine,assignments:["Corporal","Sergeant","Master Sergeant"]},
+                    {label:"Marine Officer",career:ENUM_CAREERS.Marine,assignments:["Captain","Force Commander","Coronel"]},
+                    {label:"Navy Enlisted", career:ENUM_CAREERS.Spacer,assignments:["Able Spacer","Petty Officer First","Master Chief"]},
+                    {label:"Navy Officer", career:ENUM_CAREERS.Spacer,assignments:["Lieutenant","Commander","Captain"]}
+                ],
+                [
+                    {label:"Scholar",career:ENUM_CAREERS.Scholar,assignments:["Amateur","Lecturer","Instructor"]},
+                    {label:"Scholar",career:ENUM_CAREERS.Scholar,assignments:["Assistant Professor","Professor","Distinguished Professor"]},
+                    {label:"Entertainer",career:ENUM_CAREERS.Entertainer,assignments:["Musician","Actor","Dancer"]},
+                    {label:"Entertainer",career:ENUM_CAREERS.Entertainer,assignments:["Artist","Author","Chef"]},
+                    {label:"Citizen",career:ENUM_CAREERS.Citizen,assignments:[jobText + " Professional",jobText + " Professional",jobText + " Professional"]},
+                    {label:"Citizen",career:ENUM_CAREERS.Citizen,assignments:[jobText + " Hobbyist",jobText + " Hobbyist",jobText + " Hobbyist"]},
+                ],
+                [
+                    {label:"Merchant",career:ENUM_CAREERS.Merchant,assignments:["Engineer","Astrogator","Steward"]},
+                    {label:"Merchant",career:ENUM_CAREERS.Merchant,assignments:["Pilot","Freightmaster","Counsellor"]},
+                    {label:"Scout",career:ENUM_CAREERS.Scout,assignments:["Courier","Courier","Courier"]},
+                    {label:"Scout",career:ENUM_CAREERS.Scout,assignments:["World Discover","World Discover","World Discover"]},
+                    {label:"Noble",career:ENUM_CAREERS.Noble,assignments:["Knight","Baron","Marquis"]},
+                    {label:"Functionary",career:ENUM_CAREERS.Functionary,assignments:["Functionary","Functionary","Functionary"]}
+                ]
+            ];
+            var assignment = assignments[rollOne-1][rollTwo-1];
+            var specificAssignment = assignment.assignments[rollThree-1];
+            return {specificAssignment:specificAssignment, text:"Assigned to impersonate a " + specificAssignment + " in the " + assignment.label + " career.",career:assignment.career};
+        }
+        var advanceAndGetSkills = function(){
+            var assignment = rollForUndercoverAssignment();
+            record(assignment.text);
+            updateFunc();
+            // pick a skill to gain from the assignment.career's career skill tables
+            pickSkill(assignment.career,"Choose a skill to gain from the undercover " + assignment.specificAssignment + " assignment.",(skill)=>{
+                if(typeof skill.knowledge == "undefined"){
+                    skill.label = skill.skill;  
+                }else{
+                    skill.label = skill.skill+"("+skill.knowledge+")";
+                }
+                gainSkillWithPromptForKnowledge("",skill.label,()=>{
+                    updateFunc();
+                    var termSkillTables = [
+                        {age:true},
+                        {age:true}
+                    ];
+                    pickOption(CCs,"Choose a controlling characteristic for the term.",function(selectedCC){
+                        var defaultValue = 0;
+                        var ccIndex = +(selectedCC.substring(1))-1;
+                        var ccValue = characteristics[ccIndex].value;
+                        if(ccValue > 12){
+                            defaultValue = ccValue - 12;
+                        }
+                        CCs.splice(CCs.indexOf(selectedCC),1);
+                        var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
+                        var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll > " + (val+ccValue),"Published if Reward roll < " + (-val+ccValue)]);
+                        pickOption(cautionBraveryOptions,"Select caution(+) or bravery(-) mod.<br/>" +
+                            "Target " + selectedCC + "=" + ccValue + "<br/>"+
+                            "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
+                            (selectedMod)=>{
+                                var caution = +(selectedMod);
+                                var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                                var riskResult = checkCharacteristic(selectedCC,numDice,caution,"Risk Roll");
+                                record(riskResult.remarks);
+                                updateFunc();
+                                if(riskResult.success){
+                                    record("Safely conducted undercover mission.");
+                                }else{
+                                    record("Encountered danger during undercover mission.");
+                                    // roll for injury 
+                                    var penalty = 0;
+                                    if(caution < 0){ penalty += caution;}
+                                    var fresult = roller.flux().result;
+                                    penalty += fresult;
+                                    record("Attribute Damage = " + (caution < 0 ? " [" + (caution) + " bravery] + " : "") + " [" + fresult + " flux] = " + penalty);
+                                    if(penalty < 0){
+                                        // apply injury
+                                        decreaseCharacteristic(selectedCC,-penalty,"Injury!");
+                                        if(characteristics[ccIndex].value <= 0){ 
+                                            record("This character has died. Please create a new character.");
+                                            updateFunc();
+                                            return;
+                                        }
+                                        updateFunc();
+                                    }else{
+                                        record("Suffered a superficial injury. Characteristics unchanged."); updateFunc();
+                                    }
+                                }
+                                // check for reward
+                                var rewardResult = checkCharacteristic(selectedCC,numDice,-caution,"Reward Roll");
+                                record(rewardResult.remarks); 
+                                updateFunc();
+                                if(rewardResult.success){
+                                    var commendationLevel = ccValue - rewardResult.result;
+                                    if(commendationLevel < 0){ commendationLevel = 0; }
+                                    record("Earned a Commendation-" + commendationLevel + " for successful undercover mission.");
+                                    careers[careers.length-1].commendations += 1;
+                                    careers[careers.length-1].awards.push("Commendation-" + commendationLevel);
+                                    updateFunc();
+                                    termSkillTables.push({age:false});
+                                    termSkillTables.push({age:false});
+                                    termSkillTables.push({age:false});
+                                    termSkillTables.push({age:false});
+                                }else{
+                                    record("Undercover mission failed.");
+                                    updateFunc();
+                                }
+                                advanceAge(1);
+                                advanceAge(1);
+                                // gain skills
+                                gainTermSkills(termSkillTables,ENUM_CAREERS.Agent,updateFunc,()=>{
+                                    updateFunc();
+                                    promptContinue(ENUM_CAREERS.Agent,updateFunc);
+                                });
+                            },true, defaultValue,cautionBraveryPreviews,false);
+                    },true,undefined,CCDescriptions);
+                },false);
+            },undefined,undefined,true);
+        };
+        if(CCs.length == 0 || priorCareers == 0 || careers[priorCareers - 1].active == false || hasBeen.canResume){
+            CCs = getCCs(career);
+        }
+        var CC = "";
+        var CCDescriptions = CCs.map((val)=>{var cci = +(val.substring(1))-1; return characteristics[cci].name + " (" + characteristics[cci].value + ")";});
+        if(priorCareers == 0 || careers[priorCareers - 1].active == false){
+            
+            // apply for career
+            var numDice = species.Characteristics[2].nD + gender.Characteristics[2].nD + caste.Characteristics[2].nD;
+            var beginRoll = checkCharacteristic(characteristics[2].name,numDice,0,"Begin Agent vs "+(characteristics[2].name));
+            record(beginRoll.remarks);
+            updateFunc();
+            if(!beginRoll.success){
+                record("Failed to begin Agent career.")
+                advanceAge(1); updateFunc();
+            }else{
+                careers.push({career:career,terms:1,active:true,awards:[],commendations:0});
+                record("Became an Agent."); updateFunc();
+                advanceAndGetSkills();
+            }
+        }else{
             careers[careers.length-1].terms += 1;
             advanceAndGetSkills();
         }
@@ -5762,6 +5934,7 @@ export function createCharacter(roller, species, chosenGender){
         q.MusterOut = !isDead && (careers.length > 0 && musteredOut == false);
         q.Citizen = availability && careers.length == 0;
         q.Soldier = availability && (careers.length == 0 || (!hasBeen[ENUM_CAREERS.Soldier] || isNow[ENUM_CAREERS.Soldier]));
+        q.Agent = availability && (careers.length == 0 || (!hasBeen[ENUM_CAREERS.Agent] || isNow[ENUM_CAREERS.Agent]));
         q.Merchant = availability && (careers.length == 0 || (!hasBeen[ENUM_CAREERS.Merchant] || isNow[ENUM_CAREERS.Merchant]));
         q.Spacer = availability && (careers.length == 0 || (!hasBeen[ENUM_CAREERS.Spacer] || isNow[ENUM_CAREERS.Spacer]));
         q.Marine = availability && (careers.length == 0 ||(!hasBeen[ENUM_CAREERS.Marine] || isNow[ENUM_CAREERS.Marine]));
