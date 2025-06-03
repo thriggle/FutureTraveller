@@ -373,10 +373,10 @@ export var CareerSkillTables = {
         "Tables":["Personal","Academic","Travel","Mission","Conflict","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
-        "Travel":["Zero-G","Vacc Suit","Pilot","Starhip Skill","Gunner","Sensors"],
+        "Travel":["Zero-G","Vacc Suit","Pilot","Starship Skill","Gunner","Sensors"],
         "Mission":["Survey","Survival","Hostile Environ","Animals","Bureaucrat","Navigator"],
         "Conflict":["Fighter","Soldier Skill","Flyer","Stealth","Gunner","Streetwise"],
-        "Vocation":["Any Knowledge","Admin","Language","Starhip Skill","Forensics","Comms"],
+        "Vocation":["Any Knowledge","Admin","Language","Starship Skill","Forensics","Comms"],
         "Avocation":["One Art","One Science","Athlete","Medic","Seafarer","One Trade"]
     },
     "Rogue":{ // Career 10
@@ -384,7 +384,7 @@ export var CareerSkillTables = {
         "Personal":["C1","C2","C3","C4","C5","C6"],
         "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
         "World Travel":["Driver","Flyer","Hostile Environ","High-G","Vacc Suit","Navigator"],
-        "Space Travel":["Starhip Skill","Pilot","Engineer","Zero-G","Vacc Suit","Astrogator"],
+        "Space Travel":["Starship Skill","Pilot","Engineer","Zero-G","Vacc Suit","Astrogator"],
         "Business":["Trader","Broker","Computer","JOT","Teacher","Fighter"],
         "Vocation":["Advocate","Counsellor","Language","Leader","Streetwise","Comms"],
         "Avocation":["One Art","One Science","Athlete","Soldier Skill","Starship Skill","One Trade"]
