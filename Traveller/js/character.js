@@ -215,6 +215,9 @@ export function createCharacter(roller, species, chosenGender){
                     careerFame = Math.floor(characteristics[5].value * 1.5);
                     careerFame += timesExiled;
                 break;
+                case ENUM_CAREERS.Agent:
+                    careerFame += career.commendations;
+                    break;
             }
             if(careerFame > highestSourceOfFame){
                 highestSourceOfFame = careerFame;
@@ -2602,21 +2605,21 @@ export function createCharacter(roller, species, chosenGender){
                     {label:"Merchant",career:ENUM_CAREERS.Merchant,assignments:["Engineer","Astrogator","Steward"]},
                     {label:"Merchant",career:ENUM_CAREERS.Merchant,assignments:["Pilot","Freightmaster","Counsellor"]},
                     {label:"Scout",career:ENUM_CAREERS.Scout,assignments:["Courier","Courier","Courier"]},
-                    {label:"Scout",career:ENUM_CAREERS.Scout,assignments:["World Discover","World Discover","World Discover"]},
+                    {label:"Scout",career:ENUM_CAREERS.Scout,assignments:["World Discoverer","World Discoverer","World Discoverer"]},
                     {label:"Noble",career:ENUM_CAREERS.Noble,assignments:["Knight","Baron","Marquis"]},
                     {label:"Functionary",career:ENUM_CAREERS.Functionary,assignments:["Functionary","Functionary","Functionary"]}
                 ]
             ];
             var assignment = assignments[rollOne-1][rollTwo-1];
             var specificAssignment = assignment.assignments[rollThree-1];
-            return {specificAssignment:specificAssignment, text:"Assigned to impersonate a " + specificAssignment + " in the " + assignment.label + " career.",career:assignment.career};
+            return {label:assignment.label, specificAssignment:specificAssignment, text:"Assigned to impersonate a " + specificAssignment + " in the " + assignment.label + " career.",career:assignment.career};
         }
         var advanceAndGetSkills = function(){
             var assignment = rollForUndercoverAssignment();
             record(assignment.text);
             updateFunc();
             // pick a skill to gain from the assignment.career's career skill tables
-            pickSkill(assignment.career,"Choose a skill to gain from the undercover " + assignment.specificAssignment + " assignment.",(skill)=>{
+            pickSkill(assignment.career,"Choose a skill to gain from the undercover " + assignment.label + " (" + assignment.specificAssignment + ") assignment.",(skill)=>{
                 if(typeof skill.knowledge == "undefined"){
                     skill.label = skill.skill;  
                 }else{
