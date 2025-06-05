@@ -1779,7 +1779,7 @@ export function createCharacter(roller, species, chosenGender){
                     continueTarget = 7;
                     break;
                 case ENUM_CAREERS.Agent:
-                    continueTarget = characteristics[0].value;
+                    continueTarget = characteristics[0].value + careers[careers.length-1].terms;
                     break;
 
             }
@@ -1895,7 +1895,7 @@ export function createCharacter(roller, species, chosenGender){
                                 updateFunc();
                                 break;
                             case ENUM_CAREERS.Agent:
-                                passedContinueRoll = continueResult.result <= characteristics[0].value;
+                                passedContinueRoll = continueResult.result <= characteristics[0].value + careers[careers.length-1].terms;
                                 record("Continue as Agent: [" + continueResult.rolls.join(",") + "] < Str ("+characteristics[0].value+") ? " + (passedContinueRoll ? "PASS":"FAIL"));
                         }
                         if(passedContinueRoll){
