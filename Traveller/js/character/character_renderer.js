@@ -74,6 +74,8 @@ function careers(character,element){
             }
             if(careers[i].commendations === 0){ 
                 awards += "<li>No Commendations</li>";
+            }else if(careers[i].commendations > 0){
+                awards += "<li>Commendation Score: " + careers[i].commendationScore + "</li>";
             }
             if(careers[i].career == ENUM_CAREERS.Noble){
                 var nobleIntrigue = character.getNobleIntrigue();
