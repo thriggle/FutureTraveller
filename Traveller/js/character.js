@@ -2640,7 +2640,7 @@ export function createCharacter(roller, species, chosenGender){
                         }
                         CCs.splice(CCs.indexOf(selectedCC),1);
                         var cautionBraveryOptions = [9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5,-6,-7,-8,-9];
-                        var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll > " + (val+ccValue),"Published if Reward roll < " + (-val+ccValue)]);
+                        var cautionBraveryPreviews = cautionBraveryOptions.map((val,i,arr)=>["Injured if Risk roll > " + (val+ccValue),"Commendation if Reward roll < " + (-val+ccValue)]);
                         pickOption(cautionBraveryOptions,"Select caution(+) or bravery(-) mod.<br/>" +
                             "Target " + selectedCC + "=" + ccValue + "<br/>"+
                             "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
@@ -2682,6 +2682,10 @@ export function createCharacter(roller, species, chosenGender){
                                     if(commendationLevel < 0){ commendationLevel = 0; }
                                     record("Earned a Commendation-" + commendationLevel + " for successful undercover mission.");
                                     careers[careers.length-1].commendations += 1;
+                                    if(typeof careers[careers.length-1].commendationScore == "undefined"){ 
+                                        careers[careers.length-1].commendationScore = 0;
+                                    }
+                                    careers[careers.length-1].commendationScore += commendationLevel;
                                     careers[careers.length-1].awards.push("Commendation-" + commendationLevel);
                                     updateFunc();
                                     termSkillTables.push({age:false});
