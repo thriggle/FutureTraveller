@@ -457,51 +457,68 @@
     <div data-nav="map">
         <div class="control-block">
             <div class="controls">
-                <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
-                <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
-                <select name="slctMapSize" id="slctMapSize">
-                    <!-- <option value="Domain" data-subsectorxoffset="0" data-subsectoryoffset="0" >Domain (128x160)</option> -->
-                    <option value="Sector" data-subsectorxoffset="0" data-subsectoryoffset="0" >Sector (32x40)</option>
-                    <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="0" >Alpha Quadrant (ABEF) (16x20)</option>
-                    <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="0">Beta Quadrant (CDGH)</option>
-                    <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="20">Gamma Quadrant (IJMN)</option>
-                    <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="20">Delta Quadrant (KLOP)</option>
-                    <option value="Quadrant" data-subsectorxoffset="8" data-subsectoryoffset="10">Central Quadrant (FGJK)</option>
-                    <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="0" selected="selected">Subsector A (8x10)</option>
-                    <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="0">Subsector B</option>
-                    <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="0">Subsector C</option>
-                    <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="0">Subsector D</option>
-                    <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="10">Subsector E</option>
-                    <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="10">Subsector F</option>
-                    <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="10">Subsector G</option>
-                    <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="10">Subsector H</option>
-                    <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="20">Subsector I</option>
-                    <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="20">Subsector J</option>
-                    <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="20">Subsector K</option>
-                    <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="20">Subsector L</option>
-                    <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="30">Subsector M</option>
-                    <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="30">Subsector N</option>
-                    <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="30">Subsector O</option>
-                    <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="30">Subsector P</option>
-                </select>
-                <select name="slctStellarDensity" id="slctStellarDensity">
-                    <option value="Extra Galactic">Extra Galactic (1%)</option>
-                    <option value="Rift">Rift (3%)</option>
-                    <option value="Sparse">Sparse (17%)</option>
-                    <option value="Scattered">Scattered (33%)</option>
-                    <option value="Scattered2">Somewhat Scattered (42%)</option>
-                    <option value="Standard" selected="selected">Standard (50%)</option>
-                    <option value="Dense">Dense (66%)</option>
-                    <option value="Cluster">Cluster (83%)</option>
-                    <option value="Core">Core (97%)</option>
-                    <option value="Clump">Dense in middle</option>
-                    <option value="Flux">Fluctuating</option>
-                </select>
-                <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems"
+                <fieldset class="collapsed">
+                    <legend>Map Source</legend>
+                    <input type="radio" name="mapSource" id="mapSource1" value="travmap"></input>
+                    <label for="mapSource1">TravellerMap</label>
+                    <input type="radio" name="mapSource" id="mapSource2" checked="checked" value="custom"></input>
+                    <label for="mapSource2">Custom Map</label>
+                </fieldset>
+                <fieldset id="fldstTravellerMapDetails" style="display:none;">
+                    <legend>TravellerMap Settings</legend>
+                    <label for="slctTravMapMilieu">Milieu: <select id="slctTravMapMilieu"></select></label>
+                    <label for="slctTravMapSector">Sector: <select id="slctTravMapSector" ></select></label>
+                    <label for="btnLoadTravMap"><input type="button" id="btnLoadTravMap" value="Load Map"></label>
+
+                </fieldset>
+                <fieldset id="fldstCustomMapDetails">
+                    <legend>Custom Map Settings</legend>
+                    <label for="chkUseRandom"><input id="chkUseRandom" type="checkbox" checked="checked"> Use Random Seed</label>
+                    <label for="txtSeed"><input title="random seed" id="txtSeed" type="text"></label>
+                    <select name="slctMapSize" id="slctMapSize">
+                        <!-- <option value="Domain" data-subsectorxoffset="0" data-subsectoryoffset="0" >Domain (128x160)</option> -->
+                        <option value="Sector" data-subsectorxoffset="0" data-subsectoryoffset="0" >Sector (32x40)</option>
+                        <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="0" >Alpha Quadrant (ABEF) (16x20)</option>
+                        <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="0">Beta Quadrant (CDGH)</option>
+                        <option value="Quadrant" data-subsectorxoffset="0" data-subsectoryoffset="20">Gamma Quadrant (IJMN)</option>
+                        <option value="Quadrant" data-subsectorxoffset="16" data-subsectoryoffset="20">Delta Quadrant (KLOP)</option>
+                        <option value="Quadrant" data-subsectorxoffset="8" data-subsectoryoffset="10">Central Quadrant (FGJK)</option>
+                        <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="0" selected="selected">Subsector A (8x10)</option>
+                        <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="0">Subsector B</option>
+                        <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="0">Subsector C</option>
+                        <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="0">Subsector D</option>
+                        <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="10">Subsector E</option>
+                        <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="10">Subsector F</option>
+                        <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="10">Subsector G</option>
+                        <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="10">Subsector H</option>
+                        <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="20">Subsector I</option>
+                        <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="20">Subsector J</option>
+                        <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="20">Subsector K</option>
+                        <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="20">Subsector L</option>
+                        <option value="Subsector" data-subsectorxoffset="0" data-subsectoryoffset="30">Subsector M</option>
+                        <option value="Subsector" data-subsectorxoffset="8" data-subsectoryoffset="30">Subsector N</option>
+                        <option value="Subsector" data-subsectorxoffset="16" data-subsectoryoffset="30">Subsector O</option>
+                        <option value="Subsector" data-subsectorxoffset="24" data-subsectoryoffset="30">Subsector P</option>
+                    </select>
+                    <select name="slctStellarDensity" id="slctStellarDensity">
+                        <option value="Extra Galactic">Extra Galactic (1%)</option>
+                        <option value="Rift">Rift (3%)</option>
+                        <option value="Sparse">Sparse (17%)</option>
+                        <option value="Scattered">Scattered (33%)</option>
+                        <option value="Scattered2">Somewhat Scattered (42%)</option>
+                        <option value="Standard" selected="selected">Standard (50%)</option>
+                        <option value="Dense">Dense (66%)</option>
+                        <option value="Cluster">Cluster (83%)</option>
+                        <option value="Core">Core (97%)</option>
+                        <option value="Clump">Dense in middle</option>
+                        <option value="Flux">Fluctuating</option>
+                    </select>
+                    <label for="btnPopulateSystems"><input type="button" id="btnPopulateSystems" name="btnPopulateSystems"
                         value="Populate Map"></label>
-                <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems"
-                        value="Clear Map"></label>
-                <label for="btnSaveImg"><input type="button" id="btnSaveImg" name="btnSaveImage" value="Save .png" /></label>
+                        <label for="btnClearSystems"><input type="button" id="btnClearSystems" name="btnClearSystems"
+                            value="Clear Map"></label>
+                            <label for="btnSaveImg"><input type="button" id="btnSaveImg" name="btnSaveImage" value="Save .png" /></label>
+                        </fieldset>
                 <br />
                 <fieldset class="collapsed">
                     <legend>Appearance</legend>
@@ -1765,6 +1782,115 @@
                     displaySubsectorGrid = document.getElementById("chkDisplaySubsectorGrid").checked;
                     drawMap(mapContent);
                 });
+                // add event listener to mapSource radio button selection
+                var mapSource = document.querySelectorAll("input[name='mapSource']");
+                for(var i = 0, len = mapSource.length; i < len; i++){
+                    mapSource[i].addEventListener("change",function(e){
+                        var source = e.target.value;
+                        if(source === "custom"){
+                            document.getElementById("fldstCustomMapDetails").style.display = "inline-block";
+                            document.getElementById("fldstTravellerMapDetails").style.display = "none";
+                        }else{
+                            document.getElementById("fldstCustomMapDetails").style.display = "none";
+                            document.getElementById("fldstTravellerMapDetails").style.display = "inline-block";
+                            document.getElementById("slctMapSize").value = "Sector";
+                            mapSizeChanged();
+                            
+                        }
+                    });
+                }
+                // make an HTTP request to https://travellermap.com/data to get the sector list as JSON object
+                fetch("https://travellermap.com/data")
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        var arrMilieu = [];
+                        data.Sectors.forEach(sector => {
+                            if(sector.Tags.indexOf("Official OTU")==0 || sector.Tags.indexOf("OTU")==0){
+
+                                // add sector Milieu to array if not already present
+                                if(!arrMilieu.some(milieu => milieu.name === sector.Milieu)){
+                                    arrMilieu.push({name: sector.Milieu, sectors: [{name: sector.Names[0].Text, abbr: sector.Abbreviation}]});
+                                }else{
+                                    // find the Milieu in the array and add the sector name to its sectors array
+                                    arrMilieu.forEach(milieu => {
+                                        if(milieu.name === sector.Milieu){
+                                            milieu.sectors.push({name: sector.Names[0].Text, abbr: sector.Abbreviation});
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        // add the Milieu options to the select
+                        var milieuSelect = document.getElementById("slctTravMapMilieu");
+                        arrMilieu.forEach(milieu => {
+                            // sort the sectors alphabetically by name
+                            milieu.sectors.sort((a, b) => a.name.localeCompare(b.name));
+
+                            var option = document.createElement("option");
+                            option.value = milieu.name;
+                            option.textContent = milieu.name;
+                            milieuSelect.appendChild(option);
+                        });
+                        // add event listener to milieu select to populate sector select options
+                        milieuSelect.addEventListener("change", onMilieuChange);
+                        
+                        function onMilieuChange() {
+                            var milieuSelect = document.getElementById("slctTravMapMilieu");
+                            var selectedMilieu = milieuSelect.value;
+                            console.log("Selected Milieu: " + selectedMilieu);
+                            var sectorSelect = document.getElementById("slctTravMapSector");
+                            // remove all options from sector select
+                            var sectorOptions = sectorSelect.querySelectorAll("option");
+                            sectorOptions.forEach(option => {
+                                option.remove();
+                            });
+                            var milieu = arrMilieu.find(m => m.name === selectedMilieu);
+                            console.log(milieu);
+                            milieu.sectors.forEach(sector => {
+                                var option = document.createElement("option");
+                                option.value = sector.abbr;
+                                option.textContent = sector.name + " (" + sector.abbr + ")";
+                                sectorSelect.appendChild(option);
+                            });
+                        }
+                        var sectorSelect = document.getElementById("slctTravMapSector");
+                        // add event listener to sector select to invoke HTTP Request to https://travellermap.com/data/sectorname?milieu=milieuvalue
+                        sectorSelect.addEventListener("change", function () {
+                            loadTravMapSector();  
+                        });
+                        document.getElementById("btnLoadTravMap").addEventListener("click",function(){
+                            loadTravMapSector();
+                        });
+                        function loadTravMapSector(){
+                            var sectorSelect = document.getElementById("slctTravMapSector");
+                            var milieuSelect = document.getElementById("slctTravMapMilieu");
+                            var selectedSector = sectorSelect.value;
+                            var selectedMilieu = milieuSelect.value;
+                            // make HTTP request to https://travellermap.com/data/sectorname?milieu=milieuvalue to return text data
+                            fetch(`https://travellermap.com/data/${selectedSector}/tab?milieu=${selectedMilieu}&type=TabDelimited`)
+                                .then(sectorData => {
+                                   // set sectordata text area to sectorData value
+                                   console.log(sectorData);
+                                    if(sectorData.status !== 200){
+                                        throw new Error("Failed to load sector data: " + sectorData.statusText);
+                                    }
+                                   return sectorData.text();
+                                }).then(text=>{
+                                    console.log(text);
+                                    document.getElementById("sectordata").value = text;
+                                    if(text === ""){
+                                        alert("Sector data is empty.");
+                                    }else{
+                                        populateSubsectorFromSectorData(text);
+                                    }
+                                }).catch(error => {
+                                    console.error(error);
+                                });     
+                        }
+                        onMilieuChange();
+                    });
+                
                 document.getElementById("gridLineColor").addEventListener("input",function(){
                     GRID_LINE_COLOR = document.getElementById("gridLineColor").value;
                     if(displaySubsectorGrid){
@@ -2697,6 +2823,7 @@
                     }
                 }
                 if(hexIndex == -1){ alert("Imported file is missing Hex column."); }
+                if(importedRows[importedRows.length-1] == ""){ importedRows.pop(); } // remove empty last row
                 for(var rowIndex = 1, numRows = importedRows.length; rowIndex < numRows; rowIndex++){
                     var row = importedRows[rowIndex];
                     var cells = row.split(/\t/g);
