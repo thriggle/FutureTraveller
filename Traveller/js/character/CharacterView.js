@@ -11,8 +11,160 @@ import { getNames } from "../names.js";
 var nameGenerator;
 var roller = getRollerFromSeed(), person;
 NameGenerator(getNames(),(generator)=>{ nameGenerator = generator;},undefined,roller.random,true);
-//document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
-newCharacter(); 
+
+var rdoHomeworlds = document.getElementsByName("homeworld");
+for (var i = 0, len = rdoHomeworlds.length; i < len; i++) {
+    var rdo = rdoHomeworlds[i];
+    rdo.addEventListener("change", function (e) {
+        if (e.target.value === "specify") {
+            document.getElementById("divSpecifyTradeCodes").style.display = "block";
+            document.getElementById("divChooseHomeworld").style.display = "none";
+        } else {
+            document.getElementById("divSpecifyTradeCodes").style.display = "none";
+            document.getElementById("divChooseHomeworld").style.display = "block";
+        }
+    });
+}
+newCharacter();
+    fetch("https://travellermap.com/data").then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        var arrMilieu = [];
+                        data.Sectors.forEach(sector => {
+                            if(sector.Tags.indexOf("Official OTU")==0 || sector.Tags.indexOf("OTU")==0){
+
+                                // add sector Milieu to array if not already present
+                                if(!arrMilieu.some(milieu => milieu.name === sector.Milieu)){
+                                    arrMilieu.push({name: sector.Milieu, sectors: [{name: sector.Names[0].Text, abbr: sector.Abbreviation}]});
+                                }else{
+                                    // find the Milieu in the array and add the sector name to its sectors array
+                                    arrMilieu.forEach(milieu => {
+                                        if(milieu.name === sector.Milieu){
+                                            milieu.sectors.push({name: sector.Names[0].Text, abbr: sector.Abbreviation});
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        // add the Milieu options to the select
+                        var milieuSelect = document.getElementById("slctMilieu");
+                        arrMilieu.forEach(milieu => {
+                            // sort the sectors alphabetically by name
+                            milieu.sectors.sort((a, b) => a.name.localeCompare(b.name));
+
+                            var option = document.createElement("option");
+                            option.value = milieu.name;
+                            option.textContent = milieu.name;
+                            milieuSelect.appendChild(option);
+                        });
+                        // add event listener to milieu select to populate sector select options
+                        milieuSelect.addEventListener("change", onMilieuChange);
+                        function onMilieuChange() {
+                            var milieuSelect = document.getElementById("slctMilieu");
+                            var selectedMilieu = milieuSelect.value;
+                            console.log("Selected Milieu: " + selectedMilieu);
+                            var sectorSelect = document.getElementById("slctSector");
+                            // remove all options from sector select
+                            var sectorOptions = sectorSelect.querySelectorAll("option");
+                            sectorOptions.forEach(option => {
+                                option.remove();
+                            });
+                            var milieu = arrMilieu.find(m => m.name === selectedMilieu);
+                            console.log(milieu);
+                            milieu.sectors.forEach(sector => {
+                                var option = document.createElement("option");
+                                option.value = sector.abbr;
+                                option.textContent = sector.name + " (" + sector.abbr + ")";
+                                sectorSelect.appendChild(option);
+                            });
+                            // set the sector select to the first option
+                            sectorSelect.selectedIndex = 0;
+                            loadTravMapSector();
+                        }
+                        var sectorSelect = document.getElementById("slctSector");
+                        // add event listener to sector select to invoke HTTP Request to https://travellermap.com/data/sectorname?milieu=milieuvalue
+                        sectorSelect.addEventListener("change", function () {
+                            loadTravMapSector();
+                        });
+                        function loadTravMapSector(){
+                            var sectorSelect = document.getElementById("slctSector");
+                            var milieuSelect = document.getElementById("slctMilieu");
+                            var selectedSector = sectorSelect.value;
+                            var selectedMilieu = milieuSelect.value;
+                            // make HTTP request to https://travellermap.com/data/sectorname?milieu=milieuvalue to return text data
+                            fetch(`https://travellermap.com/data/${selectedSector}/tab?milieu=${selectedMilieu}&type=TabDelimited`)
+                                .then(sectorData => {
+                                   // set sectordata text area to sectorData value
+                                   console.log(sectorData);
+                                    if(sectorData.status !== 200){
+                                        throw new Error("Failed to load sector data: " + sectorData.statusText);
+                                    }
+                                   return sectorData.text();
+                                }).then(text=>{
+                                    console.log(text);
+
+                                    if(text === ""){
+                                        document.getElementById("spanSectorError").textContent = "Sector data is empty.";
+                                    }else{
+                                        document.getElementById("spanSectorError").textContent = "";
+                                        // populate slctHomeworld with the names of the worlds in the sector data
+
+                                        // split text by lines
+                                        var lines = text.split("\n");
+                                        // first line is header
+                                        var header = lines[0].split("\t");
+                                        // get the Hex, Name, and Remarks columns
+                                        var hexIndex = header.indexOf("Hex");
+                                        var nameIndex = header.indexOf("Name");
+                                        var remarksIndex = header.indexOf("Remarks");
+                                        // clear the homeworld select
+                                        var homeworldSelect = document.getElementById("slctHomeworld");
+                                        var homeworldOptions = homeworldSelect.querySelectorAll("option");
+                                        homeworldOptions.forEach(option => option.remove());
+                                        // sort lines.slice(1) alphabetically by name column
+                                        var sortedLines = lines.slice(1);
+                                        sortedLines.sort((a, b) => {
+                                            var aColumns = a.split("\t");
+                                            if(aColumns.length < header.length) return -1; // push incomplete lines to the end
+                                            var bColumns = b.split("\t");
+                                            if(bColumns.length < header.length) return 1; // push incomplete lines to the end
+                                            return aColumns[nameIndex].localeCompare(bColumns[nameIndex]);
+                                        });
+
+                                        // add an option for each world, displayed value is "Name (Hex) - Remarks" and value is Remarks
+                                        sortedLines.forEach(line => {
+                                            var columns = line.split("\t");
+                                            var hex = columns[hexIndex];
+                                            var name = columns[nameIndex];
+                                            var remarks = columns[remarksIndex];
+                                            var option = document.createElement("option");
+                                            option.value = remarks;
+                                            option.textContent = `${name} (${hex}) - ${remarks}`;
+                                            // only append option is value is not undefined or empty
+                                            if(option.value && option.value !== "undefined"){
+                                                homeworldSelect.appendChild(option);
+                                            }
+                                        });
+                                        // set the homeworld select to the first option
+                                        homeworldSelect.selectedIndex = 0;
+                                        onSystemChange();
+                                    }
+                                }).catch(error => {
+                                    console.error(error);
+                                });     
+                        }
+                        function onSystemChange(){
+                            var systemSelect = document.getElementById("slctHomeworld");
+                            var selectedHomeworld = systemSelect.value;
+                            document.getElementById("txtHomeworldTradeCodes").value = selectedHomeworld;
+                        }
+                        var systemSelect = document.getElementById("slctHomeworld");
+                        systemSelect.addEventListener("change", function () {
+                            onSystemChange();
+                        });
+                        onMilieuChange();
+                        
+                    });
 var collapserHandles = document.querySelectorAll("fieldset legend");
 for (var i = 0, len = collapserHandles.length; i < len; i++) {
     var handle = collapserHandles[i];

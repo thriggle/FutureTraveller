@@ -238,12 +238,27 @@
                 
                 <fieldset>
                     <legend>Origin</legend>
-                    <label style="white-space: nowrap;" for="txtHomeworldTradeCodes">Homeworld Codes: <input type="text" style="width:6rem;" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" /><button type="button" id="btnRandomHWTCs" title="Random trade codes" value="🌏">🌏</button><button type="button" style="cursor:pointer;display:none;" id="btnClearHWTCs">❌</button></label><br/>
+                        <!-- Add radio buttons to choose between Specify Trade Codes and Choose Homeworld -->
+                        <input type="radio" name="homeworld" id="homeworldSpecify" value="specify" checked> <label for="homeworldSpecify">Specify HW Trade Codes</label>
+                        <input type="radio" name="homeworld" id="homeworldChoose" value="choose" > <label for="homeworldChoose">Choose Homeworld</label>
+                        <br/>
+                        <div id="divChooseHomeworld" style="display:none;">
+                            <!-- dropdown to choose milieu (leave blank for now, we'll populate it with JavaScript later)-->
+                            <label style="white-space: nowrap;" for="slctMilieu">Milieu: <select name="slctMilieu" id="slctMilieu"></select></label>
+                            <label style="white-space: nowrap;" for="slctSector">Sector: <select name="slctSector" id="slctSector"></select><span id="spanSectorError" style="color:red"></span></label>
+                            <label style="white-space: nowrap;" for="slctHomeworld">Homeworld: <select name="slctHomeworld" id="slctHomeworld"></select></label>
+                            <button type="button" id="btnRandomHomeworld" title="Random homeworld">🎲</button>
+                            <span id="spanHomeWorldTradeCodes"></span>
+                        </div>
+                        <div id="divSpecifyTradeCodes">
+                            <label style="white-space: nowrap;" for="txtHomeworldTradeCodes"></label>Homeworld Trade Codes: <input type="text" style="width:6rem;" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" />
+                            <button type="button" id="btnRandomHWTCs" title="Random trade codes" value="🌏">🌏</button>
+                            <button type="button" style="cursor:pointer;display:none;" id="btnClearHWTCs">❌</button></label>
+                        </div>
                         <label style="white-space: nowrap;" for="slctNativeLanguage">Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
                         <option value="!kee">!kee</option>
                         <option selected="selected" value="Anglic">Anglic</option>
                         <option value="Vilani">Vilani</option>
-                        <option value="Battle">Battle</option>
                         <option value="Gonk">Gonk</option>
                         <option value="Gvegh">Gvegh</option>
                         <option value="Oynprith">Oynprith</option>
