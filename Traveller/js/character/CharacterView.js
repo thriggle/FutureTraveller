@@ -31,7 +31,8 @@ newCharacter();
                         console.log(data);
                         var arrMilieu = [];
                         data.Sectors.forEach(sector => {
-                            if(sector.Tags.indexOf("Official OTU")==0 || sector.Tags.indexOf("OTU")==0){
+                            if(true){
+                            //if(sector.Tags.indexOf("Official OTU")==0 || sector.Tags.indexOf("OTU")==0){
 
                                 // add sector Milieu to array if not already present
                                 if(!arrMilieu.some(milieu => milieu.name === sector.Milieu)){
