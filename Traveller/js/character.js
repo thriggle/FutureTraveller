@@ -4763,6 +4763,15 @@ export function createCharacter(roller, species, chosenGender){
                         updateFunc();
                     }
                     if(officerPromotion){
+                        switch(careers[careers.length-1].rank.officer){
+                                //case 0: record("Promoted to Fourth Officer"); break;
+                                //case 1: record("Promoted to Third Officer"); break;
+                                //case 2: record("Promoted to Second Officer"); break;
+                                //case 3: record("Promoted to First Officer"); break;
+                                case 4: record("Promoted to Captain"); break;
+                                case 5: record("Promoted to Senior Captain"); break;
+                                default:break;
+                        }
                         termSkillTables.push({age:false,note:"Bonus skill from promotion"});
                         careers[careers.length-1].rank.officer += 1;updateFunc();
                         // gain officer skill here
@@ -4811,6 +4820,34 @@ export function createCharacter(roller, species, chosenGender){
                     }
                     
                 }else if(careers[careers.length-1].rank.officer <= 0){
+                    var ratingPromotion = false;
+                    if(careers[careers.length-1].rank.enlisted < 2){
+                        // roll for rating promotion
+                        var ratingRoll = checkCharacteristic(ENUM_CHARACTERISTICS.DEX,undefined,characteristics[3].value >= 8 ? 3 : 0,"Roll for enlisted promotion.");
+                        record(ratingRoll.remarks); updateFunc();
+                        ratingPromotion = ratingRoll.success
+                    }
+                    if(ratingPromotion){
+                        termSkillTables.push({age:false,note:"Bonus skill from promotion"});
+                        careers[careers.length-1].rank.enlisted += 1; updateFunc();
+                        // gain enlisted skill here
+                        switch(careers[careers.length-1].rank.enlisted){
+                                case 0: record("Promoted to Spacehand"); break;
+                                //case 1: record("Promoted to Steward Apprentice"); break;
+                                //case 2: record("Promoted to Drive Helper"); break;
+                                default:break;
+                        }
+                        if(careers[careers.length-1].rank.enlisted == 1){
+                            gainSkillOrKnowledge(ENUM_SKILLS.Steward,undefined,false,"Promoted to Steward Apprentice.");
+                            updateFunc();
+                        }else if(careers[careers.length-1].rank.enlisted == 2){
+                            gainSkillWithPromptForKnowledge("Promoted to Drive Helper.",ENUM_SKILLS.Engineer,()=>{
+                                updateFunc();
+                            },false); 
+                        }else{
+                            
+                        }
+                    }
                     // roll for officer commission
                     var commissionRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,undefined,0,"Roll for Officer Commission");
                     record(commissionRoll.remarks);
@@ -4819,51 +4856,12 @@ export function createCharacter(roller, species, chosenGender){
                         careers[careers.length-1].rank.officer = 1; updateFunc();
                         gainSkillOrKnowledge(ENUM_SKILLS.Steward,undefined,false,"Promoted to M1 Fourth Officer.");
                         updateFunc();
-                        termSkillTables.push({age:false,note:"Bonus skill from promotion"});
-                        gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
-                            updateFunc(); 
-                            promptContinue(ENUM_CAREERS.Merchant,updateFunc);
-                        });
-                    }else{
-                        var ratingPromotion = false;
-                        if(careers[careers.length-1].rank.enlisted < 2){
-                            // roll for rating promotion
-                            var ratingRoll = checkCharacteristic(ENUM_CHARACTERISTICS.DEX,undefined,characteristics[3].value >= 8 ? 3 : 0,"Roll for enlisted promotion.");
-                            record(ratingRoll.remarks); updateFunc();
-                            ratingPromotion = ratingRoll.success
-                        }
-                        if(ratingPromotion){
-                                termSkillTables.push({age:false,note:"Bonus skill from promotion"});
-                                careers[careers.length-1].rank.enlisted += 1; updateFunc();
-                                // gain enlisted skill here
-                                if(careers[careers.length-1].rank.enlisted == 1){
-                                    gainSkillOrKnowledge(ENUM_SKILLS.Steward,undefined,false,"Promoted to Steward Apprentice.");
-                                    updateFunc();
-                                    gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
-                                        updateFunc(); 
-                                        promptContinue(ENUM_CAREERS.Merchant,updateFunc);
-                                    });
-                                }else if(careers[careers.length-1].rank.enlisted == 2){
-                                    gainSkillWithPromptForKnowledge("Promoted to Drive Helper.",ENUM_SKILLS.Engineer,()=>{
-                                        updateFunc();
-                                        gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
-                                            updateFunc(); 
-                                            promptContinue(ENUM_CAREERS.Merchant,updateFunc);
-                                        });
-                                    },false); 
-                                }else{
-                                    gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
-                                        updateFunc(); 
-                                        promptContinue(ENUM_CAREERS.Merchant,updateFunc);
-                                    });
-                                }
-                        }else{
-                            gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
-                                updateFunc(); 
-                                promptContinue(ENUM_CAREERS.Merchant,updateFunc);
-                            });
-                        }
-                    }
+                        termSkillTables.push({age:false,note:"Bonus skill from officer promotion"});
+                    }  
+                    gainTermSkills(termSkillTables,ENUM_CAREERS.Merchant,updateFunc,()=>{
+                        updateFunc(); 
+                        promptContinue(ENUM_CAREERS.Merchant,updateFunc);
+                    });
                 }
             },true,defaultValue,cautionBraveryPreviews,false);
         };
