@@ -105,12 +105,14 @@ newCharacter();
 
                                     if(text === ""){
                                         document.getElementById("spanSectorError").textContent = "Sector data is empty.";
+                                        document.getElementById("lblSlctHomeworld").style.display = "none";
                                         // clear the homeworld select
                                         var homeworldSelect = document.getElementById("slctHomeworld");
                                         var homeworldOptions = homeworldSelect.querySelectorAll("option");
                                         homeworldOptions.forEach(option => option.remove());
                                     }else{
                                         document.getElementById("spanSectorError").textContent = "";
+                                        document.getElementById("lblSlctHomeworld").style.display = "inline";
                                         // populate slctHomeworld with the names of the worlds in the sector data
 
                                         // split text by lines
@@ -185,12 +187,20 @@ newCharacter();
                             onSystemChange();
                         });
                         onMilieuChange();
+                        
                         document.getElementById("btnRandomHomeworld").addEventListener("click", function(){
                             var systemSelect = document.getElementById("slctHomeworld");
                             var options = systemSelect.options;
                             var randomIndex = Math.floor(Math.random() * options.length);
                             systemSelect.selectedIndex = randomIndex;
                             onSystemChange();
+                        });
+                        document.getElementById("btnRandomSector").addEventListener("click", function(){
+                            var sectorSelect = document.getElementById("slctSector");
+                            var options = sectorSelect.options;
+                            var randomIndex = Math.floor(Math.random() * options.length);
+                            sectorSelect.selectedIndex = randomIndex;
+                            loadTravMapSector();
                         });
                     });
 var collapserHandles = document.querySelectorAll("fieldset legend");
