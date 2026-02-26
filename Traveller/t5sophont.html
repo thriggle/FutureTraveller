@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Traveller Sophont Creation System</title>
-    
+
     <script src="js/SystemGenerator.js"></script>
     <script src="js/SophontGenerator.js"></script>
-    
+
 </head>
 <style>
     @font-face {
@@ -409,535 +409,539 @@
     <h1>TRAVELLER Sophont Creation System</h1>
     <hr />
     <h2 id="name"></h2>
-    
-        <p data-detail="physsummary" data-source="species"></p>
-        <fieldset class="collapsed">
-            <legend>Appearance</legend>
 
-            <div class="innerblock">
-                <div><strong>Locomotion:</strong> <span data-detail="locomotion" data-source="species"></span></div>
-                <div><strong>Symmetry: </strong><span data-detail="symmetry" data-source="species"></span> &nbsp;
-                    <strong>Stance: </strong></strong><span data-detail="stance" data-source="species"></span></div>
-                <div><strong>Size:</strong> <span data-detail="sizeclass" data-source="species"></span> (<span
-                        data-detail="size" data-source="species"></span> kg, <span data-detail="height"
-                        data-source="species"></span>)
-                </div>
-                <div><strong>Profile:</strong>&nbsp;<span data-detail="bfp" data-source="species"></span> (<span
-                        data-detail="bfpdesc" data-source="species"></span>)</div>
-                <div><strong>Manipulators: </strong><span data-detail="allmanipulators" data-source="species"></span>
-                </div>
-                <div><strong>Natural Weapon: </strong><span data-detail="naturalweapon" data-source="species"></span>
-                </div>
-                <div><strong>Body Covering: </strong><span data-detail="skin" data-source="species"></span></div>
-                <div><strong>Skeletal Structure: </strong><span data-detail="skeleton" data-source="species"></span>
-                </div>
-                <div>
-                    <strong>Body Fluids:&nbsp;</strong><span data-detail="fluids" data-source="species"></span>
-                </div>
+    <p data-detail="physsummary" data-source="species"></p>
+    <fieldset class="collapsed">
+        <legend>Appearance</legend>
 
-
-            </div>
-            <div class="innerblock">
-                <div><strong>Body Plan: </strong><span data-detail="bodystructure" data-source="species"></span></div>
-                <table class="table">
-                    <tr>
-                        <th>Segment</th>
-                        <th>Value</th>
-                        <th>Limbs</th>
-                        <th>Description</th>
-                    </tr>
-                    <tr>
-                        <td>Head</td>
-                        <td><span data-detail="head" data-source="species"></span></td>
-                        <td> </td>
-                        <td><span data-detail="headdesc" data-source="species"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Torso</td>
-                        <td><span data-detail="torso" data-source="species"></span></td>
-                        <td> </td>
-                        <td><span data-detail="torsodesc" data-source="species"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Front Limbs</td>
-                        <td><span data-detail="frontlimbs" data-source="species"></span></td>
-                        <td><span data-detail="frontlimbs1" data-source="species"></span> <span
-                                data-detail="frontlimbs2" data-source="species"></span></td>
-                        <td><span data-detail="frontlimbsdesc" data-source="species"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Rear Limbs</td>
-                        <td><span data-detail="rearlimbs" data-source="species"></span></td>
-                        <td><span data-detail="rearlimbs1" data-source="species"></span> <span data-detail="rearlimbs2"
-                                data-source="species"></span></td>
-                        <td><span data-detail="rearlimbsdesc" data-source="species"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Other</td>
-                        <td><span data-detail="tail" data-source="species"></span></td>
-                        <td><span data-detail="taillimbs" data-source="species"></span></span></td>
-                        <td><span data-detail="taildesc" data-source="species"></span></td>
-                    </tr>
-                </table>
-            </div>
-            <div><strong>Other Features: </strong><span class="traitlist" data-html="true" data-detail="uniqueTraitDesc"
-                    data-source="species">None</span></div>
-
-        </fieldset>
-        <p data-detail="sensesummary" data-source="species"></p>
-        <fieldset class="collapsed">
-            <legend>Senses</legend>
-            <div><strong>Language: </strong><span data-detail="language" data-source="species"></span></div>
-            <table class="table">
-                <tr>
-                    <th>Sense</th>
-                    <th>Capability</th>
-                    <th>Notes</th>
-                </tr>
-                <tr>
-                    <td>Vision</td>
-                    <td><span data-detail="vision" data-source="species"></span></td>
-                    <td>
-                        <span data-detail="visiondesc" data-source="species"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Hearing</td>
-                    <td><span data-detail="hearing" data-source="species"></span></td>
-                    <td><span data-detail="hearingdesc" data-source="species"></span><br />
-                        <span data-detail="hearingrangedesc" data-source="species"></span>
-                        <br /><span data-detail="voicedesc" data-source="species"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Smell</td>
-                    <td><span data-detail="smell" data-source="species"></span></td>
-                    <td><span data-detail="smelldesc" data-source="species"></span></td>
-                </tr>
-                <tr>
-                    <td>Touch</td>
-                    <td><span data-detail="touch" data-source="species"></span></td>
-                    <td><span data-detail="touchdesc" data-source="species"></span></td>
-                </tr>
-                <tr>
-                    <td>Aware</td>
-                    <td><span data-detail="aware" data-source="species"></span></td>
-                    <td><span data-detail="awaredesc" data-source="species"></span></td>
-                </tr>
-                <tr>
-                    <td>Percept</td>
-                    <td><span data-detail="percep" data-source="species"></span></td>
-                    <td><span data-detail="percepdesc" data-source="species"></span></td>
-                </tr>
-            </table>
-            <div><strong>Note:</strong> Human senses are V-16-RGB, H-16-9382, S-10-02, and T-06-02</div>
-        </fieldset>
-        <p data-detail="habitatsummary" data-source="species"></p>
-        <fieldset class="collapsed">
-            <legend>Habitat</legend>
-            <div><strong>Homeworld:</strong> <span data-detail="name" data-source="homeworld"></span> <span
-                    data-detail="uwp" data-source="mainworld"></span> <span data-detail="tradecodes"
-                    data-source="homeworld"></span></div>
-            <div><strong>Home Star:</strong> <span data-detail="homestar" data-source="species"></span></div>
-            <div><strong>Native Terrain:</strong> <span data-detail="nativeTerrain" data-source="species"></span>
-            </div>
-            <div><strong>Native Gravity:</strong> <span data-lookup="size" data-detail="size"
-                    data-source="mainworld"></span> </div>
-            <div><strong>Acclimation:</strong> <span data-detail="climate" data-source="species"></span></div>
+        <div class="innerblock">
             <div><strong>Locomotion:</strong> <span data-detail="locomotion" data-source="species"></span></div>
-            <div><strong>Niche:</strong> <span data-detail="class" data-source="species"></span> (<span
-                    data-detail="niche" data-source="species"></span>)</div>
-            <div><strong>Breathes:</strong> <span data-detail="breathes" data-source="species"></span></div>
-        </fieldset>
-        <p data-detail="lifesummary" class="summarytext" data-source="species"></p>    
-        <fieldset class="collapsed">
-            <legend>Life Stages</legend>
-
-            <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy" data-source="species"></span> years
-                <strong>Generation Length:</strong> <span data-detail="generation" data-source="species"> </span> years
+            <div><strong>Symmetry: </strong><span data-detail="symmetry" data-source="species"></span> &nbsp;
+                <strong>Stance: </strong></strong><span data-detail="stance" data-source="species"></span>
             </div>
+            <div><strong>Size:</strong> <span data-detail="sizeclass" data-source="species"></span> (<span
+                    data-detail="size" data-source="species"></span> kg, <span data-detail="height"
+                    data-source="species"></span>)
+            </div>
+            <div><strong>Profile:</strong>&nbsp;<span data-detail="bfp" data-source="species"></span> (<span
+                    data-detail="bfpdesc" data-source="species"></span>)</div>
+            <div><strong>Manipulators: </strong><span data-detail="allmanipulators" data-source="species"></span>
+            </div>
+            <div><strong>Natural Weapon: </strong><span data-detail="naturalweapon" data-source="species"></span>
+            </div>
+            <div><strong>Body Covering: </strong><span data-detail="skin" data-source="species"></span></div>
+            <div><strong>Skeletal Structure: </strong><span data-detail="skeleton" data-source="species"></span>
+            </div>
+            <div>
+                <strong>Body Fluids:&nbsp;</strong><span data-detail="fluids" data-source="species"></span>
+            </div>
+
+
+        </div>
+        <div class="innerblock">
+            <div><strong>Body Plan: </strong><span data-detail="bodystructure" data-source="species"></span></div>
             <table class="table">
                 <tr>
-                    <th>#</th>
-                    <th>Life Stage</th>
-                    <th>Duration</th>
-                    <th>Ages</th>
-                    <th>Notes</th>
+                    <th>Segment</th>
+                    <th>Value</th>
+                    <th>Limbs</th>
+                    <th>Description</th>
                 </tr>
                 <tr>
-                    <td>0</td>
-                    <td>Infant</td>
-                    <td><span data-detail="lifestages" data-index="0" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="0" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="0" data-source="species"></span></td>
-                    <td></td>
+                    <td>Head</td>
+                    <td><span data-detail="head" data-source="species"></span></td>
+                    <td> </td>
+                    <td><span data-detail="headdesc" data-source="species"></span></td>
                 </tr>
                 <tr>
-                    <td>1</td>
-                    <td>Child</td>
-                    <td><span data-detail="lifestages" data-index="1" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="1" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="1" data-source="species"></span></td>
-                    <td></td>
+                    <td>Torso</td>
+                    <td><span data-detail="torso" data-source="species"></span></td>
+                    <td> </td>
+                    <td><span data-detail="torsodesc" data-source="species"></span></td>
                 </tr>
                 <tr>
-                    <td>2</td>
-                    <td>Teen</td>
-                    <td><span data-detail="lifestages" data-index="2" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="2" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="2" data-source="species"></span></td>
-                    <td>Gender/Caste maturity.</td>
+                    <td>Front Limbs</td>
+                    <td><span data-detail="frontlimbs" data-source="species"></span></td>
+                    <td><span data-detail="frontlimbs1" data-source="species"></span> <span data-detail="frontlimbs2"
+                            data-source="species"></span></td>
+                    <td><span data-detail="frontlimbsdesc" data-source="species"></span></td>
                 </tr>
                 <tr>
-                    <td>3</td>
-                    <td>Young Adult</td>
-                    <td><span data-detail="lifestages" data-index="3" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="3" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="3" data-source="species"></span></td>
-                    <td>Career resolution begins.</td>
+                    <td>Rear Limbs</td>
+                    <td><span data-detail="rearlimbs" data-source="species"></span></td>
+                    <td><span data-detail="rearlimbs1" data-source="species"></span> <span data-detail="rearlimbs2"
+                            data-source="species"></span></td>
+                    <td><span data-detail="rearlimbsdesc" data-source="species"></span></td>
                 </tr>
                 <tr>
-                    <td>4</td>
-                    <td>Adult</td>
-                    <td><span data-detail="lifestages" data-index="4" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="4" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="4" data-source="species"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Peak</td>
-                    <td><span data-detail="lifestages" data-index="5" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="5" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="5" data-source="species"></span></td>
-                    <td>Physical aging begins.</td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>Mid-Life</td>
-                    <td><span data-detail="lifestages" data-index="6" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="6" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="6" data-source="species"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td>Senior</td>
-                    <td><span data-detail="lifestages" data-index="7" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="7" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="7" data-source="species"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td>Elder</td>
-                    <td><span data-detail="lifestages" data-index="8" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="8" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="8" data-source="species"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>9</td>
-                    <td>Retirement</td>
-                    <td><span data-detail="lifestages" data-index="9" data-source="species"></span> years</td>
-                    <td><span data-detail="lifestagelower" data-index="9" data-source="species"></span>-<span
-                            data-detail="lifestageupper" data-index="9" data-source="species"></span></td>
-                    <td>Mental aging begins.</td>
+                    <td>Other</td>
+                    <td><span data-detail="tail" data-source="species"></span></td>
+                    <td><span data-detail="taillimbs" data-source="species"></span></span></td>
+                    <td><span data-detail="taildesc" data-source="species"></span></td>
                 </tr>
             </table>
-        </fieldset>
-        <p data-detail="gendersummary" class="summarytext" data-source="species"></p>
-        <p data-detail="castesummary" class="summarytext" data-source="species"></p>
-<fieldset >
-    <legend>Genetics and Abilities</legend>
-    <div><strong>Genetic Profile:</strong> <span data-detail="geneticprofile" data-source="species"></span>
-        <strong>DNA:</strong> <span data-detail="dna" data-source="species"></span> </div>
-        <div><strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span> <strong>Assignment:</strong> <span data-detail="genderassignment" data-source="species"></span> (<span
-                data-detail="gendershift" data-source="species"></span>)</div>
-                <div><strong>Caste:</strong> <span data-detail="castestructure" data-source="species">No</span> caste structure
-                    <strong>Assignment:</strong> <span data-detail="casteassignment" data-source="species"></span> (<span
-                        data-detail="casteshift" data-source="species"></span>) <strong>Caste-Gender Relation:</strong> <span data-detail="castegenderrelation"
-                        data-source="species"></span></div>
-    <table class="table">
-        <tr>
-            <th colspan="2"></th>
-            <th colspan="7">Genders</th>
-            <th colspan="11" data-hideifzero="castes" data-source="species">Castes</th>
-        </tr>
-        <tr>
-            <th></th>
-            <th>Baseline</th>
-            <th data-detail="genderdesc" data-index="0" data-source="species"></th>
-            <th data-detail="genderdesc" data-index="1" data-source="species"></th>
-            <th data-detail="genderdesc" data-index="2" data-source="species"></th>
-            <th data-detail="genderdesc" data-index="3" data-source="species"></th>
-            <th data-detail="genderdesc" data-index="4" data-source="species"></th>
-            <th data-detail="genderdesc" data-index="5" data-source="species"></th>
-            <th data-detail="genderdesc" data-index="6" data-source="species"></th>
-            <th data-detail="castedesc" data-index="0" data-source="species"></th>
-            <th data-detail="castedesc" data-index="1" data-source="species"></th>
-            <th data-detail="castedesc" data-index="2" data-source="species"></th>
-            <th data-detail="castedesc" data-index="3" data-source="species"></th>
-            <th data-detail="castedesc" data-index="4" data-source="species"></th>
-            <th data-detail="castedesc" data-index="5" data-source="species"></th>
-            <th data-detail="castedesc" data-index="6" data-source="species"></th>
-            <th data-detail="castedesc" data-index="7" data-source="species"></th>
-            <th data-detail="castedesc" data-index="8" data-source="species"></th>
-            <th data-detail="castedesc" data-index="9" data-source="species"></th>
-            <th data-detail="castedesc" data-index="10" data-source="species"></th>
-        </tr>
-        <tr>
-            <td><span data-detail="c1" data-source="species"></span></td>
-            <td><span data-detail="c1val" data-source="species"></span></td>
-            <td data-detail="genderc1s" data-index="0" data-source="species"></td>
-            <td data-detail="genderc1s" data-index="1" data-source="species"></td>
-            <td data-detail="genderc1s" data-index="2" data-source="species"></td>
-            <td data-detail="genderc1s" data-index="3" data-source="species"></td>
-            <td data-detail="genderc1s" data-index="4" data-source="species"></td>
-            <td data-detail="genderc1s" data-index="5" data-source="species"></td>
-            <td data-detail="genderc1s" data-index="6" data-source="species"></td>
-            <td data-detail="castec1s" data-index="0" data-source="species"></td>
-            <td data-detail="castec1s" data-index="1" data-source="species"></td>
-            <td data-detail="castec1s" data-index="2" data-source="species"></td>
-            <td data-detail="castec1s" data-index="3" data-source="species"></td>
-            <td data-detail="castec1s" data-index="4" data-source="species"></td>
-            <td data-detail="castec1s" data-index="5" data-source="species"></td>
-            <td data-detail="castec1s" data-index="6" data-source="species"></td>
-            <td data-detail="castec1s" data-index="7" data-source="species"></td>
-            <td data-detail="castec1s" data-index="8" data-source="species"></td>
-            <td data-detail="castec1s" data-index="9" data-source="species"></td>
-            <td data-detail="castec1s" data-index="10" data-source="species"></td>
-
-        </tr>
-        <tr>
-            <td><span data-detail="c2" data-source="species"></span></td>
-            <td><span data-detail="c2val" data-source="species"></span></td>
-            <td data-detail="genderc2s" data-index="0" data-source="species"></td>
-            <td data-detail="genderc2s" data-index="1" data-source="species"></td>
-            <td data-detail="genderc2s" data-index="2" data-source="species"></td>
-            <td data-detail="genderc2s" data-index="3" data-source="species"></td>
-            <td data-detail="genderc2s" data-index="4" data-source="species"></td>
-            <td data-detail="genderc2s" data-index="5" data-source="species"></td>
-            <td data-detail="genderc2s" data-index="6" data-source="species"></td>
-            <td data-detail="castec2s" data-index="0" data-source="species"></td>
-            <td data-detail="castec2s" data-index="1" data-source="species"></td>
-            <td data-detail="castec2s" data-index="2" data-source="species"></td>
-            <td data-detail="castec2s" data-index="3" data-source="species"></td>
-            <td data-detail="castec2s" data-index="4" data-source="species"></td>
-            <td data-detail="castec2s" data-index="5" data-source="species"></td>
-            <td data-detail="castec2s" data-index="6" data-source="species"></td>
-            <td data-detail="castec2s" data-index="7" data-source="species"></td>
-            <td data-detail="castec2s" data-index="8" data-source="species"></td>
-            <td data-detail="castec2s" data-index="9" data-source="species"></td>
-            <td data-detail="castec2s" data-index="10" data-source="species"></td>
-        </tr>
-        <tr>
-            <td><span data-detail="c3" data-source="species"></span></td>
-            <td><span data-detail="c3val" data-source="species"></span></td>
-            <td data-detail="genderc3s" data-index="0" data-source="species"></td>
-            <td data-detail="genderc3s" data-index="1" data-source="species"></td>
-            <td data-detail="genderc3s" data-index="2" data-source="species"></td>
-            <td data-detail="genderc3s" data-index="3" data-source="species"></td>
-            <td data-detail="genderc3s" data-index="4" data-source="species"></td>
-            <td data-detail="genderc3s" data-index="5" data-source="species"></td>
-            <td data-detail="genderc3s" data-index="6" data-source="species"></td>
-            <td data-detail="castec3s" data-index="0" data-source="species"></td>
-            <td data-detail="castec3s" data-index="1" data-source="species"></td>
-            <td data-detail="castec3s" data-index="2" data-source="species"></td>
-            <td data-detail="castec3s" data-index="3" data-source="species"></td>
-            <td data-detail="castec3s" data-index="4" data-source="species"></td>
-            <td data-detail="castec3s" data-index="5" data-source="species"></td>
-            <td data-detail="castec3s" data-index="6" data-source="species"></td>
-            <td data-detail="castec3s" data-index="7" data-source="species"></td>
-            <td data-detail="castec3s" data-index="8" data-source="species"></td>
-            <td data-detail="castec3s" data-index="9" data-source="species"></td>
-            <td data-detail="castec3s" data-index="10" data-source="species"></td>
-        </tr>
-        <tr>
-            <td><span data-detail="c4" data-source="species"></span></td>
-            <td><span data-detail="c4val" data-source="species"></span></td>
-            <td data-detail="genderc4s" data-index="0" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="1" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="2" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="3" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="4" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="5" data-source="species"></td>
-            <td data-detail="genderc4s" data-index="6" data-source="species"></td>
-            <td data-detail="castec4s" data-index="0" data-source="species"></td>
-            <td data-detail="castec4s" data-index="1" data-source="species"></td>
-            <td data-detail="castec4s" data-index="2" data-source="species"></td>
-            <td data-detail="castec4s" data-index="3" data-source="species"></td>
-            <td data-detail="castec4s" data-index="4" data-source="species"></td>
-            <td data-detail="castec4s" data-index="5" data-source="species"></td>
-            <td data-detail="castec4s" data-index="6" data-source="species"></td>
-            <td data-detail="castec4s" data-index="7" data-source="species"></td>
-            <td data-detail="castec4s" data-index="8" data-source="species"></td>
-            <td data-detail="castec4s" data-index="9" data-source="species"></td>
-            <td data-detail="castec4s" data-index="10" data-source="species"></td>
-        </tr>
-        <tr>
-            <td><span data-detail="c5" data-source="species"></span></td>
-            <td><span data-detail="c5val" data-source="species"></span></td>
-            <td data-detail="genderc5s" data-index="0" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="1" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="2" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="3" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="4" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="5" data-source="species"></td>
-            <td data-detail="genderc5s" data-index="6" data-source="species"></td>
-            <td data-detail="castec5s" data-index="0" data-source="species"></td>
-            <td data-detail="castec5s" data-index="1" data-source="species"></td>
-            <td data-detail="castec5s" data-index="2" data-source="species"></td>
-            <td data-detail="castec5s" data-index="3" data-source="species"></td>
-            <td data-detail="castec5s" data-index="4" data-source="species"></td>
-            <td data-detail="castec5s" data-index="5" data-source="species"></td>
-            <td data-detail="castec5s" data-index="6" data-source="species"></td>
-            <td data-detail="castec5s" data-index="7" data-source="species"></td>
-            <td data-detail="castec5s" data-index="8" data-source="species"></td>
-            <td data-detail="castec5s" data-index="9" data-source="species"></td>
-            <td data-detail="castec5s" data-index="10" data-source="species"></td>
-        </tr>
-        <tr>
-            <td><span data-detail="c6" data-source="species"></span></td>
-            <td><span data-detail="c6val" data-source="species"></span></td>
-            <td data-detail="genderc6s" data-index="0" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="1" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="2" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="3" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="4" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="5" data-source="species"></td>
-            <td data-detail="genderc6s" data-index="6" data-source="species"></td>
-            <td data-detail="castec6s" data-index="0" data-source="species"></td>
-            <td data-detail="castec6s" data-index="1" data-source="species"></td>
-            <td data-detail="castec6s" data-index="2" data-source="species"></td>
-            <td data-detail="castec6s" data-index="3" data-source="species"></td>
-            <td data-detail="castec6s" data-index="4" data-source="species"></td>
-            <td data-detail="castec6s" data-index="5" data-source="species"></td>
-            <td data-detail="castec6s" data-index="6" data-source="species"></td>
-            <td data-detail="castec6s" data-index="7" data-source="species"></td>
-            <td data-detail="castec6s" data-index="8" data-source="species"></td>
-            <td data-detail="castec6s" data-index="9" data-source="species"></td>
-            <td data-detail="castec6s" data-index="10" data-source="species"></td>
-        </tr>
-        <tr>
-            <td>Odor</td>
-            <td><span data-detail="scent" data-source="species"></span></td>
-            <td data-detail="genderscents" data-index="0" data-source="species"></td>
-            <td data-detail="genderscents" data-index="1" data-source="species"></td>
-            <td data-detail="genderscents" data-index="2" data-source="species"></td>
-            <td data-detail="genderscents" data-index="3" data-source="species"></td>
-            <td data-detail="genderscents" data-index="4" data-source="species"></td>
-            <td data-detail="genderscents" data-index="5" data-source="species"></td>
-            <td data-detail="genderscents" data-index="6" data-source="species"></td>
-            <td data-detail="castescents" data-index="0" data-source="species"></td>
-            <td data-detail="castescents" data-index="1" data-source="species"></td>
-            <td data-detail="castescents" data-index="2" data-source="species"></td>
-            <td data-detail="castescents" data-index="3" data-source="species"></td>
-            <td data-detail="castescents" data-index="4" data-source="species"></td>
-            <td data-detail="castescents" data-index="5" data-source="species"></td>
-            <td data-detail="castescents" data-index="6" data-source="species"></td>
-            <td data-detail="castescents" data-index="7" data-source="species"></td>
-            <td data-detail="castescents" data-index="8" data-source="species"></td>
-            <td data-detail="castescents" data-index="9" data-source="species"></td>
-            <td data-detail="castescents" data-index="10" data-source="species"></td>
-        </tr>
-        <tr>
-            <td colspan="2">Special Abilities</td>
-            <td data-detail="genderabilities" data-index="0" data-source="species"></td>
-            <td data-detail="genderabilities" data-index="1" data-source="species"></td>
-            <td data-detail="genderabilities" data-index="2" data-source="species"></td>
-            <td data-detail="genderabilities" data-index="3" data-source="species"></td>
-            <td data-detail="genderabilities" data-index="4" data-source="species"></td>
-            <td data-detail="genderabilities" data-index="5" data-source="species"></td>
-            <td data-detail="genderabilities" data-index="6" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="0" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="1" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="2" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="3" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="4" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="5" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="6" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="7" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="8" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="9" data-source="species"></td>
-            <td data-detail="casteabilities" data-index="10" data-source="species"></td>
-        </tr>
-
-    </table>
-    <table class="table">
-        <tr>
-            <th>Gender</th>
-            <th>2D</th>
-            <th>Caste</th>
-        </tr>
-        <tr>
-            <td><span data-detail="gender2" data-source="species"></span></td>
-            <td>2</td>
-            <td><span data-detail="caste2" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender3" data-source="species"></span></td>
-            <td>3</td>
-            <td><span data-detail="caste3" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender4" data-source="species"></span></td>
-            <td>4</td>
-            <td><span data-detail="caste4" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender5" data-source="species"></span></td>
-            <td>5</td>
-            <td><span data-detail="caste5" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender6" data-source="species"></span></td>
-            <td>6</td>
-            <td><span data-detail="caste6" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender7" data-source="species"></span></td>
-            <td>7</td>
-            <td><span data-detail="caste7" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender8" data-source="species"></span></td>
-            <td>8</td>
-            <td><span data-detail="caste8" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender9" data-source="species"></span></td>
-            <td>9</td>
-            <td><span data-detail="caste9" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender10" data-source="species"></span></td>
-            <td>10</td>
-            <td><span data-detail="caste10" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender11" data-source="species"></span></td>
-            <td>11</td>
-            <td><span data-detail="caste11" data-source="species"></span></td>
-        </tr>
-        <tr>
-            <td><span data-detail="gender12" data-source="species"></span></td>
-            <td>12</td>
-            <td><span data-detail="caste12" data-source="species"></span></td>
-        </tr>
-    </table>
-    <fieldset>
-        <legend>Roll for Special</legend>
-        <input type="button" value="Roll for Special Ability" id="btnGetSpecialAbility" />
-        <br /><span id="specialAbility"></span>
-        <div data-if="Skilled" data-ifdetail="castestructure" data-source="species">
-            <input type="button" value="Roll for Skilled Caste" id="btnGetCasteSkill" />
-            <br /><span id="casteSkill"></span>
         </div>
+        <div><strong>Other Features: </strong><span class="traitlist" data-html="true" data-detail="uniqueTraitDesc"
+                data-source="species">None</span></div>
+
     </fieldset>
+    <p data-detail="sensesummary" data-source="species"></p>
+    <fieldset class="collapsed">
+        <legend>Senses</legend>
+        <div><strong>Language: </strong><span data-detail="language" data-source="species"></span></div>
+        <table class="table">
+            <tr>
+                <th>Sense</th>
+                <th>Capability</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td>Vision</td>
+                <td><span data-detail="vision" data-source="species"></span></td>
+                <td>
+                    <span data-detail="visiondesc" data-source="species"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Hearing</td>
+                <td><span data-detail="hearing" data-source="species"></span></td>
+                <td><span data-detail="hearingdesc" data-source="species"></span><br />
+                    <span data-detail="hearingrangedesc" data-source="species"></span>
+                    <br /><span data-detail="voicedesc" data-source="species"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Smell</td>
+                <td><span data-detail="smell" data-source="species"></span></td>
+                <td><span data-detail="smelldesc" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td>Touch</td>
+                <td><span data-detail="touch" data-source="species"></span></td>
+                <td><span data-detail="touchdesc" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td>Aware</td>
+                <td><span data-detail="aware" data-source="species"></span></td>
+                <td><span data-detail="awaredesc" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td>Percept</td>
+                <td><span data-detail="percep" data-source="species"></span></td>
+                <td><span data-detail="percepdesc" data-source="species"></span></td>
+            </tr>
+        </table>
+        <div><strong>Note:</strong> Human senses are V-16-RGB, H-16-9382, S-10-02, and T-06-02</div>
+    </fieldset>
+    <p data-detail="habitatsummary" data-source="species"></p>
+    <fieldset class="collapsed">
+        <legend>Habitat</legend>
+        <div><strong>Homeworld:</strong> <span data-detail="name" data-source="homeworld"></span> <span
+                data-detail="uwp" data-source="mainworld"></span> <span data-detail="tradecodes"
+                data-source="homeworld"></span></div>
+        <div><strong>Home Star:</strong> <span data-detail="homestar" data-source="species"></span></div>
+        <div><strong>Native Terrain:</strong> <span data-detail="nativeTerrain" data-source="species"></span>
+        </div>
+        <div><strong>Native Gravity:</strong> <span data-lookup="size" data-detail="size"
+                data-source="mainworld"></span> </div>
+        <div><strong>Acclimation:</strong> <span data-detail="climate" data-source="species"></span></div>
+        <div><strong>Locomotion:</strong> <span data-detail="locomotion" data-source="species"></span></div>
+        <div><strong>Niche:</strong> <span data-detail="class" data-source="species"></span> (<span data-detail="niche"
+                data-source="species"></span>)</div>
+        <div><strong>Breathes:</strong> <span data-detail="breathes" data-source="species"></span></div>
+    </fieldset>
+    <p data-detail="lifesummary" class="summarytext" data-source="species"></p>
+    <fieldset class="collapsed">
+        <legend>Life Stages</legend>
+
+        <div><strong>Life Expectancy:</strong> <span data-detail="lifeexpectancy" data-source="species"></span> years
+            <strong>Generation Length:</strong> <span data-detail="generation" data-source="species"> </span> years
+        </div>
+        <table class="table">
+            <tr>
+                <th>#</th>
+                <th>Life Stage</th>
+                <th>Duration</th>
+                <th>Ages</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>Infant</td>
+                <td><span data-detail="lifestages" data-index="0" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="0" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="0" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Child</td>
+                <td><span data-detail="lifestages" data-index="1" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="1" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="1" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Teen</td>
+                <td><span data-detail="lifestages" data-index="2" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="2" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="2" data-source="species"></span></td>
+                <td>Gender/Caste maturity.</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Young Adult</td>
+                <td><span data-detail="lifestages" data-index="3" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="3" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="3" data-source="species"></span></td>
+                <td>Career resolution begins.</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Adult</td>
+                <td><span data-detail="lifestages" data-index="4" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="4" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="4" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Peak</td>
+                <td><span data-detail="lifestages" data-index="5" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="5" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="5" data-source="species"></span></td>
+                <td>Physical aging begins.</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Mid-Life</td>
+                <td><span data-detail="lifestages" data-index="6" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="6" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="6" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Senior</td>
+                <td><span data-detail="lifestages" data-index="7" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="7" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="7" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>Elder</td>
+                <td><span data-detail="lifestages" data-index="8" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="8" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="8" data-source="species"></span></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>Retirement</td>
+                <td><span data-detail="lifestages" data-index="9" data-source="species"></span> years</td>
+                <td><span data-detail="lifestagelower" data-index="9" data-source="species"></span>-<span
+                        data-detail="lifestageupper" data-index="9" data-source="species"></span></td>
+                <td>Mental aging begins.</td>
+            </tr>
+        </table>
+    </fieldset>
+    <p data-detail="gendersummary" class="summarytext" data-source="species"></p>
+    <p data-detail="castesummary" class="summarytext" data-source="species"></p>
+    <fieldset>
+        <legend>Genetics and Abilities</legend>
+        <div><strong>Genetic Profile:</strong> <span data-detail="geneticprofile" data-source="species"></span>
+            <strong>DNA:</strong> <span data-detail="dna" data-source="species"></span>
+        </div>
+        <div><strong>Genders:</strong> <span data-detail="genderstructure" data-source="species"></span>
+            <strong>Assignment:</strong> <span data-detail="genderassignment" data-source="species"></span> (<span
+                data-detail="gendershift" data-source="species"></span>)</div>
+        <div><strong>Caste:</strong> <span data-detail="castestructure" data-source="species">No</span> caste structure
+            <strong>Assignment:</strong> <span data-detail="casteassignment" data-source="species"></span> (<span
+                data-detail="casteshift" data-source="species"></span>) <strong>Caste-Gender Relation:</strong> <span
+                data-detail="castegenderrelation" data-source="species"></span>
+        </div>
+        <table class="table">
+            <tr>
+                <th colspan="2"></th>
+                <th colspan="7">Genders</th>
+                <th colspan="11" data-hideifzero="castes" data-source="species">Castes</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>Baseline</th>
+                <th data-detail="genderdesc" data-index="0" data-source="species"></th>
+                <th data-detail="genderdesc" data-index="1" data-source="species"></th>
+                <th data-detail="genderdesc" data-index="2" data-source="species"></th>
+                <th data-detail="genderdesc" data-index="3" data-source="species"></th>
+                <th data-detail="genderdesc" data-index="4" data-source="species"></th>
+                <th data-detail="genderdesc" data-index="5" data-source="species"></th>
+                <th data-detail="genderdesc" data-index="6" data-source="species"></th>
+                <th data-detail="castedesc" data-index="0" data-source="species"></th>
+                <th data-detail="castedesc" data-index="1" data-source="species"></th>
+                <th data-detail="castedesc" data-index="2" data-source="species"></th>
+                <th data-detail="castedesc" data-index="3" data-source="species"></th>
+                <th data-detail="castedesc" data-index="4" data-source="species"></th>
+                <th data-detail="castedesc" data-index="5" data-source="species"></th>
+                <th data-detail="castedesc" data-index="6" data-source="species"></th>
+                <th data-detail="castedesc" data-index="7" data-source="species"></th>
+                <th data-detail="castedesc" data-index="8" data-source="species"></th>
+                <th data-detail="castedesc" data-index="9" data-source="species"></th>
+                <th data-detail="castedesc" data-index="10" data-source="species"></th>
+            </tr>
+            <tr>
+                <td><span data-detail="c1" data-source="species"></span></td>
+                <td><span data-detail="c1val" data-source="species"></span></td>
+                <td data-detail="genderc1s" data-index="0" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="1" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="2" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="3" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="4" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="5" data-source="species"></td>
+                <td data-detail="genderc1s" data-index="6" data-source="species"></td>
+                <td data-detail="castec1s" data-index="0" data-source="species"></td>
+                <td data-detail="castec1s" data-index="1" data-source="species"></td>
+                <td data-detail="castec1s" data-index="2" data-source="species"></td>
+                <td data-detail="castec1s" data-index="3" data-source="species"></td>
+                <td data-detail="castec1s" data-index="4" data-source="species"></td>
+                <td data-detail="castec1s" data-index="5" data-source="species"></td>
+                <td data-detail="castec1s" data-index="6" data-source="species"></td>
+                <td data-detail="castec1s" data-index="7" data-source="species"></td>
+                <td data-detail="castec1s" data-index="8" data-source="species"></td>
+                <td data-detail="castec1s" data-index="9" data-source="species"></td>
+                <td data-detail="castec1s" data-index="10" data-source="species"></td>
+
+            </tr>
+            <tr>
+                <td><span data-detail="c2" data-source="species"></span></td>
+                <td><span data-detail="c2val" data-source="species"></span></td>
+                <td data-detail="genderc2s" data-index="0" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="1" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="2" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="3" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="4" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="5" data-source="species"></td>
+                <td data-detail="genderc2s" data-index="6" data-source="species"></td>
+                <td data-detail="castec2s" data-index="0" data-source="species"></td>
+                <td data-detail="castec2s" data-index="1" data-source="species"></td>
+                <td data-detail="castec2s" data-index="2" data-source="species"></td>
+                <td data-detail="castec2s" data-index="3" data-source="species"></td>
+                <td data-detail="castec2s" data-index="4" data-source="species"></td>
+                <td data-detail="castec2s" data-index="5" data-source="species"></td>
+                <td data-detail="castec2s" data-index="6" data-source="species"></td>
+                <td data-detail="castec2s" data-index="7" data-source="species"></td>
+                <td data-detail="castec2s" data-index="8" data-source="species"></td>
+                <td data-detail="castec2s" data-index="9" data-source="species"></td>
+                <td data-detail="castec2s" data-index="10" data-source="species"></td>
+            </tr>
+            <tr>
+                <td><span data-detail="c3" data-source="species"></span></td>
+                <td><span data-detail="c3val" data-source="species"></span></td>
+                <td data-detail="genderc3s" data-index="0" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="1" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="2" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="3" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="4" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="5" data-source="species"></td>
+                <td data-detail="genderc3s" data-index="6" data-source="species"></td>
+                <td data-detail="castec3s" data-index="0" data-source="species"></td>
+                <td data-detail="castec3s" data-index="1" data-source="species"></td>
+                <td data-detail="castec3s" data-index="2" data-source="species"></td>
+                <td data-detail="castec3s" data-index="3" data-source="species"></td>
+                <td data-detail="castec3s" data-index="4" data-source="species"></td>
+                <td data-detail="castec3s" data-index="5" data-source="species"></td>
+                <td data-detail="castec3s" data-index="6" data-source="species"></td>
+                <td data-detail="castec3s" data-index="7" data-source="species"></td>
+                <td data-detail="castec3s" data-index="8" data-source="species"></td>
+                <td data-detail="castec3s" data-index="9" data-source="species"></td>
+                <td data-detail="castec3s" data-index="10" data-source="species"></td>
+            </tr>
+            <tr>
+                <td><span data-detail="c4" data-source="species"></span></td>
+                <td><span data-detail="c4val" data-source="species"></span></td>
+                <td data-detail="genderc4s" data-index="0" data-source="species"></td>
+                <td data-detail="genderc4s" data-index="1" data-source="species"></td>
+                <td data-detail="genderc4s" data-index="2" data-source="species"></td>
+                <td data-detail="genderc4s" data-index="3" data-source="species"></td>
+                <td data-detail="genderc4s" data-index="4" data-source="species"></td>
+                <td data-detail="genderc4s" data-index="5" data-source="species"></td>
+                <td data-detail="genderc4s" data-index="6" data-source="species"></td>
+                <td data-detail="castec4s" data-index="0" data-source="species"></td>
+                <td data-detail="castec4s" data-index="1" data-source="species"></td>
+                <td data-detail="castec4s" data-index="2" data-source="species"></td>
+                <td data-detail="castec4s" data-index="3" data-source="species"></td>
+                <td data-detail="castec4s" data-index="4" data-source="species"></td>
+                <td data-detail="castec4s" data-index="5" data-source="species"></td>
+                <td data-detail="castec4s" data-index="6" data-source="species"></td>
+                <td data-detail="castec4s" data-index="7" data-source="species"></td>
+                <td data-detail="castec4s" data-index="8" data-source="species"></td>
+                <td data-detail="castec4s" data-index="9" data-source="species"></td>
+                <td data-detail="castec4s" data-index="10" data-source="species"></td>
+            </tr>
+            <tr>
+                <td><span data-detail="c5" data-source="species"></span></td>
+                <td><span data-detail="c5val" data-source="species"></span></td>
+                <td data-detail="genderc5s" data-index="0" data-source="species"></td>
+                <td data-detail="genderc5s" data-index="1" data-source="species"></td>
+                <td data-detail="genderc5s" data-index="2" data-source="species"></td>
+                <td data-detail="genderc5s" data-index="3" data-source="species"></td>
+                <td data-detail="genderc5s" data-index="4" data-source="species"></td>
+                <td data-detail="genderc5s" data-index="5" data-source="species"></td>
+                <td data-detail="genderc5s" data-index="6" data-source="species"></td>
+                <td data-detail="castec5s" data-index="0" data-source="species"></td>
+                <td data-detail="castec5s" data-index="1" data-source="species"></td>
+                <td data-detail="castec5s" data-index="2" data-source="species"></td>
+                <td data-detail="castec5s" data-index="3" data-source="species"></td>
+                <td data-detail="castec5s" data-index="4" data-source="species"></td>
+                <td data-detail="castec5s" data-index="5" data-source="species"></td>
+                <td data-detail="castec5s" data-index="6" data-source="species"></td>
+                <td data-detail="castec5s" data-index="7" data-source="species"></td>
+                <td data-detail="castec5s" data-index="8" data-source="species"></td>
+                <td data-detail="castec5s" data-index="9" data-source="species"></td>
+                <td data-detail="castec5s" data-index="10" data-source="species"></td>
+            </tr>
+            <tr>
+                <td><span data-detail="c6" data-source="species"></span></td>
+                <td><span data-detail="c6val" data-source="species"></span></td>
+                <td data-detail="genderc6s" data-index="0" data-source="species"></td>
+                <td data-detail="genderc6s" data-index="1" data-source="species"></td>
+                <td data-detail="genderc6s" data-index="2" data-source="species"></td>
+                <td data-detail="genderc6s" data-index="3" data-source="species"></td>
+                <td data-detail="genderc6s" data-index="4" data-source="species"></td>
+                <td data-detail="genderc6s" data-index="5" data-source="species"></td>
+                <td data-detail="genderc6s" data-index="6" data-source="species"></td>
+                <td data-detail="castec6s" data-index="0" data-source="species"></td>
+                <td data-detail="castec6s" data-index="1" data-source="species"></td>
+                <td data-detail="castec6s" data-index="2" data-source="species"></td>
+                <td data-detail="castec6s" data-index="3" data-source="species"></td>
+                <td data-detail="castec6s" data-index="4" data-source="species"></td>
+                <td data-detail="castec6s" data-index="5" data-source="species"></td>
+                <td data-detail="castec6s" data-index="6" data-source="species"></td>
+                <td data-detail="castec6s" data-index="7" data-source="species"></td>
+                <td data-detail="castec6s" data-index="8" data-source="species"></td>
+                <td data-detail="castec6s" data-index="9" data-source="species"></td>
+                <td data-detail="castec6s" data-index="10" data-source="species"></td>
+            </tr>
+            <tr>
+                <td>Odor</td>
+                <td><span data-detail="scent" data-source="species"></span></td>
+                <td data-detail="genderscents" data-index="0" data-source="species"></td>
+                <td data-detail="genderscents" data-index="1" data-source="species"></td>
+                <td data-detail="genderscents" data-index="2" data-source="species"></td>
+                <td data-detail="genderscents" data-index="3" data-source="species"></td>
+                <td data-detail="genderscents" data-index="4" data-source="species"></td>
+                <td data-detail="genderscents" data-index="5" data-source="species"></td>
+                <td data-detail="genderscents" data-index="6" data-source="species"></td>
+                <td data-detail="castescents" data-index="0" data-source="species"></td>
+                <td data-detail="castescents" data-index="1" data-source="species"></td>
+                <td data-detail="castescents" data-index="2" data-source="species"></td>
+                <td data-detail="castescents" data-index="3" data-source="species"></td>
+                <td data-detail="castescents" data-index="4" data-source="species"></td>
+                <td data-detail="castescents" data-index="5" data-source="species"></td>
+                <td data-detail="castescents" data-index="6" data-source="species"></td>
+                <td data-detail="castescents" data-index="7" data-source="species"></td>
+                <td data-detail="castescents" data-index="8" data-source="species"></td>
+                <td data-detail="castescents" data-index="9" data-source="species"></td>
+                <td data-detail="castescents" data-index="10" data-source="species"></td>
+            </tr>
+            <tr>
+                <td colspan="2">Special Abilities</td>
+                <td data-detail="genderabilities" data-index="0" data-source="species"></td>
+                <td data-detail="genderabilities" data-index="1" data-source="species"></td>
+                <td data-detail="genderabilities" data-index="2" data-source="species"></td>
+                <td data-detail="genderabilities" data-index="3" data-source="species"></td>
+                <td data-detail="genderabilities" data-index="4" data-source="species"></td>
+                <td data-detail="genderabilities" data-index="5" data-source="species"></td>
+                <td data-detail="genderabilities" data-index="6" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="0" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="1" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="2" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="3" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="4" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="5" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="6" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="7" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="8" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="9" data-source="species"></td>
+                <td data-detail="casteabilities" data-index="10" data-source="species"></td>
+            </tr>
+
+        </table>
+        <table class="table">
+            <tr>
+                <th>Gender</th>
+                <th>2D</th>
+                <th>Caste</th>
+            </tr>
+            <tr>
+                <td><span data-detail="gender2" data-source="species"></span></td>
+                <td>2</td>
+                <td><span data-detail="caste2" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender3" data-source="species"></span></td>
+                <td>3</td>
+                <td><span data-detail="caste3" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender4" data-source="species"></span></td>
+                <td>4</td>
+                <td><span data-detail="caste4" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender5" data-source="species"></span></td>
+                <td>5</td>
+                <td><span data-detail="caste5" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender6" data-source="species"></span></td>
+                <td>6</td>
+                <td><span data-detail="caste6" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender7" data-source="species"></span></td>
+                <td>7</td>
+                <td><span data-detail="caste7" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender8" data-source="species"></span></td>
+                <td>8</td>
+                <td><span data-detail="caste8" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender9" data-source="species"></span></td>
+                <td>9</td>
+                <td><span data-detail="caste9" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender10" data-source="species"></span></td>
+                <td>10</td>
+                <td><span data-detail="caste10" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender11" data-source="species"></span></td>
+                <td>11</td>
+                <td><span data-detail="caste11" data-source="species"></span></td>
+            </tr>
+            <tr>
+                <td><span data-detail="gender12" data-source="species"></span></td>
+                <td>12</td>
+                <td><span data-detail="caste12" data-source="species"></span></td>
+            </tr>
+        </table>
+        <fieldset>
+            <legend>Roll for Special</legend>
+            <input type="button" value="Roll for Special Ability" id="btnGetSpecialAbility" />
+            <br /><span id="specialAbility"></span>
+            <div data-if="Skilled" data-ifdetail="castestructure" data-source="species">
+                <input type="button" value="Roll for Skilled Caste" id="btnGetCasteSkill" />
+                <br /><span id="casteSkill"></span>
+            </div>
+        </fieldset>
 
 
-</fieldset>
+    </fieldset>
     <ul class="statnotes"></ul>
     <hr />
     <fieldset class="collapsed">
@@ -950,404 +954,404 @@
         </fieldset>
     </fieldset>
     <hr />
-    <div class="footer">The Traveller game in all forms is owned by Far Future Enterprises. Copyright © 1977 – 2023 <a
-            href="http://www.farfuture.net/" target="_blank">Far Future Enterprises</a>.</div>
+    <script src="js/disclaimer.js"></script>
 </body>
 <script src="js/NameGenerator.js" type="module"></script>
 <script src="js/names.js" type="module"></script>
 <script>
-    setTimeout(function(){
+    setTimeout(function () {
         var abilityRoll = 0, skillRoll = 0;
-    document.getElementById("slctStyle").addEventListener("change", function () {
-        var style = document.getElementById("slctStyle").value;
-        document.body.className = style;
-    });
-    document.getElementById("btnGetSpecialAbility").addEventListener("click", function () {
-        var output = document.getElementById("specialAbility");
-        removeChildElements(output);
-        output.innerHTML = "Roll " + ++abilityRoll + ": " + getRandomSpecialAbility();
-    });
-    document.getElementById("btnGetCasteSkill").addEventListener("click", function () {
-        var output = document.getElementById("casteSkill");
-        removeChildElements(output);
-        output.innerHTML = "Roll " + ++skillRoll + ": " + getCasteSkill();
-    });
-    document.getElementById("chkRandomHomeworld").addEventListener("change", function () {
-        var manual = !(document.getElementById("chkRandomHomeworld").checked);
-        if (manual) {
+        document.getElementById("slctStyle").addEventListener("change", function () {
+            var style = document.getElementById("slctStyle").value;
+            document.body.className = style;
+        });
+        document.getElementById("btnGetSpecialAbility").addEventListener("click", function () {
+            var output = document.getElementById("specialAbility");
+            removeChildElements(output);
+            output.innerHTML = "Roll " + ++abilityRoll + ": " + getRandomSpecialAbility();
+        });
+        document.getElementById("btnGetCasteSkill").addEventListener("click", function () {
+            var output = document.getElementById("casteSkill");
+            removeChildElements(output);
+            output.innerHTML = "Roll " + ++skillRoll + ": " + getCasteSkill();
+        });
+        document.getElementById("chkRandomHomeworld").addEventListener("change", function () {
+            var manual = !(document.getElementById("chkRandomHomeworld").checked);
+            if (manual) {
 
-            document.getElementById("homeworldcontainer").classList.remove("hidden");
-        } else {
-            document.getElementById("homeworldcontainer").classList.add("hidden");
-        }
-    });
-    var collapserHandles = document.querySelectorAll("fieldset legend");
-    for (var i = 0, len = collapserHandles.length; i < len; i++) {
-        var handle = collapserHandles[i];
-        handle.addEventListener("click", function (e) {
-            var parent = e.target.parentElement;
-            if (parent.classList.contains("collapsed")) {
-                parent.classList.remove("collapsed");
+                document.getElementById("homeworldcontainer").classList.remove("hidden");
             } else {
-                parent.classList.add("collapsed");
+                document.getElementById("homeworldcontainer").classList.add("hidden");
             }
         });
-    }
-    var fromDirectLink = false;
-    if (window.location.hash) {
-        console.log(window.location.hash);
-        processHash();
-        fromDirectLink = true;
-        var manual = !(document.getElementById("chkRandomHomeworld").checked);
-        if (manual) {
-            document.getElementById("homeworldcontainer").classList.remove("hidden");
-        } else {
-            document.getElementById("homeworldcontainer").classList.add("hidden");
-        }
-    }
-    window.globalThis.NameGenerator(window.globalThis.getNames(), setup, null, MathRandom, true);
-    document.getElementById("btnLoadFromJson").addEventListener("click", function () {
-        var json = document.getElementById("json").value;
-        var species = JSON.parse(json);
-        renderDetails(species);
-    });
-    document.getElementById("btnExportJSON").addEventListener("click", function () {
-        var data = document.getElementById("json").value;
-        var species = JSON.parse(data);
-        var a = document.createElement("a");
-        a.href = "data:text/json;charset=utf-8," + encodeURIComponent(data);
-        a.download = species.name + " of " + species.homeworld.name + ".json";
-        a.click();
-    });
-    document.getElementById("btnImportJSON").addEventListener("change", function () {
-        var curFiles = document.getElementById("btnImportJSON").files;
-        if (curFiles.length > 0) {
-            var reader = new FileReader();
-            reader.onload = function (event) {
-                document.getElementById("json").value = event.target.result;
-                document.getElementById("btnLoadFromJson").click();
-                //document.getElementById("txtSeed").value = curFiles[0].name.replace(".json","");
-            }
-            reader.readAsText(curFiles[0]);
-        }
-    });
-    function processHash() {
-        var hash = window.location.hash;
-        if (hash.indexOf("$") >= 0) {
-            seed = "";
-            var hashParamPairs = hash.substr(1).split("&");
-            for (var i = 0, len = hashParamPairs.length; i < len; i++) {
-                var pair = hashParamPairs[i].split("=");
-                var key = pair[0].toLowerCase();
-                console.log(key);
-                if (key === "$seed") {
-                    seed = pair[1];
-                    document.getElementById("txtSeed").value = decodeURI(seed);
-                    document.getElementById("chkUseRandom").checked = false;
-                    console.log("unchecked random");
-                }else if(key === "$world"){
-                    document.getElementById("chkRandomHomeworld").checked = false;
-                    document.getElementById("inWorldName").value = decodeURI(pair[1]);
-                }else
-                if(key === "$uwp"){
-                    document.getElementById("chkRandomHomeworld").checked = false;
-                    document.getElementById("inUWP").value = decodeURI(pair[1]);
-                }else
-                if(key === "$startype"){
-                    document.getElementById("chkRandomHomeworld").checked = false;
-                    document.getElementById("inStarType").value = decodeURI(pair[1]);
-                }else 
-                if(key === "$stardecimal"){
-                    document.getElementById("chkRandomHomeworld").checked = false;
-                    document.getElementById("inStarDecimal").value = decodeURI(pair[1]);
-                }else
-                if(key === "$starsize"){
-                    document.getElementById("chkRandomHomeworld").checked = false;
-                    document.getElementById("inStarSize").value = decodeURI(pair[1]);
-                }else 
-                if(key === "$tradecodes"){
-                    document.getElementById("chkRandomHomeworld").checked = false;
-                    document.getElementById("inTradeCodes").value = decodeURI(pair[1]);
-                }else if(key=== "$traits"){
-                    document.getElementById("slctUniqueTraits").value = decodeURI(pair[1]);
-                }
-            }
-        }else{
-            seed = hash.substr(1);
-            document.getElementById("txtSeed").value = decodeURI(seed);
-            document.getElementById("chkUseRandom").checked = false;
-        }
-        if(seed.length > 0){
-            document.getElementById("txtSeed").value = decodeURI(seed);
-            MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
-        }
-    }
-    function setup(generator) {
-        document.getElementById("txtSeed").addEventListener("keyup", function (e) {
-            if (e.keyCode == 13) {
-                MathRandom = pseudoRandomNumberGenerator(this.value);
-                generator.setRandom(MathRandom);
-                document.getElementById("chkUseRandom").checked = false;
-                renderDetails(generateRandomAlien(initializeRandomSpecies(generator), MathRandom));
-            }
-        });
-        window.addEventListener("hashchange", function () {
-            var hash = window.location.hash, newValue;
-            if (hash.length > 0) {
-                var seed = hash.substring(1);
-                if (hash.indexOf("$") > 0) {
-                    var hashParamPairs = hash.substr(1).split("&");
-                    for (var i = 0, len = hashParamPairs.length; i < len; i++) {
-                        var pair = hashParamPairs[i].split("=");
-                        var key = pair[0].toLowerCase();
-                        if (key === "$seed") {
-                            seed = pair[1];
-                            newValue = decodeURI(seed);
-                        }else if(key === "$uwp"){
-                            document.getElementById("chkRandomHomeworld").checked = false;
-                            document.getElementById("inUWP").value = pair[1];
-                        }else if(key === "$startype"){
-                            document.getElementById("chkRandomHomeworld").checked = false;
-                            document.getElementById("inStarType").value = pair[1];
-                        }else if(key === "$stardecimal"){
-                            document.getElementById("chkRandomHomeworld").checked = false;
-                            document.getElementById("inStarDecimal").value = pair[1];
-                        }else if(key === "$starsize"){
-                            document.getElementById("chkRandomHomeworld").checked = false;
-                            document.getElementById("inStarSize").value = pair[1];
-                        }else if(key === "$tradecodes"){
-                            document.getElementById("chkRandomHomeworld").checked = false;
-                            document.getElementById("inTradeCodes").value = pair[1];
-                        }else if(key === "$world"){
-                            document.getElementById("chkRandomHomeworld").checked = false;
-                            document.getElementById("inWorldName").value = pair[1];
-                        }
-                    }
-                }else{
-                    newValue = decodeURI(seed);
-                }
-                if (document.getElementById("txtSeed").value == newValue) {
-
+        var collapserHandles = document.querySelectorAll("fieldset legend");
+        for (var i = 0, len = collapserHandles.length; i < len; i++) {
+            var handle = collapserHandles[i];
+            handle.addEventListener("click", function (e) {
+                var parent = e.target.parentElement;
+                if (parent.classList.contains("collapsed")) {
+                    parent.classList.remove("collapsed");
                 } else {
-                    document.getElementById("txtSeed").value = newValue;
-                    var wasChecked = document.getElementById("chkUseRandom").checked;
+                    parent.classList.add("collapsed");
+                }
+            });
+        }
+        var fromDirectLink = false;
+        if (window.location.hash) {
+            console.log(window.location.hash);
+            processHash();
+            fromDirectLink = true;
+            var manual = !(document.getElementById("chkRandomHomeworld").checked);
+            if (manual) {
+                document.getElementById("homeworldcontainer").classList.remove("hidden");
+            } else {
+                document.getElementById("homeworldcontainer").classList.add("hidden");
+            }
+        }
+        window.globalThis.NameGenerator(window.globalThis.getNames(), setup, null, MathRandom, true);
+        document.getElementById("btnLoadFromJson").addEventListener("click", function () {
+            var json = document.getElementById("json").value;
+            var species = JSON.parse(json);
+            renderDetails(species);
+        });
+        document.getElementById("btnExportJSON").addEventListener("click", function () {
+            var data = document.getElementById("json").value;
+            var species = JSON.parse(data);
+            var a = document.createElement("a");
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(data);
+            a.download = species.name + " of " + species.homeworld.name + ".json";
+            a.click();
+        });
+        document.getElementById("btnImportJSON").addEventListener("change", function () {
+            var curFiles = document.getElementById("btnImportJSON").files;
+            if (curFiles.length > 0) {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    document.getElementById("json").value = event.target.result;
+                    document.getElementById("btnLoadFromJson").click();
+                    //document.getElementById("txtSeed").value = curFiles[0].name.replace(".json","");
+                }
+                reader.readAsText(curFiles[0]);
+            }
+        });
+        function processHash() {
+            var hash = window.location.hash;
+            if (hash.indexOf("$") >= 0) {
+                seed = "";
+                var hashParamPairs = hash.substr(1).split("&");
+                for (var i = 0, len = hashParamPairs.length; i < len; i++) {
+                    var pair = hashParamPairs[i].split("=");
+                    var key = pair[0].toLowerCase();
+                    console.log(key);
+                    if (key === "$seed") {
+                        seed = pair[1];
+                        document.getElementById("txtSeed").value = decodeURI(seed);
+                        document.getElementById("chkUseRandom").checked = false;
+                        console.log("unchecked random");
+                    } else if (key === "$world") {
+                        document.getElementById("chkRandomHomeworld").checked = false;
+                        document.getElementById("inWorldName").value = decodeURI(pair[1]);
+                    } else
+                        if (key === "$uwp") {
+                            document.getElementById("chkRandomHomeworld").checked = false;
+                            document.getElementById("inUWP").value = decodeURI(pair[1]);
+                        } else
+                            if (key === "$startype") {
+                                document.getElementById("chkRandomHomeworld").checked = false;
+                                document.getElementById("inStarType").value = decodeURI(pair[1]);
+                            } else
+                                if (key === "$stardecimal") {
+                                    document.getElementById("chkRandomHomeworld").checked = false;
+                                    document.getElementById("inStarDecimal").value = decodeURI(pair[1]);
+                                } else
+                                    if (key === "$starsize") {
+                                        document.getElementById("chkRandomHomeworld").checked = false;
+                                        document.getElementById("inStarSize").value = decodeURI(pair[1]);
+                                    } else
+                                        if (key === "$tradecodes") {
+                                            document.getElementById("chkRandomHomeworld").checked = false;
+                                            document.getElementById("inTradeCodes").value = decodeURI(pair[1]);
+                                        } else if (key === "$traits") {
+                                            document.getElementById("slctUniqueTraits").value = decodeURI(pair[1]);
+                                        }
+                }
+            } else {
+                seed = hash.substr(1);
+                document.getElementById("txtSeed").value = decodeURI(seed);
+                document.getElementById("chkUseRandom").checked = false;
+            }
+            if (seed.length > 0) {
+                document.getElementById("txtSeed").value = decodeURI(seed);
+                MathRandom = pseudoRandomNumberGenerator(decodeURI(seed));
+            }
+        }
+        function setup(generator) {
+            document.getElementById("txtSeed").addEventListener("keyup", function (e) {
+                if (e.keyCode == 13) {
+                    MathRandom = pseudoRandomNumberGenerator(this.value);
+                    generator.setRandom(MathRandom);
                     document.getElementById("chkUseRandom").checked = false;
                     renderDetails(generateRandomAlien(initializeRandomSpecies(generator), MathRandom));
-                    document.getElementById("chkUseRandom").checked = wasChecked;
                 }
-            }
-        });
-        var species = initializeRandomSpecies(generator);
-        renderDetails(generateRandomAlien(species, MathRandom));
-        if (fromDirectLink) {
-            fromDirectLink = false;
-            document.getElementById("chkUseRandom").checked = true;
-        }
-        document.getElementById("btnGenerate").addEventListener("click", function () {
-            renderDetails(generateRandomAlien(initializeRandomSpecies(generator), MathRandom));
-        });
-    }
-    function initializeRandomSpecies(generator) {
-        var useRandomSeed = document.getElementById("chkUseRandom").checked;
-        var seed;
-        if (useRandomSeed) {
-            var seed1 = Math.floor(Math.random() * 1000000);
-            seed = addCaps(generator.getRandomName("system") + seed1);
-            document.getElementById("txtSeed").value = seed;
-
-        } else {
-            seed = document.getElementById("txtSeed").value
-        }
-        var hwhash = "&$traits=" + encodeURI(document.getElementById("slctUniqueTraits").value);
-        if(!document.getElementById("chkRandomHomeworld").checked){
-            hwhash = "&$world="+encodeURI(document.getElementById("inWorldName").value) +
-             "&$uwp=" + encodeURI(document.getElementById("inUWP").value) +
-              "&$startype=" + encodeURI(document.getElementById("inStarType").value) + 
-              "&$stardecimal=" + encodeURI(document.getElementById("inStarDecimal").value) + 
-              "&$starsize=" + encodeURI(document.getElementById("inStarSize").value) + 
-              "&$tradecodes=" + encodeURI(document.getElementById("inTradeCodes").value) +
-              "&$traits=" + encodeURI(document.getElementById("slctUniqueTraits").value)
-        }
-        window.location.hash = "$seed="+encodeURI(seed) + hwhash;
-        MathRandom = pseudoRandomNumberGenerator(seed.toString());
-        generator.setRandom(MathRandom);
-        var species = {};
-        species.name = addCaps(generator.getRandomName("word"));
-        var systemName = document.getElementById("inWorldName").value;
-        var uniqueTraits = document.getElementById("slctUniqueTraits").value;
-        if (uniqueTraits === "0") { species.uniqueTraitsCount = 0; }
-        else if (uniqueTraits === "1") { species.uniqueTraitsCount = 1; }
-        else if (uniqueTraits === "2") { species.uniqueTraitsCount = 2; }
-        else if (uniqueTraits === "3") { species.uniqueTraitsCount = 3; }
-        else if (uniqueTraits === "4") { species.uniqueTraitsCount = 4; }
-        else if (uniqueTraits === "5") { species.uniqueTraitsCount = 5; }
-        else if (uniqueTraits === "6") { species.uniqueTraitsCount = 6; }
-        else if (uniqueTraits === "1d6") { species.uniqueTraitsCount = MathRandom() * 6 + 1 >>> 0; }
-        if (document.getElementById("chkRandomHomeworld").checked) {
-            systemName = addCaps(generator.getRandomName("system"));
-            species.homeworld = generateSystemDetails(
-                systemName,
-                8, // gas giant frequency
-                16 // max tech level
-            );
-            while (species.homeworld.mainworld.atmo < 2 || species.homeworld.mainworld.pop < 7) {
-                species.homeworld = generateSystemDetails(species.homeworld.name, 8, 16);
-            }
-            species.homestar = species.homeworld.stars.primary.type + (typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal) + species.homeworld.stars.primary.size;
-        } else {
-            var throwawayName = generator.getRandomName("system");
-            var throwawayWorld = generateSystemDetails(throwawayName, 8, 16);
-            while (throwawayWorld.mainworld.atmo < 2 || throwawayWorld.mainworld.pop < 7) {
-                throwawayWorld = generateSystemDetails(throwawayWorld.name, 8, 16);
-            }
-            species.homeworld = {};
-            species.homeworld.name = systemName;
-            species.homeworld.uwp = document.getElementById("inUWP").value;
-            species.homeworld.mainworld = {};
-            species.homeworld.mainworld.size = parseInt(species.homeworld.uwp[1], 16);
-            species.homeworld.mainworld.atmo = parseInt(species.homeworld.uwp[2], 16);
-            species.homeworld.mainworld.hydro = parseInt(species.homeworld.uwp[3], 16);
-            var tc = [];
-            if (document.getElementById("inTradeCodes").value.length > 0) {
-                tc = document.getElementById("inTradeCodes").value.split(",");
-            }
-            species.homeworld.tradecodes = tc;
-            species.homeworld.mainworld.tradecodes = tc;
-            species.homeworld.mainworld.uwp = species.homeworld.uwp;
-            var climate = "Temperate.";
-            if (tc.indexOf("Tr") >= 0) {
-                climate = "Tropic.";
-            } else if (tc.indexOf("Ho") >= 0) {
-                climate = "Hot.";
-            } else if (tc.indexOf("Tu") >= 0) {
-                climate = "Tundra.";
-            } else if (tc.indexOf("Co") >= 0) {
-                climate = "Cold.";
-            } else if (tc.indexOf("Fr") >= 0) {
-                climate = "Frozen.";
-            }
-            species.homeworld.mainworld.climate = climate;
-            species.homeworld.stars = {};
-            species.homeworld.stars.primary = {};
-            species.homeworld.stars.primary.type = document.getElementById("inStarType").value;
-            var decimal = document.getElementById("inStarDecimal").value
-            if (decimal.length > 0) { species.homeworld.stars.primary.decimal = decimal; }
-            species.homeworld.stars.primary.size = document.getElementById("inStarSize").value;
-            species.homestar = species.homeworld.stars.primary.type + (typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal) + species.homeworld.stars.primary.size;
-        }
-        return species;
-    }
-    function renderDetails(species) {
-        var lookups = {
-            "size": {
-                "0": "Microgravity 0 G",
-                "1": "Very Low Gravity 0.05 to 0.12 G",
-                "2": "Low Gravity (Luna) 0.15 to 0.25 G",
-                "3": "Low Gravity (Mercury) 0.25 - 0.4 G",
-                "4": "Low Gravity (Mars) 0.35 - 0.50 G",
-                "5": "Standard/Low Gravity 0.45 - 0.62 G",
-                "6": "Standard/Low Gravity 0.65 - 0.75 G",
-                "7": "Standard Gravity 0.8 - 0.9 G",
-                "8": "Standard Gravity (Terra) 1.00 G",
-                "9": "Standard Gravity 1.1 - 1.25 G",
-                "10": "Standard/High Gravity 1.2 - 1.4 G",
-                "11": "High Gravity 1.3 - 1.49 G",
-                "12": "High Gravity 1.5 - 1.61 G",
-                "13": "High Gravity 1.6 - 1.74 G",
-                "14": "High Gravity 1.75 - 1.86 G",
-                "15": "High Gravity 1.87 - 1.9 G"
-
-            }
-        };
-        document.getElementById("inWorldName").value = species.homeworld.name;
-        document.getElementById("inUWP").value = species.homeworld.uwp;
-        document.getElementById("inStarType").value = species.homeworld.stars.primary.type;
-        document.getElementById("inStarSize").value = species.homeworld.stars.primary.size;
-        document.getElementById("inStarDecimal").value = typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal;
-        document.getElementById("inTradeCodes").value = species.homeworld.mainworld.tradecodes;
-        console.log(species);
-        var elmtName = document.getElementById("name");
-        removeChildElements(elmtName);
-
-        elmtName.appendChild(document.createTextNode("The " + species.name + " of " + species.homeworld.name));
-        document.querySelectorAll("[data-detail]").forEach(function (elmt) {
-            var source = elmt.getAttribute("data-source");
-            var detail = elmt.getAttribute("data-detail");
-            var value = source === "species" ? species[detail] : (source === "mainworld" ? species.homeworld.mainworld[detail] : species[source][detail]);
-            if (elmt.getAttribute("data-index")) {
-                value = value[+(elmt.getAttribute("data-index"))];
-            } else if (elmt.getAttribute("data-lookup")) {
-                value = lookups[elmt.getAttribute("data-lookup")][value];
-            } else if (elmt.getAttribute("data-complex-source")) {
-                var complexSource = elmt.getAttribute("data-complex-source");
-                var complexindex = +(elmt.getAttribute("data-complex-index"));
-                var temp = species[complexSource][complexindex];
-                if (typeof temp !== "undefined") {
-                    value = value[temp];
-                    if (elmt.getAttribute("data-36")) {
-
-                        value = " (" + (+(value) / 36 * 100).toFixed(2) + "%)";
+            });
+            window.addEventListener("hashchange", function () {
+                var hash = window.location.hash, newValue;
+                if (hash.length > 0) {
+                    var seed = hash.substring(1);
+                    if (hash.indexOf("$") > 0) {
+                        var hashParamPairs = hash.substr(1).split("&");
+                        for (var i = 0, len = hashParamPairs.length; i < len; i++) {
+                            var pair = hashParamPairs[i].split("=");
+                            var key = pair[0].toLowerCase();
+                            if (key === "$seed") {
+                                seed = pair[1];
+                                newValue = decodeURI(seed);
+                            } else if (key === "$uwp") {
+                                document.getElementById("chkRandomHomeworld").checked = false;
+                                document.getElementById("inUWP").value = pair[1];
+                            } else if (key === "$startype") {
+                                document.getElementById("chkRandomHomeworld").checked = false;
+                                document.getElementById("inStarType").value = pair[1];
+                            } else if (key === "$stardecimal") {
+                                document.getElementById("chkRandomHomeworld").checked = false;
+                                document.getElementById("inStarDecimal").value = pair[1];
+                            } else if (key === "$starsize") {
+                                document.getElementById("chkRandomHomeworld").checked = false;
+                                document.getElementById("inStarSize").value = pair[1];
+                            } else if (key === "$tradecodes") {
+                                document.getElementById("chkRandomHomeworld").checked = false;
+                                document.getElementById("inTradeCodes").value = pair[1];
+                            } else if (key === "$world") {
+                                document.getElementById("chkRandomHomeworld").checked = false;
+                                document.getElementById("inWorldName").value = pair[1];
+                            }
+                        }
+                    } else {
+                        newValue = decodeURI(seed);
                     }
+                    if (document.getElementById("txtSeed").value == newValue) {
 
-                } else { value = undefined; }
+                    } else {
+                        document.getElementById("txtSeed").value = newValue;
+                        var wasChecked = document.getElementById("chkUseRandom").checked;
+                        document.getElementById("chkUseRandom").checked = false;
+                        renderDetails(generateRandomAlien(initializeRandomSpecies(generator), MathRandom));
+                        document.getElementById("chkUseRandom").checked = wasChecked;
+                    }
+                }
+            });
+            var species = initializeRandomSpecies(generator);
+            renderDetails(generateRandomAlien(species, MathRandom));
+            if (fromDirectLink) {
+                fromDirectLink = false;
+                document.getElementById("chkUseRandom").checked = true;
             }
+            document.getElementById("btnGenerate").addEventListener("click", function () {
+                renderDetails(generateRandomAlien(initializeRandomSpecies(generator), MathRandom));
+            });
+        }
+        function initializeRandomSpecies(generator) {
+            var useRandomSeed = document.getElementById("chkUseRandom").checked;
+            var seed;
+            if (useRandomSeed) {
+                var seed1 = Math.floor(Math.random() * 1000000);
+                seed = addCaps(generator.getRandomName("system") + seed1);
+                document.getElementById("txtSeed").value = seed;
 
-            removeChildElements(elmt);
-            if (typeof value !== "undefined") {
-                if (elmt.getAttribute("data-html")) {
-                    elmt.insertAdjacentHTML("beforeend", value);
+            } else {
+                seed = document.getElementById("txtSeed").value
+            }
+            var hwhash = "&$traits=" + encodeURI(document.getElementById("slctUniqueTraits").value);
+            if (!document.getElementById("chkRandomHomeworld").checked) {
+                hwhash = "&$world=" + encodeURI(document.getElementById("inWorldName").value) +
+                    "&$uwp=" + encodeURI(document.getElementById("inUWP").value) +
+                    "&$startype=" + encodeURI(document.getElementById("inStarType").value) +
+                    "&$stardecimal=" + encodeURI(document.getElementById("inStarDecimal").value) +
+                    "&$starsize=" + encodeURI(document.getElementById("inStarSize").value) +
+                    "&$tradecodes=" + encodeURI(document.getElementById("inTradeCodes").value) +
+                    "&$traits=" + encodeURI(document.getElementById("slctUniqueTraits").value)
+            }
+            window.location.hash = "$seed=" + encodeURI(seed) + hwhash;
+            MathRandom = pseudoRandomNumberGenerator(seed.toString());
+            generator.setRandom(MathRandom);
+            var species = {};
+            species.name = addCaps(generator.getRandomName("word"));
+            var systemName = document.getElementById("inWorldName").value;
+            var uniqueTraits = document.getElementById("slctUniqueTraits").value;
+            if (uniqueTraits === "0") { species.uniqueTraitsCount = 0; }
+            else if (uniqueTraits === "1") { species.uniqueTraitsCount = 1; }
+            else if (uniqueTraits === "2") { species.uniqueTraitsCount = 2; }
+            else if (uniqueTraits === "3") { species.uniqueTraitsCount = 3; }
+            else if (uniqueTraits === "4") { species.uniqueTraitsCount = 4; }
+            else if (uniqueTraits === "5") { species.uniqueTraitsCount = 5; }
+            else if (uniqueTraits === "6") { species.uniqueTraitsCount = 6; }
+            else if (uniqueTraits === "1d6") { species.uniqueTraitsCount = MathRandom() * 6 + 1 >>> 0; }
+            if (document.getElementById("chkRandomHomeworld").checked) {
+                systemName = addCaps(generator.getRandomName("system"));
+                species.homeworld = generateSystemDetails(
+                    systemName,
+                    8, // gas giant frequency
+                    16 // max tech level
+                );
+                while (species.homeworld.mainworld.atmo < 2 || species.homeworld.mainworld.pop < 7) {
+                    species.homeworld = generateSystemDetails(species.homeworld.name, 8, 16);
+                }
+                species.homestar = species.homeworld.stars.primary.type + (typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal) + species.homeworld.stars.primary.size;
+            } else {
+                var throwawayName = generator.getRandomName("system");
+                var throwawayWorld = generateSystemDetails(throwawayName, 8, 16);
+                while (throwawayWorld.mainworld.atmo < 2 || throwawayWorld.mainworld.pop < 7) {
+                    throwawayWorld = generateSystemDetails(throwawayWorld.name, 8, 16);
+                }
+                species.homeworld = {};
+                species.homeworld.name = systemName;
+                species.homeworld.uwp = document.getElementById("inUWP").value;
+                species.homeworld.mainworld = {};
+                species.homeworld.mainworld.size = parseInt(species.homeworld.uwp[1], 16);
+                species.homeworld.mainworld.atmo = parseInt(species.homeworld.uwp[2], 16);
+                species.homeworld.mainworld.hydro = parseInt(species.homeworld.uwp[3], 16);
+                var tc = [];
+                if (document.getElementById("inTradeCodes").value.length > 0) {
+                    tc = document.getElementById("inTradeCodes").value.split(",");
+                }
+                species.homeworld.tradecodes = tc;
+                species.homeworld.mainworld.tradecodes = tc;
+                species.homeworld.mainworld.uwp = species.homeworld.uwp;
+                var climate = "Temperate.";
+                if (tc.indexOf("Tr") >= 0) {
+                    climate = "Tropic.";
+                } else if (tc.indexOf("Ho") >= 0) {
+                    climate = "Hot.";
+                } else if (tc.indexOf("Tu") >= 0) {
+                    climate = "Tundra.";
+                } else if (tc.indexOf("Co") >= 0) {
+                    climate = "Cold.";
+                } else if (tc.indexOf("Fr") >= 0) {
+                    climate = "Frozen.";
+                }
+                species.homeworld.mainworld.climate = climate;
+                species.homeworld.stars = {};
+                species.homeworld.stars.primary = {};
+                species.homeworld.stars.primary.type = document.getElementById("inStarType").value;
+                var decimal = document.getElementById("inStarDecimal").value
+                if (decimal.length > 0) { species.homeworld.stars.primary.decimal = decimal; }
+                species.homeworld.stars.primary.size = document.getElementById("inStarSize").value;
+                species.homestar = species.homeworld.stars.primary.type + (typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal) + species.homeworld.stars.primary.size;
+            }
+            return species;
+        }
+        function renderDetails(species) {
+            var lookups = {
+                "size": {
+                    "0": "Microgravity 0 G",
+                    "1": "Very Low Gravity 0.05 to 0.12 G",
+                    "2": "Low Gravity (Luna) 0.15 to 0.25 G",
+                    "3": "Low Gravity (Mercury) 0.25 - 0.4 G",
+                    "4": "Low Gravity (Mars) 0.35 - 0.50 G",
+                    "5": "Standard/Low Gravity 0.45 - 0.62 G",
+                    "6": "Standard/Low Gravity 0.65 - 0.75 G",
+                    "7": "Standard Gravity 0.8 - 0.9 G",
+                    "8": "Standard Gravity (Terra) 1.00 G",
+                    "9": "Standard Gravity 1.1 - 1.25 G",
+                    "10": "Standard/High Gravity 1.2 - 1.4 G",
+                    "11": "High Gravity 1.3 - 1.49 G",
+                    "12": "High Gravity 1.5 - 1.61 G",
+                    "13": "High Gravity 1.6 - 1.74 G",
+                    "14": "High Gravity 1.75 - 1.86 G",
+                    "15": "High Gravity 1.87 - 1.9 G"
+
+                }
+            };
+            document.getElementById("inWorldName").value = species.homeworld.name;
+            document.getElementById("inUWP").value = species.homeworld.uwp;
+            document.getElementById("inStarType").value = species.homeworld.stars.primary.type;
+            document.getElementById("inStarSize").value = species.homeworld.stars.primary.size;
+            document.getElementById("inStarDecimal").value = typeof species.homeworld.stars.primary.decimal === "undefined" ? "" : species.homeworld.stars.primary.decimal;
+            document.getElementById("inTradeCodes").value = species.homeworld.mainworld.tradecodes;
+            console.log(species);
+            var elmtName = document.getElementById("name");
+            removeChildElements(elmtName);
+
+            elmtName.appendChild(document.createTextNode("The " + species.name + " of " + species.homeworld.name));
+            document.querySelectorAll("[data-detail]").forEach(function (elmt) {
+                var source = elmt.getAttribute("data-source");
+                var detail = elmt.getAttribute("data-detail");
+                var value = source === "species" ? species[detail] : (source === "mainworld" ? species.homeworld.mainworld[detail] : species[source][detail]);
+                if (elmt.getAttribute("data-index")) {
+                    value = value[+(elmt.getAttribute("data-index"))];
+                } else if (elmt.getAttribute("data-lookup")) {
+                    value = lookups[elmt.getAttribute("data-lookup")][value];
+                } else if (elmt.getAttribute("data-complex-source")) {
+                    var complexSource = elmt.getAttribute("data-complex-source");
+                    var complexindex = +(elmt.getAttribute("data-complex-index"));
+                    var temp = species[complexSource][complexindex];
+                    if (typeof temp !== "undefined") {
+                        value = value[temp];
+                        if (elmt.getAttribute("data-36")) {
+
+                            value = " (" + (+(value) / 36 * 100).toFixed(2) + "%)";
+                        }
+
+                    } else { value = undefined; }
+                }
+
+                removeChildElements(elmt);
+                if (typeof value !== "undefined") {
+                    if (elmt.getAttribute("data-html")) {
+                        elmt.insertAdjacentHTML("beforeend", value);
+                    } else {
+                        elmt.appendChild(document.createTextNode(value));
+                    }
+                }
+            });
+            document.querySelectorAll("[data-if]").forEach(function (elmt) {
+                var source = elmt.getAttribute("data-source");
+                var detail = elmt.getAttribute("data-ifdetail");
+                var value = source === "species" ? species[detail] : (source === "mainworld" ? species.homeworld.mainworld[detail] : species[source][detail]);
+                var target = elmt.getAttribute("data-if");
+                if (value === target) {
+                    elmt.classList.remove("hidden");
                 } else {
-                    elmt.appendChild(document.createTextNode(value));
+                    elmt.classList.add("hidden");
+                }
+            });
+            document.getElementById("json").value = JSON.stringify(species);
+            var noteContainer = document.querySelector(".statnotes");
+            removeChildElements(noteContainer);
+            var notes = species.statnotes;
+            for (var i = 0; i < notes.length; i++) {
+                var note = notes[i];
+                var noteElmt = document.createElement("li");
+                noteElmt.classList.add("note");
+                note = note.replace(/(?<=\[)(Str)?(Agi)?(Gra)?(Vig)?(Sta)?(Ins)?(Tra)?(Cas)?(Cha)?(?=\])/g, "<strong>$&</strong>");
+                note = note.replace(/(?<=\. ).+/g, "<p style=\"font-size:smaller; margin-top:0px;\">$&</p>")
+                noteElmt.insertAdjacentHTML("beforeend", note);
+                noteContainer.appendChild(noteElmt);
+            }
+        }
+        function removeChildElements(element) {
+            while (element.childNodes.length > 0) {
+                element.removeChild(element.childNodes[element.childNodes.length - 1]);
+            }
+        }
+
+        function addCaps(text) {
+            var capitalizedString = "";
+            var lastCharacter = null, currCharacter = " ";
+            if (typeof text === "undefined") { return text; }
+            for (var i = 0, len = text.length; i < len; i++) {
+                lastCharacter = currCharacter;
+                currCharacter = text[i];
+                if (lastCharacter === " " || lastCharacter === "-") {
+                    capitalizedString += currCharacter.toUpperCase();
+                } else {
+                    capitalizedString += currCharacter;
                 }
             }
-        });
-        document.querySelectorAll("[data-if]").forEach(function (elmt) {
-            var source = elmt.getAttribute("data-source");
-            var detail = elmt.getAttribute("data-ifdetail");
-            var value = source === "species" ? species[detail] : (source === "mainworld" ? species.homeworld.mainworld[detail] : species[source][detail]);
-            var target = elmt.getAttribute("data-if");
-            if (value === target) {
-                elmt.classList.remove("hidden");
-            } else {
-                elmt.classList.add("hidden");
-            }
-        });
-        document.getElementById("json").value = JSON.stringify(species);
-        var noteContainer = document.querySelector(".statnotes");
-        removeChildElements(noteContainer);
-        var notes = species.statnotes;
-        for (var i = 0; i < notes.length; i++) {
-            var note = notes[i];
-            var noteElmt = document.createElement("li");
-            noteElmt.classList.add("note");
-            note = note.replace(/(?<=\[)(Str)?(Agi)?(Gra)?(Vig)?(Sta)?(Ins)?(Tra)?(Cas)?(Cha)?(?=\])/g, "<strong>$&</strong>");
-            note = note.replace(/(?<=\. ).+/g, "<p style=\"font-size:smaller; margin-top:0px;\">$&</p>")
-            noteElmt.insertAdjacentHTML("beforeend", note);
-            noteContainer.appendChild(noteElmt);
+            return capitalizedString;
         }
-    }
-    function removeChildElements(element) {
-        while (element.childNodes.length > 0) {
-            element.removeChild(element.childNodes[element.childNodes.length - 1]);
-        }
-    }
+    }, 100)
 
-    function addCaps(text) {
-        var capitalizedString = "";
-        var lastCharacter = null, currCharacter = " ";
-        if (typeof text === "undefined") { return text; }
-        for (var i = 0, len = text.length; i < len; i++) {
-            lastCharacter = currCharacter;
-            currCharacter = text[i];
-            if (lastCharacter === " " || lastCharacter === "-") {
-                capitalizedString += currCharacter.toUpperCase();
-            } else {
-                capitalizedString += currCharacter;
-            }
-        }
-        return capitalizedString;
-    }
-    },100)
-    
 </script>
+
 </html>
