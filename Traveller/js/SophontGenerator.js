@@ -3093,7 +3093,7 @@ function generateRandomAlien(species,rand){
         }
             
         if(species.frontlimbs[0] === species.frontlimbs[1]){
-            var lc = (species.frontlimbs1 + species.frontlimbs2).toString();
+            var lc = (species.frontlimbs1 + species.frontlimbs2);
             switch(species.frontlimbs[0]){
                 case "W": species.frontlimbsdesc += lc  + " wing"+(lc > 1? "s":""); break;
                 case "A": species.frontlimbsdesc += lc  + " arm"+(lc > 1? "s":""); break;
@@ -3117,7 +3117,7 @@ function generateRandomAlien(species,rand){
             }     
         }
         if(species.rearlimbs[0] === species.rearlimbs[1]){
-            var lc = (species.rearlimbs1 + species.rearlimbs2).toString();
+            var lc = (species.rearlimbs1 + species.rearlimbs2);
             switch(species.rearlimbs[0]){
                 case "W": 
                     species.rearlimbsdesc += lc + " wing"+(lc > 1? "s":""); break;
@@ -4586,7 +4586,7 @@ function generateRandomAlien(species,rand){
              }else if(species.casteshift === "progresses along caste table at every life stage"){
                 species.castesummary += " Their castes may shift at every life stage.";
              }
-             if(!species.castestructure === "Skilled" && species.genders.length > 1){
+             if(!(species.castestructure === "Skilled") && species.genders.length > 1){
                 if(species.castegenderrelation !== "Independent"){
                     if(species.castegenderrelation === "Dependent"){
                         species.castesummary += " Each ranked caste is always a specific gender.";
@@ -4807,7 +4807,7 @@ function getRandomSpecialAbility(){
     }
     if(ability === "Mem"){
         var roll = d6();
-        while(d6 === 4){ roll = d6();}
+        while(roll === 4){ roll = d6();}
         switch(roll){
             case 1: ability = "MemVision"; break;
             case 2: ability = "MemAudio"; break;

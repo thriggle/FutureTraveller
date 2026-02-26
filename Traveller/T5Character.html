@@ -1,33 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>T5 Character Wizard</title>
 </head>
+
 <body>
     <style>
         @font-face {
             font-family: Bahnschrift;
             src: url(/Traveller/fonts/BAHNSCHRIFT.TTF);
         }
-        .award{display:inline-block; white-space:nowrap; }
-        body{ font-family: Bahnschrift; background-color:black; color:white; font-weight:lighter;}
-        fieldset{
-            flex:1;
-            line-height:1.3rem;
+
+        .award {
+            display: inline-block;
+            white-space: nowrap;
         }
-        fieldset.collapsed{
-            display:inline-block;
-            vertical-align:top;
-            flex:0;
+
+        body {
+            font-family: Bahnschrift;
+            background-color: black;
+            color: white;
+            font-weight: lighter;
         }
-        fieldset li{
-            line-height:1.1rem;
-            padding-inline-start:0rem;
-            margin-block-start:0rem;
-            margin-block-end:0rem;
+
+        fieldset {
+            flex: 1;
+            line-height: 1.3rem;
         }
+
+        fieldset.collapsed {
+            display: inline-block;
+            vertical-align: top;
+            flex: 0;
+        }
+
+        fieldset li {
+            line-height: 1.1rem;
+            padding-inline-start: 0rem;
+            margin-block-start: 0rem;
+            margin-block-end: 0rem;
+        }
+
         fieldset legend {
             white-space: nowrap;
             cursor: pointer;
@@ -45,168 +61,347 @@
             -ms-user-select: none;
             user-select: none;
         }
-        fieldset.collapsed *:not(legend){
+
+        fieldset.collapsed *:not(legend) {
             display: none;
         }
-        fieldset>legend::before{
+
+        fieldset>legend::before {
             content: "▼ ";
         }
+
         fieldset.collapsed>legend::before {
             content: "► ";
         }
-        ul{
-            padding-inline-start:0.5rem;
-            margin-block-start:0.5rem;
-            margin-block-end:0.5rem;
+
+        ul {
+            padding-inline-start: 0.5rem;
+            margin-block-start: 0.5rem;
+            margin-block-end: 0.5rem;
         }
-        ul ul{
-            padding-inline-start:1.1rem;
-            margin-block-start:0rem;
-            margin-block-end:0rem;
+
+        ul ul {
+            padding-inline-start: 1.1rem;
+            margin-block-start: 0rem;
+            margin-block-end: 0rem;
         }
-        li[data-characteristic='unknown']{ opacity: 0.65;}
-        button,input[type='button'],input[type='submit'],input[type='file' i],input#file-upload-button{
-            padding:0.3rem;
-            border:1px solid rgb(88, 88, 88);
-            margin:1px;
-            border-radius:0rem;
-            cursor:pointer;
+
+        li[data-characteristic='unknown'] {
+            opacity: 0.65;
+        }
+
+        button,
+        input[type='button'],
+        input[type='submit'],
+        input[type='file' i],
+        input#file-upload-button {
+            padding: 0.3rem;
+            border: 1px solid rgb(88, 88, 88);
+            margin: 1px;
+            border-radius: 0rem;
+            cursor: pointer;
             background-color: black;
-            color:white;
+            color: white;
             font-family: Bahnschrift;
         }
-        button:hover,input[type='button']:hover,input[type='submit']:hover,input[type='file' i]:hover,input#file-upload-button:hover{
-            background-color:#455151;
+
+        button:hover,
+        input[type='button']:hover,
+        input[type='submit']:hover,
+        input[type='file' i]:hover,
+        input#file-upload-button:hover {
+            background-color: #455151;
         }
-        [data-careerbtn][disabled]{
+
+        [data-careerbtn][disabled] {
             color: rgb(88, 88, 88);
-            cursor:inherit;
+            cursor: inherit;
         }
-        [data-careerbtn][disabled]:hover{
+
+        [data-careerbtn][disabled]:hover {
             background-color: black;
         }
-        
-        label.genetics{
+
+        label.genetics {
             font-family: 'Courier New', Courier, monospace;
-            font-size:small;
+            font-size: small;
             white-space: nowrap;
         }
-        #btnReset{
+
+        #btnReset {
 
             font-family: Bahnschrift;
-            font-size:large;          
+            font-size: large;
         }
-        nav.menu{
-            display:block;
+
+        nav.menu {
+            display: block;
         }
-        [data-history]{
-            display:table;
-            
-            width:100%;
-            border:1px solid black;
-            background-color:#dfdfdf;
-            color:black;
+
+        [data-history] {
+            display: table;
+
+            width: 100%;
+            border: 1px solid black;
+            background-color: #dfdfdf;
+            color: black;
             text-align: left;
         }
-        .event{
-            display:table-row;
-            width:100%;
-            border-bottom:1px solid black;
+
+        .event {
+            display: table-row;
+            width: 100%;
+            border-bottom: 1px solid black;
             text-align: left;
-            font-size:smaller;
+            font-size: smaller;
         }
-        .event.newage{
-            background-color:white;
+
+        .event.newage {
+            background-color: white;
         }
-        .event.Pass{
+
+        .event.Pass {
             background-color: lightgreen;
         }
-        .event.Aging{
-            background-color:lightyellow;
+
+        .event.Aging {
+            background-color: lightyellow;
         }
-        .event.Loss, .event.Fail{
-           
+
+        .event.Loss,
+        .event.Fail {
+
             background-color: pink;
         }
-        .event.AgingFail{
+
+        .event.AgingFail {
             background-color: #ff9999;
         }
-        .event.drafted{
-            background-color:lightblue;
+
+        .event.drafted {
+            background-color: lightblue;
         }
-        .event.calledup{
+
+        .event.calledup {
             background-color: gold;
         }
-        .event_text, .event_age, .event_index{ 
-            display:table-cell;
-        }
-        .event_text{
-            padding-left:1rem;
-            
-        }
-        .event_age{
-            width:3rem;
-        }
-        .event_index{
-            width:2rem;
-            text-align:center;
-        }
-        .event.Death{
-            background-color: darkred;
-            color:white;
-        }
-        .event.ready{
-            background-color:darkblue;
-            color:white;
-        }
-        nav.menu ul{ margin:0px; }
-        nav.menu li{display:inline-block;font-family: Bahnschrift; user-select: none; }
-        nav.menu li a{cursor:pointer; text-decoration: none; color:white; background-color:black; display:inline-block; 
-            padding:0.75rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; border:1px solid white; border-bottom:0px;}
-        nav.menu li a:hover{ color:black; background-color: rgb(198, 198, 198);}
-        nav.menu li a.selected{ color:black; background-color: white; border:1px solid black;}
-        [data-nav]{ display:none; border:1px solid gray;}
-        [data-nav='create']{display:block; }
-        [data-nav='background']{display:block;}
-        nav.menu a[data-tier='2']{ font-size:smaller}
-        #rdoAttributesClone:checked ~ #divGeneticDice{  display:flex; flex-direction: row; flex-wrap: wrap; }
-        #rdoAttributesCustom:checked ~ #divAttributeValues{ display:flex; flex-direction: row; flex-wrap: wrap;}
-        #divGeneticDice,#divAttributeValues{display:none;}
-        #divAttributeValues label, #divGeneticDice label{flex:50%; font-family: 'Courier New', Courier, monospace;}
-        #divAttributeValues input{width:1.5rem;}
-        [data-tier='2']{
-            background-color:rgba(223, 223, 223, 0.1);
-        }
-        #dialog{ padding:0px;}
-        #txtDialog{ padding:1rem;}
-        #slctDialog{ margin-left:1rem;}
-        #slctDialog,#dlgBtn,#cancelDlgBtn{ margin-bottom:1rem;}
-        #cancelDlgBtn{ margin-right:1rem;}
-        #txtDialogPreview{ margin-left:1rem; margin-bottom:1rem;}
-        #txtDialogPreview ul, #txtDialogPreview ol{ margin-block:0; padding-inline:1rem;}
-        [data-name],[data-ageblock],[data-gender]{font-weight: bold; margin-right: 0.5rem;}
-        [data-credits]{font-weight: bold;}
-        [data-skill='true']{font-weight:bold; color:white; opacity:1}
-        [data-skill='false']{color:#dfdfdf; font-weight:lighter}
-        [data-skilllevel]{font-weight:bold;}
-        [data-skilllevel='Incompetent']{ color:darkred;}
-        [data-skilllevel='Novice']{ color:rgb(139, 95, 0);}
-        [data-skilllevel='Adequate']{ color:rgb(53, 139, 0);}
-        [data-skilllevel='Competent']{ color:rgb(0, 116, 116);}
-        [data-skilllevel='Proficient']{ color:rgb(0, 60, 116);}
-        [data-skilllevel='Expert']{ color:rgb(37, 0, 116);}
-        [data-skilllevel='Veteran']{ color:rgb(102, 0, 116);}
-        [data-skilllevel='Legendary']{ color:rgb(151, 0, 116);}
 
-        [data-nav='sheet']{
-            font-weight:normal;
+        .event_text,
+        .event_age,
+        .event_index {
+            display: table-cell;
+        }
+
+        .event_text {
+            padding-left: 1rem;
+
+        }
+
+        .event_age {
+            width: 3rem;
+        }
+
+        .event_index {
+            width: 2rem;
+            text-align: center;
+        }
+
+        .event.Death {
+            background-color: darkred;
+            color: white;
+        }
+
+        .event.ready {
+            background-color: darkblue;
+            color: white;
+        }
+
+        nav.menu ul {
+            margin: 0px;
+        }
+
+        nav.menu li {
+            display: inline-block;
+            font-family: Bahnschrift;
+            user-select: none;
+        }
+
+        nav.menu li a {
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            background-color: black;
+            display: inline-block;
+            padding: 0.75rem;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            border: 1px solid white;
+            border-bottom: 0px;
+        }
+
+        nav.menu li a:hover {
+            color: black;
+            background-color: rgb(198, 198, 198);
+        }
+
+        nav.menu li a.selected {
+            color: black;
             background-color: white;
-            color:black;
+            border: 1px solid black;
         }
-        [data-nav='sheet'] [data-skill='false']{
-            color:rgb(47, 47, 47);
+
+        [data-nav] {
+            display: none;
+            border: 1px solid gray;
         }
-        [data-nav='sheet'] [data-skill='true']{ color:black; }
+
+        [data-nav='create'] {
+            display: block;
+        }
+
+        [data-nav='background'] {
+            display: block;
+        }
+
+        nav.menu a[data-tier='2'] {
+            font-size: smaller
+        }
+
+        #rdoAttributesClone:checked~#divGeneticDice {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        #rdoAttributesCustom:checked~#divAttributeValues {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        #divGeneticDice,
+        #divAttributeValues {
+            display: none;
+        }
+
+        #divAttributeValues label,
+        #divGeneticDice label {
+            flex: 50%;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #divAttributeValues input {
+            width: 1.5rem;
+        }
+
+        [data-tier='2'] {
+            background-color: rgba(223, 223, 223, 0.1);
+        }
+
+        #dialog {
+            padding: 0px;
+        }
+
+        #txtDialog {
+            padding: 1rem;
+        }
+
+        #slctDialog {
+            margin-left: 1rem;
+        }
+
+        #slctDialog,
+        #dlgBtn,
+        #cancelDlgBtn {
+            margin-bottom: 1rem;
+        }
+
+        #cancelDlgBtn {
+            margin-right: 1rem;
+        }
+
+        #txtDialogPreview {
+            margin-left: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        #txtDialogPreview ul,
+        #txtDialogPreview ol {
+            margin-block: 0;
+            padding-inline: 1rem;
+        }
+
+        [data-name],
+        [data-ageblock],
+        [data-gender] {
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        [data-credits] {
+            font-weight: bold;
+        }
+
+        [data-skill='true'] {
+            font-weight: bold;
+            color: white;
+            opacity: 1
+        }
+
+        [data-skill='false'] {
+            color: #dfdfdf;
+            font-weight: lighter
+        }
+
+        [data-skilllevel] {
+            font-weight: bold;
+        }
+
+        [data-skilllevel='Incompetent'] {
+            color: darkred;
+        }
+
+        [data-skilllevel='Novice'] {
+            color: rgb(139, 95, 0);
+        }
+
+        [data-skilllevel='Adequate'] {
+            color: rgb(53, 139, 0);
+        }
+
+        [data-skilllevel='Competent'] {
+            color: rgb(0, 116, 116);
+        }
+
+        [data-skilllevel='Proficient'] {
+            color: rgb(0, 60, 116);
+        }
+
+        [data-skilllevel='Expert'] {
+            color: rgb(37, 0, 116);
+        }
+
+        [data-skilllevel='Veteran'] {
+            color: rgb(102, 0, 116);
+        }
+
+        [data-skilllevel='Legendary'] {
+            color: rgb(151, 0, 116);
+        }
+
+        [data-nav='sheet'] {
+            font-weight: normal;
+            background-color: white;
+            color: black;
+        }
+
+        [data-nav='sheet'] [data-skill='false'] {
+            color: rgb(47, 47, 47);
+        }
+
+        [data-nav='sheet'] [data-skill='true'] {
+            color: black;
+        }
     </style>
     <script src="./js/character/CharacterView.js" type="module"></script>
     <nav class="menu">
@@ -216,7 +411,7 @@
             <li><a data-tier="1" target="sheet">Character Sheet</a></li>
         </ul>
     </nav>
-    
+
     <div data-tier="1" data-nav="create">
         <nav class="menu">
             <ul>
@@ -227,251 +422,297 @@
             </ul>
         </nav>
         <div data-tier="2" data-nav="save">
-            <label for="btnExport">&nbsp;Export current character to .json file <input type="button" value="Save Character" id="btnExport"></label>
-            <hr/>
-            <label for="btnImportJSON">&nbsp;Import a character from a .json file: </label><input type="file" Text="Import JSON" id="btnImportJSON" accept="text/*,.json" />
+            <label for="btnExport">&nbsp;Export current character to .json file <input type="button"
+                    value="Save Character" id="btnExport"></label>
+            <hr />
+            <label for="btnImportJSON">&nbsp;Import a character from a .json file: </label><input type="file"
+                Text="Import JSON" id="btnImportJSON" accept="text/*,.json" />
         </div>
         <fieldset data-tier="2" data-nav="background">
-            
+
             <div style="display:flex">
                 <div style="flex:2">
-                
-                <fieldset>
-                    <legend>Origin</legend>
+
+                    <fieldset>
+                        <legend>Origin</legend>
                         <!-- Add radio buttons to choose between Specify Trade Codes and Choose Homeworld -->
-                        <input type="radio" name="homeworld" id="homeworldSpecify" value="specify" checked> <label for="homeworldSpecify">Specify HW Trade Codes</label>
-                        <input type="radio" name="homeworld" id="homeworldChoose" value="choose" > <label for="homeworldChoose">Choose Homeworld</label>
-                        <br/>
+                        <input type="radio" name="homeworld" id="homeworldSpecify" value="specify" checked> <label
+                            for="homeworldSpecify">Specify HW Trade Codes</label>
+                        <input type="radio" name="homeworld" id="homeworldChoose" value="choose"> <label
+                            for="homeworldChoose">Choose Homeworld</label>
+                        <br />
                         <div id="divChooseHomeworld" style="display:none;">
                             <!-- dropdown to choose milieu (leave blank for now, we'll populate it with JavaScript later)-->
-                            <label style="white-space: nowrap;" for="slctMilieu">Milieu: <select name="slctMilieu" id="slctMilieu"></select></label>
-                            <label style="white-space: nowrap;" for="slctSector">Sector: <select name="slctSector" id="slctSector"></select></label><button type="button" id="btnRandomSector" title="Random Sector">🎲</button><br/>
-                            <span id="spanSectorError" style="color:red"></span><label id="lblSlctHomeworld" style="white-space: nowrap;" for="slctHomeworld">Homeworld: <select name="slctHomeworld" id="slctHomeworld"></select><button type="button" id="btnRandomHomeworld" title="Random homeworld">🎲</button></label>
-                            
+                            <label style="white-space: nowrap;" for="slctMilieu">Milieu: <select name="slctMilieu"
+                                    id="slctMilieu"></select></label>
+                            <label style="white-space: nowrap;" for="slctSector">Sector: <select name="slctSector"
+                                    id="slctSector"></select></label><button type="button" id="btnRandomSector"
+                                title="Random Sector">🎲</button><br />
+                            <span id="spanSectorError" style="color:red"></span><label id="lblSlctHomeworld"
+                                style="white-space: nowrap;" for="slctHomeworld">Homeworld: <select name="slctHomeworld"
+                                    id="slctHomeworld"></select><button type="button" id="btnRandomHomeworld"
+                                    title="Random homeworld">🎲</button></label>
+
                             <span id="spanHomeWorldTradeCodes"></span>
                         </div>
                         <div id="divSpecifyTradeCodes">
-                            <label style="white-space: nowrap;" for="txtHomeworldTradeCodes">Homeworld Trade Codes: <input type="text" style="width:6rem;" name="txtHomeworldTradeCodes" id="txtHomeworldTradeCodes" /></label>
-                            <button type="button" id="btnRandomHWTCs" title="Random trade codes" value="🌏">🌏</button><button type="button" id="btnDeepSpaceTC" title="Deep Space" value="💫">💫</button><button type="button" style="cursor:pointer;display:none;" id="btnClearHWTCs">❌</button></label>
+                            <label style="white-space: nowrap;" for="txtHomeworldTradeCodes">Homeworld Trade Codes:
+                                <input type="text" style="width:6rem;" name="txtHomeworldTradeCodes"
+                                    id="txtHomeworldTradeCodes" /></label>
+                            <button type="button" id="btnRandomHWTCs" title="Random trade codes"
+                                value="🌏">🌏</button><button type="button" id="btnDeepSpaceTC" title="Deep Space"
+                                value="💫">💫</button><button type="button" style="cursor:pointer;display:none;"
+                                id="btnClearHWTCs">❌</button></label>
                         </div>
-                        <label style="white-space: nowrap;" for="slctNativeLanguage">Native Language: <select name="slctNativeLanguage" id="slctNativeLanguage">
-                        <option value="!kee">!kee</option>
-                        <option selected="selected" value="Anglic">Anglic</option>
-                        <option value="Vilani">Vilani</option>
-                        <option value="Gonk">Gonk</option>
-                        <option value="Gvegh">Gvegh</option>
-                        <option value="Oynprith">Oynprith</option>
-                        <option value="Sagamaal">Sagamaal</option>
-                        <option value="Tezapet">Tezapet</option>
-                        <option value="Trokh">Trokh</option>
-                        <option value="Zdetl">Zdetl</option>             
-                    </select></label><br/>
-                    <label for="chkLowTechHW" title="Excludes Computer from default skills"><input type="checkbox" id="chkLowTechHW" >Low Tech (TL6-) Homeworld</label>
-                </fieldset>
-                <fieldset>
-                    <legend>Identity</legend>
-                    <label for="txtName">Name: <input type="text" style="width:10em" placeholder="Random name" id="txtName" /><button style="cursor:pointer" id="btnRandomName" title="Random name">🎲</button><button style="cursor:pointer;display:none;" title="Apply name to existing character" id="btnApplyName">💾</button><button style="cursor:pointer;display:none;" id="btnClearName">❌</button></label><br/>         
-                    <label style="white-space: nowrap;" for="slctGender">Sex: <select name="slctGender" id="slctGender">
-                        <option value="random">Random</option>
-                        <option value="M">Male</option>
-                        <option value="F">Female</option>
-                    </select></label>
-                </fieldset>
-                <fieldset class="collapsed">
-                    <legend>Characteristics</legend>
-                    <label style="white-space: nowrap;" for="slctSpecies">Species: <select name="slctSpecies" id="slctSpecies">
-                        <option value="human">Humaniti</option>
-                    </select></label><br/>
-                    <label for="rdoAttributesNatural"> <input type="radio" checked="checked" name="rdoAttributes" id="rdoAttributesNatural" value="Natural">Random Characteristics</label><br/>
-                    <input type="radio" name="rdoAttributes" id="rdoAttributesClone" value="Clone"><label for="rdoAttributesClone">Predefined Genetics</label><br/>
-                     <input type="radio" name="rdoAttributes" id="rdoAttributesCustom" value="Custom"><label for="rdoAttributesCustom">Custom Characteristics</label>
-                     <div id="divGeneticDice">
-                        <label class="genetics">C1:<select id="slctGeneticC1">
-                            <option value="Random">?</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select></label> <label class="genetics">C3:<select id="slctGeneticC3">
-                            <option value="Random">?</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select></label> <label class="genetics">C2:<select id="slctGeneticC2">
-                            <option value="Random">?</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select></label>  <label class="genetics">C4:<select id="slctGeneticC4">
-                            <option value="Random">?</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select></label>
-                        <label class="genetics" style="display:none;" for="slctGeneticC5">C5:</label><select style="display:none" id="slctGeneticC5">
-                            <option value="Random">?</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select>  <label class="genetics" for="slctGeneticCS">CS:<select id="slctGeneticCS">
-                            <option value="Random">?</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select></label>
-                        <label class="genetics" for="slctGeneticCP">CP:<select id="slctGeneticCP">
-                            <option value="Random">?</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select></label>
-                    </div>
-                    <div id="divAttributeValues">
-                        <label for="txtCustomC1">C1:<input id="txtCustomC1" type="number" min="1" value="3"/><input id="txtCustomC1b" type="number" min="0" value="4"/></label>
-                        <label for="txtCustomC4">C4:<input id="txtCustomC4" type="number" min="1" value="4"/><input id="txtCustomC4b" type="number" min="0" value="3"/></label>
-                        <label for="txtCustomC2">C2:<input id="txtCustomC2" type="number" min="1" value="3"/><input id="txtCustomC2b" type="number" min="0" value="4"/></label>
-                        <label for="txtCustomC5">C5:<input id="txtCustomC5" type="number" min="1" value="4"/><input id="txtCustomC5b" type="number" min="0" value="3"/></label>
-                        <label for="txtCustomC3">C3:<input id="txtCustomC3" type="number" min="1" value="3"/><input id="txtCustomC3b" type="number" min="0" value="4"/></label>
-                        <label for="txtCustomC6">C6:<input id="txtCustomC6" type="number" min="1" value="4"/><input id="txtCustomC6b" type="number" min="0" value="3"/></label>
-                    </div>
-                </fieldset>
-                <fieldset class="collapsed">
-                    <legend>Cloning</legend>
-                    <label for="isNotForcedGrowthClone"><input type="radio" id="isNotForcedGrowthClone" checked="checked" name="isForcedGrowthClone">Natural Born</label>
-                    <label for="isForcedGrowthClone" title="Forced growth clones experience accelerated aging and may suffer aging effects beginning at life stage 4"><input type="radio" name="isForcedGrowthClone" id="isForcedGrowthClone" >Forced Growth Clone</label>
-                </fieldset>
+                        <label style="white-space: nowrap;" for="slctNativeLanguage">Native Language: <select
+                                name="slctNativeLanguage" id="slctNativeLanguage">
+                                <option value="!kee">!kee</option>
+                                <option selected="selected" value="Anglic">Anglic</option>
+                                <option value="Vilani">Vilani</option>
+                                <option value="Gonk">Gonk</option>
+                                <option value="Gvegh">Gvegh</option>
+                                <option value="Oynprith">Oynprith</option>
+                                <option value="Sagamaal">Sagamaal</option>
+                                <option value="Tezapet">Tezapet</option>
+                                <option value="Trokh">Trokh</option>
+                                <option value="Zdetl">Zdetl</option>
+                            </select></label><br />
+                        <label for="chkLowTechHW" title="Excludes Computer from default skills"><input type="checkbox"
+                                id="chkLowTechHW">Low Tech (TL6-) Homeworld</label>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Identity</legend>
+                        <label for="txtName">Name: <input type="text" style="width:10em" placeholder="Random name"
+                                id="txtName" /><button style="cursor:pointer" id="btnRandomName"
+                                title="Random name">🎲</button><button style="cursor:pointer;display:none;"
+                                title="Apply name to existing character" id="btnApplyName">💾</button><button
+                                style="cursor:pointer;display:none;" id="btnClearName">❌</button></label><br />
+                        <label style="white-space: nowrap;" for="slctGender">Sex: <select name="slctGender"
+                                id="slctGender">
+                                <option value="random">Random</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                            </select></label>
+                    </fieldset>
+                    <fieldset class="collapsed">
+                        <legend>Characteristics</legend>
+                        <label style="white-space: nowrap;" for="slctSpecies">Species: <select name="slctSpecies"
+                                id="slctSpecies">
+                                <option value="human">Humaniti</option>
+                            </select></label><br />
+                        <label for="rdoAttributesNatural"> <input type="radio" checked="checked" name="rdoAttributes"
+                                id="rdoAttributesNatural" value="Natural">Random Characteristics</label><br />
+                        <input type="radio" name="rdoAttributes" id="rdoAttributesClone" value="Clone"><label
+                            for="rdoAttributesClone">Predefined Genetics</label><br />
+                        <input type="radio" name="rdoAttributes" id="rdoAttributesCustom" value="Custom"><label
+                            for="rdoAttributesCustom">Custom Characteristics</label>
+                        <div id="divGeneticDice">
+                            <label class="genetics">C1:<select id="slctGeneticC1">
+                                    <option value="Random">?</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select></label> <label class="genetics">C3:<select id="slctGeneticC3">
+                                    <option value="Random">?</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select></label> <label class="genetics">C2:<select id="slctGeneticC2">
+                                    <option value="Random">?</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select></label> <label class="genetics">C4:<select id="slctGeneticC4">
+                                    <option value="Random">?</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select></label>
+                            <label class="genetics" style="display:none;" for="slctGeneticC5">C5:</label><select
+                                style="display:none" id="slctGeneticC5">
+                                <option value="Random">?</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                            </select> <label class="genetics" for="slctGeneticCS">CS:<select id="slctGeneticCS">
+                                    <option value="Random">?</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select></label>
+                            <label class="genetics" for="slctGeneticCP">CP:<select id="slctGeneticCP">
+                                    <option value="Random">?</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select></label>
+                        </div>
+                        <div id="divAttributeValues">
+                            <label for="txtCustomC1">C1:<input id="txtCustomC1" type="number" min="1" value="3" /><input
+                                    id="txtCustomC1b" type="number" min="0" value="4" /></label>
+                            <label for="txtCustomC4">C4:<input id="txtCustomC4" type="number" min="1" value="4" /><input
+                                    id="txtCustomC4b" type="number" min="0" value="3" /></label>
+                            <label for="txtCustomC2">C2:<input id="txtCustomC2" type="number" min="1" value="3" /><input
+                                    id="txtCustomC2b" type="number" min="0" value="4" /></label>
+                            <label for="txtCustomC5">C5:<input id="txtCustomC5" type="number" min="1" value="4" /><input
+                                    id="txtCustomC5b" type="number" min="0" value="3" /></label>
+                            <label for="txtCustomC3">C3:<input id="txtCustomC3" type="number" min="1" value="3" /><input
+                                    id="txtCustomC3b" type="number" min="0" value="4" /></label>
+                            <label for="txtCustomC6">C6:<input id="txtCustomC6" type="number" min="1" value="4" /><input
+                                    id="txtCustomC6b" type="number" min="0" value="3" /></label>
+                        </div>
+                    </fieldset>
+                    <fieldset class="collapsed">
+                        <legend>Cloning</legend>
+                        <label for="isNotForcedGrowthClone"><input type="radio" id="isNotForcedGrowthClone"
+                                checked="checked" name="isForcedGrowthClone">Natural Born</label>
+                        <label for="isForcedGrowthClone"
+                            title="Forced growth clones experience accelerated aging and may suffer aging effects beginning at life stage 4"><input
+                                type="radio" name="isForcedGrowthClone" id="isForcedGrowthClone">Forced Growth
+                            Clone</label>
+                    </fieldset>
+                </div>
+                <input style="flex:1; flex-shrink: 2; white-space: normal;" type="button"
+                    value="🚀 Roll up new character with these options" id="btnReset" />
             </div>
-            <input style="flex:1; flex-shrink: 2; white-space: normal;" type="button" value="🚀 Roll up new character with these options" id="btnReset"/>
-        </div>
         </fieldset>
         <fieldset data-tier="2" data-nav="education">
             <fieldset>
-            <legend>Education</legend>
-            <div>
-                <input type="button" data-educationbtn value="Apprenticeship" id="btnApprenticeship"/>
-                <input type="button" data-educationbtn value="ED5" id="btnED5"/>
-                <hr>
-                <input type="button" data-educationbtn value="Trade School" id="btnTradeSchool"/>
-                <input type="button" data-educationbtn value="Training Course" id="btnTrainingCourse"/>
-                <hr>
-                <input type="button" data-qualify="BA" data-educationbtn value="College" id="btnCollege"/>
-                <input type="button" data-qualify="BA" data-educationbtn value="University" id="btnUniversity"/>
-                <input type="button" data-qualify="BA" data-educationbtn value="Naval Academy" id="btnNavalAcademy"/>
-                <input type="button" data-qualify="BA" data-educationbtn value="Military Academy" id="btnMilitaryAcademy"/>
-                <hr>
-                <input type="button" data-educationbtn value="Masters" id="btnMasters"/>
-                <input type="button" data-educationbtn value="Professors" id="btnProfessors"/>
-                <input type="button" data-educationbtn value="Medical School" id="btnMedicalSchool"/>
-                <input type="button" data-educationbtn value="Law School" id="btnLawSchool"/>
-            </div>
-        </fieldset>
+                <legend>Education</legend>
+                <div>
+                    <input type="button" data-educationbtn value="Apprenticeship" id="btnApprenticeship" />
+                    <input type="button" data-educationbtn value="ED5" id="btnED5" />
+                    <hr>
+                    <input type="button" data-educationbtn value="Trade School" id="btnTradeSchool" />
+                    <input type="button" data-educationbtn value="Training Course" id="btnTrainingCourse" />
+                    <hr>
+                    <input type="button" data-qualify="BA" data-educationbtn value="College" id="btnCollege" />
+                    <input type="button" data-qualify="BA" data-educationbtn value="University" id="btnUniversity" />
+                    <input type="button" data-qualify="BA" data-educationbtn value="Naval Academy"
+                        id="btnNavalAcademy" />
+                    <input type="button" data-qualify="BA" data-educationbtn value="Military Academy"
+                        id="btnMilitaryAcademy" />
+                    <hr>
+                    <input type="button" data-educationbtn value="Masters" id="btnMasters" />
+                    <input type="button" data-educationbtn value="Professors" id="btnProfessors" />
+                    <input type="button" data-educationbtn value="Medical School" id="btnMedicalSchool" />
+                    <input type="button" data-educationbtn value="Law School" id="btnLawSchool" />
+                </div>
+            </fieldset>
         </fieldset>
         <fieldset data-tier="2" data-nav="career">
-            <input type="button" disabled="disabled" data-careerbtn="Craftsman" id="btnCraftsman" value="Craftsman" title="Begin automatic
+            <input type="button" disabled="disabled" data-careerbtn="Craftsman" id="btnCraftsman" value="Craftsman"
+                title="Begin automatic
 Requires 2x Skill-6
 Requires Craftsman-1
 CC=C1,C2,C3,C4
-Continue vs Craftsman 2"/>
+Continue vs Craftsman 2" />
             <input type="button" data-careerbtn="Scholar" id="btnScholar" value="Scholar" title="Begin Automatic if Edu 8+, otherwise check Edu/Tra
 CC=C1,C2,C3,C4
 Promotion vs Int
-Continue vs Edu or Tra"/>
-            <input type="button" disabled="disabled" data-careerbtn="Entertainer" id="btnEntertainer" value="Entertainer" title="Begin C2,C3,Int,C5
+Continue vs Edu or Tra" />
+            <input type="button" disabled="disabled" data-careerbtn="Entertainer" id="btnEntertainer"
+                value="Entertainer" title="Begin C2,C3,Int,C5
 Fame and Talent determined by 2D
-Continue vs Fame"/>
-            <input type="button"  value="Citizen" data-careerbtn="Citizen" id="btnCitizen" title="Begin Auto
+Continue vs Fame" />
+            <input type="button" value="Citizen" data-careerbtn="Citizen" id="btnCitizen" title="Begin Auto
 CC=C1,C2,C3,C4
-Continue vs 10"/>
+Continue vs 10" />
             <input type="button" disabled="disabled" data-careerbtn="Scout" value="Scout" id="btnScout" title="Begin vs C1,C2,C3
 Retry vs C5
 CC=C1,C2,C3
-Continue vs Int"/>
+Continue vs Int" />
             <input type="button" disabled="disabled" data-careerbtn="Merchant" value="Merchant" id="btnMerchant" title="Begin 4th Officer vs Int
 Begin Spacehand vs Dex
 Begin Temp automatic
 Rating Promotion vs Dex (+3 if Int 8+)
 Officer Commission vs Int
 Officer Promotion vs Terms x2 (+3 if Int 8+)
-Continue vs Str"/>
+Continue vs Str" />
             <input type="button" disabled="disabled" data-careerbtn="Spacer" value="Spacer" id="btnSpacer" title="Begin vs Int
 CC=C1,C2,C3
 Rating Promotion/Commission vs C2
 Officer Promotion vs Soc
 Continue vs Str
-"/>
+" />
             <input type="button" disabled="disabled" data-careerbtn="Soldier" value="Soldier" id="btnSoldier" title="Begin vs Str
 CC=C1,C3,C4
 Rating Promotion/Commission vs C3
 Officer Promotion vs Soc
 Continue vs C3
-"/>
+" />
             <input type="button" disabled="disabled" data-careerbtn="Agent" value="Agent" id="btnAgent" />
             <input type="button" disabled="disabled" data-careerbtn="Rogue" value="Rogue" id="btnRogue" />
             <input type="button" disabled="disabled" data-careerbtn="Noble" value="Noble" id="btnNoble" title="Begin Automatic if Soc 11+
 CC=C2, C3, C4, C5
 Elevation by Rolling >= Soc
 Continue vs 7
-Cannot pursue other careers after this one"/>
+Cannot pursue other careers after this one" />
             <input type="button" disabled="disabled" data-careerbtn="Marine" value="Marine" id="btnMarine" title="Begin vs Str
 CC=C1,C4
 Rating Promotion/Commission vs C1
 Officer Promotion vs Int
 Continue vs C1
-"/>
-            <input type="button" disabled="disabled" data-careerbtn="Functionary" value="Functionary" id="btnFunctionary" />
+" />
+            <input type="button" disabled="disabled" data-careerbtn="Functionary" value="Functionary"
+                id="btnFunctionary" />
             <input type="button" disabled="disabled" value="Muster Out" id="btnMusterOut" />
             <input type="button" disabled="disabled" value="Fame Flux Event" id="btnFameFluxEvent" />
             <input type="button" disabled="disabled" value="Leave Reserves" id="btnResignFromReserves" />
             <!-- /* <input type="button" disabled="disabled" value="Claim Fame Benefit" id="btnFameMusterOutBonus" /> */ -->
         </fieldset>
         <div style="display:flex;">
-            <div style="flex-shrink:2; flex:4;" >
-                
-            <fieldset style="display:flex; flex-direction:row; flex-wrap:wrap;">
-                <legend>Character Sheet</legend>
-                <div>
-                    <label for="" style="white-space:nowrap">Competency: <span data-score></span>
-                </div>
-                <div style="width:100%;">
-                    <label for="" style="white-space:nowrap">Name: <span data-name></span></label> <label style="white-space:nowrap" for="">Age: <span data-ageblock=""></span></label> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
-                </div>
-                <fieldset>
-                    <legend>Stats</legend>
-                    <div data-statblock="" style="white-space: nowrap;"></div>
+            <div style="flex-shrink:2; flex:4;">
+
+                <fieldset style="display:flex; flex-direction:row; flex-wrap:wrap;">
+                    <legend>Character Sheet</legend>
+                    <div>
+                        <label for="" style="white-space:nowrap">Competency: <span data-score></span>
+                    </div>
+                    <div style="width:100%;">
+                        <label for="" style="white-space:nowrap">Name: <span data-name></span></label> <label
+                            style="white-space:nowrap" for="">Age: <span data-ageblock=""></span></label> <label
+                            style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for=""
+                            style="white-space:nowrap">Credits: <span data-credits></span> </label>
+                    </div>
+                    <fieldset>
+                        <legend>Stats</legend>
+                        <div data-statblock="" style="white-space: nowrap;"></div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Skills</legend>
+                        <div data-skillblock style="white-space: nowrap;"></div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Awards</legend>
+                        <div data-awards=""></div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Careers</legend>
+                        <div data-careers></div>
+                    </fieldset>
                 </fieldset>
-                <fieldset>
-                    <legend>Skills</legend>
-                    <div data-skillblock style="white-space: nowrap;"></div>
-                </fieldset>
-                <fieldset>
-                    <legend>Awards</legend>
-                    <div data-awards=""></div>
-                </fieldset>
-                <fieldset>
-                    <legend>Careers</legend>
-                    <div data-careers></div>
-                </fieldset>
-            </fieldset>
             </div>
             <fieldset style="flex-shrink:1; flex:5;">
                 <legend>History</legend>
@@ -482,18 +723,21 @@ Continue vs C1
 
         </div>
     </div>
-    <div  data-nav="history" data-tier="1" >
+    <div data-nav="history" data-tier="1">
         <div data-history>
             &nbsp;
         </div>
-       
+
     </div>
-    <div data-tier="1" data-nav="sheet" >
+    <div data-tier="1" data-nav="sheet">
         <div style="display:flex; flex-direction:row; flex-wrap:wrap;">
             <div style="width:100%;">
-                <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span data-ageblock=""></span> <label style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span data-credits></span> </label>
+                <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span
+                    data-ageblock=""></span> <label style="white-space:nowrap" for="">Gender: <span
+                        data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span
+                        data-credits></span> </label>
             </div>
-            
+
             <fieldset>
                 <legend>Stats</legend>
                 <div data-statblock="" style="white-space: nowrap;"></div>
@@ -504,8 +748,8 @@ Continue vs C1
             </fieldset>
             <fieldset>
                 <legend>Awards</legend>
-                <div data-awards=""></div> 
-                
+                <div data-awards=""></div>
+
             </fieldset>
             <fieldset>
                 <legend>Careers</legend>
@@ -513,6 +757,7 @@ Continue vs C1
             </fieldset>
         </div>
     </div>
-    
+    <script src="js/disclaimer.js"></script>
 </body>
+
 </html>
