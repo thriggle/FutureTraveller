@@ -1190,6 +1190,19 @@
                             <h4>
                                 <span class="subtitle">Bases:</span> <span class="subnormal" data-system="bases"
                                     data-join=", " data-ifblank="None">None</span>
+                                <span title="Edit bases" id="btnEditBases" class="dice">🖊️</span>
+                                <select id="slctBases" multiple="multiple" size="4"
+                                    style="display:none; vertical-align: middle;">
+                                    <option value="Naval">Naval</option>
+                                    <option value="Naval Depot">Naval Depot</option>
+                                    <option value="Scout">Scout</option>
+                                    <option value="Way Station">Way Station</option>
+                                    <option value="Corsair">Corsair</option>
+                                    <option value="Military">Military</option>
+                                </select>
+                                <span id="btnSaveBases" title="Update bases" class="dice"
+                                    style="display:none;">💾</span><span class="dice" title="Cancel editing bases"
+                                    style="display:none;" id="btnCancelBases">❌</span>
                                 <span class="subtitle">Gas Giants:</span> <span class="subnormal" data-system="gg"
                                     data-ifblank="None">None</span>
                                 <span class="subtitle">Planetoid Belts:</span> <span class="subnormal"
@@ -2485,6 +2498,44 @@
                         document.getElementById("btnEditSystemName").style.display = "inline-block";
                         document.querySelector("[data-system=\"name\"]").style.display = "inline";
                         document.querySelector("[data-randomize=\"systemname\"]").style.display = "none";
+                    });
+
+                    document.getElementById("btnEditBases").addEventListener("click", function () {
+                        var slctBases = document.getElementById("slctBases");
+                        var currentBasesStr = document.querySelector("[data-system=\"bases\"]").innerHTML;
+                        var currentBases = currentBasesStr.split(",").map(function (s) { return s.trim(); });
+                        for (var i = 0; i < slctBases.options.length; i++) {
+                            slctBases.options[i].selected = currentBases.indexOf(slctBases.options[i].value) >= 0;
+                        }
+                        slctBases.style.display = "inline-block";
+                        document.getElementById("btnSaveBases").style.display = "inline-block";
+                        document.getElementById("btnCancelBases").style.display = "inline-block";
+                        document.getElementById("btnEditBases").style.display = "none";
+                        document.querySelector("[data-system=\"bases\"]").style.display = "none";
+                    });
+
+                    document.getElementById("btnCancelBases").addEventListener("click", function () {
+                        document.getElementById("slctBases").style.display = "none";
+                        document.getElementById("btnSaveBases").style.display = "none";
+                        document.getElementById("btnCancelBases").style.display = "none";
+                        document.getElementById("btnEditBases").style.display = "inline-block";
+                        document.querySelector("[data-system=\"bases\"]").style.display = "inline";
+                    });
+
+                    document.getElementById("btnSaveBases").addEventListener("click", function () {
+                        var slctBases = document.getElementById("slctBases");
+                        var selectedBases = [];
+                        for (var i = 0; i < slctBases.options.length; i++) {
+                            if (slctBases.options[i].selected) {
+                                selectedBases.push(slctBases.options[i].value);
+                            }
+                        }
+                        updateSystemBases(selectedBases.join(", "));
+                        slctBases.style.display = "none";
+                        document.getElementById("btnSaveBases").style.display = "none";
+                        document.getElementById("btnCancelBases").style.display = "none";
+                        document.getElementById("btnEditBases").style.display = "inline-block";
+                        document.querySelector("[data-system=\"bases\"]").style.display = "inline";
                     });
                     document.getElementById("fontFamily").addEventListener("keyup", updateStyle);
                     document.getElementById("hexBorderColor").addEventListener("keyup", function () {
@@ -5069,6 +5120,11 @@
                     document.getElementById("btnUpdateUWP").style.display = "none";
                     document.getElementById("btnCancelEditUWP").style.display = "none";
                     document.getElementById("btnEditUWP").style.display = "inline";
+                    document.getElementById("slctBases").style.display = "none";
+                    document.getElementById("btnSaveBases").style.display = "none";
+                    document.getElementById("btnCancelBases").style.display = "none";
+                    document.getElementById("btnEditBases").style.display = "inline";
+                    document.querySelector("[data-system=\"bases\"]").style.display = "inline";
                     var populaceContainer = document.getElementById("populaceBreakdown");
                     clearElement(populaceContainer);
                     if (system.populace) {
@@ -6180,6 +6236,37 @@
                     }
                     price = Math.round(price);
                     return price;
+                }
+                function updateSystemBases(basesStr) {
+                    var tcoord = lastSelectedHex.system.tcoord;
+                    var xycoord = TCoordToXYCoord(tcoord);
+                    var index = XYtoIndex(xycoord.x, xycoord.y);
+
+                    var newBases = basesStr.split(",").map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });
+                    mapContent[index].system.bases = newBases;
+
+                    var uwp = mapContent[index].system.uwp;
+                    mapContent[index].system.starport = uwp[0];
+                    mapContent[index].system.size = revExt(uwp[1]);
+                    mapContent[index].system.atmo = revExt(uwp[2]);
+                    mapContent[index].system.hydro = revExt(uwp[3]);
+                    mapContent[index].system.pop = revExt(uwp[4]);
+                    mapContent[index].system.gov = revExt(uwp[5]);
+                    mapContent[index].system.law = revExt(uwp[6]);
+                    mapContent[index].system.tech = uwp.length > 9 ? Number(uwp[8] + uwp[9]) : revExt(uwp[8]);
+
+                    mapContent[index].system = updateTradeCodes(mapContent[index].system);
+
+                    _systems[tcoord] = mapContent[index].system;
+                    systemArray[mapContent[index].system.sysArrayIndex] = mapContent[index].system;
+
+                    applyTravelCodes(mapContent);
+                    var designateSubsectorCapitals = document.getElementById("chkDesignateSubsectorCapitals").checked;
+                    var designateSectorCapital = document.getElementById("chkDesignateSectorCapital").checked;
+                    analyzeMap(systemArray, designateSubsectorCapitals, designateSectorCapital);
+                    drawMap(mapContent);
+                    renderSystem(mapContent[index].system);
+                    document.getElementById("sectordata").value = getSectorData(mapContent);
                 }
                 function updateSystemName(name) {
                     var tcoord = lastSelectedHex.system.tcoord;
