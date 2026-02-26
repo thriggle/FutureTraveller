@@ -1830,7 +1830,10 @@
                     </div>
                 </fieldset>
                 <fieldset class="collapsed" data-copy="donot">
-                    <legend>Local Trade</legend>
+                    <legend>T5 Tools</legend>
+                    <div style="margin-bottom: 1em;">
+                        <input type="button" value="Create a character from here" id="btnCreateCharacter" />
+                    </div>
                     <div id="TradePartners"></div>
                     <div class="CargoContainer">
                         <input type="button" value="Generate Cargo" id="btnGenerateCargo"><br />
@@ -2727,6 +2730,16 @@
                         a.download = document.getElementById("txtSeed").value + ".png";
                         a.click();
                     });
+                    document.getElementById("btnCreateCharacter").addEventListener("click", function () {
+                        if (lastSelectedHex && lastSelectedHex.system && lastSelectedHex.system.mainworld) {
+                            var system = lastSelectedHex.system;
+                            var name = encodeURIComponent(system.name);
+                            var tradecodes = encodeURIComponent(system.mainworld.tradecodes.join(" "));
+                            var sector = encodeURIComponent(window.location.href);
+                            window.open("T5Character.html?homeworld=" + name + "&tradecodes=" + tradecodes + "&sector=" + sector, "_blank");
+                        }
+                    });
+
                     document.getElementById("btnGenerateCargo").addEventListener("click", function () {
                         var TL = lastSelectedHex.system.mainworld.tech;
                         var tradeCodes = lastSelectedHex.system.mainworld.tradecodes;

@@ -101,16 +101,26 @@ function renderCredits(character, element) {
 function renderHomeworld(character, element) {
     var hw = character.getHomeworld && character.getHomeworld();
     if (hw && hw.name) {
-        var sectorParam = encodeURIComponent(hw.sectorId || hw.sector || "");
-        var hexParam = encodeURIComponent(hw.hex || "");
-        var milieuParam = encodeURIComponent(hw.milieuId || "");
-        var url = `https://travellermap.com/?sector=${sectorParam}&hex=${hexParam}`;
-        if (milieuParam) {
-            url += `&milieu=${milieuParam}&ew=milieu`;
+        if (hw.customLink !== undefined) {
+            if (hw.customLink) {
+                var html = `<label for="" style="white-space:nowrap">Homeworld: <a href="${hw.customLink}" target="_blank">${hw.name}</a></label>`;
+                element.insertAdjacentHTML("beforeend", html);
+            } else {
+                var html = `<label for="" style="white-space:nowrap">Homeworld: ${hw.name}</label>`;
+                element.insertAdjacentHTML("beforeend", html);
+            }
+        } else {
+            var sectorParam = encodeURIComponent(hw.sectorId || hw.sector || "");
+            var hexParam = encodeURIComponent(hw.hex || "");
+            var milieuParam = encodeURIComponent(hw.milieuId || "");
+            var url = `https://travellermap.com/?sector=${sectorParam}&hex=${hexParam}`;
+            if (milieuParam) {
+                url += `&milieu=${milieuParam}&ew=milieu`;
+            }
+            url += `&options=58359`;
+            var html = `<label for="" style="white-space:nowrap">Homeworld: <a href="${url}" target="_blank">${hw.name} (${hw.hex})</a></label>`;
+            element.insertAdjacentHTML("beforeend", html);
         }
-        url += `&options=58359`;
-        var html = `<label for="" style="white-space:nowrap">Homeworld: <a href="${url}" target="_blank">${hw.name} (${hw.hex})</a></label>`;
-        element.insertAdjacentHTML("beforeend", html);
     }
 }
 function renderGender(character, element) {

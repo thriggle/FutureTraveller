@@ -26,6 +26,19 @@ for (var i = 0, len = rdoHomeworlds.length; i < len; i++) {
     });
 }
 newCharacter();
+
+var urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('tradecodes')) {
+    document.getElementById("txtHomeworldTradeCodes").value = urlParams.get('tradecodes');
+    document.getElementById("btnClearHWTCs").style.display = "inline";
+}
+if (urlParams.has('homeworld')) {
+    document.getElementById("txtHomeworldName").value = urlParams.get('homeworld');
+}
+if (urlParams.has('sector')) {
+    document.getElementById("txtHomeworldLink").value = urlParams.get('sector');
+}
+
 fetch("https://travellermap.com/data").then(response => response.json())
     .then(data => {
         console.log(data);
@@ -834,6 +847,16 @@ function newCharacter() {
                 milieuId: slctMilieu.value
             });
             log("Homeworld: " + option.innerText);
+        }
+    } else {
+        var hwName = document.getElementById("txtHomeworldName").value;
+        var hwLink = document.getElementById("txtHomeworldLink").value;
+        if (hwName) {
+            person.setHomeworld({
+                name: hwName,
+                customLink: hwLink
+            });
+            log("Homeworld: " + hwName);
         }
     }
 
