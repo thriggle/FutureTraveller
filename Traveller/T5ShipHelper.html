@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>T5 Ship Helper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.8em;
+            color: #666;
+            background: #eee;
+            border-top: 1px solid #ddd;
+        }
+
+        .panel {
+            padding: 16px;
+            box-sizing: border-box;
+            background: #f4f4f4;
+            border-right: 1px solid #ddd;
+        }
+
+        .left-panel {
+            width: 20%;
+            min-width: 200px;
+            background: #e9ecef;
+        }
+
+        .center-panel {
+            flex: 1;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        .right-panel {
+            width: 25%;
+            min-width: 250px;
+            background: #f8f9fa;
+            border-right: none;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .categorynode {
+            margin: 0px 0;
+            list-style-type: none;
+        }
+
+        .collapsible {
+            cursor: pointer;
+            border: none;
+            outline: none;
+            padding: 10px;
+            font-size: 16px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .collapsible::after {
+            content: '+';
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+
+        .collapsible.active::after {
+            content: '-';
+        }
+
+        .collapsible:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            display: none;
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+
+        .content ul {
+            list-style-type: circle;
+            margin: 0;
+            padding: 0;
+        }
+
+        .content ul li {
+            margin: 5px 0;
+        }
+
+        .drive-item {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .drive-item:hover {
+            background-color: #d0d0d0;
+            border-radius: 3px;
+        }
+
+        .drive-item.unavailable {
+            text-decoration: line-through;
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: transparent !important;
+        }
+
+        /* Dialog Styles */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .dialog {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 300px;
+        }
+
+        .dialog h2 {
+            margin-top: 0;
+        }
+
+        .dialog-content {
+            margin-bottom: 20px;
+        }
+
+        .dialog-buttons {
+            text-align: right;
+        }
+
+        .dialog-buttons button {
+            margin-left: 10px;
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="./js/ShipHelper.js" type="module"></script>
+    <script src="./js/ShipHelperView.js" type="module"></script>
+    <div>
+        <h1 style="text-align: center; margin: 20px;">Traveller T5 Ship Helper</h1>
+        <p style="text-align: center;">A tool to help design and manage Traveller T5 starships.</p>
+    </div>
+    <div style="display: flex; gap: 20px; padding: 10px 20px; background: #eee; border-bottom: 1px solid #ddd;">
+        <div>
+            <label for="base-tl">Base Tech Level:</label>
+            <input type="number" id="base-tl" value="13" min="0" max="33" style="width: 50px;">
+        </div>
+        <div>
+            <label for="ship-tonnage">Hull Tonnage:</label>
+            <input type="number" id="ship-tonnage" value="100" min="10" step="10" style="width: 80px;">
+        </div>
+        <div>
+            <label for="hull-config">Hull Configuration:</label>
+            <select id="hull-config">
+                <option value="Cluster">Cluster</option>
+                <option value="Braced">Braced</option>
+                <option value="Planetoid">Planetoid</option>
+                <option value="Unstreamlined" selected>Unstreamlined</option>
+                <option value="Streamlined">Streamlined</option>
+                <option value="Airframe">Airframe</option>
+                <option value="Lifting Body">Lifting Body</option>
+            </select>
+        </div>
+    </div>
+    <div class="container">
+        <!-- Left Panel: Potential Components -->
+        <div class="panel left-panel">
+            <h2>Available Components</h2>
+            <ul id="component-list">
+                <!-- Collapsible list of categories and items will be added here -->
+                <li class="categorynode">
+                    <strong class="collapsible">Drives</strong>
+                    <ul class="content">
+                        <li class="drive-item" data-drive-type="Jump">Jump Drive</li>
+                        <li class="drive-item" data-drive-type="M-Drive">Maneuver Drive</li>
+                        <li class="drive-item" data-drive-type="G-Drive">G-Drive</li>
+                        <li class="drive-item" data-drive-type="Power Plant">Power Plant</li>
+                        <li class="drive-item" data-drive-type="Fission">Fission Plant</li>
+                        <li class="drive-item" data-drive-type="Anti-Matter">Anti-Matter Plant</li>
+                        <li class="drive-item" data-drive-type="Hop">Hop Drive</li>
+                        <li class="drive-item" data-drive-type="Skip">Skip Drive</li>
+                        <li class="drive-item" data-drive-type="Rocket">Rocket Drive</li>
+                        <li class="drive-item" data-drive-type="NAFAL">NAFAL Drive</li>
+                        <li class="drive-item" data-drive-type="HEPlaR">HEPlaR Drive</li>
+                        <li class="drive-item" data-drive-type="Collector">Collector</li>
+                    </ul>
+            </ul>
+        </div>
+        <!-- Center Panel: Current Components -->
+        <div class="panel center-panel">
+            <h2>Current Components</h2>
+            <div id="current-components">
+                <!-- Current components will be displayed here -->
+            </div>
+        </div>
+        <!-- Right Panel: Ship Stats and Costs -->
+        <div class="panel right-panel">
+            <h2>Ship Stats</h2>
+            <div id="ship-stats">
+                <!-- Calculated stats and costs will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/disclaimer.js"></script>
+</body>
+
+</html>
