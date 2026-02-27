@@ -163,7 +163,7 @@ fetch("https://travellermap.com/data").then(response => response.json())
                             var option = document.createElement("option");
                             option.value = remarks;
                             option.setAttribute("data-uwp", uwp);
-                            option.setAttribute("data-name", name);
+                            option.setAttribute("data-world-name", name);
                             option.setAttribute("data-hex", hex);
                             option.textContent = `${name} (${hex}) - ${uwp} ${remarks}`;
                             // only append option if value is not undefined or empty
@@ -837,7 +837,7 @@ function newCharacter() {
             var slctSector = document.getElementById("slctSector");
             var slctMilieu = document.getElementById("slctMilieu");
             person.setHomeworld({
-                name: option.getAttribute("data-name"),
+                name: option.getAttribute("data-world-name"),
                 hex: option.getAttribute("data-hex"),
                 uwp: option.getAttribute("data-uwp"),
                 remarks: option.value,
