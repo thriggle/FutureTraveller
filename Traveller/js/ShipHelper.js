@@ -139,7 +139,8 @@ export function getAvailableTechStages(tl, tech) {
                 var effectivePotential = (stage.eff * p);
                 // round effectivePotential to 2 decimal places
                 effectivePotential = Math.round(effectivePotential * 100) / 100;
-                var text = desc + ": max " + tech + "-" + p + " (" + (effectivePotential) + ")";
+                var roundedDown = Math.floor(effectivePotential);
+                var text = desc + " " + tech + "-" + p + " (max " + effectivePotential + (effectivePotential !== roundedDown ? "=" + roundedDown : "") + ")";
                 var component = {
                     name: text,
                     stage: stage.desc,
@@ -153,18 +154,29 @@ export function getAvailableTechStages(tl, tech) {
                     if (mod === 0 || mod === 1) {
                         exclude = true;
                     } else if (mod === 2) {
-
                         exclude = false;
                     }
                 } else if (p === evalFunction(tl - 1) && p === evalFunction(tl)) {
+                    if (mod === 0 && evalFunction(tl) !== evalFunction(tl - 1)) {
+                        // Original logic excluded Standard (mod 0) if p was identical to tl-1,
+                        // but actually p is evaluated at (tl - mod).
+                        // If tl and tl-1 yield the same potential, Standard (tl-0) shouldn't be excluded 
+                        // just because Improved (tl-1) also hits the max potential limit.
+                        // Wait, the T5 rules for "Stage Effects" typically mean if a drive's max potential
+                        // hasn't increased since the previous TL, the previous TL's Advanced/Modified
+                        // supersedes it. However, Standard is *always* available at its nominal TL.
+                        // For T5, Improved/Modified just offer better cost/tons/fuel.
+                        // Let's remove the forced exclusion of Standard (mod === 0) 
+                        // unless it's genuinely superseded by a rule intent.
+                    }
                     if (mod === 0) {
-                        exclude = true;
-                    } else if (mod === 1) {
-
-                        exclude = false;
+                        exclude = false; // Never implicitly exclude Standard just due to potential plateau
+                    }
+                    if (mod === 0 && p === evalFunction(tl - 1)) {
+                        exclude = false; // Hotfix: Standard must ALWAYS be available at its TL for Jump Drives.
                     }
                 } else if (mod === 0) {
-
+                    exclude = false;
                 }
                 if (!exclude) {
                     availableComponents.push(component);

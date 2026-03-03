@@ -54,9 +54,33 @@ class ShipHelperView {
             classOptions += `<option value="${key}">${key} (EP: ${ShipHelper.ENUM_DRIVE_CLASS[key].ep})</option>`;
         }
 
+        let defaultStageValue = availableStages[0].stage;
+        const standardStage = availableStages.find(s => s.stage === 'Standard');
+        if (standardStage) {
+            try {
+                // Determine Performance of Standard drive for given ship tonnage
+                const tempDrive = ShipHelper.buildDrive('Standard', 1, "A", driveType, this.ship.baseTL);
+                const standardPerf = ShipHelper.getDrivePerformance(tempDrive, this.ship.tonnage).potential;
+
+                const modifiedStage = availableStages.find(s => s.stage === 'Modified');
+                const improvedStage = availableStages.find(s => s.stage === 'Improved');
+
+                if (modifiedStage && Math.floor(modifiedStage.eff) >= standardPerf) {
+                    defaultStageValue = 'Modified';
+                } else if (improvedStage && Math.floor(improvedStage.eff) >= standardPerf) {
+                    defaultStageValue = 'Improved';
+                } else {
+                    defaultStageValue = 'Standard';
+                }
+            } catch (err) {
+                console.error("Error determining default tech stage:", err);
+            }
+        }
+
         let stageOptions = '';
         availableStages.forEach(stage => {
-            stageOptions += `<option value="${stage.stage}">${stage.name}</option>`;
+            const isSelected = stage.stage === defaultStageValue ? 'selected' : '';
+            stageOptions += `<option value="${stage.stage}" ${isSelected}>${stage.name}</option>`;
         });
 
         const content = `
@@ -76,7 +100,7 @@ class ShipHelperView {
                 <label>Nexus Multiplier:</label>
                 <input type="number" id="dialog-nexus" value="1" min="1" max="9" style="width: 50px;">
             </div>
-            <div id="drive-preview" style="background: #f0f0f0; padding: 10px; border: 1px solid #ccc; font-size: 0.9em;">
+            <div id="drive-preview" class="drive-preview-box">
                 <!-- Preview updates here -->
             </div>
         `;
@@ -106,14 +130,14 @@ class ShipHelperView {
                 const perf = ShipHelper.getDrivePerformance(drivePreview, this.ship.tonnage);
 
                 document.getElementById('drive-preview').innerHTML = `
-                    <strong>Preview:</strong><br>
-                    Cost: MCr${drivePreview.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}<br>
-                    Tonnage: ${drivePreview.tons.toLocaleString()} tons<br>
-                    Performance: ${perf.potential.toLocaleString()}<br>
-                    Fuel Consumption: ${perf.note}
+                    <div class="preview-title">Preview:</div>
+                    <div class="preview-stat">Cost: MCr${drivePreview.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
+                    <div class="preview-stat">Tonnage: ${drivePreview.tons.toLocaleString()} tons</div>
+                    <div class="preview-stat">Performance: ${perf.potential.toLocaleString()}</div>
+                    <div class="preview-stat">Fuel Consumption: ${perf.note}</div>
                 `;
             } catch (err) {
-                document.getElementById('drive-preview').innerHTML = `<span style="color:red">Error: ${err.message}</span>`;
+                document.getElementById('drive-preview').innerHTML = `<span style="color:var(--accent-purple)">Error: ${err.message}</span>`;
             }
         };
 
@@ -179,34 +203,27 @@ class ShipHelperView {
             return;
         }
 
-        const ul = document.createElement('ul');
-        ul.style.listStyleType = 'none';
-        ul.style.padding = '0';
+        const ul = document.createElement('div');
+        ul.className = 'components-list';
 
         this.ship.drives.forEach((drive, index) => {
-            const li = document.createElement('li');
-            li.style.border = '1px solid #ddd';
-            li.style.margin = '10px 0';
-            li.style.padding = '10px';
-            li.style.background = '#f9f9f9';
-            li.style.borderRadius = '5px';
-            li.style.position = 'relative';
+            const li = document.createElement('div');
+            li.className = 'component-card';
 
             const perf = ShipHelper.getDrivePerformance(drive, this.ship.tonnage);
 
             li.innerHTML = `
-                <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 5px;">${drive.driveType} (Class ${drive.driveClass})</div>
-                <div style="font-size: 0.9em; color: #444;">TL-${drive.tl} ${drive.stage}, EP: ${drive.ep}</div>
-                <div style="font-size: 0.9em; color: #444;">MCr${drive.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${drive.tons.toLocaleString()} tons</div>
-                <div style="font-size: 0.85em; color: #111; margin-top: 5px; font-style: italic;">Perf: ${perf.potential} (${perf.note})</div>
+                <div class="component-info">
+                    <div class="component-title">${drive.driveType} (Class ${drive.driveClass})</div>
+                    <div class="component-details">TL-${drive.tl} ${drive.stage}, EP: ${drive.ep}</div>
+                    <div class="component-details">MCr${drive.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${drive.tons.toLocaleString()} tons</div>
+                    <div class="component-perf">Perf: ${perf.potential} (${perf.note})</div>
+                </div>
             `;
 
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'Remove';
-            removeBtn.style.position = 'absolute';
-            removeBtn.style.top = '10px';
-            removeBtn.style.right = '10px';
-            removeBtn.style.padding = '4px 8px';
+            removeBtn.className = 'remove-btn';
             removeBtn.onclick = () => {
                 this.ship.removeDriveAtIndex(index);
                 this.render();
@@ -234,24 +251,20 @@ class ShipHelperView {
         const tonnageRemaining = this.ship.tonnage - totalTonnageUsed;
 
         stats.innerHTML = `
-            <div style="margin-bottom: 10px;"><strong>Hull Configurations:</strong><br>
-            <ul>
-                <li>Type: ${this.ship.configurationType}</li>
-                <li>Base Cost: MCr${this.ship.baseCost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</li>
-                <li>Friction: ${this.ship.configuration.friction}</li>
-                <li>Agility: ${this.ship.configuration.agility}</li>
-            </ul>
+            <div class="stat-section">
+                <div class="stat-header">Hull Configurations:</div>
+                <div class="stat-row"><span class="stat-label">Type:</span> <span class="stat-value">${this.ship.configurationType}</span></div>
+                <div class="stat-row"><span class="stat-label">Base Cost:</span> <span class="stat-value">MCr${this.ship.baseCost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span></div>
+                <div class="stat-row"><span class="stat-label">Friction:</span> <span class="stat-value">${this.ship.configuration.friction}</span></div>
+                <div class="stat-row"><span class="stat-label">Agility:</span> <span class="stat-value">${this.ship.configuration.agility}</span></div>
             </div>
             
-            <hr>
-
-            <div style="margin-bottom: 10px;"><strong>Overall Ship:</strong><br>
-            <ul>
-                <li><strong>Total Cost:</strong> MCr${totalCost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</li>
-                <li><strong>Total Tonnage:</strong> ${this.ship.tonnage.toLocaleString()} tons</li>
-                <li><strong>Tonnage Used:</strong> ${totalTonnageUsed.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</li>
-                <li style="color: ${tonnageRemaining < 0 ? 'red' : 'green'}"><strong>Tonnage Available:</strong> ${tonnageRemaining.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</li>
-            </ul>
+            <div class="stat-section">
+                <div class="stat-header">Overall Ship:</div>
+                <div class="stat-row"><span class="stat-label">Total Cost:</span> <span class="stat-value">MCr${totalCost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span></div>
+                <div class="stat-row"><span class="stat-label">Total Tonnage:</span> <span class="stat-value">${this.ship.tonnage.toLocaleString()} tons</span></div>
+                <div class="stat-row"><span class="stat-label">Tonnage Used:</span> <span class="stat-value">${totalTonnageUsed.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</span></div>
+                <div class="stat-row"><span class="stat-label">Tonnage Available:</span> <span class="stat-value ${tonnageRemaining < 0 ? 'warning' : 'good'}">${tonnageRemaining.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</span></div>
             </div>
         `;
     }
@@ -267,7 +280,7 @@ class ShipHelperView {
             <div class="dialog-content">${content}</div>
             <div class="dialog-buttons">
                 <button id="cancel-button">Cancel</button>
-                <button id="accept-button" style="background-color: #007bff; color: white; border: 1px solid #0056b3;">Accept</button>
+                <button id="accept-button" class="confirm-btn">Accept</button>
             </div>
         `;
 
