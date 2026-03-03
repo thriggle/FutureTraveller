@@ -20,20 +20,15 @@
             <input type="number" id="base-tl" value="13" min="0" max="33" style="width: 50px;">
         </div>
         <div>
-            <label for="ship-tonnage">Hull Tonnage:</label>
-            <input type="number" id="ship-tonnage" value=100 min=0 step=100 style="width: 80px;">
-        </div>
-        <div>
-            <label for="hull-config">Hull Configuration:</label>
-            <select id="hull-config">
-                <option value="Cluster">Cluster</option>
-                <option value="Braced">Braced</option>
-                <option value="Planetoid">Planetoid</option>
-                <option value="Unstreamlined" selected>Unstreamlined</option>
-                <option value="Streamlined">Streamlined</option>
-                <option value="Airframe">Airframe</option>
-                <option value="Lifting Body">Lifting Body</option>
-            </select>
+            <button id="export-json" class="cyan-btn" style="margin-right: 10px;">Export Ship</button>
+            <button id="import-json" class="cyan-btn" style="margin-right: 20px;">Import Ship</button>
+            <input type="file" id="import-file" style="display:none" accept=".json">
+
+            <label>Total Tonnage:</label>
+            <span id="display-tonnage" style="font-weight: bold; margin-right: 20px;">0</span>
+
+            <label>Overall Configuration:</label>
+            <span id="display-config" style="font-weight: bold;">Unstreamlined</span>
         </div>
     </div>
     <div class="container">
@@ -42,6 +37,13 @@
             <h2>Available Components</h2>
             <ul id="component-list">
                 <!-- Collapsible list of categories and items will be added here -->
+                <li class="categorynode">
+                    <strong class="collapsible">Hulls</strong>
+                    <ul class="content">
+                        <li class="generic-item" data-component-type="Subhull">Subhull</li>
+                        <li class="generic-item" data-component-type="Pod">Pod</li>
+                    </ul>
+                </li>
                 <li class="categorynode">
                     <strong class="collapsible">Drives</strong>
                     <ul class="content">
@@ -63,12 +65,19 @@
                     <strong class="collapsible">Fuel</strong>
                     <ul class="content">
                         <li class="generic-item" data-component-type="Fuel Tank">Fuel Tank</li>
+                        <li class="generic-item" data-component-type="Fuel Rods">Fuel Rods</li>
                     </ul>
                 </li>
                 <li class="categorynode">
                     <strong class="collapsible">Payload</strong>
                     <ul class="content">
                         <li class="generic-item" data-component-type="Cargo Space">Cargo Space</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Hull Fittings</strong>
+                    <ul class="content">
+                        <li class="generic-item" data-component-type="Grapple">Grapple</li>
                     </ul>
                 </li>
             </ul>

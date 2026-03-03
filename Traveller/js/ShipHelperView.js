@@ -6,35 +6,71 @@ window.buildDrive = ShipHelper.buildDrive;
 class ShipHelperView {
     constructor() {
         this.ship = new ShipHelper.Hull(
-            parseInt(document.getElementById('base-tl').value),
-            parseFloat(document.getElementById('ship-tonnage').value),
-            document.getElementById('hull-config').value
+            parseInt(document.getElementById('base-tl').value, 10) || 12
         );
+        // Add a default starting 100-ton subhull so the user can begin adding components immediately
+        this.ship.addSubhull("Main Hull", 100, this.ship.baseTL, "Unstreamlined");
         this.initEventListeners();
         this.render();
     }
 
     initEventListeners() {
         document.getElementById('base-tl').addEventListener('change', (e) => {
-            this.ship.setBaseTL(parseInt(e.target.value));
+            this.ship.setBaseTL(parseInt(e.target.value, 10));
             this.render();
         });
-        document.getElementById('ship-tonnage').addEventListener('change', (e) => {
-            this.ship.setTonnage(parseFloat(e.target.value));
-            this.render();
+
+        // Add export/import functionality
+        document.getElementById('export-json').addEventListener('click', () => {
+            const data = {
+                version: 1,
+                baseTL: this.ship.baseTL,
+                subhulls: this.ship.subhulls
+            };
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const shipName = this.ship.subhulls.length > 0 ? this.ship.subhulls[0].name.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'ship';
+            a.download = `${shipName}_data.json`;
+            a.click();
+            URL.revokeObjectURL(url);
         });
-        document.getElementById('hull-config').addEventListener('change', (e) => {
-            this.ship.setConfiguration(e.target.value);
-            this.render();
+
+        document.getElementById('import-json').addEventListener('click', () => {
+            document.getElementById('import-file').click();
+        });
+
+        document.getElementById('import-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (data.subhulls) {
+                        this.ship.setBaseTL(data.baseTL || 12);
+                        document.getElementById('base-tl').value = this.ship.baseTL;
+                        this.ship.subhulls = data.subhulls;
+                        this.ship.selectedSubhullIndex = this.ship.subhulls.length > 0 ? 0 : -1;
+                        this.render();
+                    }
+                } catch (err) {
+                    console.error("Failed to parse ship JSON", err);
+                    alert("Invalid Ship JSON File");
+                }
+            };
+            reader.readAsText(file);
+            // reset file input
+            e.target.value = '';
         });
 
         // Setup component list clicks
         const driveItems = document.querySelectorAll('.drive-item');
         driveItems.forEach(item => {
             item.addEventListener('click', (e) => {
-                if (e.target.classList.contains('unavailable')) {
-                    return;
-                }
                 const driveType = e.target.getAttribute('data-drive-type');
                 this.openDriveDialog(driveType);
             });
@@ -45,22 +81,38 @@ class ShipHelperView {
         genericItems.forEach(item => {
             item.addEventListener('click', (e) => {
                 const componentType = e.target.getAttribute('data-component-type');
-                this.openGenericDialog(componentType);
+                if (componentType === 'Subhull' || componentType === 'Pod') {
+                    this.openHullDialog(componentType);
+                } else {
+                    this.openGenericDialog(componentType);
+                }
             });
         });
     }
 
     openDriveDialog(driveType, editIndex = -1) {
         let classOptions = '';
-        const availableStages = ShipHelper.getAvailableTechStages(this.ship.baseTL, driveType);
+        let defaultTL = this.ship.baseTL;
+        let availableStages = ShipHelper.getAvailableTechStages(defaultTL, driveType);
+
         if (availableStages.length === 0) {
-            alert(`No ${driveType} technology available at TL-${this.ship.baseTL}`);
-            return;
+            // Find minimum TL where this drive becomes available
+            for (let tl = 1; tl <= 33; tl++) {
+                const stages = ShipHelper.getAvailableTechStages(tl, driveType);
+                if (stages.length > 0) {
+                    defaultTL = tl;
+                    availableStages = stages;
+                    break;
+                }
+            }
+            if (availableStages.length === 0) {
+                alert(`No ${driveType} technology available at any Tech Level.`);
+                return;
+            }
         }
 
         // Determine defaults based on whether we are editing or creating new
         let defaultClass = "A";
-        let defaultTL = this.ship.baseTL;
         let defaultNexus = 1;
 
         let defaultStageValue = availableStages.length > 0 ? availableStages[0].stage : '';
@@ -192,7 +244,7 @@ class ShipHelperView {
                 }
 
                 if (editIndex >= 0) {
-                    this.ship.drives[editIndex] = drive;
+                    this.ship.updateComponent(editIndex, drive);
                 } else {
                     this.ship.addDrive(drive);
 
@@ -206,13 +258,25 @@ class ShipHelperView {
                     if (shouldIncludeFuel && fuelTons && fuelTons > 0 && editIndex < 0) {
                         let shortDrive = drive.driveType.replace(/Drive/i, '').trim();
                         if (shortDrive === 'PowerPlant' || shortDrive === 'Power Plant') shortDrive = 'Power Plant';
+
+                        let compName = 'Fuel Tank';
+                        let compTons = fuelTons;
+                        let compCost = 0;
+                        if (shortDrive === 'Fission') {
+                            compName = 'Fuel Rods';
+                            // fuelTons is actually the number of rods required per 10 years.
+                            const numRods = Math.max(10, Math.ceil(fuelTons / 10) * 10);
+                            compTons = numRods / 200;
+                            compCost = (numRods / 10) * 0.4;
+                        }
+
                         const fuelComp = {
                             isGeneric: true,
-                            name: 'Fuel Tank',
+                            name: compName,
                             label: `${shortDrive} Fuel`,
                             linkedDriveIndex: this.ship.drives.length - 1,
-                            tons: fuelTons,
-                            cost: 0
+                            tons: compTons,
+                            cost: compCost
                         };
                         this.ship.addDrive(fuelComp);
                     }
@@ -322,12 +386,14 @@ class ShipHelperView {
     }
 
     openGenericDialog(componentType, editIndex = -1) {
-        let defaultTons = 10;
+        const isRods = componentType === 'Fuel Rods';
+        let defaultValue = isRods ? 10 : 10;
         let defaultLabel = '';
         let defaultLinkedIndex = -1;
 
         if (editIndex >= 0) {
-            defaultTons = this.ship.drives[editIndex].tons;
+            const currentTons = this.ship.drives[editIndex].tons;
+            defaultValue = isRods ? Math.round(currentTons * 200) : currentTons;
             defaultLabel = this.ship.drives[editIndex].label || '';
             if (this.ship.drives[editIndex].linkedDriveIndex !== undefined) {
                 defaultLinkedIndex = this.ship.drives[editIndex].linkedDriveIndex;
@@ -335,10 +401,14 @@ class ShipHelperView {
         }
 
         let linkHTML = '';
-        if (componentType === 'Fuel Tank') {
+        const validDrivesMap = {
+            'Fuel Tank': ["Power Plant", "Jump", "Hop", "Skip", "HEPlaR"],
+            'Fuel Rods': ["Fission"]
+        };
+        const validDrives = validDrivesMap[componentType];
+        if (validDrives) {
             let options = '<option value="-1">None</option>';
             this.ship.drives.forEach((comp, idx) => {
-                const validDrives = ["PowerPlant", "Jump", "Hop", "Skip", "HEPlaR"];
                 if (!comp.isGeneric && validDrives.includes(comp.driveType)) {
                     const sel = (idx === defaultLinkedIndex) ? 'selected' : '';
                     options += `<option value="${idx}" ${sel}>${comp.driveType} (Class ${comp.driveClass})</option>`;
@@ -352,19 +422,23 @@ class ShipHelperView {
             `;
         }
 
+        const inputLabel = isRods ? 'Rods (increments of 10):' : 'Tonnage:';
+        const stepVal = isRods ? 10 : 1;
+        const minVal = isRods ? 10 : 1;
+
         const content = `
             <div style="margin-bottom: 15px;">
                 <label>Custom Label:</label>
                 <input type="text" id="dialog-generic-label" value="${defaultLabel}" placeholder="(Optional)" style="width: 150px;">
             </div>
             <div style="margin-bottom: 15px;">
-                <label>Tonnage:</label>
+                <label>${inputLabel}</label>
                 <div>
-                    <button type="button" class="tons-btn" data-val="-100">-100</button>
-                    <button type="button" class="tons-btn" data-val="-10">-10</button>
-                    <input type="number" id="dialog-generic-tons" value="${defaultTons}" min="1" step="1" style="width: 80px; display:inline-block; margin: 0 5px;">
-                    <button type="button" class="tons-btn" data-val="10">+10</button>
-                    <button type="button" class="tons-btn" data-val="100">+100</button>
+                    <button type="button" class="tons-btn" data-val="${-100 * stepVal}">-${100 * stepVal}</button>
+                    <button type="button" class="tons-btn" data-val="${-10 * stepVal}">-${10 * stepVal}</button>
+                    <input type="number" id="dialog-generic-tons" value="${defaultValue}" min="${minVal}" step="${stepVal}" style="width: 80px; display:inline-block; margin: 0 5px;">
+                    <button type="button" class="tons-btn" data-val="${10 * stepVal}">+${10 * stepVal}</button>
+                    <button type="button" class="tons-btn" data-val="${100 * stepVal}">+${100 * stepVal}</button>
                 </div>
             </div>
             ${linkHTML}
@@ -380,21 +454,25 @@ class ShipHelperView {
             const linkInput = document.getElementById('dialog-generic-link');
 
             if (tonsInput) {
-                const tons = parseFloat(tonsInput.value);
+                let inputVal = parseFloat(tonsInput.value);
+                if (isRods) inputVal = Math.max(10, Math.floor(inputVal / 10) * 10);
                 const customLabel = labelInput ? labelInput.value.trim() : '';
                 const linkedIdx = linkInput ? parseInt(linkInput.value, 10) : -1;
 
-                if (tons > 0) {
+                const tons = isRods ? inputVal / 200 : inputVal;
+                const cost = isRods ? (inputVal / 10) * 0.4 : 0;
+
+                if (inputVal > 0) {
                     const comp = {
                         isGeneric: true,
                         name: componentType,
                         label: customLabel,
                         linkedDriveIndex: linkedIdx >= 0 ? linkedIdx : undefined,
                         tons: tons,
-                        cost: 0
+                        cost: cost
                     };
                     if (editIndex >= 0) {
-                        this.ship.drives[editIndex] = comp;
+                        this.ship.updateComponent(editIndex, comp);
                     } else {
                         this.ship.addDrive(comp);
                     }
@@ -408,7 +486,10 @@ class ShipHelperView {
             const linkInput = document.getElementById('dialog-generic-link');
 
             if (tonsInput) {
-                const tons = parseFloat(tonsInput.value) || 0;
+                let inputVal = parseFloat(tonsInput.value) || 0;
+                if (isRods) inputVal = Math.max(10, Math.floor(inputVal / 10) * 10);
+                const tons = isRods ? inputVal / 200 : inputVal;
+                const cost = isRods ? (inputVal / 10) * 0.4 : 0;
                 let linkedPerfStr = '';
 
                 if (linkInput) {
@@ -417,18 +498,22 @@ class ShipHelperView {
                         const linkedDrive = this.ship.drives[linkedIdx];
                         const drivePerf = ShipHelper.getDrivePerformance(linkedDrive, this.ship.tonnage);
                         let requiredFuelPerUnit = drivePerf.minConsumption || drivePerf.fuelConsumption || 0;
-                        if (linkedDrive.driveType === "Power Plant") {
+                        if (linkedDrive.driveType === "Power Plant" || linkedDrive.driveType === "Fission") {
                             requiredFuelPerUnit = drivePerf.fuelConsumption || 0;
                         }
 
                         if (requiredFuelPerUnit > 0) {
                             // Calculate how many units this tank supports based on the linked drive's consumption per unit
-                            const unitsSupported = Math.floor((tons / requiredFuelPerUnit) * 10) / 10;
+                            const amountAvailable = isRods ? inputVal : tons;
+                            const unitsSupported = Math.floor((amountAvailable / requiredFuelPerUnit) * 10) / 10;
                             let unitName = "uses";
                             let itemName = " (" + linkedDrive.driveType + ")";
                             if (linkedDrive.driveType === "Power Plant") {
                                 unitName = "month operations";
                                 itemName = " (Power Plant)";
+                            } else if (linkedDrive.driveType === "Fission") {
+                                unitName = "decades operations";
+                                itemName = " (Fission)";
                             }
                             else if (linkedDrive.driveType === "Jump") { unitName = "Parsecs"; itemName = ""; }
                             else if (linkedDrive.driveType === "Hop") { unitName = "hops"; itemName = ""; }
@@ -444,7 +529,8 @@ class ShipHelperView {
 
                 document.getElementById('generic-preview').innerHTML = `
                     <div class="preview-title">Preview:</div>
-                    <div class="preview-stat">Cost: MCr0.0</div>
+                    <div class="preview-stat">Cost: MCr${cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
+                    ${isRods ? `<div class="preview-stat">${inputLabel} ${inputVal.toLocaleString()}</div>` : ''}
                     <div class="preview-stat">Tonnage: ${tons.toLocaleString()} tons</div>
                     ${linkedPerfStr}
                 `;
@@ -480,6 +566,148 @@ class ShipHelperView {
         }, 10);
     }
 
+    openHullDialog(hullType, editIndex = -1) {
+        let isPod = hullType === 'Pod';
+
+        let defaultTons = isPod ? 10 : 100;
+        let defaultTL = this.ship.baseTL;
+        let defaultConfig = 'Unstreamlined';
+        let defaultName = hullType;
+
+        if (editIndex >= 0) {
+            const h = this.ship.subhulls[editIndex];
+            isPod = h.isPod;
+            defaultTons = h.tons;
+            defaultTL = h.tl;
+            defaultConfig = h.config;
+            defaultName = h.name;
+        }
+
+        const minTons = isPod ? 10 : 100;
+        const maxTons = isPod ? 90 : 999999;
+        const disabledMax = isPod ? 'max="90"' : '';
+
+        let configs = ["Cluster", "Braced", "Planetoid", "Unstreamlined", "Streamlined", "Airframe", "Lifting Body"];
+        if (isPod) {
+            configs = configs.filter(c => c !== "Airframe");
+        }
+        const configOptions = configs.map(c => `<option value="${c}" ${c === defaultConfig ? 'selected' : ''}>${c}</option>`).join('');
+
+        const content = `
+            <div style="margin-bottom: 15px;">
+                <label>Name:</label>
+                <input type="text" id="dialog-hull-name" value="${defaultName}" style="width: 150px;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Tech Level:</label>
+                <input type="number" id="dialog-hull-tl" value="${defaultTL}" min="0" max="33" style="width: 50px;">
+                <label style="display: inline-flex; align-items: center; cursor: pointer; color: var(--text-main); margin-left:15px; font-size:14px;">
+                    <input type="checkbox" id="dialog-hull-import" ${defaultTL !== this.ship.baseTL ? 'checked' : ''}> Import Fee (10%)
+                </label>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Configuration:</label>
+                <select id="dialog-hull-config">
+                    ${configOptions}
+                </select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Tonnage:</label>
+                <div>
+                     <button type="button" class="tons-btn" data-val="-100">-100</button>
+                     <button type="button" class="tons-btn" data-val="-10">-10</button>
+                     <input type="number" id="dialog-hull-tons" value="${defaultTons}" min="${minTons}" ${disabledMax} step="10" style="width: 80px; display:inline-block; margin: 0 5px;">
+                     <button type="button" class="tons-btn" data-val="10">+10</button>
+                     <button type="button" class="tons-btn" data-val="100">+100</button>
+                </div>
+            </div>
+            <div id="hull-preview" class="drive-preview-box"></div>
+        `;
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} ${hullType}`, content, () => {
+            const hName = document.getElementById('dialog-hull-name').value;
+            const hTL = parseInt(document.getElementById('dialog-hull-tl').value, 10);
+            const hConfig = document.getElementById('dialog-hull-config').value;
+            const hTons = parseInt(document.getElementById('dialog-hull-tons').value, 10);
+
+            if (editIndex >= 0) {
+                this.ship.updateSubhull(editIndex, hName, hTons, hTL, hConfig);
+            } else {
+                this.ship.addSubhull(hName, hTons, hTL, hConfig, isPod);
+            }
+            this.render();
+        });
+
+        setTimeout(() => {
+            const inputEl = document.getElementById('dialog-hull-tons');
+            const stepBtns = document.querySelectorAll('.tons-btn');
+            const tlEl = document.getElementById('dialog-hull-tl');
+            const importEl = document.getElementById('dialog-hull-import');
+            const configEl = document.getElementById('dialog-hull-config');
+
+            const updatePreview = () => {
+                const tons = parseInt(inputEl.value, 10) || 0;
+                const config = configEl.value;
+                const isImport = importEl.checked;
+
+                let cost = 0;
+                if (ShipHelper.ENUM_HULL_CONFIG[config]) {
+                    const flat = isPod ? ShipHelper.ENUM_HULL_CONFIG[config].podflatcost : ShipHelper.ENUM_HULL_CONFIG[config].flatcost;
+                    cost = tons * ShipHelper.ENUM_HULL_CONFIG[config].cost + flat;
+                    if (isImport) cost *= 1.1;
+                }
+
+                let grappleText = "";
+                if (this.ship.subhulls.length > 0 && editIndex === -1) {
+                    const activeHull = this.ship.selectedSubhullIndex >= 0 ? this.ship.subhulls[this.ship.selectedSubhullIndex] : this.ship.subhulls[0];
+                    const smallerTons = Math.min(tons, activeHull.tons);
+                    const numGrapples = Math.max(1, Math.floor(smallerTons / 35));
+                    grappleText = `<div class="preview-stat">Auto-Grapples: ${numGrapples} sets (Consumes ${numGrapples * 2} tons total across both hulls)</div>`;
+                }
+
+                const previewEl = document.getElementById('hull-preview');
+                if (previewEl) {
+                    previewEl.innerHTML = `
+                        <div class="preview-title">Preview:</div>
+                        <div class="preview-stat">Cost: MCr${cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
+                        <div class="preview-stat">Tonnage: ${tons} tons</div>
+                        ${grappleText}
+                    `;
+                }
+            };
+
+            if (tlEl && importEl) {
+                tlEl.addEventListener('change', () => {
+                    importEl.checked = parseInt(tlEl.value, 10) !== this.ship.baseTL;
+                    updatePreview();
+                });
+                importEl.addEventListener('change', updatePreview);
+            }
+            if (configEl) {
+                configEl.addEventListener('change', updatePreview);
+            }
+
+            if (inputEl) {
+                inputEl.addEventListener('input', updatePreview);
+                inputEl.addEventListener('change', updatePreview);
+
+                stepBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const valChange = parseInt(e.target.getAttribute('data-val'), 10);
+                        let current = parseFloat(inputEl.value) || 0;
+                        current += valChange;
+                        if (current < minTons) current = minTons;
+                        if (hullType === 'Pod' && current > maxTons) current = maxTons;
+                        inputEl.value = current;
+                        updatePreview();
+                    });
+                });
+            }
+            updatePreview();
+        }, 10);
+    }
+
     render() {
         this.updateAvailableComponents();
         this.renderCenterPanel();
@@ -487,14 +715,69 @@ class ShipHelperView {
     }
 
     updateAvailableComponents() {
-        const driveItems = document.querySelectorAll('.drive-item');
-        driveItems.forEach(item => {
-            const driveType = item.getAttribute('data-drive-type');
-            const availableStages = ShipHelper.getAvailableTechStages(this.ship.baseTL, driveType);
-            if (availableStages.length === 0) {
-                item.classList.add('unavailable');
+        const categories = document.querySelectorAll('.categorynode:not(.tech-constrained-node)');
+
+        categories.forEach(category => {
+            const contentList = category.querySelector(':scope > .content');
+            if (!contentList) return;
+
+            // Find or create the "Tech Constrained" section within this category
+            let constrainedSection = contentList.querySelector(':scope > .tech-constrained-node');
+            if (!constrainedSection) {
+                constrainedSection = document.createElement('li');
+                constrainedSection.className = 'categorynode tech-constrained-node';
+                constrainedSection.innerHTML = `
+                    <strong class="collapsible">Tech Constrained</strong>
+                    <ul class="content constrained-list"></ul>
+                `;
+                contentList.appendChild(constrainedSection);
+
+                // Attach collapsible event listener to the new header
+                const newCollapsible = constrainedSection.querySelector('.collapsible');
+                newCollapsible.addEventListener('click', function () {
+                    this.classList.toggle('active');
+                    const c = this.parentElement.querySelector('.content');
+                    c.style.display = c.style.display === "block" ? "none" : "block";
+                });
+            }
+
+            const constrainedList = constrainedSection.querySelector('.constrained-list');
+
+            // Collect all items in this category (both regular and already constrained)
+            const allItems = category.querySelectorAll('.drive-item, .generic-item');
+
+            let hasConstrained = false;
+
+            allItems.forEach(item => {
+                let isConstrained = false;
+
+                if (item.classList.contains('drive-item')) {
+                    const driveType = item.getAttribute('data-drive-type');
+                    const availableStages = ShipHelper.getAvailableTechStages(this.ship.baseTL, driveType);
+                    if (availableStages.length === 0) {
+                        isConstrained = true;
+                    }
+                } else if (item.classList.contains('generic-item')) {
+                    const compType = item.getAttribute('data-component-type');
+                    if (compType === 'Fuel Rods' && this.ship.baseTL < 8) {
+                        isConstrained = true;
+                    }
+                }
+
+                if (isConstrained) {
+                    item.classList.add('unavailable');
+                    constrainedList.appendChild(item);
+                    hasConstrained = true;
+                } else {
+                    item.classList.remove('unavailable');
+                    contentList.insertBefore(item, constrainedSection);
+                }
+            });
+
+            if (hasConstrained) {
+                constrainedSection.style.display = 'block';
             } else {
-                item.classList.remove('unavailable');
+                constrainedSection.style.display = 'none';
             }
         });
     }
@@ -503,94 +786,173 @@ class ShipHelperView {
         const center = document.getElementById('current-components');
         center.innerHTML = '';
 
-        if (this.ship.drives.length === 0) {
-            center.innerHTML = '<p style="color: #666; font-style: italic;">No components added.</p>';
+        if (this.ship.subhulls.length === 0) {
+            center.innerHTML = '<p style="color: #666; font-style: italic;">No Hulls added. Add a Subhull or Pod to begin.</p>';
             return;
         }
 
-        const ul = document.createElement('div');
-        ul.className = 'components-list';
+        let globalCompIdx = 0;
 
-        this.ship.drives.forEach((comp, index) => {
-            const li = document.createElement('div');
-            li.className = 'component-card';
-
-            if (comp.isGeneric) {
-                let labelHtml = comp.label ? `<span style="font-size:0.9em; color:#aaa"> - ${comp.label}</span>` : '';
-                let linkedPerfStr = '';
-                let linkIcon = '';
-
-                if (comp.name === 'Fuel Tank' && comp.linkedDriveIndex !== undefined && this.ship.drives[comp.linkedDriveIndex]) {
-                    linkIcon = '🔗 ';
-                    const linkedDrive = this.ship.drives[comp.linkedDriveIndex];
-                    const drivePerf = ShipHelper.getDrivePerformance(linkedDrive, this.ship.tonnage);
-                    let fuelPerUnit = drivePerf.minConsumption || drivePerf.fuelConsumption || 0;
-                    if (linkedDrive.driveType === "Power Plant") {
-                        fuelPerUnit = drivePerf.fuelConsumption || 0;
-                    }
-                    if (fuelPerUnit > 0) {
-                        const unitsSupported = Math.floor((comp.tons / fuelPerUnit) * 10) / 10;
-                        let unitName = "uses";
-                        let itemName = " (" + linkedDrive.driveType + ")";
-                        if (linkedDrive.driveType === "Power Plant") {
-                            unitName = "month operations";
-                            itemName = " (Power Plant)";
-                        }
-                        else if (linkedDrive.driveType === "Jump") { unitName = "Parsecs"; itemName = ""; }
-                        else if (linkedDrive.driveType === "Hop") { unitName = "hops"; itemName = ""; }
-                        else if (linkedDrive.driveType === "Skip") { unitName = "skips"; itemName = ""; }
-                        else if (linkedDrive.driveType === "HEPlaR") { unitName = "burns"; itemName = ""; }
-
-                        linkedPerfStr = `<div class="component-perf">Supports: ${unitsSupported} ${unitName}${itemName}</div>`;
-                    }
-                }
-
-                li.innerHTML = `
-                    <div class="component-info">
-                        <div class="component-title">${linkIcon}${comp.name}${labelHtml}</div>
-                        <div class="component-details">MCr${comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${comp.tons.toLocaleString()} tons</div>
-                        ${linkedPerfStr}
-                    </div>
-                `;
-            } else {
-                const perf = ShipHelper.getDrivePerformance(comp, this.ship.tonnage);
-
-                li.innerHTML = `
-                    <div class="component-info">
-                        <div class="component-title">${comp.driveType} (Class ${comp.driveClass})</div>
-                        <div class="component-details">TL-${comp.tl} ${comp.stage}, EP: ${comp.ep}</div>
-                        <div class="component-details">MCr${comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${comp.tons.toLocaleString()} tons</div>
-                        <div class="component-perf">Perf: ${perf.potential} (${perf.note})</div>
-                    </div>
-                `;
+        this.ship.subhulls.forEach((hull, hIdx) => {
+            const hullContainer = document.createElement('div');
+            hullContainer.className = 'subhull-container';
+            if (this.ship.selectedSubhullIndex === hIdx) {
+                hullContainer.classList.add('selected-hull');
             }
 
-            li.addEventListener('click', () => {
-                if (comp.isGeneric) {
-                    this.openGenericDialog(comp.name, index);
-                } else {
-                    this.openDriveDialog(comp.driveType, index);
-                }
+            const isSelected = this.ship.selectedSubhullIndex === hIdx ? 'checked' : '';
+            const flat = hull.isPod ? ShipHelper.ENUM_HULL_CONFIG[hull.config].podflatcost : ShipHelper.ENUM_HULL_CONFIG[hull.config].flatcost;
+            const hullCost = (hull.tons * ShipHelper.ENUM_HULL_CONFIG[hull.config].cost + flat);
+
+            const consumedTons = hull.components.reduce((sum, comp) => sum + comp.tons, 0);
+
+            // Hull Header
+            hullContainer.innerHTML = `
+                <div class="subhull-header">
+                    <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+                        <input type="radio" name="hull-selection" value="${hIdx}" ${isSelected}>
+                        <strong>${hull.name}</strong>
+                    </label>
+                    <div style="font-size: 0.9em; flex-grow: 1; margin-left:15px; display:flex; gap: 15px;">
+                         <span>TL-${hull.tl}</span>
+                         <span class="${consumedTons > hull.tons ? 'warning' : ''}">${consumedTons.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 1 })} / ${hull.tons.toLocaleString()} tons</span>
+                         <span>${hull.config}</span>
+                         <span>MCr${hullCost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                    </div>
+                    <button class="hull-edit-btn" data-idx="${hIdx}">Edit</button>
+                    <button class="hull-remove-btn" data-idx="${hIdx}">Remove</button>
+                </div>
+                <div class="components-list"></div>
+            `;
+
+            // Radio button selection
+            const radioBtn = hullContainer.querySelector(`input[type="radio"]`);
+            radioBtn.addEventListener('change', () => {
+                this.ship.selectSubhull(hIdx);
+                this.renderCenterPanel(); // just re-render center to update styles
             });
 
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = 'Remove';
-            removeBtn.className = 'remove-btn';
-            removeBtn.onclick = (e) => {
-                e.stopPropagation(); // prevent opening the edit dialog
-                this.ship.removeDriveAtIndex(index);
-                this.render();
-            };
+            // Edit Hull button
+            const editBtn = hullContainer.querySelector('.hull-edit-btn');
+            editBtn.addEventListener('click', () => {
+                this.openHullDialog(hull.name, hIdx);
+            });
 
-            li.appendChild(removeBtn);
-            ul.appendChild(li);
+            // Remove Hull button
+            const rmHullBtn = hullContainer.querySelector('.hull-remove-btn');
+            if (rmHullBtn) {
+                rmHullBtn.addEventListener('click', () => {
+                    this.ship.removeSubhull(hIdx);
+                    this.render();
+                });
+            }
+
+            const ul = hullContainer.querySelector('.components-list');
+
+            if (hull.components.length === 0) {
+                ul.innerHTML = '<div style="color: #555; font-style: italic; padding: 5px 10px;">Empty</div>';
+            } else {
+                hull.components.forEach((comp) => {
+                    const li = document.createElement('div');
+                    li.className = 'component-card';
+                    const currentGlobalIdx = globalCompIdx; // capture current value for closures
+
+                    if (comp.isGeneric) {
+                        let labelHtml = comp.label ? `<span style="font-size:0.9em; color:#aaa"> - ${comp.label}</span>` : '';
+                        let linkedPerfStr = '';
+                        let linkIcon = '';
+
+                        if ((comp.name === 'Fuel Tank' || comp.name === 'Fuel Rods') && comp.linkedDriveIndex !== undefined) {
+                            const linkedTarget = this.ship.getComponentByIdx(comp.linkedDriveIndex);
+                            if (linkedTarget && linkedTarget.component) {
+                                linkIcon = '🔗 ';
+                                const linkedDrive = linkedTarget.component;
+                                const drivePerf = ShipHelper.getDrivePerformance(linkedDrive, this.ship.tonnage);
+                                let fuelPerUnit = drivePerf.minConsumption || drivePerf.fuelConsumption || 0;
+                                if (linkedDrive.driveType === "Power Plant" || linkedDrive.driveType === "Fission") {
+                                    fuelPerUnit = drivePerf.fuelConsumption || 0;
+                                }
+                                if (fuelPerUnit > 0) {
+                                    const isRods = comp.name === 'Fuel Rods';
+                                    const amountAvailable = isRods ? Math.round(comp.tons * 200) : comp.tons;
+                                    const unitsSupported = Math.floor((amountAvailable / fuelPerUnit) * 10) / 10;
+                                    let unitName = "uses";
+                                    let itemName = " (" + linkedDrive.driveType + ")";
+                                    if (linkedDrive.driveType === "Power Plant") {
+                                        unitName = "month operations";
+                                        itemName = " (Power Plant)";
+                                    } else if (linkedDrive.driveType === "Fission") {
+                                        unitName = "decades operations";
+                                        itemName = " (Fission)";
+                                    }
+                                    else if (linkedDrive.driveType === "Jump") { unitName = "Parsecs"; itemName = ""; }
+                                    else if (linkedDrive.driveType === "Hop") { unitName = "hops"; itemName = ""; }
+                                    else if (linkedDrive.driveType === "Skip") { unitName = "skips"; itemName = ""; }
+                                    else if (linkedDrive.driveType === "HEPlaR") { unitName = "burns"; itemName = ""; }
+
+                                    linkedPerfStr = `<div class="component-perf">Supports: ${unitsSupported} ${unitName}${itemName}</div>`;
+                                }
+                            }
+                        }
+
+                        const compCostStr = comp.cost ? comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '0.0';
+                        li.innerHTML = `
+                            <div class="component-info">
+                                <div class="component-title">${linkIcon}${comp.name}${labelHtml}</div>
+                                <div class="component-details">MCr${compCostStr} - ${comp.tons.toLocaleString()} tons</div>
+                                ${linkedPerfStr}
+                            </div>
+                        `;
+                    } else {
+                        const perf = ShipHelper.getDrivePerformance(comp, this.ship.tonnage);
+
+                        li.innerHTML = `
+                            <div class="component-info">
+                                <div class="component-title">${comp.driveType} (Class ${comp.driveClass})</div>
+                                <div class="component-details">TL-${comp.tl} ${comp.stage}, EP: ${comp.ep}</div>
+                                <div class="component-details">MCr${comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${comp.tons.toLocaleString()} tons</div>
+                                <div class="component-perf">Perf: ${perf.potential} (${perf.note})</div>
+                            </div>
+                        `;
+                    }
+
+                    li.addEventListener('click', () => {
+                        if (comp.isGeneric) {
+                            this.openGenericDialog(comp.name, currentGlobalIdx);
+                        } else {
+                            this.openDriveDialog(comp.driveType, currentGlobalIdx);
+                        }
+                    });
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = (e) => {
+                        e.stopPropagation(); // prevent opening the edit dialog
+                        this.ship.removeComponentAtIndex(currentGlobalIdx);
+                        this.render();
+                    };
+
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+
+                    globalCompIdx++;
+                });
+            }
+
+            center.appendChild(hullContainer);
         });
-
-        center.appendChild(ul);
     }
 
     renderRightPanel() {
         const stats = document.getElementById('ship-stats');
+
+        // Update top bar display elements
+        const displayTonnage = document.getElementById('display-tonnage');
+        if (displayTonnage) displayTonnage.textContent = this.ship.tonnage.toLocaleString();
+
+        const displayConfig = document.getElementById('display-config');
+        if (displayConfig) displayConfig.textContent = this.ship.configurationType;
 
         // Calculate totals
         let totalCost = this.ship.baseCost;
@@ -602,6 +964,60 @@ class ShipHelperView {
         });
 
         const tonnageRemaining = this.ship.tonnage - totalTonnageUsed;
+
+        let maxPower = 0;
+        let maxJumpPower = 0;
+        let mdrivePotential = 0;
+        let jumpPotential = 0;
+        let hopPotential = 0;
+        let skipPotential = 0;
+
+        this.ship.drives.forEach(d => {
+            if (!d.isGeneric) {
+                const perf = ShipHelper.getDrivePerformance(d, this.ship.tonnage);
+                const pot = perf.potential || 0;
+
+                if (d.driveType === 'Power Plant' || d.driveType === 'Fission') {
+                    if (pot > maxPower) maxPower = pot;
+                    if (pot > maxJumpPower) maxJumpPower = pot;
+                } else if (d.driveType === 'Collector') {
+                    if (pot > maxJumpPower) maxJumpPower = pot;
+                } else if (d.driveType === 'M-Drive') {
+                    if (pot > mdrivePotential) mdrivePotential = pot;
+                } else if (d.driveType === 'Jump') {
+                    if (pot > jumpPotential) jumpPotential = pot;
+                } else if (d.driveType === 'Hop') {
+                    if (pot > hopPotential) hopPotential = pot;
+                } else if (d.driveType === 'Skip') {
+                    if (pot > skipPotential) skipPotential = pot;
+                }
+            }
+        });
+
+        const hullMaxG = this.ship.configuration.maxG;
+        const effectiveMDrive = Math.min(mdrivePotential, maxPower, hullMaxG);
+        let mDriveNote = '';
+        if (effectiveMDrive < mdrivePotential) {
+            if (effectiveMDrive === hullMaxG) mDriveNote = ' (Hull Limited)';
+            else mDriveNote = ' (Power Limited)';
+        }
+
+        const effectiveJump = Math.min(jumpPotential, maxJumpPower);
+        const effectiveHop = Math.min(hopPotential, maxJumpPower);
+        const effectiveSkip = Math.min(skipPotential, maxJumpPower);
+
+        let drivePerfHtml = '';
+        if (mdrivePotential > 0 || jumpPotential > 0 || hopPotential > 0 || skipPotential > 0) {
+            drivePerfHtml = `
+            <div class="stat-section">
+                <div class="stat-header">Drive Performance:</div>
+                ${mdrivePotential > 0 ? `<div class="stat-row"><span class="stat-label">Maneuver:</span> <span class="stat-value ${effectiveMDrive < mdrivePotential ? 'warning' : 'good'}">${effectiveMDrive} G${mDriveNote}</span></div>` : ''}
+                ${jumpPotential > 0 ? `<div class="stat-row"><span class="stat-label">Jump:</span> <span class="stat-value ${effectiveJump < jumpPotential ? 'warning' : 'good'}">Jump-${effectiveJump}${effectiveJump < jumpPotential ? ' (Power Limited)' : ''}</span></div>` : ''}
+                ${hopPotential > 0 ? `<div class="stat-row"><span class="stat-label">Hop:</span> <span class="stat-value ${effectiveHop < hopPotential ? 'warning' : 'good'}">Hop-${effectiveHop}${effectiveHop < hopPotential ? ' (Power Limited)' : ''}</span></div>` : ''}
+                ${skipPotential > 0 ? `<div class="stat-row"><span class="stat-label">Skip:</span> <span class="stat-value ${effectiveSkip < skipPotential ? 'warning' : 'good'}">Skip-${effectiveSkip}${effectiveSkip < skipPotential ? ' (Power Limited)' : ''}</span></div>` : ''}
+            </div>
+            `;
+        }
 
         stats.innerHTML = `
             <div class="stat-section">
@@ -619,6 +1035,7 @@ class ShipHelperView {
                 <div class="stat-row"><span class="stat-label">Tonnage Used:</span> <span class="stat-value">${totalTonnageUsed.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</span></div>
                 <div class="stat-row"><span class="stat-label">Tonnage Available:</span> <span class="stat-value ${tonnageRemaining < 0 ? 'warning' : 'good'}">${tonnageRemaining.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</span></div>
             </div>
+            ${drivePerfHtml}
         `;
     }
 
@@ -644,11 +1061,21 @@ class ShipHelperView {
         document.body.appendChild(overlay);
 
         document.getElementById('accept-button').addEventListener('click', () => {
-            if (onAccept) onAccept();
-            document.body.removeChild(overlay);
+            try {
+                if (onAccept) onAccept();
+            } catch (err) {
+                console.error("Dialog Acceptance Error:", err);
+                alert("Error saving component: " + err.message);
+            } finally {
+                if (document.body.contains(overlay)) {
+                    document.body.removeChild(overlay);
+                }
+            }
         });
         document.getElementById('cancel-button').addEventListener('click', () => {
-            document.body.removeChild(overlay);
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay);
+            }
         });
     }
 }

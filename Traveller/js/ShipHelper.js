@@ -72,13 +72,14 @@ export class ENUM_HULL_TYPE {
     static get LiftingBody() { return "Lifting Body"; }
 }
 export class ENUM_HULL_CONFIG {
-    static get Cluster() { return { type: "Cluster", friction: 2, agility: -5, accel: 0, maxG: 1, stability: -3, land: false, cost: 2 / 100, flatcost: 0 } }
-    static get Braced() { return { type: "Braced", friction: 2, agility: -4, accel: 0, maxG: 3, stability: -2, land: false, cost: 3 / 100, flatcost: 0 } }
-    static get Planetoid() { return { type: "Planetoid", friction: 1, agility: -2, accel: 0, maxG: 9, stability: -1, land: false, cost: 1 / 100, flatcost: 0 } }
-    static get Unstreamlined() { return { type: "Unstreamlined", friction: 0.5, agility: -1, accel: 0, maxG: 9, stability: 0, land: true, cost: 3 / 100, flatcost: 5 } }
-    static get Streamlined() { return { type: "Streamlined", friction: 1 / 3, agility: 0, accel: 0, maxG: 9, stability: 1, land: true, cost: 6 / 100, flatcost: 2 } }
-    static get Airframe() { return { type: "Airframe", friction: 0.25, agility: 1, accel: 1, maxG: 9, stability: 2, land: true, cost: 7 / 100, flatcost: 2 } }
-    static get LiftingBody() { return { type: "Lifting Body", friction: 0.2, agility: 1, accel: 1, maxG: 9, stability: 3, land: true, cost: 12 / 100, flatcost: 4 } }
+    static get Cluster() { return { type: "Cluster", friction: 2, agility: -5, accel: 0, maxG: 1, stability: -3, land: false, cost: 2 / 100, flatcost: 0, podflatcost: 0 } }
+    static get Braced() { return { type: "Braced", friction: 2, agility: -4, accel: 0, maxG: 3, stability: -2, land: false, cost: 3 / 100, flatcost: 0, podflatcost: 0 } }
+    static get Planetoid() { return { type: "Planetoid", friction: 1, agility: -2, accel: 0, maxG: 9, stability: -1, land: false, cost: 1 / 100, flatcost: 0, podflatcost: 0 } }
+    static get Unstreamlined() { return { type: "Unstreamlined", friction: 0.5, agility: -1, accel: 0, maxG: 9, stability: 0, land: true, cost: 3 / 100, flatcost: 2, podflatcost: 0.5 } }
+    static get Streamlined() { return { type: "Streamlined", friction: 1 / 3, agility: 0, accel: 0, maxG: 9, stability: 1, land: true, cost: 6 / 100, flatcost: 2, podflatcost: 0.8 } }
+    static get Airframe() { return { type: "Airframe", friction: 0.25, agility: 1, accel: 1, maxG: 9, stability: 2, land: true, cost: 7 / 100, flatcost: 2, podflatcost: 0.8 } }
+    static get LiftingBody() { return { type: "Lifting Body", friction: 0.2, agility: 1, accel: 1, maxG: 9, stability: 3, land: true, cost: 12 / 100, flatcost: 4, podflatcost: 1.6 } }
+    static get "Lifting Body"() { return this.LiftingBody; }
 }
 export function getAvailableTechStages(tl, tech) {
     /**
@@ -437,69 +438,203 @@ export function getDrivePerformance(drive, shipTonnage) {
     };
 }
 export class Hull {
-    constructor(baseTL = 12, tonnage = 100, configuration = ENUM_HULL_TYPE.Unstreamlined) {
-        this.drives = [];
-        this.baseTL = baseTL; // Base Tech Level
-        this.tonnage = tonnage;
-        this.configurationType = configuration;
-        this.configuration = ENUM_HULL_CONFIG[configuration];
-        this.baseCost = this.tonnage * this.configuration.cost + this.configuration.flatcost;
+    constructor(baseTL = 12) {
+        this.baseTL = baseTL;
+        this.subhulls = []; // Array of hull objects: { name, tons, tl, config, components: [] }
+        this.selectedSubhullIndex = -1;
     }
+
     setBaseTL(tl) {
         this.baseTL = tl;
     }
-    setTonnage(tonnage) {
-        this.tonnage = tonnage;
-        this.baseCost = this.tonnage * this.configuration.cost + this.configuration.flatcost;
+
+    get tonnage() {
+        if (this.subhulls.length === 0) return 0;
+        return this.subhulls.reduce((sum, h) => sum + h.tons, 0);
     }
-    setConfiguration(configuration) {
-        this.configurationType = configuration;
-        this.configuration = ENUM_HULL_CONFIG[configuration];
-        this.baseCost = this.tonnage * this.configuration.cost + this.configuration.flatcost;
+
+    // Determine the least favorable configuration
+    get configurationType() {
+        if (this.subhulls.length === 0) return "Unstreamlined";
+        let chosenName = "Streamlined";
+
+        const configRanks = [
+            "Lifting Body",
+            "Airframe",
+            "Streamlined",
+            "Unstreamlined",
+            "Planetoid",
+            "Braced",
+            "Cluster"
+        ]; // Ordered from best (0) to worst (6)
+
+        let worstRank = -1;
+        let hasAirframeSubhull = this.subhulls.some(h => !h.isPod && h.config === "Airframe");
+
+        for (const h of this.subhulls) {
+            let rank = configRanks.indexOf(h.config);
+
+            // Exception: Streamlined Pods do not reduce an Airframe hull to Streamlined
+            if (h.isPod && h.config === "Streamlined" && hasAirframeSubhull) {
+                rank = configRanks.indexOf("Airframe");
+            }
+
+            if (rank > worstRank) {
+                worstRank = rank;
+                chosenName = configRanks[worstRank];
+            }
+        }
+        return chosenName;
     }
+
+    get configuration() {
+        return ENUM_HULL_CONFIG[this.configurationType] || ENUM_HULL_CONFIG["Unstreamlined"];
+    }
+
+    get baseCost() {
+        return this.subhulls.reduce((sum, h) => {
+            const conf = ENUM_HULL_CONFIG[h.config];
+            return sum + (h.tons * conf.cost + (h.isPod ? conf.podflatcost : conf.flatcost));
+        }, 0);
+    }
+
+    get drives() {
+        // Flatten all components from all subhulls into a single array for overall iteration
+        return this.subhulls.flatMap(h => h.components);
+    }
+
+    addSubhull(name, tons, tl, config, isPod = false) {
+        const newHull = {
+            isHull: true,
+            isPod: isPod,
+            name: name,
+            tons: Math.max(isPod ? 10 : 100, Math.min(tons, isPod ? 90 : Infinity)),
+            tl: tl,
+            config: config,
+            components: []
+        };
+
+        this.subhulls.push(newHull);
+        const newHullIndex = this.subhulls.length - 1;
+
+        // Auto-link Grapples if connecting to an existing ship
+        if (this.subhulls.length > 1 && this.selectedSubhullIndex >= 0) {
+            const oldHull = this.subhulls[this.selectedSubhullIndex];
+            const smallerTons = Math.min(newHull.tons, oldHull.tons);
+            const numGrapples = Math.max(1, Math.floor(smallerTons / 35));
+
+            for (let i = 0; i < numGrapples; i++) {
+                const grappleCompNew = { isGeneric: true, name: 'Grapple', tons: 1, cost: 0, label: `To Hull ${this.selectedSubhullIndex + 1}` };
+                const grappleCompOld = { isGeneric: true, name: 'Grapple', tons: 1, cost: 0, label: `To Hull ${newHullIndex + 1}` };
+
+                newHull.components.push(grappleCompNew);
+                oldHull.components.push(grappleCompOld);
+            }
+        }
+
+        this.selectedSubhullIndex = newHullIndex;
+    }
+
+    updateSubhull(index, name, tons, tl, config) {
+        if (index >= 0 && index < this.subhulls.length) {
+            const h = this.subhulls[index];
+            h.name = name;
+            h.tons = Math.max(h.isPod ? 10 : 100, Math.min(tons, h.isPod ? 90 : Infinity));
+            h.tl = tl;
+            h.config = config;
+        }
+    }
+
+    removeSubhull(index) {
+        if (index >= 0 && index < this.subhulls.length) {
+            this.subhulls.splice(index, 1);
+            if (this.selectedSubhullIndex >= this.subhulls.length) {
+                this.selectedSubhullIndex = this.subhulls.length - 1;
+            }
+        }
+    }
+
+    selectSubhull(index) {
+        if (index >= 0 && index < this.subhulls.length) {
+            this.selectedSubhullIndex = index;
+        }
+    }
+
+    // Proxy methods for components
     addDrive(drive) {
-        this.drives.push(drive);
+        if (this.selectedSubhullIndex >= 0 && this.selectedSubhullIndex < this.subhulls.length) {
+            this.subhulls[this.selectedSubhullIndex].components.push(drive);
+        } else {
+            throw new Error("No Subhull or Pod selected to attach component.");
+        }
     }
+
     addComponent(component) {
         this.addDrive(component);
     }
-    removeDriveAtIndex(index) {
-        if (index >= 0 && index < this.drives.length) {
-            const drivesToRemove = new Set([index]);
 
-            // Find components explicitly linked to the one we're removing
-            this.drives.forEach((d, i) => {
-                if (d.linkedDriveIndex === index) {
-                    drivesToRemove.add(i);
+    getComponentByIdx(globalIndex) {
+        let count = 0;
+        for (let h = 0; h < this.subhulls.length; h++) {
+            for (let c = 0; c < this.subhulls[h].components.length; c++) {
+                if (count === globalIndex) {
+                    return { hullIndex: h, compIndex: c, component: this.subhulls[h].components[c] };
                 }
-            });
+                count++;
+            }
+        }
+        return null;
+    }
 
-            // Rebuild the array and map old indices to new indices
-            const newDrives = [];
-            const indexMap = new Map(); // oldIndex -> newIndex
-
-            this.drives.forEach((d, oldIndex) => {
-                if (!drivesToRemove.has(oldIndex)) {
-                    indexMap.set(oldIndex, newDrives.length);
-                    newDrives.push(d);
-                }
-            });
-
-            // Update the linkedDriveIndex for remaining components to point to the new shifted indices
-            newDrives.forEach(d => {
-                if (d.linkedDriveIndex !== undefined) {
-                    if (indexMap.has(d.linkedDriveIndex)) {
-                        d.linkedDriveIndex = indexMap.get(d.linkedDriveIndex);
-                    } else {
-                        // The linked drive was removed
-                        delete d.linkedDriveIndex;
-                    }
-                }
-            });
-
-            this.drives = newDrives;
+    updateComponent(globalIndex, newComp) {
+        const target = this.getComponentByIdx(globalIndex);
+        if (target) {
+            this.subhulls[target.hullIndex].components[target.compIndex] = newComp;
         }
     }
+
+    removeDriveAtIndex(globalIndex) {
+        const target = this.getComponentByIdx(globalIndex);
+        if (!target) return;
+
+        const hull = this.subhulls[target.hullIndex];
+        const drivesToRemove = new Set([target.compIndex]);
+
+        // Find components explicitly linked to the one we're removing (within the same hull)
+        hull.components.forEach((d, i) => {
+            if (d.linkedDriveIndex === target.compIndex) {
+                // Warning: Linked indices might break if referring to global drives array.
+                // Assuming links are localized for now or will be refactored to unique IDs.
+                drivesToRemove.add(i);
+            }
+        });
+
+        // Rebuild the array and map old indices to new indices
+        const newDrives = [];
+        const indexMap = new Map(); // oldIndex -> newIndex
+
+        hull.components.forEach((d, oldIndex) => {
+            if (!drivesToRemove.has(oldIndex)) {
+                indexMap.set(oldIndex, newDrives.length);
+                newDrives.push(d);
+            }
+        });
+
+        // Update the linkedDriveIndex for remaining components
+        newDrives.forEach(d => {
+            if (d.linkedDriveIndex !== undefined) {
+                if (indexMap.has(d.linkedDriveIndex)) {
+                    d.linkedDriveIndex = indexMap.get(d.linkedDriveIndex);
+                } else {
+                    // The linked drive was removed
+                    delete d.linkedDriveIndex;
+                }
+            }
+        });
+
+        hull.components = newDrives;
+    }
+
     removeComponentAtIndex(index) {
         this.removeDriveAtIndex(index);
     }
