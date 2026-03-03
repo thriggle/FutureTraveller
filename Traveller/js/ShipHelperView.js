@@ -163,7 +163,8 @@ class ShipHelperView {
         const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
 
         let includeFuelHtml = '';
-        if (editIndex < 0) {
+        const nonFuelDrives = ["M-Drive", "G-Drive", "Rocket", "Collector"];
+        if (editIndex < 0 && !nonFuelDrives.includes(driveType)) {
             includeFuelHtml = `
                 <label style="display: flex; align-items: center; cursor: pointer; color: var(--text-main);">
                     <input type="checkbox" id="dialog-include-fuel" checked> Include Linked Fuel Tank
@@ -196,7 +197,7 @@ class ShipHelperView {
                     this.ship.addDrive(drive);
 
                     // Auto-link a minimal fuel tank if the drive consumes fuel
-                    const fuelTons = drive.driveType === 'Power Plant' ? rawPerf.fuelConsumption : rawPerf.minConsumption;
+                    const fuelTons = rawPerf.fuelConsumption;
 
                     const includeFuelEl = document.getElementById('dialog-include-fuel');
                     const shouldIncludeFuel = includeFuelEl ? includeFuelEl.checked : false;
