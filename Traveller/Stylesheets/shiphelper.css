@@ -550,3 +550,27 @@ ul.content {
 .stat-value.good {
     color: var(--accent-cyan);
 }
+
+/* Responsive layout adjustments for mobile */
+@media (max-width: 900px) {
+    body {
+        /* Let the body scroll normally when panels stack */
+        overflow: auto;
+    }
+
+    .container {
+        flex-direction: column;
+        overflow-y: visible;
+        height: auto;
+    }
+
+    .left-panel,
+    .center-panel,
+    .right-panel {
+        width: 100%;
+        min-width: unset;
+        /* Let them shrink/grow naturally in a vertical stack */
+        flex: none;
+        overflow-y: visible;
+    }
+}
