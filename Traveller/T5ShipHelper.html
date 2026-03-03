@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>T5 Ship Helper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./Stylesheets/shiphelper.css">
+</head>
+
+<body>
+    <script src="./js/ShipHelper.js" type="module"></script>
+    <script src="./js/ShipHelperView.js" type="module"></script>
+    <div class="header-container">
+        <h1>Traveller T5 Ship Helper</h1>
+        <p>A tool to help design and manage Traveller T5 starships.</p>
+    </div>
+    <div class="controls-bar">
+        <div>
+            <label for="base-tl">Base Tech Level:</label>
+            <input type="number" id="base-tl" value="13" min="0" max="33" style="width: 50px;">
+        </div>
+        <div>
+            <label for="ship-tonnage">Hull Tonnage:</label>
+            <input type="number" id="ship-tonnage" value="100" min="10" step="10" style="width: 80px;">
+        </div>
+        <div>
+            <label for="hull-config">Hull Configuration:</label>
+            <select id="hull-config">
+                <option value="Cluster">Cluster</option>
+                <option value="Braced">Braced</option>
+                <option value="Planetoid">Planetoid</option>
+                <option value="Unstreamlined" selected>Unstreamlined</option>
+                <option value="Streamlined">Streamlined</option>
+                <option value="Airframe">Airframe</option>
+                <option value="Lifting Body">Lifting Body</option>
+            </select>
+        </div>
+    </div>
+    <div class="container">
+        <!-- Left Panel: Potential Components -->
+        <div class="panel left-panel">
+            <h2>Available Components</h2>
+            <ul id="component-list">
+                <!-- Collapsible list of categories and items will be added here -->
+                <li class="categorynode">
+                    <strong class="collapsible">Drives</strong>
+                    <ul class="content">
+                        <li class="drive-item" data-drive-type="Jump">Jump Drive</li>
+                        <li class="drive-item" data-drive-type="M-Drive">Maneuver Drive</li>
+                        <li class="drive-item" data-drive-type="G-Drive">G-Drive</li>
+                        <li class="drive-item" data-drive-type="Power Plant">Power Plant</li>
+                        <li class="drive-item" data-drive-type="Fission">Fission Plant</li>
+                        <li class="drive-item" data-drive-type="Anti-Matter">Anti-Matter Plant</li>
+                        <li class="drive-item" data-drive-type="Hop">Hop Drive</li>
+                        <li class="drive-item" data-drive-type="Skip">Skip Drive</li>
+                        <li class="drive-item" data-drive-type="Rocket">Rocket Drive</li>
+                        <li class="drive-item" data-drive-type="NAFAL">NAFAL Drive</li>
+                        <li class="drive-item" data-drive-type="HEPlaR">HEPlaR Drive</li>
+                        <li class="drive-item" data-drive-type="Collector">Collector</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Fuel</strong>
+                    <ul class="content">
+                        <li class="generic-item" data-component-type="Fuel Tank">Fuel Tank</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Payload</strong>
+                    <ul class="content">
+                        <li class="generic-item" data-component-type="Cargo Space">Cargo Space</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- Center Panel: Current Components -->
+        <div class="panel center-panel">
+            <h2>Current Components</h2>
+            <div id="current-components">
+                <!-- Current components will be displayed here -->
+            </div>
+        </div>
+        <!-- Right Panel: Ship Stats and Costs -->
+        <div class="panel right-panel">
+            <h2>Ship Stats</h2>
+            <div id="ship-stats">
+                <!-- Calculated stats and costs will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/disclaimer.js"></script>
+</body>
+
+</html>
