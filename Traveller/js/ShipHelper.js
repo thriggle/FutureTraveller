@@ -424,7 +424,7 @@ export function getDrivePerformance(drive, shipTonnage) {
             minNote = note;
             break;
     }
-    if (potential < 1) {
+    if (potential <= 1) {
         minConsumption = fuelConsumption;
         minNote = note;
     }
@@ -465,7 +465,39 @@ export class Hull {
     }
     removeDriveAtIndex(index) {
         if (index >= 0 && index < this.drives.length) {
-            this.drives.splice(index, 1);
+            const drivesToRemove = new Set([index]);
+
+            // Find components explicitly linked to the one we're removing
+            this.drives.forEach((d, i) => {
+                if (d.linkedDriveIndex === index) {
+                    drivesToRemove.add(i);
+                }
+            });
+
+            // Rebuild the array and map old indices to new indices
+            const newDrives = [];
+            const indexMap = new Map(); // oldIndex -> newIndex
+
+            this.drives.forEach((d, oldIndex) => {
+                if (!drivesToRemove.has(oldIndex)) {
+                    indexMap.set(oldIndex, newDrives.length);
+                    newDrives.push(d);
+                }
+            });
+
+            // Update the linkedDriveIndex for remaining components to point to the new shifted indices
+            newDrives.forEach(d => {
+                if (d.linkedDriveIndex !== undefined) {
+                    if (indexMap.has(d.linkedDriveIndex)) {
+                        d.linkedDriveIndex = indexMap.get(d.linkedDriveIndex);
+                    } else {
+                        // The linked drive was removed
+                        delete d.linkedDriveIndex;
+                    }
+                }
+            });
+
+            this.drives = newDrives;
         }
     }
     removeComponentAtIndex(index) {
