@@ -384,9 +384,23 @@ ul.content {
 }
 
 .dialog-buttons {
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 15px;
+    margin-top: 15px;
+}
+
+.dialog-footer-left {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+}
+
+.dialog-footer-right {
+    display: flex;
+    align-items: center;
 }
 
 .dialog-buttons button {

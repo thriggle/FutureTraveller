@@ -63,32 +63,46 @@ class ShipHelperView {
         let defaultTL = this.ship.baseTL;
         let defaultNexus = 1;
 
-        let defaultStageValue = availableStages[0].stage;
-        const standardStage = availableStages.find(s => s.stage === 'Standard');
-        if (standardStage) {
+        let defaultStageValue = availableStages.length > 0 ? availableStages[0].stage : '';
+
+        if (editIndex < 0 && availableStages.length > 0) {
             try {
-                // Determine Performance of Standard drive for given ship tonnage
-                const tempDrive = ShipHelper.buildDrive('Standard', 1, "A", driveType, this.ship.baseTL);
-                const standardPerf = ShipHelper.getDrivePerformance(tempDrive, this.ship.tonnage).potential;
+                const driveClasses = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+                const preferredStages = ['Modified', 'Improved', 'Standard', 'Basic', 'Early', 'Prototype', 'Experimental'];
 
-                const modifiedStage = availableStages.find(s => s.stage === 'Modified');
-                const improvedStage = availableStages.find(s => s.stage === 'Improved');
-
-                if (modifiedStage && Math.floor(modifiedStage.eff) >= standardPerf) {
-                    defaultStageValue = 'Modified';
-                } else if (improvedStage && Math.floor(improvedStage.eff) >= standardPerf) {
-                    defaultStageValue = 'Improved';
-                } else {
-                    defaultStageValue = 'Standard';
+                let orderedStages = [];
+                for (const p of preferredStages) {
+                    const s = availableStages.find(x => x.stage === p);
+                    if (s) orderedStages.push(s);
                 }
+                for (const s of availableStages) {
+                    // Append any other available stages not in the preferred list
+                    if (!orderedStages.includes(s)) orderedStages.push(s);
+                }
+
+                let foundViable = false;
+                for (const dClass of driveClasses) {
+                    for (const stage of orderedStages) {
+                        const tempDrive = ShipHelper.buildDrive(stage.stage, 1, dClass, driveType, defaultTL);
+                        const perf = ShipHelper.getDrivePerformance(tempDrive, this.ship.tonnage).potential;
+                        if (perf >= 1) {
+                            defaultClass = dClass;
+                            defaultStageValue = stage.stage;
+                            foundViable = true;
+                            break;
+                        }
+                    }
+                    if (foundViable) break;
+                }
+
+                if (!foundViable) {
+                    // Fallback if no class can give 1 performance (e.g. ship too big for class Z)
+                    defaultClass = "A";
+                    defaultStageValue = orderedStages[0].stage;
+                }
+
             } catch (err) {
-                console.error("Error determining default tech stage:", err);
-            }
-        } else {
-            // Find the lowest stage (reading from right to left array end) that gives us eff >= 1
-            const viableStages = availableStages.slice().reverse().filter(s => Math.floor(s.eff) >= 1);
-            if (viableStages.length > 0) {
-                defaultStageValue = viableStages[0].stage;
+                console.error("Error determining default drive:", err);
             }
         }
 
@@ -147,6 +161,16 @@ class ShipHelperView {
         `;
 
         const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+
+        let includeFuelHtml = '';
+        if (editIndex < 0) {
+            includeFuelHtml = `
+                <label style="display: flex; align-items: center; cursor: pointer; color: var(--text-main);">
+                    <input type="checkbox" id="dialog-include-fuel" checked> Include Linked Fuel Tank
+                </label>
+            `;
+        }
+
         this.showDialog(`${titlePrefix} ${driveType}`, content, () => {
             const driveClass = document.getElementById('dialog-drive-class').value;
             const techStage = document.getElementById('dialog-tech-stage').value;
@@ -172,13 +196,19 @@ class ShipHelperView {
                     this.ship.addDrive(drive);
 
                     // Auto-link a minimal fuel tank if the drive consumes fuel
-                    const fuelTons = drive.driveType === 'PowerPlant' ? rawPerf.fuelConsumption : rawPerf.minConsumption;
+                    const fuelTons = drive.driveType === 'Power Plant' ? rawPerf.fuelConsumption : rawPerf.minConsumption;
 
-                    if (fuelTons && fuelTons > 0) {
+                    const includeFuelEl = document.getElementById('dialog-include-fuel');
+                    const shouldIncludeFuel = includeFuelEl ? includeFuelEl.checked : false;
+
+                    // Automatically linking the tank is handled exclusively on new drive creation
+                    if (shouldIncludeFuel && fuelTons && fuelTons > 0 && editIndex < 0) {
+                        let shortDrive = drive.driveType.replace(/Drive/i, '').trim();
+                        if (shortDrive === 'PowerPlant' || shortDrive === 'Power Plant') shortDrive = 'Power Plant';
                         const fuelComp = {
                             isGeneric: true,
                             name: 'Fuel Tank',
-                            label: `Auto-Linked (${drive.driveType})`,
+                            label: `${shortDrive} Fuel`,
                             linkedDriveIndex: this.ship.drives.length - 1,
                             tons: fuelTons,
                             cost: 0
@@ -190,7 +220,7 @@ class ShipHelperView {
             } catch (err) {
                 alert(err.message);
             }
-        });
+        }, includeFuelHtml);
 
         // Add listeners for live preview updates
         const updatePreview = () => {
@@ -207,8 +237,16 @@ class ShipHelperView {
                 const rawPerf = ShipHelper.getDrivePerformance(drivePreview, this.ship.tonnage);
 
                 if (perfSlider) {
+                    const oldMax = perfSlider.max ? parseInt(perfSlider.max, 10) : null;
                     perfSlider.max = rawPerf.potential;
                     let limit = parseInt(perfSlider.value, 10);
+
+                    // If the maximum capacity just increased, snap the slider to the new maximum
+                    if (oldMax !== null && rawPerf.potential > oldMax) {
+                        limit = rawPerf.potential;
+                        perfSlider.value = limit;
+                    }
+
                     if (limit > rawPerf.potential) {
                         limit = rawPerf.potential;
                         perfSlider.value = limit;
@@ -377,19 +415,26 @@ class ShipHelperView {
                     if (linkedIdx >= 0 && this.ship.drives[linkedIdx]) {
                         const linkedDrive = this.ship.drives[linkedIdx];
                         const drivePerf = ShipHelper.getDrivePerformance(linkedDrive, this.ship.tonnage);
-                        const requiredFuelPerUnit = drivePerf.minConsumption || drivePerf.fuelConsumption || 0;
+                        let requiredFuelPerUnit = drivePerf.minConsumption || drivePerf.fuelConsumption || 0;
+                        if (linkedDrive.driveType === "Power Plant") {
+                            requiredFuelPerUnit = drivePerf.fuelConsumption || 0;
+                        }
 
                         if (requiredFuelPerUnit > 0) {
                             // Calculate how many units this tank supports based on the linked drive's consumption per unit
                             const unitsSupported = Math.floor((tons / requiredFuelPerUnit) * 10) / 10;
                             let unitName = "uses";
-                            if (linkedDrive.driveType === "PowerPlant") unitName = "months";
-                            else if (linkedDrive.driveType === "Jump") unitName = "Parsecs"; // e.g. Jump 1 uses 10%, Jump 2 uses 20%, so if we have fuel for Jump 1, we have 1 parsec of jump capacity. Actually, fuel required is per jump. We'll say "jumps at max rating" or similar. But user said "half fuel for Jump 2 = enough for Jump 1". That means fuel is linear per parsec for Jump drives (usually 10% per parsec).
-                            else if (linkedDrive.driveType === "Hop") unitName = "hops";
-                            else if (linkedDrive.driveType === "Skip") unitName = "skips";
-                            else if (linkedDrive.driveType === "HEPlaR") unitName = "burns";
+                            let itemName = " (" + linkedDrive.driveType + ")";
+                            if (linkedDrive.driveType === "Power Plant") {
+                                unitName = "month operations";
+                                itemName = " (Power Plant)";
+                            }
+                            else if (linkedDrive.driveType === "Jump") { unitName = "Parsecs"; itemName = ""; }
+                            else if (linkedDrive.driveType === "Hop") { unitName = "hops"; itemName = ""; }
+                            else if (linkedDrive.driveType === "Skip") { unitName = "skips"; itemName = ""; }
+                            else if (linkedDrive.driveType === "HEPlaR") { unitName = "burns"; itemName = ""; }
 
-                            linkedPerfStr = `<div class="preview-stat" style="color:var(--accent-cyan)">Supports: ${unitsSupported} ${unitName}</div>`;
+                            linkedPerfStr = `<div class="preview-stat" style="color:var(--accent-cyan)">Supports: ${unitsSupported} ${unitName}${itemName}</div>`;
                         } else {
                             linkedPerfStr = `<div class="preview-stat" style="color:#aaa">Drive consumes no fuel per unit.</div>`;
                         }
@@ -472,26 +517,36 @@ class ShipHelperView {
             if (comp.isGeneric) {
                 let labelHtml = comp.label ? `<span style="font-size:0.9em; color:#aaa"> - ${comp.label}</span>` : '';
                 let linkedPerfStr = '';
+                let linkIcon = '';
+
                 if (comp.name === 'Fuel Tank' && comp.linkedDriveIndex !== undefined && this.ship.drives[comp.linkedDriveIndex]) {
+                    linkIcon = '🔗 ';
                     const linkedDrive = this.ship.drives[comp.linkedDriveIndex];
                     const drivePerf = ShipHelper.getDrivePerformance(linkedDrive, this.ship.tonnage);
-                    const fuelPerUnit = drivePerf.minConsumption || drivePerf.fuelConsumption || 0;
+                    let fuelPerUnit = drivePerf.minConsumption || drivePerf.fuelConsumption || 0;
+                    if (linkedDrive.driveType === "Power Plant") {
+                        fuelPerUnit = drivePerf.fuelConsumption || 0;
+                    }
                     if (fuelPerUnit > 0) {
                         const unitsSupported = Math.floor((comp.tons / fuelPerUnit) * 10) / 10;
                         let unitName = "uses";
-                        if (linkedDrive.driveType === "PowerPlant") unitName = "months";
-                        else if (linkedDrive.driveType === "Jump") unitName = "Parsecs";
-                        else if (linkedDrive.driveType === "Hop") unitName = "hops";
-                        else if (linkedDrive.driveType === "Skip") unitName = "skips";
-                        else if (linkedDrive.driveType === "HEPlaR") unitName = "burns";
+                        let itemName = " (" + linkedDrive.driveType + ")";
+                        if (linkedDrive.driveType === "Power Plant") {
+                            unitName = "month operations";
+                            itemName = " (Power Plant)";
+                        }
+                        else if (linkedDrive.driveType === "Jump") { unitName = "Parsecs"; itemName = ""; }
+                        else if (linkedDrive.driveType === "Hop") { unitName = "hops"; itemName = ""; }
+                        else if (linkedDrive.driveType === "Skip") { unitName = "skips"; itemName = ""; }
+                        else if (linkedDrive.driveType === "HEPlaR") { unitName = "burns"; itemName = ""; }
 
-                        linkedPerfStr = `<div class="component-perf">Supports: ${unitsSupported} ${unitName} (${linkedDrive.driveType})</div>`;
+                        linkedPerfStr = `<div class="component-perf">Supports: ${unitsSupported} ${unitName}${itemName}</div>`;
                     }
                 }
 
                 li.innerHTML = `
                     <div class="component-info">
-                        <div class="component-title">${comp.name}${labelHtml}</div>
+                        <div class="component-title">${linkIcon}${comp.name}${labelHtml}</div>
                         <div class="component-details">MCr${comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${comp.tons.toLocaleString()} tons</div>
                         ${linkedPerfStr}
                     </div>
@@ -566,7 +621,7 @@ class ShipHelperView {
         `;
     }
 
-    showDialog(title, content, onAccept) {
+    showDialog(title, content, onAccept, footerHtml = '') {
         const overlay = document.createElement('div');
         overlay.className = 'dialog-overlay';
 
@@ -576,8 +631,11 @@ class ShipHelperView {
             <h2>${title}</h2>
             <div class="dialog-content">${content}</div>
             <div class="dialog-buttons">
-                <button id="cancel-button">Cancel</button>
-                <button id="accept-button" class="confirm-btn">Accept</button>
+                <div class="dialog-footer-left">${footerHtml}</div>
+                <div class="dialog-footer-right">
+                    <button id="cancel-button">Cancel</button>
+                    <button id="accept-button" class="confirm-btn">Accept</button>
+                </div>
             </div>
         `;
 
