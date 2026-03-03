@@ -39,9 +39,18 @@ class ShipHelperView {
                 this.openDriveDialog(driveType);
             });
         });
+
+        // Setup generic component list clicks
+        const genericItems = document.querySelectorAll('.generic-item');
+        genericItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const componentType = e.target.getAttribute('data-component-type');
+                this.openGenericDialog(componentType);
+            });
+        });
     }
 
-    openDriveDialog(driveType) {
+    openDriveDialog(driveType, editIndex = -1) {
         let classOptions = '';
         const availableStages = ShipHelper.getAvailableTechStages(this.ship.baseTL, driveType);
         if (availableStages.length === 0) {
@@ -49,10 +58,10 @@ class ShipHelperView {
             return;
         }
 
-        const driveClasses = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
-        for (const key of driveClasses) {
-            classOptions += `<option value="${key}">${key} (EP: ${ShipHelper.ENUM_DRIVE_CLASS[key].ep})</option>`;
-        }
+        // Determine defaults based on whether we are editing or creating new
+        let defaultClass = "A";
+        let defaultTL = this.ship.baseTL;
+        let defaultNexus = 1;
 
         let defaultStageValue = availableStages[0].stage;
         const standardStage = availableStages.find(s => s.stage === 'Standard');
@@ -75,6 +84,29 @@ class ShipHelperView {
             } catch (err) {
                 console.error("Error determining default tech stage:", err);
             }
+        } else {
+            // Find the lowest stage (reading from right to left array end) that gives us eff >= 1
+            const viableStages = availableStages.slice().reverse().filter(s => Math.floor(s.eff) >= 1);
+            if (viableStages.length > 0) {
+                defaultStageValue = viableStages[0].stage;
+            }
+        }
+
+        if (editIndex >= 0) {
+            const existingDrive = this.ship.drives[editIndex];
+            defaultClass = existingDrive.driveClass.replace(/\d+$/, ''); // Strip nexus from class
+            defaultStageValue = existingDrive.stage;
+            defaultTL = existingDrive.tl;
+
+            // Re-derive the Nexus Multiplier by comparing with base tonnage EP
+            const nexusMatch = existingDrive.driveClass.match(/\d+$/);
+            defaultNexus = nexusMatch ? parseInt(nexusMatch[0]) : 1;
+        }
+
+        const driveClasses = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        for (const key of driveClasses) {
+            const isSelected = key === defaultClass ? 'selected' : '';
+            classOptions += `<option value="${key}" ${isSelected}>${key} (EP: ${ShipHelper.ENUM_DRIVE_CLASS[key].ep})</option>`;
         }
 
         let stageOptions = '';
@@ -92,27 +124,68 @@ class ShipHelperView {
                 <label>Tech Stage:</label>
                 <select id="dialog-tech-stage">${stageOptions}</select>
             </div>
-            <div style="margin-bottom: 15px;">
-                <label>Tech Level:</label>
-                <input type="number" id="dialog-tl" value="${this.ship.baseTL}" min="0" max="33" style="width: 50px;">
+            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <label style="margin-bottom: 0;">Tech Level:</label>
+                <input type="number" id="dialog-tl" value="${defaultTL}" min="0" max="33" style="width: 50px;">
+                <label style="margin-bottom: 0; margin-left: auto; display: flex; align-items: center; gap: 5px;">
+                    <input type="checkbox" id="dialog-import-fee" ${editIndex >= 0 && this.ship.drives[editIndex].importFee ? 'checked' : ''}>
+                    Import Fee (10%)
+                </label>
             </div>
             <div style="margin-bottom: 15px;">
                 <label>Nexus Multiplier:</label>
-                <input type="number" id="dialog-nexus" value="1" min="1" max="9" style="width: 50px;">
+                <input type="number" id="dialog-nexus" value="${defaultNexus}" min="1" max="9" style="width: 50px;">
+            </div>
+            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <label style="margin-bottom: 0;">Desired Output:</label>
+                <input type="range" id="dialog-perf-limit" min="0" max="99" value="${editIndex >= 0 && this.ship.drives[editIndex].performanceLimit !== undefined ? this.ship.drives[editIndex].performanceLimit : 99}" step="1" style="flex-grow: 1;">
+                <span id="dialog-perf-limit-val" style="min-width: 50px; text-align: right;">Max</span>
             </div>
             <div id="drive-preview" class="drive-preview-box">
                 <!-- Preview updates here -->
             </div>
         `;
 
-        this.showDialog(`Add ${driveType}`, content, () => {
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} ${driveType}`, content, () => {
             const driveClass = document.getElementById('dialog-drive-class').value;
             const techStage = document.getElementById('dialog-tech-stage').value;
             const tl = parseInt(document.getElementById('dialog-tl').value, 10);
             const nexus = parseInt(document.getElementById('dialog-nexus').value, 10);
+            const perfSlider = document.getElementById('dialog-perf-limit');
+            const importFee = document.getElementById('dialog-import-fee').checked;
+
             try {
-                const drive = ShipHelper.buildDrive(techStage, nexus, driveClass, driveType, tl);
-                this.ship.addDrive(drive);
+                const drive = ShipHelper.buildDrive(techStage, nexus, driveClass, driveType, tl, importFee);
+                const rawPerf = ShipHelper.getDrivePerformance(drive, this.ship.tonnage);
+
+                if (perfSlider) {
+                    const limit = parseInt(perfSlider.value, 10);
+                    if (limit < rawPerf.potential) {
+                        drive.performanceLimit = limit;
+                    }
+                }
+
+                if (editIndex >= 0) {
+                    this.ship.drives[editIndex] = drive;
+                } else {
+                    this.ship.addDrive(drive);
+
+                    // Auto-link a minimal fuel tank if the drive consumes fuel
+                    const fuelTons = drive.driveType === 'PowerPlant' ? rawPerf.fuelConsumption : rawPerf.minConsumption;
+
+                    if (fuelTons && fuelTons > 0) {
+                        const fuelComp = {
+                            isGeneric: true,
+                            name: 'Fuel Tank',
+                            label: `Auto-Linked (${drive.driveType})`,
+                            linkedDriveIndex: this.ship.drives.length - 1,
+                            tons: fuelTons,
+                            cost: 0
+                        };
+                        this.ship.addDrive(fuelComp);
+                    }
+                }
                 this.render();
             } catch (err) {
                 alert(err.message);
@@ -125,8 +198,31 @@ class ShipHelperView {
             const techStage = document.getElementById('dialog-tech-stage').value;
             const tl = parseInt(document.getElementById('dialog-tl').value, 10);
             const nexus = parseInt(document.getElementById('dialog-nexus').value, 10);
+            const perfSlider = document.getElementById('dialog-perf-limit');
+            const perfVal = document.getElementById('dialog-perf-limit-val');
+            const importFee = document.getElementById('dialog-import-fee').checked;
+
             try {
-                const drivePreview = ShipHelper.buildDrive(techStage, nexus, driveClass, driveType, tl);
+                const drivePreview = ShipHelper.buildDrive(techStage, nexus, driveClass, driveType, tl, importFee);
+                const rawPerf = ShipHelper.getDrivePerformance(drivePreview, this.ship.tonnage);
+
+                if (perfSlider) {
+                    perfSlider.max = rawPerf.potential;
+                    let limit = parseInt(perfSlider.value, 10);
+                    if (limit > rawPerf.potential) {
+                        limit = rawPerf.potential;
+                        perfSlider.value = limit;
+                    }
+
+                    if (limit >= rawPerf.potential) {
+                        perfVal.textContent = 'Max (' + rawPerf.potential + ')';
+                        drivePreview.performanceLimit = undefined;
+                    } else {
+                        perfVal.textContent = limit;
+                        drivePreview.performanceLimit = limit;
+                    }
+                }
+
                 const perf = ShipHelper.getDrivePerformance(drivePreview, this.ship.tonnage);
 
                 document.getElementById('drive-preview').innerHTML = `
@@ -143,8 +239,19 @@ class ShipHelperView {
 
         document.getElementById('dialog-drive-class').addEventListener('change', updatePreview);
         document.getElementById('dialog-tech-stage').addEventListener('change', updatePreview);
+        document.getElementById('dialog-perf-limit').addEventListener('input', updatePreview);
+        document.getElementById('dialog-import-fee').addEventListener('change', updatePreview);
         document.getElementById('dialog-tl').addEventListener('change', () => {
             const tl = parseInt(document.getElementById('dialog-tl').value, 10);
+
+            // Auto check import fee if TL is different from ship's base TL
+            const importFeeCb = document.getElementById('dialog-import-fee');
+            if (tl !== this.ship.tl) {
+                importFeeCb.checked = true;
+            } else {
+                importFeeCb.checked = false;
+            }
+
             const availableStages = ShipHelper.getAvailableTechStages(tl, driveType);
             const stageSelect = document.getElementById('dialog-tech-stage');
 
@@ -173,6 +280,158 @@ class ShipHelperView {
         document.getElementById('dialog-nexus').addEventListener('change', updatePreview);
 
         updatePreview();
+    }
+
+    openGenericDialog(componentType, editIndex = -1) {
+        let defaultTons = 10;
+        let defaultLabel = '';
+        let defaultLinkedIndex = -1;
+
+        if (editIndex >= 0) {
+            defaultTons = this.ship.drives[editIndex].tons;
+            defaultLabel = this.ship.drives[editIndex].label || '';
+            if (this.ship.drives[editIndex].linkedDriveIndex !== undefined) {
+                defaultLinkedIndex = this.ship.drives[editIndex].linkedDriveIndex;
+            }
+        }
+
+        let linkHTML = '';
+        if (componentType === 'Fuel Tank') {
+            let options = '<option value="-1">None</option>';
+            this.ship.drives.forEach((comp, idx) => {
+                const validDrives = ["PowerPlant", "Jump", "Hop", "Skip", "HEPlaR"];
+                if (!comp.isGeneric && validDrives.includes(comp.driveType)) {
+                    const sel = (idx === defaultLinkedIndex) ? 'selected' : '';
+                    options += `<option value="${idx}" ${sel}>${comp.driveType} (Class ${comp.driveClass})</option>`;
+                }
+            });
+            linkHTML = `
+                <div style="margin-bottom: 15px;">
+                    <label>Linked To:</label>
+                    <select id="dialog-generic-link">${options}</select>
+                </div>
+            `;
+        }
+
+        const content = `
+            <div style="margin-bottom: 15px;">
+                <label>Custom Label:</label>
+                <input type="text" id="dialog-generic-label" value="${defaultLabel}" placeholder="(Optional)" style="width: 150px;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Tonnage:</label>
+                <div>
+                    <button type="button" class="tons-btn" data-val="-100">-100</button>
+                    <button type="button" class="tons-btn" data-val="-10">-10</button>
+                    <input type="number" id="dialog-generic-tons" value="${defaultTons}" min="1" step="1" style="width: 80px; display:inline-block; margin: 0 5px;">
+                    <button type="button" class="tons-btn" data-val="10">+10</button>
+                    <button type="button" class="tons-btn" data-val="100">+100</button>
+                </div>
+            </div>
+            ${linkHTML}
+            <div id="generic-preview" class="drive-preview-box">
+                <!-- Preview updates here -->
+            </div>
+        `;
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} ${componentType}`, content, () => {
+            const tonsInput = document.getElementById('dialog-generic-tons');
+            const labelInput = document.getElementById('dialog-generic-label');
+            const linkInput = document.getElementById('dialog-generic-link');
+
+            if (tonsInput) {
+                const tons = parseFloat(tonsInput.value);
+                const customLabel = labelInput ? labelInput.value.trim() : '';
+                const linkedIdx = linkInput ? parseInt(linkInput.value, 10) : -1;
+
+                if (tons > 0) {
+                    const comp = {
+                        isGeneric: true,
+                        name: componentType,
+                        label: customLabel,
+                        linkedDriveIndex: linkedIdx >= 0 ? linkedIdx : undefined,
+                        tons: tons,
+                        cost: 0
+                    };
+                    if (editIndex >= 0) {
+                        this.ship.drives[editIndex] = comp;
+                    } else {
+                        this.ship.addDrive(comp);
+                    }
+                    this.render();
+                }
+            }
+        });
+
+        const updatePreview = () => {
+            const tonsInput = document.getElementById('dialog-generic-tons');
+            const linkInput = document.getElementById('dialog-generic-link');
+
+            if (tonsInput) {
+                const tons = parseFloat(tonsInput.value) || 0;
+                let linkedPerfStr = '';
+
+                if (linkInput) {
+                    const linkedIdx = parseInt(linkInput.value, 10);
+                    if (linkedIdx >= 0 && this.ship.drives[linkedIdx]) {
+                        const linkedDrive = this.ship.drives[linkedIdx];
+                        const drivePerf = ShipHelper.getDrivePerformance(linkedDrive, this.ship.tonnage);
+                        const requiredFuelPerUnit = drivePerf.minConsumption || drivePerf.fuelConsumption || 0;
+
+                        if (requiredFuelPerUnit > 0) {
+                            // Calculate how many units this tank supports based on the linked drive's consumption per unit
+                            const unitsSupported = Math.floor((tons / requiredFuelPerUnit) * 10) / 10;
+                            let unitName = "uses";
+                            if (linkedDrive.driveType === "PowerPlant") unitName = "months";
+                            else if (linkedDrive.driveType === "Jump") unitName = "Parsecs"; // e.g. Jump 1 uses 10%, Jump 2 uses 20%, so if we have fuel for Jump 1, we have 1 parsec of jump capacity. Actually, fuel required is per jump. We'll say "jumps at max rating" or similar. But user said "half fuel for Jump 2 = enough for Jump 1". That means fuel is linear per parsec for Jump drives (usually 10% per parsec).
+                            else if (linkedDrive.driveType === "Hop") unitName = "hops";
+                            else if (linkedDrive.driveType === "Skip") unitName = "skips";
+                            else if (linkedDrive.driveType === "HEPlaR") unitName = "burns";
+
+                            linkedPerfStr = `<div class="preview-stat" style="color:var(--accent-cyan)">Supports: ${unitsSupported} ${unitName}</div>`;
+                        } else {
+                            linkedPerfStr = `<div class="preview-stat" style="color:#aaa">Drive consumes no fuel per unit.</div>`;
+                        }
+                    }
+                }
+
+                document.getElementById('generic-preview').innerHTML = `
+                    <div class="preview-title">Preview:</div>
+                    <div class="preview-stat">Cost: MCr0.0</div>
+                    <div class="preview-stat">Tonnage: ${tons.toLocaleString()} tons</div>
+                    ${linkedPerfStr}
+                `;
+            }
+        };
+
+        const tInput = document.getElementById('dialog-generic-tons');
+        // Small delay to ensure the dialog is fully rendered
+        setTimeout(() => {
+            const inputEl = document.getElementById('dialog-generic-tons');
+            const linkEl = document.getElementById('dialog-generic-link');
+            const stepBtns = document.querySelectorAll('.tons-btn');
+
+            if (inputEl) {
+                inputEl.addEventListener('input', updatePreview);
+                inputEl.addEventListener('change', updatePreview);
+
+                stepBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const valChange = parseInt(e.target.getAttribute('data-val'), 10);
+                        let current = parseFloat(inputEl.value) || 0;
+                        current += valChange;
+                        if (current < 1) current = 1;
+                        inputEl.value = current;
+                        updatePreview();
+                    });
+                });
+            }
+            if (linkEl) {
+                linkEl.addEventListener('change', updatePreview);
+            }
+            updatePreview();
+        }, 10);
     }
 
     render() {
@@ -206,25 +465,63 @@ class ShipHelperView {
         const ul = document.createElement('div');
         ul.className = 'components-list';
 
-        this.ship.drives.forEach((drive, index) => {
+        this.ship.drives.forEach((comp, index) => {
             const li = document.createElement('div');
             li.className = 'component-card';
 
-            const perf = ShipHelper.getDrivePerformance(drive, this.ship.tonnage);
+            if (comp.isGeneric) {
+                let labelHtml = comp.label ? `<span style="font-size:0.9em; color:#aaa"> - ${comp.label}</span>` : '';
+                let linkedPerfStr = '';
+                if (comp.name === 'Fuel Tank' && comp.linkedDriveIndex !== undefined && this.ship.drives[comp.linkedDriveIndex]) {
+                    const linkedDrive = this.ship.drives[comp.linkedDriveIndex];
+                    const drivePerf = ShipHelper.getDrivePerformance(linkedDrive, this.ship.tonnage);
+                    const fuelPerUnit = drivePerf.minConsumption || drivePerf.fuelConsumption || 0;
+                    if (fuelPerUnit > 0) {
+                        const unitsSupported = Math.floor((comp.tons / fuelPerUnit) * 10) / 10;
+                        let unitName = "uses";
+                        if (linkedDrive.driveType === "PowerPlant") unitName = "months";
+                        else if (linkedDrive.driveType === "Jump") unitName = "Parsecs";
+                        else if (linkedDrive.driveType === "Hop") unitName = "hops";
+                        else if (linkedDrive.driveType === "Skip") unitName = "skips";
+                        else if (linkedDrive.driveType === "HEPlaR") unitName = "burns";
 
-            li.innerHTML = `
-                <div class="component-info">
-                    <div class="component-title">${drive.driveType} (Class ${drive.driveClass})</div>
-                    <div class="component-details">TL-${drive.tl} ${drive.stage}, EP: ${drive.ep}</div>
-                    <div class="component-details">MCr${drive.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${drive.tons.toLocaleString()} tons</div>
-                    <div class="component-perf">Perf: ${perf.potential} (${perf.note})</div>
-                </div>
-            `;
+                        linkedPerfStr = `<div class="component-perf">Supports: ${unitsSupported} ${unitName} (${linkedDrive.driveType})</div>`;
+                    }
+                }
+
+                li.innerHTML = `
+                    <div class="component-info">
+                        <div class="component-title">${comp.name}${labelHtml}</div>
+                        <div class="component-details">MCr${comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${comp.tons.toLocaleString()} tons</div>
+                        ${linkedPerfStr}
+                    </div>
+                `;
+            } else {
+                const perf = ShipHelper.getDrivePerformance(comp, this.ship.tonnage);
+
+                li.innerHTML = `
+                    <div class="component-info">
+                        <div class="component-title">${comp.driveType} (Class ${comp.driveClass})</div>
+                        <div class="component-details">TL-${comp.tl} ${comp.stage}, EP: ${comp.ep}</div>
+                        <div class="component-details">MCr${comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${comp.tons.toLocaleString()} tons</div>
+                        <div class="component-perf">Perf: ${perf.potential} (${perf.note})</div>
+                    </div>
+                `;
+            }
+
+            li.addEventListener('click', () => {
+                if (comp.isGeneric) {
+                    this.openGenericDialog(comp.name, index);
+                } else {
+                    this.openDriveDialog(comp.driveType, index);
+                }
+            });
 
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'Remove';
             removeBtn.className = 'remove-btn';
-            removeBtn.onclick = () => {
+            removeBtn.onclick = (e) => {
+                e.stopPropagation(); // prevent opening the edit dialog
                 this.ship.removeDriveAtIndex(index);
                 this.render();
             };

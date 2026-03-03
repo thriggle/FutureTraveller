@@ -150,34 +150,6 @@ export function getAvailableTechStages(tl, tech) {
                     cost: stage.cost
                 }
 
-                if (p === evalFunction(tl - 2) && p === evalFunction(tl)) {
-                    if (mod === 0 || mod === 1) {
-                        exclude = true;
-                    } else if (mod === 2) {
-                        exclude = false;
-                    }
-                } else if (p === evalFunction(tl - 1) && p === evalFunction(tl)) {
-                    if (mod === 0 && evalFunction(tl) !== evalFunction(tl - 1)) {
-                        // Original logic excluded Standard (mod 0) if p was identical to tl-1,
-                        // but actually p is evaluated at (tl - mod).
-                        // If tl and tl-1 yield the same potential, Standard (tl-0) shouldn't be excluded 
-                        // just because Improved (tl-1) also hits the max potential limit.
-                        // Wait, the T5 rules for "Stage Effects" typically mean if a drive's max potential
-                        // hasn't increased since the previous TL, the previous TL's Advanced/Modified
-                        // supersedes it. However, Standard is *always* available at its nominal TL.
-                        // For T5, Improved/Modified just offer better cost/tons/fuel.
-                        // Let's remove the forced exclusion of Standard (mod === 0) 
-                        // unless it's genuinely superseded by a rule intent.
-                    }
-                    if (mod === 0) {
-                        exclude = false; // Never implicitly exclude Standard just due to potential plateau
-                    }
-                    if (mod === 0 && p === evalFunction(tl - 1)) {
-                        exclude = false; // Hotfix: Standard must ALWAYS be available at its TL for Jump Drives.
-                    }
-                } else if (mod === 0) {
-                    exclude = false;
-                }
                 if (!exclude) {
                     availableComponents.push(component);
                 }
@@ -284,13 +256,14 @@ export function getAvailableTechStages(tl, tech) {
     }
 
 }
-export function buildDrive(stage, nexus = 1, driveClass, driveType, tl) {
+export function buildDrive(stage, nexus = 1, driveClass, driveType, tl, importFee = false) {
     /**
      * @param {string} stage - Tech stage
      * @param {number} nexus - Nexus multiplier
      * @param {string} driveClass - Drive class (A, B, C, etc.)
      * @param {string} driveType - Drive type (Jump, M-Drive, etc.)
      * @param {number} tl - Tech level
+     * @param {boolean} [importFee=false] - Apply 10% import markup if true
      * @returns {Object} Drive object
      */
     var availableStages = getAvailableTechStages(tl, driveType);
@@ -340,7 +313,9 @@ export function buildDrive(stage, nexus = 1, driveClass, driveType, tl) {
         }
         tons = Math.max(minTonnage, ENUM_DRIVE_STAGE[stage].tons * baseTonnage) * nexus;
         cost = baseCost * nexus * ENUM_DRIVE_STAGE[stage].cost;
-
+        if (importFee) {
+            cost *= 1.1;
+        }
 
     }
     var drive = {
@@ -351,6 +326,7 @@ export function buildDrive(stage, nexus = 1, driveClass, driveType, tl) {
         driveClass: (nexus > 1 ? `${driveClass}${nexus}` : driveClass),
         driveType: driveType,
         tl: tl,
+        importFee: importFee,
         maxDrivePotential: maxDrivePotential
     };
     return drive;
@@ -363,6 +339,10 @@ export function getDrivePerformance(drive, shipTonnage) {
      */
     var potential = 0, fuelConsumption = 0, note = '', minConsumption = 0, minNote = '';
     potential = Math.floor(Math.min(potential = drive.ep / shipTonnage * 2, drive.maxDrivePotential));
+
+    if (drive.performanceLimit !== undefined) {
+        potential = Math.min(potential, drive.performanceLimit);
+    }
     switch (drive.driveType) {
         case ENUM_DRIVE_TYPE.Jump:
             fuelConsumption = potential * shipTonnage / 10 * ENUM_DRIVE_STAGE[drive.stage].fuel;
@@ -480,10 +460,16 @@ export class Hull {
     addDrive(drive) {
         this.drives.push(drive);
     }
+    addComponent(component) {
+        this.addDrive(component);
+    }
     removeDriveAtIndex(index) {
         if (index >= 0 && index < this.drives.length) {
             this.drives.splice(index, 1);
         }
+    }
+    removeComponentAtIndex(index) {
+        this.removeDriveAtIndex(index);
     }
 }
 export class Ship {
