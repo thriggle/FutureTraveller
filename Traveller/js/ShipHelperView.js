@@ -246,7 +246,7 @@ class ShipHelperView {
 
             // Auto check import fee if TL is different from ship's base TL
             const importFeeCb = document.getElementById('dialog-import-fee');
-            if (tl !== this.ship.tl) {
+            if (tl !== this.ship.baseTL) {
                 importFeeCb.checked = true;
             } else {
                 importFeeCb.checked = false;

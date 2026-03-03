@@ -356,7 +356,8 @@ ul.content {
     color: var(--text-muted);
 }
 
-.dialog-content input,
+.dialog-content input[type="text"],
+.dialog-content input[type="number"],
 .dialog-content select {
     width: 100%;
     box-sizing: border-box;
@@ -368,11 +369,18 @@ ul.content {
     font-family: inherit;
 }
 
-.dialog-content input:focus,
+.dialog-content input[type="text"]:focus,
+.dialog-content input[type="number"]:focus,
 .dialog-content select:focus {
     outline: none;
     border-color: var(--accent-cyan);
     box-shadow: 0 0 8px var(--accent-cyan-glow);
+}
+
+.dialog-content input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+    accent-color: var(--accent-cyan);
 }
 
 .dialog-buttons {
