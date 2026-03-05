@@ -583,15 +583,13 @@ export class Hull {
         if (this.subhulls.length > 1 && this.selectedSubhullIndex >= 0) {
             const oldHull = this.subhulls[this.selectedSubhullIndex];
             const smallerTons = Math.min(newHull.tons, oldHull.tons);
-            const numGrapples = Math.max(1, Math.floor(smallerTons / 35));
+            const numGrapples = Math.ceil(smallerTons / 35);
 
-            for (let i = 0; i < numGrapples; i++) {
-                const grappleCompNew = { isGeneric: true, name: 'Grapple', tons: 1, cost: 0, label: `To Hull ${this.selectedSubhullIndex + 1}` };
-                const grappleCompOld = { isGeneric: true, name: 'Grapple', tons: 1, cost: 0, label: `To Hull ${newHullIndex + 1}` };
+            const grappleCompNew = { isGeneric: true, name: 'Grapple', tons: numGrapples, cost: 0, label: `To Hull ${this.selectedSubhullIndex + 1}` };
+            const grappleCompOld = { isGeneric: true, name: 'Grapple', tons: numGrapples, cost: 0, label: `To Hull ${newHullIndex + 1}` };
 
-                newHull.components.push(grappleCompNew);
-                oldHull.components.push(grappleCompOld);
-            }
+            newHull.components.push(grappleCompNew);
+            oldHull.components.push(grappleCompOld);
         }
 
         this.selectedSubhullIndex = newHullIndex;
