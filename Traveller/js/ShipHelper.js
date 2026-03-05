@@ -81,6 +81,14 @@ export class ENUM_HULL_CONFIG {
     static get LiftingBody() { return { type: "Lifting Body", friction: 0.2, agility: 1, accel: 1, maxG: 9, stability: 3, land: true, cost: 12 / 100, flatcost: 4, podflatcost: 1.6 } }
     static get "Lifting Body"() { return this.LiftingBody; }
 }
+export const ENUM_HULL_ARMOR = {
+    Plate: { type: "Plate", AV_Mult: 1, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined"] },
+    Charged: { type: "Charged", AV_Mult: 2, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined"] },
+    Shell: { type: "Shell", AV_Mult: 0.5, ton_Mult: 0.5, AV_FlatBonus: 0, configurations: ["Streamlined", "Airframe", "Lifting Body"] },
+    Polymer: { type: "Polymer", AV_Mult: 0.5, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined", "Airframe"] },
+    Organic: { type: "Organic", AV_Mult: 0.5, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined", "Airframe"] },
+    FeN: { type: "FeN", AV_Mult: 0, ton_Mult: 1, AV_FlatBonus: 20, configurations: ["Planetoid", "Unstreamlined"] }
+};
 export function getAvailableTechStages(tl, tech) {
     /**
      * @param {number} tl - Tech level
@@ -517,6 +525,20 @@ export class Hull {
         return ENUM_HULL_CONFIG[this.configurationType] || ENUM_HULL_CONFIG["Unstreamlined"];
     }
 
+    getSubhullArmorTons(h) {
+        if (!h.armorType || h.armorLayers <= 1) return 0;
+        const armorDef = ENUM_HULL_ARMOR[h.armorType];
+        if (!armorDef) return 0;
+        return (h.armorLayers - 1) * 0.04 * h.tons * armorDef.ton_Mult;
+    }
+
+    getSubhullAV(h) {
+        if (!h.armorType) return 0;
+        const armorDef = ENUM_HULL_ARMOR[h.armorType];
+        if (!armorDef) return 0;
+        return (h.tl * armorDef.AV_Mult) + armorDef.AV_FlatBonus;
+    }
+
     get baseCost() {
         return this.subhulls.reduce((sum, h) => {
             const conf = ENUM_HULL_CONFIG[h.config];
@@ -529,7 +551,17 @@ export class Hull {
         return this.subhulls.flatMap(h => h.components);
     }
 
-    addSubhull(name, tons, tl, config, isPod = false) {
+    addSubhull(name, tons, tl, config, isPod = false, armorType = null, armorLayers = 1) {
+        if (!armorType) {
+            // Find a valid default armor for this configuration
+            for (const key of Object.keys(ENUM_HULL_ARMOR)) {
+                if (ENUM_HULL_ARMOR[key].configurations.includes(config)) {
+                    armorType = ENUM_HULL_ARMOR[key].type;
+                    break;
+                }
+            }
+        }
+
         const newHull = {
             isHull: true,
             isPod: isPod,
@@ -537,6 +569,8 @@ export class Hull {
             tons: Math.max(isPod ? 10 : 100, Math.min(tons, isPod ? 90 : Infinity)),
             tl: tl,
             config: config,
+            armorType: armorType,
+            armorLayers: Math.max(1, armorLayers),
             components: []
         };
 
@@ -561,13 +595,26 @@ export class Hull {
         this.selectedSubhullIndex = newHullIndex;
     }
 
-    updateSubhull(index, name, tons, tl, config) {
+    updateSubhull(index, name, tons, tl, config, armorType, armorLayers) {
         if (index >= 0 && index < this.subhulls.length) {
             const h = this.subhulls[index];
             h.name = name;
             h.tons = Math.max(h.isPod ? 10 : 100, Math.min(tons, h.isPod ? 90 : Infinity));
             h.tl = tl;
             h.config = config;
+            if (armorType) h.armorType = armorType;
+            if (armorLayers !== undefined) h.armorLayers = Math.max(1, armorLayers);
+
+            // Validate that current armor is still compatible with new config
+            const armorDef = ENUM_HULL_ARMOR[h.armorType];
+            if (!armorDef || !armorDef.configurations.includes(h.config)) {
+                for (const key of Object.keys(ENUM_HULL_ARMOR)) {
+                    if (ENUM_HULL_ARMOR[key].configurations.includes(h.config)) {
+                        h.armorType = ENUM_HULL_ARMOR[key].type;
+                        break;
+                    }
+                }
+            }
         }
     }
 
