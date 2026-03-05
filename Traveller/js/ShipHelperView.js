@@ -164,6 +164,9 @@ class ShipHelperView {
             defaultStageValue = existingDrive.stage;
             defaultTL = existingDrive.tl;
 
+            // TL might be different for an imported drive, so we must re-calculate available stages
+            availableStages = ShipHelper.getAvailableTechStages(defaultTL, driveType);
+
             // Re-derive the Nexus Multiplier by comparing with base tonnage EP
             const nexusMatch = existingDrive.driveClass.match(/\d+$/);
             defaultNexus = nexusMatch ? parseInt(nexusMatch[0]) : 1;
@@ -338,11 +341,13 @@ class ShipHelperView {
                 }
 
                 const perf = ShipHelper.getDrivePerformance(drivePreview, this.ship.tonnage);
+                const mechanisms = Math.ceil(drivePreview.tons / 35);
 
                 document.getElementById('drive-preview').innerHTML = `
                     <div class="preview-title">Preview:</div>
                     <div class="preview-stat">Cost: MCr${drivePreview.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
                     <div class="preview-stat">Tonnage: ${drivePreview.tons.toLocaleString()} tons</div>
+                    <div class="preview-stat">Mechanisms: ${mechanisms}</div>
                     <div class="preview-stat">Performance: ${perf.potential.toLocaleString()}</div>
                     <div class="preview-stat">Fuel Consumption: ${perf.note}</div>
                 `;
@@ -432,8 +437,7 @@ class ShipHelperView {
                 </div>
             `;
         }
-
-        const inputLabel = isRods ? 'Rods (increments of 10):' : 'Tonnage:';
+        const inputLabel = isRods ? 'Rods (increments of 10):' : (componentType === 'Grapple' ? 'Grapples in Set:' : 'Tonnage:');
         const stepVal = isRods ? 10 : 1;
         const minVal = isRods ? 10 : 1;
 
@@ -538,11 +542,17 @@ class ShipHelperView {
                     }
                 }
 
+                let mechanismsHtml = '';
+                if (componentType === 'Grapple') {
+                    mechanismsHtml = `<div class="preview-stat">Mechanisms: 1</div>`;
+                }
+
                 document.getElementById('generic-preview').innerHTML = `
                     <div class="preview-title">Preview:</div>
                     <div class="preview-stat">Cost: MCr${cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
                     ${isRods ? `<div class="preview-stat">${inputLabel} ${inputVal.toLocaleString()}</div>` : ''}
                     <div class="preview-stat">Tonnage: ${tons.toLocaleString()} tons</div>
+                    ${mechanismsHtml}
                     ${linkedPerfStr}
                 `;
             }
@@ -606,6 +616,7 @@ class ShipHelperView {
 
         let defaultArmorType = editIndex >= 0 ? this.ship.subhulls[editIndex].armorType : null;
         let defaultArmorLayers = editIndex >= 0 ? this.ship.subhulls[editIndex].armorLayers : 1;
+        let defaultImportFee = editIndex >= 0 ? this.ship.subhulls[editIndex].importFee : (defaultTL !== this.ship.baseTL);
 
         const content = `
             <div style="margin-bottom: 15px;">
@@ -616,7 +627,7 @@ class ShipHelperView {
                 <label>Tech Level:</label>
                 <input type="number" id="dialog-hull-tl" value="${defaultTL}" min="0" max="33" style="width: 50px;">
                 <label style="display: inline-flex; align-items: center; cursor: pointer; color: var(--text-main); margin-left:15px; font-size:14px;">
-                    <input type="checkbox" id="dialog-hull-import" ${defaultTL !== this.ship.baseTL ? 'checked' : ''}> Import Fee (10%)
+                    <input type="checkbox" id="dialog-hull-import" ${defaultImportFee ? 'checked' : ''}> Import Fee (10%)
                 </label>
             </div>
             <div style="margin-bottom: 15px;">
@@ -885,7 +896,8 @@ class ShipHelperView {
 
             const isSelected = this.ship.selectedSubhullIndex === hIdx ? 'checked' : '';
             const flat = hull.isPod ? ShipHelper.ENUM_HULL_CONFIG[hull.config].podflatcost : ShipHelper.ENUM_HULL_CONFIG[hull.config].flatcost;
-            const hullCost = (hull.tons * ShipHelper.ENUM_HULL_CONFIG[hull.config].cost + flat);
+            const baseHullCost = (hull.tons * ShipHelper.ENUM_HULL_CONFIG[hull.config].cost + flat);
+            const hullCost = hull.importFee ? baseHullCost * 1.1 : baseHullCost;
             const armorTons = this.ship.getSubhullArmorTons(hull);
             const subhullAV = this.ship.getSubhullAV(hull);
 
@@ -900,7 +912,7 @@ class ShipHelperView {
                         <strong>${hull.name}</strong>
                     </label>
                     <div style="font-size: 0.9em; flex-grow: 1; margin-left:15px; display:flex; gap: 15px; flex-wrap: wrap;">
-                         <span>TL-${hull.tl}</span>
+                         <span>TL-${hull.tl}${hull.importFee ? ' (Imported)' : ''}</span>
                          <span class="${consumedTons > hull.tons ? 'warning' : ''}">${consumedTons.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 1 })} / ${hull.tons.toLocaleString()} tons</span>
                          <span>${hull.config} ${hull.armorType || ''}</span>
                          <span>AV: ${subhullAV} (${hull.armorLayers} Layer${hull.armorLayers !== 1 ? 's' : ''})</span>
@@ -1068,6 +1080,7 @@ class ShipHelperView {
 
         const tonnageRemaining = this.ship.tonnage - totalTonnageUsed;
 
+        let totalMechanisms = 0;
         let maxPower = 0;
         let maxJumpPower = 0;
         let mdrivePotential = 0;
@@ -1075,8 +1088,11 @@ class ShipHelperView {
         let hopPotential = 0;
         let skipPotential = 0;
         let nafalPotential = 0;
+        let totalDriveTonnage = 0;
         this.ship.drives.forEach(d => {
             if (!d.isGeneric) {
+                totalMechanisms += Math.ceil(d.tons / 35);
+                totalDriveTonnage += d.tons;
                 const perf = ShipHelper.getDrivePerformance(d, this.ship.tonnage);
                 const pot = perf.potential || 0;
 
@@ -1096,6 +1112,8 @@ class ShipHelperView {
                 } else if (d.driveType === 'Skip') {
                     if (pot > skipPotential) skipPotential = pot;
                 }
+            } else if (d.name === 'Grapple') {
+                totalMechanisms += 1;
             }
         });
 
@@ -1118,10 +1136,11 @@ class ShipHelperView {
         const effectiveSkip = Math.min(skipPotential, maxJumpPower);
 
         let drivePerfHtml = '';
-        if (mdrivePotential > 0 || jumpPotential > 0 || hopPotential > 0 || skipPotential > 0 || nafalPotential > 0) {
+        if (totalDriveTonnage > 0 || mdrivePotential > 0 || jumpPotential > 0 || hopPotential > 0 || skipPotential > 0 || nafalPotential > 0) {
             drivePerfHtml = `
             <div class="stat-section">
                 <div class="stat-header">Drive Performance:</div>
+                ${totalDriveTonnage > 0 ? `<div class="stat-row"><span class="stat-label">Total Drive Tonnage:</span> <span class="stat-value">${totalDriveTonnage.toLocaleString()} tons</span></div>` : ''}
                 ${mdrivePotential > 0 ? `<div class="stat-row"><span class="stat-label">Maneuver:</span> <span class="stat-value ${effectiveMDrive < mdrivePotential ? 'warning' : 'good'}">${effectiveMDrive} G${mDriveNote}</span></div>` : ''}
                 ${nafalPotential > 0 ? `<div class="stat-row"><span class="stat-label">Interstellar Maneuver:</span> <span class="stat-value ${effectiveNafal < nafalPotential ? 'warning' : 'good'}">${(effectiveNafal / 10).toFixed(1)}G to ${(effectiveNafal / 10).toFixed(1)}C${nafalNote}</span></div>` : ''}
                 ${jumpPotential > 0 ? `<div class="stat-row"><span class="stat-label">Jump:</span> <span class="stat-value ${effectiveJump < jumpPotential ? 'warning' : 'good'}">Jump-${effectiveJump}${effectiveJump < jumpPotential ? ' (Power Limited)' : ''}</span></div>` : ''}
@@ -1139,6 +1158,11 @@ class ShipHelperView {
                 <div class="stat-row"><span class="stat-label">Agility:</span> <span class="stat-value">${this.ship.configuration.agility}</span></div>
             </div>
             
+            <div class="stat-section">
+                <div class="stat-header">Controls & Mechanisms:</div>
+                <div class="stat-row"><span class="stat-label">Total Mechanisms:</span> <span class="stat-value">${totalMechanisms}</span></div>
+            </div>
+
             <div class="stat-section">
                 <div class="stat-header">Overall Ship:</div>
                 <div class="stat-row"><span class="stat-label">Total Cost:</span> <span class="stat-value">MCr${totalCost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span></div>
