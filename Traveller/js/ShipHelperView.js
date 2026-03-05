@@ -654,11 +654,12 @@ class ShipHelperView {
             const hTons = parseInt(document.getElementById('dialog-hull-tons').value, 10);
             const hArmorType = document.getElementById('dialog-hull-armor').value;
             const hArmorLayers = parseInt(document.getElementById('dialog-hull-armor-layers').value, 10);
+            const hImport = document.getElementById('dialog-hull-import').checked;
 
             if (editIndex >= 0) {
-                this.ship.updateSubhull(editIndex, hName, hTons, hTL, hConfig, hArmorType, hArmorLayers);
+                this.ship.updateSubhull(editIndex, hName, hTons, hTL, hConfig, hArmorType, hArmorLayers, hImport);
             } else {
-                this.ship.addSubhull(hName, hTons, hTL, hConfig, isPod, hArmorType, hArmorLayers);
+                this.ship.addSubhull(hName, hTons, hTL, hConfig, isPod, hArmorType, hArmorLayers, hImport);
             }
             this.render();
         });
