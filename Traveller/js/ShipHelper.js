@@ -542,7 +542,8 @@ export class Hull {
     get baseCost() {
         return this.subhulls.reduce((sum, h) => {
             const conf = ENUM_HULL_CONFIG[h.config];
-            return sum + (h.tons * conf.cost + (h.isPod ? conf.podflatcost : conf.flatcost));
+            const base = (h.tons * conf.cost + (h.isPod ? conf.podflatcost : conf.flatcost));
+            return sum + (h.importFee ? base * 1.1 : base);
         }, 0);
     }
 
@@ -551,7 +552,7 @@ export class Hull {
         return this.subhulls.flatMap(h => h.components);
     }
 
-    addSubhull(name, tons, tl, config, isPod = false, armorType = null, armorLayers = 1) {
+    addSubhull(name, tons, tl, config, isPod = false, armorType = null, armorLayers = 1, importFee = false) {
         if (!armorType) {
             // Find a valid default armor for this configuration
             for (const key of Object.keys(ENUM_HULL_ARMOR)) {
@@ -571,6 +572,7 @@ export class Hull {
             config: config,
             armorType: armorType,
             armorLayers: Math.max(1, armorLayers),
+            importFee: importFee,
             components: []
         };
 
@@ -595,13 +597,14 @@ export class Hull {
         this.selectedSubhullIndex = newHullIndex;
     }
 
-    updateSubhull(index, name, tons, tl, config, armorType, armorLayers) {
+    updateSubhull(index, name, tons, tl, config, armorType, armorLayers, importFee = false) {
         if (index >= 0 && index < this.subhulls.length) {
             const h = this.subhulls[index];
             h.name = name;
             h.tons = Math.max(h.isPod ? 10 : 100, Math.min(tons, h.isPod ? 90 : Infinity));
             h.tl = tl;
             h.config = config;
+            h.importFee = importFee;
             if (armorType) h.armorType = armorType;
             if (armorLayers !== undefined) h.armorLayers = Math.max(1, armorLayers);
 
