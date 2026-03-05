@@ -141,7 +141,8 @@ export function getAvailableTechStages(tl, tech) {
                 // round effectivePotential to 2 decimal places
                 effectivePotential = Math.round(effectivePotential * 100) / 100;
                 var roundedDown = Math.floor(effectivePotential);
-                var text = desc + " " + tech + "-" + p + " (max " + effectivePotential + (effectivePotential !== roundedDown ? "=" + roundedDown : "") + ")";
+                //var text = desc + " " + tech + "-" + p + " (max " + effectivePotential + (effectivePotential !== roundedDown ? "=" + roundedDown : "") + ")";
+                var text = desc + " (max " + effectivePotential + (effectivePotential !== roundedDown ? "=" + roundedDown : "") + ")";
                 var component = {
                     name: text,
                     stage: stage.desc,
@@ -286,6 +287,26 @@ export function buildDrive(stage, nexus = 1, driveClass, driveType, tl, importFe
                 baseTonnage = (ENUM_DRIVE_CLASS[driveClass].ep / 100 * 5) + 5;
                 baseCost = 1 * baseTonnage;
                 break;
+            case ENUM_DRIVE_TYPE.GDrive:
+                minTonnage = 9;
+                baseTonnage = ENUM_DRIVE_CLASS[driveClass].ep == 100 ? 9 : (ENUM_DRIVE_CLASS[driveClass].ep / 100 * 9);
+                baseCost = 0.5 * baseTonnage;
+                break;
+            case ENUM_DRIVE_TYPE.NAFAL:
+                minTonnage = 2;
+                baseTonnage = (ENUM_DRIVE_CLASS[driveClass].ep / 100 * 2);
+                baseCost = 2 * baseTonnage;
+                break;
+            case ENUM_DRIVE_TYPE.Rocket:
+                minTonnage = 2;
+                baseTonnage = (ENUM_DRIVE_CLASS[driveClass].ep / 100 * 2);
+                baseCost = 0.5 * baseTonnage;
+                break;
+            case ENUM_DRIVE_TYPE.HEPlaR:
+                minTonnage = 1;
+                baseTonnage = (ENUM_DRIVE_CLASS[driveClass].ep / 100);
+                baseCost = 1 * baseTonnage;
+                break;
             case ENUM_DRIVE_TYPE.MDrive:
                 minTonnage = 2;
                 baseTonnage = ENUM_DRIVE_CLASS[driveClass].ep == 100 ? 2 : (ENUM_DRIVE_CLASS[driveClass].ep / 100 * 2) - 1;
@@ -306,10 +327,20 @@ export function buildDrive(stage, nexus = 1, driveClass, driveType, tl, importFe
                 baseTonnage = ((ENUM_DRIVE_CLASS[driveClass].ep / 100) * 5) + 10;
                 baseCost = 2 * baseTonnage;
                 break;
+            case ENUM_DRIVE_TYPE.Skip:
+                minTonnage = 20;
+                baseTonnage = ((ENUM_DRIVE_CLASS[driveClass].ep / 100) * 5) + 15;
+                baseCost = 3 * baseTonnage;
+                break;
             case ENUM_DRIVE_TYPE.Collector:
                 minTonnage = 20;
                 baseTonnage = ((ENUM_DRIVE_CLASS[driveClass].ep / 100) * 10) + 10;
                 baseCost = 0.5 * baseTonnage;
+                break;
+            case ENUM_DRIVE_TYPE.AntiMatter:
+                minTonnage = 31;
+                baseTonnage = (ENUM_DRIVE_CLASS[driveClass].ep / 100) + 30;
+                baseCost = 2 * baseTonnage;
                 break;
         }
         tons = Math.max(minTonnage, ENUM_DRIVE_STAGE[stage].tons * baseTonnage) * nexus;
@@ -370,11 +401,6 @@ export function getDrivePerformance(drive, shipTonnage) {
             }
             break;
         case ENUM_DRIVE_TYPE.NAFAL:
-            fuelConsumption = potential * shipTonnage / 100 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-            note = fuelConsumption.toString() + " tons per month";
-            minConsumption = fuelConsumption;
-            minNote = note;
-            break;
         case ENUM_DRIVE_TYPE.MDrive:
         case ENUM_DRIVE_TYPE.GDrive:
             fuelConsumption = 0;
