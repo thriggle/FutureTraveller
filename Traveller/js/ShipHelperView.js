@@ -194,7 +194,7 @@ class ShipHelperView {
                 <label style="margin-bottom: 0;">Tech Level:</label>
                 <input type="number" id="dialog-tl" value="${defaultTL}" min="0" max="33" style="width: 50px;">
                 <label style="margin-bottom: 0; margin-left: auto; display: flex; align-items: center; gap: 5px;">
-                    <input type="checkbox" id="dialog-import-fee" ${editIndex >= 0 && this.ship.drives[editIndex].importFee ? 'checked' : ''}>
+                    <input type="checkbox" id="dialog-import-fee" ${(editIndex >= 0 && this.ship.drives[editIndex].importFee) || (editIndex < 0 && defaultTL > this.ship.baseTL) ? 'checked' : ''}>
                     Import Fee (10%)
                 </label>
             </div>
@@ -215,7 +215,7 @@ class ShipHelperView {
         const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
 
         let includeFuelHtml = '';
-        const nonFuelDrives = ["M-Drive", "G-Drive", "Rocket", "Collector", "NAFAL"];
+        const nonFuelDrives = ["M-Drive", "G-Drive", "Rocket", "Collector", "NAFAL", "Anti-Matter"];
         if (editIndex < 0 && !nonFuelDrives.includes(driveType)) {
             includeFuelHtml = `
                 <label style="display: flex; align-items: center; cursor: pointer; color: var(--text-main);">
@@ -1000,7 +1000,7 @@ class ShipHelperView {
                 const perf = ShipHelper.getDrivePerformance(d, this.ship.tonnage);
                 const pot = perf.potential || 0;
 
-                if (d.driveType === 'Power Plant' || d.driveType === 'Fission') {
+                if (d.driveType === 'Power Plant' || d.driveType === 'Fission' || d.driveType === 'Anti-Matter') {
                     if (pot > maxPower) maxPower = pot;
                     if (pot > maxJumpPower) maxJumpPower = pot;
                 } else if (d.driveType === 'Collector') {
