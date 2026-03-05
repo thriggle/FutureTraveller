@@ -133,8 +133,8 @@ class ShipHelperView {
                 }
 
                 let foundViable = false;
-                for (const dClass of driveClasses) {
-                    for (const stage of orderedStages) {
+                for (const stage of orderedStages) {
+                    for (const dClass of driveClasses) {
                         const tempDrive = ShipHelper.buildDrive(stage.stage, 1, dClass, driveType, defaultTL);
                         const perf = ShipHelper.getDrivePerformance(tempDrive, this.ship.tonnage).potential;
                         if (perf >= 1) {
@@ -215,11 +215,11 @@ class ShipHelperView {
         const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
 
         let includeFuelHtml = '';
-        const nonFuelDrives = ["M-Drive", "G-Drive", "Rocket", "Collector"];
+        const nonFuelDrives = ["M-Drive", "G-Drive", "Rocket", "Collector", "NAFAL"];
         if (editIndex < 0 && !nonFuelDrives.includes(driveType)) {
             includeFuelHtml = `
                 <label style="display: flex; align-items: center; cursor: pointer; color: var(--text-main);">
-                    <input type="checkbox" id="dialog-include-fuel" checked> Include Linked Fuel Tank
+                    <input type="checkbox" id="dialog-include-fuel" checked> Include Linked Fuel
                 </label>
             `;
         }
@@ -289,7 +289,8 @@ class ShipHelperView {
 
         // Add listeners for live preview updates
         const updatePreview = () => {
-            const driveClass = document.getElementById('dialog-drive-class').value;
+            const driveClassSelect = document.getElementById('dialog-drive-class');
+            const driveClass = driveClassSelect.value;
             const techStage = document.getElementById('dialog-tech-stage').value;
             const tl = parseInt(document.getElementById('dialog-tl').value, 10);
             const nexus = parseInt(document.getElementById('dialog-nexus').value, 10);
@@ -298,6 +299,16 @@ class ShipHelperView {
             const importFee = document.getElementById('dialog-import-fee').checked;
 
             try {
+                if (driveClassSelect && techStage) {
+                    Array.from(driveClassSelect.options).forEach(opt => {
+                        try {
+                            const tempDrive = ShipHelper.buildDrive(techStage, nexus, opt.value, driveType, tl, importFee);
+                            const perf = ShipHelper.getDrivePerformance(tempDrive, this.ship.tonnage);
+                            opt.text = `${tempDrive.driveClass} (EP: ${Math.floor(tempDrive.ep)}, P=${perf.potential})`;
+                        } catch (e) { }
+                    });
+                }
+
                 const drivePreview = ShipHelper.buildDrive(techStage, nexus, driveClass, driveType, tl, importFee);
                 const rawPerf = ShipHelper.getDrivePerformance(drivePreview, this.ship.tonnage);
 
@@ -906,12 +917,24 @@ class ShipHelperView {
                     } else {
                         const perf = ShipHelper.getDrivePerformance(comp, this.ship.tonnage);
 
+                        let perfDisplay = `Perf: ${perf.potential}`;
+                        if (comp.driveType === 'M-Drive') {
+                            perfDisplay = `Perf: ${perf.potential} (Thrust ${perf.potential}G)`;
+                        } else if (comp.driveType === 'G-Drive') {
+                            perfDisplay = `Perf: ${perf.potential} (Thrust ${perf.potential}G)`;
+                        } else if (comp.driveType === 'NAFAL') {
+                            const decimalG = (perf.potential / 10).toFixed(1);
+                            perfDisplay = `Perf: ${perf.potential} (${decimalG}G to ${decimalG}C)`;
+                        } else {
+                            perfDisplay = `Perf: ${perf.potential} (${perf.note})`;
+                        }
+
                         li.innerHTML = `
                             <div class="component-info">
                                 <div class="component-title">${comp.driveType} (Class ${comp.driveClass})</div>
                                 <div class="component-details">TL-${comp.tl} ${comp.stage}, EP: ${comp.ep}</div>
                                 <div class="component-details">MCr${comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} - ${comp.tons.toLocaleString()} tons</div>
-                                <div class="component-perf">Perf: ${perf.potential} (${perf.note})</div>
+                                <div class="component-perf">${perfDisplay}</div>
                             </div>
                         `;
                     }
@@ -971,7 +994,7 @@ class ShipHelperView {
         let jumpPotential = 0;
         let hopPotential = 0;
         let skipPotential = 0;
-
+        let nafalPotential = 0;
         this.ship.drives.forEach(d => {
             if (!d.isGeneric) {
                 const perf = ShipHelper.getDrivePerformance(d, this.ship.tonnage);
@@ -982,8 +1005,10 @@ class ShipHelperView {
                     if (pot > maxJumpPower) maxJumpPower = pot;
                 } else if (d.driveType === 'Collector') {
                     if (pot > maxJumpPower) maxJumpPower = pot;
-                } else if (d.driveType === 'M-Drive') {
+                } else if (d.driveType === 'M-Drive' || d.driveType === 'G-Drive') {
                     if (pot > mdrivePotential) mdrivePotential = pot;
+                } else if (d.driveType === 'NAFAL') {
+                    if (pot > nafalPotential) nafalPotential = pot;
                 } else if (d.driveType === 'Jump') {
                     if (pot > jumpPotential) jumpPotential = pot;
                 } else if (d.driveType === 'Hop') {
@@ -1002,16 +1027,23 @@ class ShipHelperView {
             else mDriveNote = ' (Power Limited)';
         }
 
+        const effectiveNafal = Math.min(nafalPotential, maxPower);
+        let nafalNote = '';
+        if (effectiveNafal < nafalPotential) {
+            nafalNote = ' (Power Limited)';
+        }
+
         const effectiveJump = Math.min(jumpPotential, maxJumpPower);
         const effectiveHop = Math.min(hopPotential, maxJumpPower);
         const effectiveSkip = Math.min(skipPotential, maxJumpPower);
 
         let drivePerfHtml = '';
-        if (mdrivePotential > 0 || jumpPotential > 0 || hopPotential > 0 || skipPotential > 0) {
+        if (mdrivePotential > 0 || jumpPotential > 0 || hopPotential > 0 || skipPotential > 0 || nafalPotential > 0) {
             drivePerfHtml = `
             <div class="stat-section">
                 <div class="stat-header">Drive Performance:</div>
                 ${mdrivePotential > 0 ? `<div class="stat-row"><span class="stat-label">Maneuver:</span> <span class="stat-value ${effectiveMDrive < mdrivePotential ? 'warning' : 'good'}">${effectiveMDrive} G${mDriveNote}</span></div>` : ''}
+                ${nafalPotential > 0 ? `<div class="stat-row"><span class="stat-label">Interstellar Maneuver:</span> <span class="stat-value ${effectiveNafal < nafalPotential ? 'warning' : 'good'}">${(effectiveNafal / 10).toFixed(1)}G to ${(effectiveNafal / 10).toFixed(1)}C${nafalNote}</span></div>` : ''}
                 ${jumpPotential > 0 ? `<div class="stat-row"><span class="stat-label">Jump:</span> <span class="stat-value ${effectiveJump < jumpPotential ? 'warning' : 'good'}">Jump-${effectiveJump}${effectiveJump < jumpPotential ? ' (Power Limited)' : ''}</span></div>` : ''}
                 ${hopPotential > 0 ? `<div class="stat-row"><span class="stat-label">Hop:</span> <span class="stat-value ${effectiveHop < hopPotential ? 'warning' : 'good'}">Hop-${effectiveHop}${effectiveHop < hopPotential ? ' (Power Limited)' : ''}</span></div>` : ''}
                 ${skipPotential > 0 ? `<div class="stat-row"><span class="stat-label">Skip:</span> <span class="stat-value ${effectiveSkip < skipPotential ? 'warning' : 'good'}">Skip-${effectiveSkip}${effectiveSkip < skipPotential ? ' (Power Limited)' : ''}</span></div>` : ''}

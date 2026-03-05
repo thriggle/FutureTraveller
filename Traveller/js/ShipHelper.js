@@ -141,7 +141,8 @@ export function getAvailableTechStages(tl, tech) {
                 // round effectivePotential to 2 decimal places
                 effectivePotential = Math.round(effectivePotential * 100) / 100;
                 var roundedDown = Math.floor(effectivePotential);
-                var text = desc + " " + tech + "-" + p + " (max " + effectivePotential + (effectivePotential !== roundedDown ? "=" + roundedDown : "") + ")";
+                //var text = desc + " " + tech + "-" + p + " (max " + effectivePotential + (effectivePotential !== roundedDown ? "=" + roundedDown : "") + ")";
+                var text = desc + " (max " + effectivePotential + (effectivePotential !== roundedDown ? "=" + roundedDown : "") + ")";
                 var component = {
                     name: text,
                     stage: stage.desc,
@@ -370,11 +371,6 @@ export function getDrivePerformance(drive, shipTonnage) {
             }
             break;
         case ENUM_DRIVE_TYPE.NAFAL:
-            fuelConsumption = potential * shipTonnage / 100 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-            note = fuelConsumption.toString() + " tons per month";
-            minConsumption = fuelConsumption;
-            minNote = note;
-            break;
         case ENUM_DRIVE_TYPE.MDrive:
         case ENUM_DRIVE_TYPE.GDrive:
             fuelConsumption = 0;
