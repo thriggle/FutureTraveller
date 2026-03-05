@@ -604,6 +604,9 @@ class ShipHelperView {
         }
         const configOptions = configs.map(c => `<option value="${c}" ${c === defaultConfig ? 'selected' : ''}>${c}</option>`).join('');
 
+        let defaultArmorType = editIndex >= 0 ? this.ship.subhulls[editIndex].armorType : null;
+        let defaultArmorLayers = editIndex >= 0 ? this.ship.subhulls[editIndex].armorLayers : 1;
+
         const content = `
             <div style="margin-bottom: 15px;">
                 <label>Name:</label>
@@ -621,6 +624,14 @@ class ShipHelperView {
                 <select id="dialog-hull-config">
                     ${configOptions}
                 </select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Armor Type:</label>
+                <select id="dialog-hull-armor"></select>
+            </div>
+             <div style="margin-bottom: 15px;">
+                <label>Armor Layers:</label>
+                <input type="number" id="dialog-hull-armor-layers" value="${defaultArmorLayers}" min="1" max="99" style="width: 50px;">
             </div>
             <div style="margin-bottom: 15px;">
                 <label>Tonnage:</label>
@@ -641,11 +652,13 @@ class ShipHelperView {
             const hTL = parseInt(document.getElementById('dialog-hull-tl').value, 10);
             const hConfig = document.getElementById('dialog-hull-config').value;
             const hTons = parseInt(document.getElementById('dialog-hull-tons').value, 10);
+            const hArmorType = document.getElementById('dialog-hull-armor').value;
+            const hArmorLayers = parseInt(document.getElementById('dialog-hull-armor-layers').value, 10);
 
             if (editIndex >= 0) {
-                this.ship.updateSubhull(editIndex, hName, hTons, hTL, hConfig);
+                this.ship.updateSubhull(editIndex, hName, hTons, hTL, hConfig, hArmorType, hArmorLayers);
             } else {
-                this.ship.addSubhull(hName, hTons, hTL, hConfig, isPod);
+                this.ship.addSubhull(hName, hTons, hTL, hConfig, isPod, hArmorType, hArmorLayers);
             }
             this.render();
         });
@@ -656,17 +669,63 @@ class ShipHelperView {
             const tlEl = document.getElementById('dialog-hull-tl');
             const importEl = document.getElementById('dialog-hull-import');
             const configEl = document.getElementById('dialog-hull-config');
+            const armorEl = document.getElementById('dialog-hull-armor');
+            const layersEl = document.getElementById('dialog-hull-armor-layers');
+
+            const refreshArmorOptions = () => {
+                const config = configEl.value;
+                const currentArmor = armorEl.value || defaultArmorType;
+                let validArmorTypeExists = false;
+
+                armorEl.innerHTML = '';
+                for (const key of Object.keys(ShipHelper.ENUM_HULL_ARMOR)) {
+                    const type = ShipHelper.ENUM_HULL_ARMOR[key];
+                    if (type.configurations.includes(config)) {
+                        const opt = document.createElement('option');
+                        opt.value = type.type;
+                        opt.textContent = type.type;
+                        if (type.type === currentArmor || (!currentArmor && type.type === "Plate")) {
+                            opt.selected = true;
+                            validArmorTypeExists = true;
+                        }
+                        armorEl.appendChild(opt);
+                    }
+                }
+
+                if (!validArmorTypeExists && armorEl.options.length > 0) {
+                    armorEl.options[0].selected = true;
+                }
+            };
+
+            if (armorEl) {
+                refreshArmorOptions();
+            }
 
             const updatePreview = () => {
                 const tons = parseInt(inputEl.value, 10) || 0;
                 const config = configEl.value;
                 const isImport = importEl.checked;
+                const aType = armorEl.value;
+                const aLayers = parseInt(layersEl.value, 10) || 1;
+                const aTL = parseInt(tlEl.value, 10) || 12;
 
                 let cost = 0;
                 if (ShipHelper.ENUM_HULL_CONFIG[config]) {
                     const flat = isPod ? ShipHelper.ENUM_HULL_CONFIG[config].podflatcost : ShipHelper.ENUM_HULL_CONFIG[config].flatcost;
                     cost = tons * ShipHelper.ENUM_HULL_CONFIG[config].cost + flat;
                     if (isImport) cost *= 1.1;
+                }
+
+                let armorTonsText = "";
+                let avText = "";
+                if (ShipHelper.ENUM_HULL_ARMOR[aType]) {
+                    const aDef = ShipHelper.ENUM_HULL_ARMOR[aType];
+                    const aTons = Math.max(0, (aLayers - 1) * 0.04 * tons * aDef.ton_Mult);
+                    const AV = (aTL * aDef.AV_Mult) + aDef.AV_FlatBonus;
+                    avText = `<div class="preview-stat">Armor: AV ${AV} (Layers: ${aLayers})</div>`;
+                    if (aTons > 0) {
+                        armorTonsText = `<div class="preview-stat">Armor Payload: ${aTons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>`;
+                    }
                 }
 
                 let grappleText = "";
@@ -683,6 +742,8 @@ class ShipHelperView {
                         <div class="preview-title">Preview:</div>
                         <div class="preview-stat">Cost: MCr${cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
                         <div class="preview-stat">Tonnage: ${tons} tons</div>
+                        ${avText}
+                        ${armorTonsText}
                         ${grappleText}
                     `;
                 }
@@ -696,7 +757,17 @@ class ShipHelperView {
                 importEl.addEventListener('change', updatePreview);
             }
             if (configEl) {
-                configEl.addEventListener('change', updatePreview);
+                configEl.addEventListener('change', () => {
+                    refreshArmorOptions();
+                    updatePreview();
+                });
+            }
+            if (armorEl) {
+                armorEl.addEventListener('change', updatePreview);
+            }
+            if (layersEl) {
+                layersEl.addEventListener('input', updatePreview);
+                layersEl.addEventListener('change', updatePreview);
             }
 
             if (inputEl) {
@@ -814,8 +885,11 @@ class ShipHelperView {
             const isSelected = this.ship.selectedSubhullIndex === hIdx ? 'checked' : '';
             const flat = hull.isPod ? ShipHelper.ENUM_HULL_CONFIG[hull.config].podflatcost : ShipHelper.ENUM_HULL_CONFIG[hull.config].flatcost;
             const hullCost = (hull.tons * ShipHelper.ENUM_HULL_CONFIG[hull.config].cost + flat);
+            const armorTons = this.ship.getSubhullArmorTons(hull);
+            const subhullAV = this.ship.getSubhullAV(hull);
 
-            const consumedTons = hull.components.reduce((sum, comp) => sum + comp.tons, 0);
+            // Subhull natively consumes its own armor tons
+            const consumedTons = hull.components.reduce((sum, comp) => sum + comp.tons, 0) + armorTons;
 
             // Hull Header
             hullContainer.innerHTML = `
@@ -824,16 +898,17 @@ class ShipHelperView {
                         <input type="radio" name="hull-selection" value="${hIdx}" ${isSelected}>
                         <strong>${hull.name}</strong>
                     </label>
-                    <div style="font-size: 0.9em; flex-grow: 1; margin-left:15px; display:flex; gap: 15px;">
+                    <div style="font-size: 0.9em; flex-grow: 1; margin-left:15px; display:flex; gap: 15px; flex-wrap: wrap;">
                          <span>TL-${hull.tl}</span>
                          <span class="${consumedTons > hull.tons ? 'warning' : ''}">${consumedTons.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 1 })} / ${hull.tons.toLocaleString()} tons</span>
-                         <span>${hull.config}</span>
+                         <span>${hull.config} ${hull.armorType || ''}</span>
+                         <span>AV: ${subhullAV} (${hull.armorLayers} Layer${hull.armorLayers !== 1 ? 's' : ''})</span>
                          <span>MCr${hullCost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
                     </div>
                     <button class="hull-edit-btn" data-idx="${hIdx}">Edit</button>
                     <button class="hull-remove-btn" data-idx="${hIdx}">Remove</button>
                 </div>
-                <div class="components-list"></div>
+                <ul class="components-list" data-hull-idx="${hIdx}"></ul>
             `;
 
             // Radio button selection
@@ -981,6 +1056,10 @@ class ShipHelperView {
         let totalCost = this.ship.baseCost;
         let totalTonnageUsed = 0;
 
+        this.ship.subhulls.forEach(h => {
+            totalTonnageUsed += this.ship.getSubhullArmorTons(h);
+        });
+
         this.ship.drives.forEach(d => {
             totalCost += d.cost;
             totalTonnageUsed += d.tons;
@@ -1055,7 +1134,6 @@ class ShipHelperView {
             <div class="stat-section">
                 <div class="stat-header">Hull Configurations:</div>
                 <div class="stat-row"><span class="stat-label">Type:</span> <span class="stat-value">${this.ship.configurationType}</span></div>
-                <div class="stat-row"><span class="stat-label">Base Cost:</span> <span class="stat-value">MCr${this.ship.baseCost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span></div>
                 <div class="stat-row"><span class="stat-label">Friction:</span> <span class="stat-value">${this.ship.configuration.friction}</span></div>
                 <div class="stat-row"><span class="stat-label">Agility:</span> <span class="stat-value">${this.ship.configuration.agility}</span></div>
             </div>
@@ -1066,6 +1144,7 @@ class ShipHelperView {
                 <div class="stat-row"><span class="stat-label">Total Tonnage:</span> <span class="stat-value">${this.ship.tonnage.toLocaleString()} tons</span></div>
                 <div class="stat-row"><span class="stat-label">Tonnage Used:</span> <span class="stat-value">${totalTonnageUsed.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</span></div>
                 <div class="stat-row"><span class="stat-label">Tonnage Available:</span> <span class="stat-value ${tonnageRemaining < 0 ? 'warning' : 'good'}">${tonnageRemaining.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</span></div>
+                <div class="stat-row"><span class="stat-label">Average AV:</span> <span class="stat-value">${Math.max(0, Math.floor(this.ship.subhulls.reduce((sum, h) => sum + (this.ship.getSubhullAV(h) * h.tons), 0) / Math.max(1, this.ship.tonnage)))}</span></div>
             </div>
             ${drivePerfHtml}
         `;
