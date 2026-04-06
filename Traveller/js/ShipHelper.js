@@ -81,6 +81,19 @@ export class ENUM_HULL_CONFIG {
     static get LiftingBody() { return { type: "Lifting Body", friction: 0.2, agility: 1, accel: 1, maxG: 9, stability: 3, land: true, cost: 12 / 100, flatcost: 4, podflatcost: 1.6 } }
     static get "Lifting Body"() { return this.LiftingBody; }
 }
+export class ENUM_HULL_FITTINGS {
+    static get keys() { return ['FlotationHull', 'SubmergenceHull', 'Fins', 'FoldingFins', 'Wings', 'FoldingWings', 'LandingSkids', 'LandingLegsWithPads', 'LandingWheels', 'RemoveLifters']; }
+    static get FlotationHull() { return { mechanisms: 1, name: "Flotation Hull", baseTL: 5, cost: 1, tons: 1, tonnageCanBeUsedForFuel: false, installable: ["Planetoid", "Unstreamlined", "Streamlined", "Airframe"], automatic: ["Lifting Body"], removableFromAutoInstall: false, comment: "Sealed against prolonged fluid exposure, the flotation hull permits water landing and takeoff." } }
+    static get SubmergenceHull() { return { mechanisms: 1, name: "Submergence Hull", baseTL: 6, cost: 2, tons: 2, tonnageCanBeUsedForFuel: false, installable: ["Planetoid", "Unstreamlined", "Streamlined", "Airframe", "Lifting Body"], automatic: [], removableFromAutoInstall: false, comment: "Sealed against prolonged fluid exposure, the submergence hull gives the ability to submerge and resurface in addition to permitting water landing and takeoff. Doubles the effectiveness of hull armor vs pressure." } }
+    static get Fins() { return { mechanisms: 1, name: "Fins", baseTL: 5, cost: 0.5, tons: 2, tonnageCanBeUsedForFuel: true, installable: ["Unstreamlined", "Streamlined", "Lifting Body"], automatic: ["Airframe"], removableFromAutoInstall: false, comment: "Fins increase Agility +1 in worlds with Atmo 2+." } }
+    static get FoldingFins() { return { mechanisms: 1, name: "Folding Fins", baseTL: 8, deployedTons: 2, cost: 0.5, tons: 0, tonnageCanBeUsedForFuel: false, installable: ["Unstreamlined", "Streamlined"], automatic: [], removableFromAutoInstall: false, comment: "Fins increase Agility +1 in worlds with Atmo 2+. Folding fins only contribute to displacement tonnage when deployed." } }
+    static get Wings() { return { mechanisms: 1, name: "Wings", baseTL: 7, cost: 1, tons: 5, tonnageCanBeUsedForFuel: true, installable: ["Unstreamlined", "Streamlined"], automatic: ["Airframe", "Lifting Body"], removableFromAutoInstall: false, comment: "Wings increase Speed by 1G in worlds with Atmo 2+." } }
+    static get FoldingWings() { return { mechanisms: 1, name: "Folding Wings", baseTL: 9, deployedTons: 5, cost: 2, tons: 1, tonnageCanBeUsedForFuel: false, installable: ["Unstreamlined", "Streamlined"], automatic: [], removableFromAutoInstall: false, comment: "Wings increase Speed by 1G in worlds with Atmo 2+. Folding wings consume significantly less displacement tonnage when retracted." } }
+    static get LandingSkids() { return { mechanisms: 1, name: "Landing Skids", baseTL: 7, cost: 0, tons: 0, tonnageCanBeUsedForFuel: false, installable: ["Cluster", "Braced", "Planetoid", "Unstreamlined", "Airframe"], automatic: ["Streamlined", "Lifting Body"], removableFromAutoInstall: false, comment: "Default landing skids are weight-bearing horizontal bars, retractable, which require a solid tarmac or bedrock landing site." } }
+    static get LandingLegsWithPads() { return { mechanisms: 1, name: "Landing Legs with Pads", baseTL: 8, cost: 1, tons: 1, tonnageCanBeUsedForFuel: false, installable: ["Cluster", "Braced", "Planetoid", "Unstreamlined", "Streamlined", "Airframe", "Lifting Body"], automatic: [], removableFromAutoInstall: false, comment: "Landing legs with pads permit wilderness landings on uneven terrain." } }
+    static get LandingWheels() { return { mechanisms: 1, name: "Landing Wheels", baseTL: 5, cost: 1.5, tons: 3, tonnageCanBeUsedForFuel: false, installable: ["Cluster", "Braced", "Planetoid", "Unstreamlined", "Streamlined", "Lifting Body"], automatic: ["Airframe"], removableFromAutoInstall: false, comment: "Retractable landing wheels permit glide landing/takeoff from solid airstrips. Required when using wings for liftoff or landing." } }
+    static get RemoveLifters() { return { mechanisms: -1, name: "Remove Lifters", baseTL: 8, cost: -0.5, tons: 0, tonnageCanBeUsedForFuel: false, installable: ["Cluster", "Braced", "Planetoid", "Unstreamlined", "Streamlined", "Airframe", "Lifting Body"], automatic: [], removableFromAutoInstall: false, comment: "Opt out of auto-installed Lifters. Deducts their cost from the hull." } }
+}
 export const ENUM_HULL_ARMOR = {
     Plate: { type: "Plate", AV_Mult: 1, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined"] },
     Charged: { type: "Charged", AV_Mult: 2, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined"] },
@@ -548,8 +561,83 @@ export class Hull {
     }
 
     get drives() {
-        // Flatten all components from all subhulls into a single array for overall iteration
-        return this.subhulls.flatMap(h => h.components);
+        return this.subhulls.flatMap(h => h.drives || []);
+    }
+
+    get components() {
+        return this.subhulls.flatMap(h => h.components || []);
+    }
+
+    _syncAutoFittings(hull) {
+        const config = hull.config;
+        const tons = hull.tons;
+        const shouldBeAuto = new Set(
+            ENUM_HULL_FITTINGS.keys.filter(k => ENUM_HULL_FITTINGS[k].automatic.includes(config))
+        );
+        const currentAutoKeys = new Set(
+            hull.components.filter(c => c.isHullFitting && c.isAutoInstalled).map(c => c.fittingKey)
+        );
+        // Update or remove existing auto-fittings
+        hull.components = hull.components.filter(c => {
+            if (c.isHullFitting && c.isAutoInstalled) {
+                if (shouldBeAuto.has(c.fittingKey)) {
+                    const fDef = ENUM_HULL_FITTINGS[c.fittingKey];
+                    c.tons = 0;
+                    c.cost = 0;
+                    if (fDef.deployedTons !== undefined) c.deployedTons = fDef.deployedTons * tons / 100;
+                    else delete c.deployedTons;
+                    return true;
+                }
+                return false; // no longer auto for this config
+            }
+            return true;
+        });
+        // Add newly required auto-fittings
+        for (const key of ENUM_HULL_FITTINGS.keys) {
+            if (shouldBeAuto.has(key) && !currentAutoKeys.has(key)) {
+                const fDef = ENUM_HULL_FITTINGS[key];
+                const comp = {
+                    isHullFitting: true,
+                    isAutoInstalled: true,
+                    removableFromAutoInstall: fDef.removableFromAutoInstall,
+                    fittingKey: key,
+                    name: fDef.name,
+                    mechanisms: fDef.mechanisms ?? 1,
+                    tons: 0,
+                    cost: 0,
+                    comment: fDef.comment
+                };
+                if (fDef.deployedTons !== undefined) comp.deployedTons = fDef.deployedTons * tons / 100;
+                // Insert before the first non-fitting component so fittings appear first
+                const firstNonFitting = hull.components.findIndex(c => !c.isHullFitting);
+                if (firstNonFitting === -1) hull.components.push(comp);
+                else hull.components.splice(firstNonFitting, 0, comp);
+            }
+        }
+    }
+
+    _removeIncompatibleFittings(hull) {
+        const config = hull.config;
+        const tons = hull.tons;
+        const removed = [];
+        hull.components = hull.components.filter(c => {
+            if (c.isHullFitting && !c.isAutoInstalled) {
+                const fDef = ENUM_HULL_FITTINGS[c.fittingKey];
+                if (fDef && !fDef.installable.includes(config) && !fDef.automatic.includes(config)) {
+                    removed.push(c.name);
+                    return false;
+                }
+                // Recalculate cost/tons for new tonnage
+                if (fDef) {
+                    c.tons = fDef.tons * tons / 100;
+                    c.cost = fDef.cost * tons / 100;
+                    if (fDef.deployedTons !== undefined) c.deployedTons = fDef.deployedTons * tons / 100;
+                    else delete c.deployedTons;
+                }
+            }
+            return true;
+        });
+        return removed;
     }
 
     addSubhull(name, tons, tl, config, isPod = false, armorType = null, armorLayers = 1, importFee = false) {
@@ -573,8 +661,12 @@ export class Hull {
             armorType: armorType,
             armorLayers: Math.max(1, armorLayers),
             importFee: importFee,
+            drives: [],
             components: []
         };
+
+        // Auto-install hull fittings for this configuration
+        this._syncAutoFittings(newHull);
 
         this.subhulls.push(newHull);
         const newHullIndex = this.subhulls.length - 1;
@@ -616,7 +708,13 @@ export class Hull {
                     }
                 }
             }
+
+            // Sync auto-fittings for new config/tonnage, then remove incompatible manual fittings
+            this._syncAutoFittings(h);
+            const removedManualFittingNames = this._removeIncompatibleFittings(h);
+            return { removedManualFittingNames };
         }
+        return { removedManualFittingNames: [] };
     }
 
     removeSubhull(index) {
@@ -634,25 +732,46 @@ export class Hull {
         }
     }
 
-    // Proxy methods for components
+    // Proxy methods — drives go to drives[], all other components go to components[]
     addDrive(drive) {
         if (this.selectedSubhullIndex >= 0 && this.selectedSubhullIndex < this.subhulls.length) {
-            this.subhulls[this.selectedSubhullIndex].components.push(drive);
+            this.subhulls[this.selectedSubhullIndex].drives.push(drive);
         } else {
             throw new Error("No Subhull or Pod selected to attach component.");
         }
     }
 
     addComponent(component) {
-        this.addDrive(component);
+        if (this.selectedSubhullIndex >= 0 && this.selectedSubhullIndex < this.subhulls.length) {
+            this.subhulls[this.selectedSubhullIndex].components.push(component);
+        } else {
+            throw new Error("No Subhull or Pod selected to attach component.");
+        }
     }
 
+    // Search non-drive components (hull fittings, fuel, grapples, cargo)
     getComponentByIdx(globalIndex) {
         let count = 0;
         for (let h = 0; h < this.subhulls.length; h++) {
-            for (let c = 0; c < this.subhulls[h].components.length; c++) {
+            const comps = this.subhulls[h].components || [];
+            for (let c = 0; c < comps.length; c++) {
                 if (count === globalIndex) {
-                    return { hullIndex: h, compIndex: c, component: this.subhulls[h].components[c] };
+                    return { hullIndex: h, compIndex: c, component: comps[c] };
+                }
+                count++;
+            }
+        }
+        return null;
+    }
+
+    // Search actual drives
+    getDriveByIdx(globalIndex) {
+        let count = 0;
+        for (let h = 0; h < this.subhulls.length; h++) {
+            const drives = this.subhulls[h].drives || [];
+            for (let d = 0; d < drives.length; d++) {
+                if (count === globalIndex) {
+                    return { hullIndex: h, driveIndex: d, component: drives[d] };
                 }
                 count++;
             }
@@ -667,50 +786,36 @@ export class Hull {
         }
     }
 
-    removeDriveAtIndex(globalIndex) {
-        const target = this.getComponentByIdx(globalIndex);
-        if (!target) return;
-
-        const hull = this.subhulls[target.hullIndex];
-        const drivesToRemove = new Set([target.compIndex]);
-
-        // Find components explicitly linked to the one we're removing (within the same hull)
-        hull.components.forEach((d, i) => {
-            if (d.linkedDriveIndex === target.compIndex) {
-                // Warning: Linked indices might break if referring to global drives array.
-                // Assuming links are localized for now or will be refactored to unique IDs.
-                drivesToRemove.add(i);
-            }
-        });
-
-        // Rebuild the array and map old indices to new indices
-        const newDrives = [];
-        const indexMap = new Map(); // oldIndex -> newIndex
-
-        hull.components.forEach((d, oldIndex) => {
-            if (!drivesToRemove.has(oldIndex)) {
-                indexMap.set(oldIndex, newDrives.length);
-                newDrives.push(d);
-            }
-        });
-
-        // Update the linkedDriveIndex for remaining components
-        newDrives.forEach(d => {
-            if (d.linkedDriveIndex !== undefined) {
-                if (indexMap.has(d.linkedDriveIndex)) {
-                    d.linkedDriveIndex = indexMap.get(d.linkedDriveIndex);
-                } else {
-                    // The linked drive was removed
-                    delete d.linkedDriveIndex;
-                }
-            }
-        });
-
-        hull.components = newDrives;
+    updateDrive(globalIndex, newDrive) {
+        const target = this.getDriveByIdx(globalIndex);
+        if (target) {
+            this.subhulls[target.hullIndex].drives[target.driveIndex] = newDrive;
+        }
     }
 
-    removeComponentAtIndex(index) {
-        this.removeDriveAtIndex(index);
+    removeDriveAtIndex(globalIndex) {
+        const target = this.getDriveByIdx(globalIndex);
+        if (!target) return;
+
+        // Remove the drive
+        this.subhulls[target.hullIndex].drives.splice(target.driveIndex, 1);
+
+        // Remove any non-drive components linked to this drive, and decrement
+        // linkedDriveIndex in remaining components throughout all hulls
+        this.subhulls.forEach(h => {
+            h.components = (h.components || []).filter(c => c.linkedDriveIndex !== globalIndex);
+            h.components.forEach(c => {
+                if (c.linkedDriveIndex !== undefined && c.linkedDriveIndex > globalIndex) {
+                    c.linkedDriveIndex--;
+                }
+            });
+        });
+    }
+
+    removeComponentAtIndex(globalIndex) {
+        const target = this.getComponentByIdx(globalIndex);
+        if (!target) return;
+        this.subhulls[target.hullIndex].components.splice(target.compIndex, 1);
     }
 }
 export class Ship {
