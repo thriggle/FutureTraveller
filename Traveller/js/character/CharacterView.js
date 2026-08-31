@@ -645,6 +645,8 @@ function validateQualifications(){
     if(qual.Entertainer){ document.getElementById("btnEntertainer").removeAttribute("disabled");}else{document.getElementById("btnEntertainer").setAttribute("disabled","");}
     if(qual.Scholar){ document.getElementById("btnScholar").removeAttribute("disabled");}else{document.getElementById("btnScholar").setAttribute("disabled","");}
     if(qual.Noble){ document.getElementById("btnNoble").removeAttribute("disabled");}else{document.getElementById("btnNoble").setAttribute("disabled","");}
+    if(qual.Functionary){ document.getElementById("btnFunctionary").removeAttribute("disabled");}else{document.getElementById("btnFunctionary").setAttribute("disabled","");}
+    if(qual.Rogue){ document.getElementById("btnRogue").removeAttribute("disabled");}else{document.getElementById("btnRogue").setAttribute("disabled","");}
     var baOptions = document.querySelectorAll("[data-qualify=\"BA\"]");
     if(qual.BA){ 
         for(var i = 0, len = baOptions.length; i < len; i++){
@@ -739,7 +741,13 @@ function getCareerDescription(career,isSchool){
             desc += "<ul><li>Begin: C1, C2, or C3</li><li>Retry: C5</li><li>Controlling Characteristics: C1, C2, C3</li><li>Continue: Int</li></ul>";
             break;
         case "Noble":
-            desc += "<ul><li>Begin: Automatic if Soc 11+</li><li>Controlling Characteristics: C2, C3, C4, C5</li><li>Continue: 7+</li></ul>";
+            desc += "<ul><li>Begin: Automatic if Soc 11+ (B+)</li><li>Controlling Characteristics: C2, C3, C4, C5</li><li>Intrigue & Return: Roll CC for Intrigue (or Return if in Exile)</li><li>Elevation: Roll 2D &ge; Soc (1-time Flux mod allowed) to elevate rank and increase Soc</li><li>Land Grants: Conferred on entry and each elevation</li><li>Continue: 7+ (Cannot switch to other careers)</li><li>Muster Out: Money, Benefits, and Power (Proxies)</li></ul>";
+            break;
+        case "Functionary":
+            desc += "<ul><li>Pre Req: Prior Career (Non-Noble)</li><li>Begin: 2D &le; Total Terms &times; 3</li><li>Controlling Characteristics: C2, C3, C4, C5</li><li>Office Politics: Risk check against CC (Career Ends on failure) and Reward check against CC (Promotion F0&ndash;F8)</li><li>Automatic Skills: Bureaucrat (F0, F3), Admin (F2)</li><li>Custom F6 Title: College President (Scholar), Association Director (Entertainer), Starport Warden (Merchant), Bank President (Rogue)</li><li>Continue: Office Politics</li><li>Muster Out: Money (1D+Terms), Benefits (1D+Rank), Gold Watch (100&times;Terms), Directorship (F6+)</li></ul>";
+            break;
+        case "Rogue":
+            desc += "<ul><li>Begin: Check chosen CC (12 is auto failure)</li><li>Controlling Characteristic: Select 1 fixed CC (C1&ndash;C6) for entire career</li><li>Schemes: Roll Flux (&plusmn;1 mod allowed) or target prior career</li><li>Stance: Caution (+1 Risk, -1 Reward), Bravery (-1 Risk, +1 Reward), or No Mod (+0)</li><li>Terms Modifier: -Terms to Risk, +Terms to Reward</li><li>Risk Check: Roll vs CC + Risk Mod. Failure = Prison (negative mods + Flux yrs, max 4), Infamy +1, Payoff halved</li><li>Reward Check: Roll vs CC + Reward Mod. Success = Payoff V &times; (1 + CC - Roll + Mod) for Credits or Ship Shares</li><li>Skills: 2 Term Skills + 4 (Scheme Success) / + 1 (Scheme Fail) / + 2 (In Prison: Cols 1&ndash;2 only)</li><li>Continue: Roll vs CC + Terms (12 is auto failure)</li><li>Muster Out: Money (1D+Terms), Benefits (1D+Terms)</li></ul>";
             break;
         case "Apprenticeship": desc += "<ul><li>Begin: Automatic</li><li>Pass/Fail: Check Tra (or Edu/2)</li><li>Duration: Consumes no time (happens during youth)</li><li>Provides: Skill/Knowledge +4</li></ul>"; break;
         case "Trade School": desc += "<ul><li>Pre Req: Edu 5+</li><li>Begin: Int</li><li>Pass/Fail: Int or Edu, One check</li><li>Duration: 1 year</li><li>Provides: Major +2</li><li>Additional Major +1 with Honors</li></ul>"; break;

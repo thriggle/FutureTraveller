@@ -50,12 +50,31 @@ function careers(character,element){
                     var nobility = character.getNobleRank();
                     rank = "-"+nobility.code + " ("+nobility.title+")";
                     break;
+                case ENUM_CAREERS.Functionary:
+                    rank = "-"+(careers[i].rank ? careers[i].rank.label : "F0 Clerk");
+                    break;
+                case ENUM_CAREERS.Rogue:
+                    rank = careers[i].controllingCharacteristic ? "-CC: " + careers[i].controllingCharacteristic : "";
+                    break;
             }
+        }else if(careers[i].career === ENUM_CAREERS.Rogue && careers[i].controllingCharacteristic){
+            rank = "-CC: " + careers[i].controllingCharacteristic;
         }
         var awards = "";
-        if(careers[i].fame || (careers[i].awards && careers[i].awards.length > 0)){
+        if(careers[i].fame || careers[i].associatedCareer || careers[i].infamy || careers[i].totalPayoff || (careers[i].awards && careers[i].awards.length > 0)){
 
             var awards = "<ul style=\"font-size:smaller\">";
+            if(careers[i].associatedCareer){
+                awards += "<li>Associated with " + careers[i].associatedCareer + "</li>";
+            }
+            if(careers[i].career === ENUM_CAREERS.Rogue){
+                if(careers[i].infamy){
+                    awards += "<li>Infamy: " + careers[i].infamy + "</li>";
+                }
+                if(careers[i].totalPayoff){
+                    awards += "<li>Total Payoff: Cr" + careers[i].totalPayoff.toLocaleString() + "</li>";
+                }
+            }
             if(careers[i].fame){
                 awards += "<li>"+(careers[i].fame)+" Fame</li>";
             }

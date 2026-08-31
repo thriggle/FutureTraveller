@@ -28,6 +28,7 @@ export function getCCs(career){
         case ENUM_CAREERS.Spacer: ccs = ["C1","C2","C4"]; break;
         case ENUM_CAREERS.Soldier: ccs = ["C1","C3","C4"]; break;
         case ENUM_CAREERS.Agent: ccs = ["C1","C2","C3","C4"]; break;
+        case ENUM_CAREERS.Rogue: ccs = ["C1","C2","C3","C4","C5","C6"]; break;
         case ENUM_CAREERS.Noble: ccs = ["C2","C3","C4","C5"]; break;
         case ENUM_CAREERS.Marine: ccs = ["C1","C4"]; break;
         case ENUM_CAREERS.Functionary: ccs = ["C2","C3","C4","C5"]; break;
@@ -382,7 +383,7 @@ export var CareerSkillTables = {
     "Rogue":{ // Career 10
         "Tables":["Personal","Academic","World Travel","Space Travel","Business","Vocation","Avocation"],
         "Personal":["C1","C2","C3","C4","C5","C6"],
-        "Academic":["Major","Major","Minor","Minor","One Trade","One Trade"],
+        "Academic":["One Science","Major","Minor","One Art","One Trade","Gambler"],
         "World Travel":["Driver","Flyer","Hostile Environ","High-G","Vacc Suit","Navigator"],
         "Space Travel":["Starship Skill","Pilot","Engineer","Zero-G","Vacc Suit","Astrogator"],
         "Business":["Trader","Broker","Computer","JOT","Teacher","Fighter"],
