@@ -13,6 +13,7 @@ export function renderCharacter(character, element) {
     injectHTML("[data-homeworld]", renderHomeworld);
     injectHTML("[data-credits]", renderCredits);
     injectHTML("[data-gender]", renderGender);
+    injectHTML("[data-species]",renderSpecies);
     injectHTML("[data-score]", renderScore);
     function injectHTML(selector, htmlfunc) {
         var elements = document.querySelectorAll(selector);
@@ -51,14 +52,33 @@ function careers(character, element) {
                     var nobility = character.getNobleRank();
                     rank = "-" + nobility.code + " (" + nobility.title + ")";
                     break;
+                case ENUM_CAREERS.Functionary:
+                    rank = "-"+(careers[i].rank ? careers[i].rank.label : "F0 Clerk");
+                    break;
+                case ENUM_CAREERS.Rogue:
+                    rank = careers[i].controllingCharacteristic ? "-CC: " + careers[i].controllingCharacteristic : "";
+                    break;
             }
+        }else if(careers[i].career === ENUM_CAREERS.Rogue && careers[i].controllingCharacteristic){
+            rank = "-CC: " + careers[i].controllingCharacteristic;
         }
         var awards = "";
-        if (careers[i].fame || (careers[i].awards && careers[i].awards.length > 0)) {
+        if(careers[i].fame || careers[i].associatedCareer || careers[i].infamy || careers[i].totalPayoff || (careers[i].awards && careers[i].awards.length > 0)){
 
             var awards = "<ul style=\"font-size:smaller\">";
-            if (careers[i].fame) {
-                awards += "<li>" + (careers[i].fame) + " Fame</li>";
+            if(careers[i].associatedCareer){
+                awards += "<li>Associated with " + careers[i].associatedCareer + "</li>";
+            }
+            if(careers[i].career === ENUM_CAREERS.Rogue){
+                if(careers[i].infamy){
+                    awards += "<li>Infamy: " + careers[i].infamy + "</li>";
+                }
+                if(careers[i].totalPayoff){
+                    awards += "<li>Total Payoff: Cr" + careers[i].totalPayoff.toLocaleString() + "</li>";
+                }
+            }
+            if(careers[i].fame){
+                awards += "<li>"+(careers[i].fame)+" Fame</li>";
             }
             if (careers[i].awards && careers[i].awards.length > 0) {
                 awards += "<li>" + careers[i].awards.join("</li><li>") + "</li>";
@@ -123,10 +143,12 @@ function renderHomeworld(character, element) {
         }
     }
 }
-function renderGender(character, element) {
-    element.insertAdjacentHTML("beforeend", "<span>" + character.getGender() + "</span>");
+function renderSpecies(character,element){
+    var sp = character.species;
+    var name = sp && sp.SpeciesName ? sp.SpeciesName : (sp && sp.name ? sp.name : "Humaniti");
+    element.insertAdjacentHTML("beforeend","<span>"+ name + "</span>");
 }
-function renderScore(character, element) {
+function renderScore(character,element){
     var scores = character.getPlayabilityScore();
     var score = scores.score;
     var scoreDesc = "";
@@ -241,6 +263,9 @@ function statBlock(character, element) {
     } else {
         statHTML += "<li>(CS) Sanity: " + character.getSanity() + "</li>";
     }
+    if(typeof character.getPsi() !== "undefined"){
+        statHTML += "<li>(CP) Psi: "+character.getPsi()+"</li>";
+    }
     statHTML += "</ul>";
     statHTML += "<hr/><span>Genetics: " + character.getGenetics().join(",") + "</span>";
     if (typeof character.getSanityGene() !== "undefined") { statHTML += " <span>San-" + character.getSanityGene() + "</span>"; }
@@ -251,7 +276,17 @@ function statBlock(character, element) {
     if (talent.value > 0) {
         statHTML += "<hr/><span>Talent(" + talent.name + ")-" + talent.value + "</span>";
     }
-    element.insertAdjacentHTML("beforeend", statHTML);
+    var sp = character.species;
+    if(sp && sp.BaseSenses && sp.BaseSenses.length > 0){
+        statHTML += "<hr/><span>Senses: " + sp.BaseSenses.join(", ") + "</span>";
+    }
+    if(sp && (sp.Height || sp.Weight)){
+        statHTML += "<hr/><span>Typical Height: " + (sp.Height || "n/a") + " | Typical Weight: " + (sp.Weight || "n/a") + "</span>";
+    }
+    if(sp && sp.Notes){
+        statHTML += "<hr/><span>Racial Traits: " + sp.Notes + "</span>";
+    }
+    element.insertAdjacentHTML("beforeend",statHTML);
 }
 function skillBlock(character, element) {
     var statHTML = "<ul>";
