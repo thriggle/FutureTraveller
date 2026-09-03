@@ -29,7 +29,7 @@ var defaultLanguages = {
     vargr: "Gvegh",
     aslan: "Trokh",
     zhodani: "Zdetl",
-    bwap: "!kee",
+    bwap: "Anglic",
     human: "Anglic",
     ursa: "Anglic"
 };
@@ -41,7 +41,7 @@ if (slctSpeciesEl) {
         var langEl = document.getElementById("slctNativeLanguage");
         if (langEl) {
             var selectedSpecies = getSpecies(speciesKey);
-            var lang = defaultLanguages[speciesKey] || (selectedSpecies && selectedSpecies.NativeLanguage) || "Anglic";
+            var lang = (selectedSpecies && selectedSpecies.NativeLanguage) || defaultLanguages[speciesKey] || "Anglic";
             langEl.value = lang;
         }
     });
