@@ -870,10 +870,39 @@ function newCharacter() {
             +(document.getElementById("txtCustomC6").value),
         ];
         person.initStats(attributes, genetics);
-        if (shouldRollSanityAtCreation) {
-            var sanityRoll = roller.d6(2);
-            person.setSanityGene(sanityRoll.rolls[0]);
-            person.setSanity(sanityRoll.result);
+        // Handle selectable Sanity dice for custom characteristics
+        var s1el = document.getElementById("slctCustomSanity1");
+        var s2el = document.getElementById("slctCustomSanity2");
+        var s1 = s1el ? s1el.value : "Random";
+        var s2 = s2el ? s2el.value : "Random";
+        var s1num = (s1 !== "Random") ? +(s1) : undefined;
+        var s2num = (s2 !== "Random") ? +(s2) : undefined;
+
+        // If both dice provided as numbers, set both immediately
+        if (typeof s1num !== "undefined" && typeof s2num !== "undefined") {
+            person.setSanityGene(s1num);
+            person.setSanity(s1num + s2num);
+        } else if (shouldRollSanityAtCreation) {
+            // Need to roll any random dice immediately
+            if (typeof s1num === "undefined" && typeof s2num === "undefined") {
+                var sanityRoll = roller.d6(2);
+                person.setSanityGene(sanityRoll.rolls[0]);
+                person.setSanity(sanityRoll.result);
+            } else if (typeof s1num !== "undefined" && typeof s2num === "undefined") {
+                var roll = roller.d6(1);
+                person.setSanityGene(s1num);
+                person.setSanity(s1num + roll.result);
+            } else if (typeof s1num === "undefined" && typeof s2num !== "undefined") {
+                var roll = roller.d6(1);
+                person.setSanityGene(roll.rolls[0]);
+                person.setSanity(roll.result + s2num);
+            }
+        } else {
+            // Lazy resolution: set sanity gene only if the user provided it explicitly
+            if (typeof s1num !== "undefined") {
+                person.setSanityGene(s1num);
+            }
+            // leave person.sanity undefined for later resolution
         }
         // person.getCharacteristics() = person.getCharacteristics();
     }

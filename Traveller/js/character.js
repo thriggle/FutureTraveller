@@ -349,6 +349,15 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
             }
             setSanityGene(sanityGene);
             setSanity(sanity);
+        } else {
+            // If the user provided a genetic sanity die but chose not to roll sanity now,
+            // record the genetic die so it can be displayed in the genetics section.
+            if (typeof geneticSanity !== "undefined" && geneticSanity !== "Random") {
+                sanityGene = +(geneticSanity);
+                setSanityGene(sanityGene);
+            } else {
+                sanityGene = undefined;
+            }
         }
         if(typeof geneticPsionics === "undefined" || geneticPsionics === "Random"){ }
         else{ psiGene = +(geneticPsionics); var psiRoll = roller.d6(1); psi = psiRoll.result + psiGene; setPsiGene(psiGene); setPsi(psi);}
@@ -7041,7 +7050,7 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
         return landGrants;
     }
     return {
-        setSanityGene,getSanityGene,
+        setSanity, setSanityGene, getSanityGene,
         setPsiGene,getPsiGene,setPsi,getPsi,
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, getCharacteristics,
