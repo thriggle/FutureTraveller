@@ -955,7 +955,12 @@ function validateQualifications() {
         }
     }
     if (qual.fameEvent) { document.getElementById("btnFameFluxEvent").removeAttribute("disabled"); } else { document.getElementById("btnFameFluxEvent").setAttribute("disabled", ""); }
-    if (qual.resignReserves) { document.getElementById("btnResignFromReserves").removeAttribute("disabled"); } else { document.getElementById("btnResignFromReserves").setAttribute("disabled", ""); }
+    var hasReserveAward = Array.isArray(person.getAwards()) && (person.getAwards().indexOf("Army Reserves") >= 0 || person.getAwards().indexOf("Navy Reserves") >= 0 || person.getAwards().indexOf("Marine Reserves") >= 0);
+    if (qual.resignReserves && hasReserveAward) { 
+        document.getElementById("btnResignFromReserves").removeAttribute("disabled"); 
+    } else { 
+        document.getElementById("btnResignFromReserves").setAttribute("disabled", ""); 
+    }
     //if(qual.fameBonus){ document.getElementById("btnFameMusterOutBonus").removeAttribute("disabled"); }else{document.getElementById("btnFameMusterOutBonus").setAttribute("disabled",""); }
 }
 

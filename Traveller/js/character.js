@@ -6530,6 +6530,9 @@ export function createCharacter(roller, species, chosenGender) {
         }
         return { qualifies, qualifyingSkills, masterPoints };
     }
+    function hasReserveAward() {
+        return awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0;
+    }
     function getQualifications() {
         var q = {};
         var isDead = false;
@@ -6583,7 +6586,7 @@ export function createCharacter(roller, species, chosenGender) {
         } else {
             q.fameBonus = false;
         }
-        q.resignReserves = !resignationDeclined && !musteredOut && !isDead && (awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 || awards.indexOf("Army Reserves") >= 0);
+        q.resignReserves = !resignationDeclined && !musteredOut && !isDead && hasReserveAward();
         return q;
     }
     function checkCSK(characteristic, skill, knowledge, difficulty, mods, remarks) {
@@ -6772,12 +6775,13 @@ export function createCharacter(roller, species, chosenGender) {
         return prefix + remarks;
     }
     function resignFromReserves(updateFunc) {
-        if (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0) {
+        if (hasReserveAward()) {
             var resignResult = check(11, 2, 0, "Resign Attempt");
             if (resignResult.success) {
                 record(resignResult.remarks);
+                resignationDeclined = false;
                 updateFunc();
-                while (awards.indexOf("Army Reserves") >= 0 || awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0) {
+                while (hasReserveAward()) {
                     for (var j = 0, jlen = awards.length; j < jlen; j++) {
                         var award = awards[j];
                         if (award.indexOf(" Reserves") > 0) {
