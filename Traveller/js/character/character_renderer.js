@@ -23,6 +23,9 @@ export function renderCharacter(character, element) {
         }
     }
 }
+function renderGender(character, element) {
+    element.insertAdjacentHTML("beforeend", "<span>" + character.getGender() + "</span>");
+}
 function careers(character, element) {
     var careers = character.getCareers();
     for (var i = 0, len = careers.length; i < len; i++) {
