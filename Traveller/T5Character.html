@@ -126,7 +126,7 @@
             color: rgb(88, 88, 88);
             cursor: inherit;
         }
-        
+
         #btnFameFluxEvent[disabled],#btnResignFromReserves[disabled],
         [data-careerbtn][disabled]:hover {
             background-color: black;
@@ -343,7 +343,8 @@
 
         [data-name],
         [data-ageblock],
-        [data-gender] {
+        [data-gender],
+        [data-species] {
             font-weight: bold;
             margin-right: 0.5rem;
         }
@@ -516,10 +517,14 @@
                     </fieldset>
                     <fieldset class="collapsed">
                         <legend>Characteristics</legend>
-                        <label style="white-space: nowrap;" for="slctSpecies">Species: <select name="slctSpecies"
-                                id="slctSpecies">
-                                <option value="human">Humaniti</option>
-                            </select></label><br />
+                        <label style="white-space: nowrap;" for="slctSpecies">Species: <select name="slctSpecies" id="slctSpecies">
+                            <option value="human" selected="selected">Humaniti</option>
+                            <option value="aslan">Aslan</option>
+                            <option value="bwap">Bwap</option>
+                            <option value="ursa">Ursa</option>
+                            <option value="vargr">Vargr</option>
+                            <option value="zhodani">Zhodani</option>
+                        </select></label><br/>
                         <label for="rdoAttributesNatural"> <input type="radio" checked="checked" name="rdoAttributes"
                                 id="rdoAttributesNatural" value="Natural">Random Characteristics</label><br />
                         <input type="radio" name="rdoAttributes" id="rdoAttributesClone" value="Clone"><label
@@ -712,7 +717,7 @@ Continue vs C1
                     </div>
                     <div style="width:100%;">
                         <label for="" style="white-space:nowrap">Name: <span data-name></span></label> 
-                        <label style="white-space:nowrap" for="">Species: <span data-species=""></span></label><label
+                        <label style="white-space:nowrap" for="">Species: <span data-species=""></span></label> <label
                             style="white-space:nowrap" for="">Age: <span data-ageblock=""></span></label> <label
                             style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for=""
                             style="white-space:nowrap">Credits: <span data-credits></span> </label>
