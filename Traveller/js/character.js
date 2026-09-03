@@ -94,6 +94,7 @@ export function createCharacter(roller, species, chosenGender) {
     }
     function resetVariables(){
         careers = [], CCs = []; edu_waivers = 0; 
+        awards = [];
         fame = 0, credits = 0; languageReceipts = 0;
         job = { skill: undefined, knowledge: undefined }, hobby = { skill: undefined, knowledge: undefined }, lastCitLifeReceipt = undefined;
         merchantShipShareReceiptLevel = 1, shipShares = 0;
@@ -6582,7 +6583,7 @@ export function createCharacter(roller, species, chosenGender) {
         } else {
             q.fameBonus = false;
         }
-        q.resignReserves = !resignationDeclined && (awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 || awards.indexOf("Army Reserves") >= 0);
+        q.resignReserves = !resignationDeclined && !musteredOut && !isDead && (awards.indexOf("Navy Reserves") >= 0 || awards.indexOf("Marine Reserves") >= 0 || awards.indexOf("Army Reserves") >= 0);
         return q;
     }
     function checkCSK(characteristic, skill, knowledge, difficulty, mods, remarks) {
