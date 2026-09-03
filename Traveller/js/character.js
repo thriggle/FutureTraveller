@@ -260,7 +260,6 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
                     careerFame += (career.commendations || 0);
                     break;
                 case ENUM_CAREERS.Functionary:
-                    careerFame += (career.rank && career.rank.level > 0 ? career.rank.level : 0);
                     break;
                 case ENUM_CAREERS.Rogue:
                     if (typeof career.successfulSchemes !== "undefined" || typeof career.failedSchemes !== "undefined") {
