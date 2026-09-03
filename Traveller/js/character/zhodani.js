@@ -3,6 +3,7 @@ import { CLASS_SPECIES, ENUM_CHARACTERISTICS } from "./species.js";
 export class zhodani extends CLASS_SPECIES {
     static get BaseSenses() { return ["V-16-RGB", "H-16-9382", "S-10-02", "T-06-02"]; }
     static get SpeciesName() { return "Zhodani"; }
+    static get NativeLanguage() { return "Zdetl"; }
     static get StatProfile() { return "SDEIES"; }
     static get Height() { return "2m"; }
     static get Weight() { return "90kg"; }

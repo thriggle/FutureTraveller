@@ -3,6 +3,7 @@ import { CLASS_SPECIES, ENUM_CHARACTERISTICS } from "./species.js";
 export class vargr extends CLASS_SPECIES {
     static get BaseSenses() { return ["V-20-RXB", "H-18-B4B3", "S-20-04", "T-06-02"]; }
     static get SpeciesName() { return "Vargr"; }
+    static get NativeLanguage() { return "Gvegh"; }
     static get StatProfile() { return "SDVIEC"; }
     static get Height() { return "1.6m"; }
     static get Weight() { return "66kg"; }

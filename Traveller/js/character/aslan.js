@@ -3,6 +3,7 @@ import { CLASS_SPECIES, ENUM_CHARACTERISTICS } from "./species.js";
 export class aslan extends CLASS_SPECIES {
     static get BaseSenses() { return ["V-16-RGB", "H-18-8474", "S-18-03", "T-12-03"]; }
     static get SpeciesName() { return "Aslan"; }
+    static get NativeLanguage() { return "Trokh"; }
     static get StatProfile() { return "SDSIES"; }
     static get Height() { return "2m"; }
     static get Weight() { return "100kg"; }

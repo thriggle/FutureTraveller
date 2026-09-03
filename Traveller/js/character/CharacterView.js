@@ -25,12 +25,24 @@ for (var i = 0, len = rdoHomeworlds.length; i < len; i++) {
         }
     });
 }
+var defaultLanguages = {
+    vargr: "Gvegh",
+    aslan: "Trokh",
+    zhodani: "Zdetl",
+    bwap: "!kee",
+    human: "Anglic",
+    ursa: "Anglic"
+};
+
 var slctSpeciesEl = document.getElementById("slctSpecies");
 if (slctSpeciesEl) {
     slctSpeciesEl.addEventListener("change", () => {
         var speciesKey = slctSpeciesEl.value.toLowerCase();
-        if (defaultLanguages[speciesKey]) {
-            document.getElementById("slctNativeLanguage").value = defaultLanguages[speciesKey];
+        var langEl = document.getElementById("slctNativeLanguage");
+        if (langEl) {
+            var selectedSpecies = getSpecies(speciesKey);
+            var lang = defaultLanguages[speciesKey] || (selectedSpecies && selectedSpecies.NativeLanguage) || "Anglic";
+            langEl.value = lang;
         }
     });
 }

@@ -3,6 +3,7 @@ import { CLASS_SPECIES, ENUM_CHARACTERISTICS } from "./species.js";
 export class ursa extends CLASS_SPECIES {
     static get BaseSenses() { return ["V-18-RGB", "H-18-9382", "S-22-04", "T-06-02"]; }
     static get SpeciesName() { return "Ursa"; }
+    static get NativeLanguage() { return "Anglic"; }
     static get StatProfile() { return "SDEITS"; }
     static get Height() { return "2m"; }
     static get Weight() { return "350kg"; }

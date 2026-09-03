@@ -3,6 +3,7 @@ import { CLASS_SPECIES, ENUM_CHARACTERISTICS } from "./species.js";
 export class bwap extends CLASS_SPECIES {
     static get BaseSenses() { return ["V-16-RGB", "H-14-7573", "S-14-04", "T-20-03"]; }
     static get SpeciesName() { return "Bwap"; }
+    static get NativeLanguage() { return "Anglic"; }
     static get StatProfile() { return "SAVIES"; }
     static get Height() { return "1.4m"; }
     static get Weight() { return "45kg"; }

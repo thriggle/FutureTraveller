@@ -1,4 +1,5 @@
 export class CLASS_SPECIES{
+    static get NativeLanguage(){ return "Anglic"; }
     static get LifeStageTerms(){
         return [
             0.5, // 0
