@@ -121,11 +121,13 @@
             background-color: #455151;
         }
 
+        #btnFameFluxEvent[disabled],#btnResignFromReserves[disabled],
         [data-careerbtn][disabled] {
             color: rgb(88, 88, 88);
             cursor: inherit;
         }
 
+        #btnFameFluxEvent[disabled],#btnResignFromReserves[disabled],
         [data-careerbtn][disabled]:hover {
             background-color: black;
         }
@@ -341,7 +343,8 @@
 
         [data-name],
         [data-ageblock],
-        [data-gender] {
+        [data-gender],
+        [data-species] {
             font-weight: bold;
             margin-right: 0.5rem;
         }
@@ -514,16 +517,21 @@
                     </fieldset>
                     <fieldset class="collapsed">
                         <legend>Characteristics</legend>
-                        <label style="white-space: nowrap;" for="slctSpecies">Species: <select name="slctSpecies"
-                                id="slctSpecies">
-                                <option value="human">Humaniti</option>
-                            </select></label><br />
+                        <label style="white-space: nowrap;" for="slctSpecies">Species: <select name="slctSpecies" id="slctSpecies">
+                            <option value="human" selected="selected">Humaniti</option>
+                            <option value="aslan">Aslan</option>
+                            <option value="bwap">Bwap</option>
+                            <option value="ursa">Ursa</option>
+                            <option value="vargr">Vargr</option>
+                            <option value="zhodani">Zhodani</option>
+                        </select></label><br/>
                         <label for="rdoAttributesNatural"> <input type="radio" checked="checked" name="rdoAttributes"
                                 id="rdoAttributesNatural" value="Natural">Random Characteristics</label><br />
                         <input type="radio" name="rdoAttributes" id="rdoAttributesClone" value="Clone"><label
                             for="rdoAttributesClone">Predefined Genetics</label><br />
                         <input type="radio" name="rdoAttributes" id="rdoAttributesCustom" value="Custom"><label
-                            for="rdoAttributesCustom">Custom Characteristics</label>
+                            for="rdoAttributesCustom">Custom Characteristics</label><br />
+                        <label for="chkInitialSanity"><input type="checkbox" id="chkInitialSanity">Roll Sanity at character creation</label>
                         <div id="divGeneticDice">
                             <label class="genetics">C1:<select id="slctGeneticC1">
                                     <option value="Random">?</option>
@@ -599,6 +607,24 @@
                                     id="txtCustomC3b" type="number" min="0" value="4" /></label>
                             <label for="txtCustomC6">C6:<input id="txtCustomC6" type="number" min="1" value="4" /><input
                                     id="txtCustomC6b" type="number" min="0" value="3" /></label>
+                            <label for="slctCustomSanity1">Sanity 1:<select id="slctCustomSanity1">
+                                    <option value="Random">?</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select></label>
+                            <label for="slctCustomSanity2">Sanity 2:<select id="slctCustomSanity2">
+                                    <option value="Random">?</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select></label>
                         </div>
                     </fieldset>
                     <fieldset class="collapsed">
@@ -709,7 +735,8 @@ Continue vs C1
                         <label for="" style="white-space:nowrap">Competency: <span data-score></span>
                     </div>
                     <div style="width:100%;">
-                        <label for="" style="white-space:nowrap">Name: <span data-name></span></label> <label
+                        <label for="" style="white-space:nowrap">Name: <span data-name></span></label> 
+                        <label style="white-space:nowrap" for="">Species: <span data-species=""></span></label> <label
                             style="white-space:nowrap" for="">Age: <span data-ageblock=""></span></label> <label
                             style="white-space:nowrap" for="">Gender: <span data-gender=""></span></label> <label for=""
                             style="white-space:nowrap">Credits: <span data-credits></span> </label>
@@ -731,6 +758,7 @@ Continue vs C1
                         <legend>Careers</legend>
                         <div data-careers></div>
                     </fieldset>
+
                 </fieldset>
             </div>
             <fieldset style="flex-shrink:1; flex:5;">
@@ -751,7 +779,8 @@ Continue vs C1
     <div data-tier="1" data-nav="sheet">
         <div style="display:flex; flex-direction:row; flex-wrap:wrap;">
             <div style="width:100%;">
-                <label for="">Name: <span data-name></span></label> <label for="">Age: </label><span
+
+                <label for="">Name: <span data-name></span></label> <label style="white-space:nowrap" for="">Species: <span data-species=""></span></label> <label for="">Age: </label><span
                     data-ageblock=""></span> <label style="white-space:nowrap" for="">Gender: <span
                         data-gender=""></span></label> <label for="" style="white-space:nowrap">Credits: <span
                         data-credits></span> </label>

@@ -1,4 +1,4 @@
-import { human } from "./human.js";
+import { human, getSpecies, SpeciesList } from "./races.js";
 import { getRollerFromSeed } from "../rnd.js";
 import { createCharacter } from "../character.js";
 import { ENUM_SKILLS, Knowledges } from "./skills.js";
@@ -22,6 +22,15 @@ for (var i = 0, len = rdoHomeworlds.length; i < len; i++) {
         } else {
             document.getElementById("divSpecifyTradeCodes").style.display = "none";
             document.getElementById("divChooseHomeworld").style.display = "block";
+        }
+    });
+}
+var slctSpeciesEl = document.getElementById("slctSpecies");
+if (slctSpeciesEl) {
+    slctSpeciesEl.addEventListener("change", () => {
+        var speciesKey = slctSpeciesEl.value.toLowerCase();
+        if (defaultLanguages[speciesKey]) {
+            document.getElementById("slctNativeLanguage").value = defaultLanguages[speciesKey];
         }
     });
 }
@@ -250,13 +259,65 @@ function onNavigate(e) {
         document.querySelector("[data-nav='" + target + "']" + tierselector).style.display = "block";
     }
 }
-document.getElementById("btnRandomName").addEventListener("click", () => {
-    var chosenGender = document.getElementById("slctGender").value;
-    switch (chosenGender) {
-        case "random": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human")); break;
-        case "M": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human.malefirstname") + " " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix")); break;
-        case "F": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human.femalefirstname") + " " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix")); break;
+function getValidRandomName(generator, key){
+    if (!generator) return null;
+    if (generator.templates && !generator.templates[key]) {
+        return null;
     }
+    var result = generator.getRandomName(key);
+    if (typeof result === "string" && result.startsWith("Invalid Key")) {
+        return null;
+    }
+    return result;
+}
+function getRandomNameForCharacter(speciesKey, gender){
+    var name = "";
+    try{
+        if(nameGenerator){
+            var key = (speciesKey || "human").toLowerCase();
+            if(gender === "M"){
+                var first = getValidRandomName(nameGenerator, key + ".malefirstname");
+                if(first){
+                    var last = getValidRandomName(nameGenerator, key + ".lastname") || "";
+                    var suf = getValidRandomName(nameGenerator, key + ".suffix") || "";
+                    name = (first + " " + last + suf).trim();
+                }
+            }else if(gender === "F"){
+                var first = getValidRandomName(nameGenerator, key + ".femalefirstname");
+                if(first){
+                    var last = getValidRandomName(nameGenerator, key + ".lastname") || "";
+                    var suf = getValidRandomName(nameGenerator, key + ".suffix") || "";
+                    name = (first + " " + last + suf).trim();
+                }
+            }
+            if(!name){
+                var spName = getValidRandomName(nameGenerator, key);
+                if(spName) name = spName.trim();
+            }
+            // Fall back to Humaniti if no species-specific template exists
+            if(!name){
+                if(gender === "M"){
+                    var hFirst = getValidRandomName(nameGenerator, "human.malefirstname") || "John";
+                    var hLast = getValidRandomName(nameGenerator, "human.lastname") || "Doe";
+                    var hSuf = getValidRandomName(nameGenerator, "human.suffix") || "";
+                    name = (hFirst + " " + hLast + hSuf).trim();
+                }else if(gender === "F"){
+                    var hFirst = getValidRandomName(nameGenerator, "human.femalefirstname") || "Jane";
+                    var hLast = getValidRandomName(nameGenerator, "human.lastname") || "Doe";
+                    var hSuf = getValidRandomName(nameGenerator, "human.suffix") || "";
+                    name = (hFirst + " " + hLast + hSuf).trim();
+                }else{
+                    name = getValidRandomName(nameGenerator, "human") || "J. Doe";
+                }
+            }
+        }
+    }catch(e){}
+    return name ? addCaps(name.trim()) : "J. Doe";
+}
+document.getElementById("btnRandomName").addEventListener("click",()=>{
+    var chosenGender = document.getElementById("slctGender").value;
+    var speciesKey = document.getElementById("slctSpecies").value;
+    document.getElementById("txtName").value = getRandomNameForCharacter(speciesKey, chosenGender);
     onNameFieldValueChange();
 });
 document.getElementById("btnApplyName").addEventListener("click", () => {
@@ -771,11 +832,14 @@ document.getElementById("btnImportJSON").addEventListener("change", function () 
 function newCharacter() {
     clear();
     var chosenGender = document.getElementById("slctGender").value;
-    person = createCharacter(roller, human, chosenGender);
-
+    var speciesKey = document.getElementById("slctSpecies") ? document.getElementById("slctSpecies").value : "human";
+    var selectedSpecies = getSpecies(speciesKey);
+    var shouldRollSanityAtCreation = !!(document.getElementById("chkInitialSanity") && document.getElementById("chkInitialSanity").checked);
+    person = createCharacter(roller, selectedSpecies, chosenGender, shouldRollSanityAtCreation);
+    
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if (document.getElementById("rdoAttributesNatural").checked) {
-        person.rollStatsFromGenes(["Random", "Random", "Random", "Random"]);
+        person.rollStatsFromGenes(["Random", "Random", "Random", "Random"], undefined, undefined, shouldRollSanityAtCreation);
     } else if (document.getElementById("rdoAttributesClone").checked) {
         var genes = [
             document.getElementById("slctGeneticC1").value,
@@ -785,7 +849,7 @@ function newCharacter() {
             document.getElementById("slctGeneticC5").value,
             ,
         ];
-        person.rollStatsFromGenes(genes, document.getElementById("slctGeneticCS").value, document.getElementById("slctGeneticCP").value);
+        person.rollStatsFromGenes(genes, document.getElementById("slctGeneticCS").value, document.getElementById("slctGeneticCP").value, shouldRollSanityAtCreation);
         //person.characteristics = person.getCharacteristics();
     } else if (document.getElementById("rdoAttributesCustom").checked) {
         // TODO
@@ -806,20 +870,47 @@ function newCharacter() {
             +(document.getElementById("txtCustomC6").value),
         ];
         person.initStats(attributes, genetics);
+        // Handle selectable Sanity dice for custom characteristics
+        var s1el = document.getElementById("slctCustomSanity1");
+        var s2el = document.getElementById("slctCustomSanity2");
+        var s1 = s1el ? s1el.value : "Random";
+        var s2 = s2el ? s2el.value : "Random";
+        var s1num = (s1 !== "Random") ? +(s1) : undefined;
+        var s2num = (s2 !== "Random") ? +(s2) : undefined;
+
+        // If both dice provided as numbers, set both immediately
+        if (typeof s1num !== "undefined" && typeof s2num !== "undefined") {
+            person.setSanityGene(s1num);
+            person.setSanity(s1num + s2num);
+        } else if (shouldRollSanityAtCreation) {
+            // Need to roll any random dice immediately
+            if (typeof s1num === "undefined" && typeof s2num === "undefined") {
+                var sanityRoll = roller.d6(2);
+                person.setSanityGene(sanityRoll.rolls[0]);
+                person.setSanity(sanityRoll.result);
+            } else if (typeof s1num !== "undefined" && typeof s2num === "undefined") {
+                var roll = roller.d6(1);
+                person.setSanityGene(s1num);
+                person.setSanity(s1num + roll.result);
+            } else if (typeof s1num === "undefined" && typeof s2num !== "undefined") {
+                var roll = roller.d6(1);
+                person.setSanityGene(roll.rolls[0]);
+                person.setSanity(roll.result + s2num);
+            }
+        } else {
+            // Lazy resolution: set sanity gene only if the user provided it explicitly
+            if (typeof s1num !== "undefined") {
+                person.setSanityGene(s1num);
+            }
+            // leave person.sanity undefined for later resolution
+        }
         // person.getCharacteristics() = person.getCharacteristics();
     }
 
     if (document.getElementById("txtName").value) {
         person.setName(document.getElementById("txtName").value);
-    } else {
-
-        if (person.getGender() === "M") {
-            person.setName(addCaps(nameGenerator.getRandomName("human.malefirstname") + " " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix")));
-        } else if (person.getGender() === "F") {
-            person.setName(addCaps(nameGenerator.getRandomName("human.femalefirstname") + " " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix")));
-        } else {
-            person.setName(addCaps(nameGenerator.getRandomName("human")));
-        }
+    }else{
+        person.setName(getRandomNameForCharacter(speciesKey, person.getGender()));
     }
     //{human.firstname} {human.lastname}{human.suffix}
     if (isForcedGrowthClone) { person.setForcedGrowthClone(true); }
@@ -874,18 +965,20 @@ function enableControls() {
 }
 function validateQualifications() {
     var qual = person.getQualifications();
-    if (qual.Agent) { document.getElementById("btnAgent").removeAttribute("disabled"); } else { document.getElementById("btnAgent").setAttribute("disabled", ""); }
-    if (qual.Merchant) { document.getElementById("btnMerchant").removeAttribute("disabled"); } else { document.getElementById("btnMerchant").setAttribute("disabled", ""); }
-    if (qual.Citizen) { document.getElementById("btnCitizen").removeAttribute("disabled"); } else { document.getElementById("btnCitizen").setAttribute("disabled", ""); }
-    if (qual.Craftsman) { document.getElementById("btnCraftsman").removeAttribute("disabled"); } else { document.getElementById("btnCraftsman").setAttribute("disabled", ""); }
-    if (qual.Spacer) { document.getElementById("btnSpacer").removeAttribute("disabled"); } else { document.getElementById("btnSpacer").setAttribute("disabled", ""); }
-    if (qual.Marine) { document.getElementById("btnMarine").removeAttribute("disabled"); } else { document.getElementById("btnMarine").setAttribute("disabled", ""); }
-    if (qual.Soldier) { document.getElementById("btnSoldier").removeAttribute("disabled"); } else { document.getElementById("btnSoldier").setAttribute("disabled", ""); }
-    if (qual.Scout) { document.getElementById("btnScout").removeAttribute("disabled"); } else { document.getElementById("btnScout").setAttribute("disabled", ""); }
-    if (qual.MusterOut) { document.getElementById("btnMusterOut").removeAttribute("disabled"); } else { document.getElementById("btnMusterOut").setAttribute("disabled", ""); }
-    if (qual.Entertainer) { document.getElementById("btnEntertainer").removeAttribute("disabled"); } else { document.getElementById("btnEntertainer").setAttribute("disabled", ""); }
-    if (qual.Scholar) { document.getElementById("btnScholar").removeAttribute("disabled"); } else { document.getElementById("btnScholar").setAttribute("disabled", ""); }
-    if (qual.Noble) { document.getElementById("btnNoble").removeAttribute("disabled"); } else { document.getElementById("btnNoble").setAttribute("disabled", ""); }
+    if(qual.Agent){ document.getElementById("btnAgent").removeAttribute("disabled"); }else{ document.getElementById("btnAgent").setAttribute("disabled","");}
+    if(qual.Merchant){ document.getElementById("btnMerchant").removeAttribute("disabled"); }else{ document.getElementById("btnMerchant").setAttribute("disabled","");}
+    if(qual.Citizen){ document.getElementById("btnCitizen").removeAttribute("disabled"); }else{ document.getElementById("btnCitizen").setAttribute("disabled","");}
+    if(qual.Craftsman){ document.getElementById("btnCraftsman").removeAttribute("disabled"); }else{ document.getElementById("btnCraftsman").setAttribute("disabled","");}
+    if(qual.Spacer){ document.getElementById("btnSpacer").removeAttribute("disabled"); }else{ document.getElementById("btnSpacer").setAttribute("disabled","");}
+    if(qual.Marine){ document.getElementById("btnMarine").removeAttribute("disabled"); }else{ document.getElementById("btnMarine").setAttribute("disabled","");}
+    if(qual.Soldier){ document.getElementById("btnSoldier").removeAttribute("disabled"); }else{ document.getElementById("btnSoldier").setAttribute("disabled","");}
+    if(qual.Scout){ document.getElementById("btnScout").removeAttribute("disabled"); }else{ document.getElementById("btnScout").setAttribute("disabled","");}
+    if(qual.MusterOut){ document.getElementById("btnMusterOut").removeAttribute("disabled"); }else{ document.getElementById("btnMusterOut").setAttribute("disabled","");}
+    if(qual.Entertainer){ document.getElementById("btnEntertainer").removeAttribute("disabled");}else{document.getElementById("btnEntertainer").setAttribute("disabled","");}
+    if(qual.Scholar){ document.getElementById("btnScholar").removeAttribute("disabled");}else{document.getElementById("btnScholar").setAttribute("disabled","");}
+    if(qual.Noble){ document.getElementById("btnNoble").removeAttribute("disabled");}else{document.getElementById("btnNoble").setAttribute("disabled","");}
+    if(qual.Functionary){ document.getElementById("btnFunctionary").removeAttribute("disabled");}else{document.getElementById("btnFunctionary").setAttribute("disabled","");}
+    if(qual.Rogue){ document.getElementById("btnRogue").removeAttribute("disabled");}else{document.getElementById("btnRogue").setAttribute("disabled","");}
     var baOptions = document.querySelectorAll("[data-qualify=\"BA\"]");
     if (qual.BA) {
         for (var i = 0, len = baOptions.length; i < len; i++) {
@@ -897,7 +990,12 @@ function validateQualifications() {
         }
     }
     if (qual.fameEvent) { document.getElementById("btnFameFluxEvent").removeAttribute("disabled"); } else { document.getElementById("btnFameFluxEvent").setAttribute("disabled", ""); }
-    if (qual.resignReserves) { document.getElementById("btnResignFromReserves").removeAttribute("disabled"); } else { document.getElementById("btnResignFromReserves").setAttribute("disabled", ""); }
+    var hasReserveAward = Array.isArray(person.getAwards()) && (person.getAwards().indexOf("Army Reserves") >= 0 || person.getAwards().indexOf("Navy Reserves") >= 0 || person.getAwards().indexOf("Marine Reserves") >= 0);
+    if (qual.resignReserves && hasReserveAward) { 
+        document.getElementById("btnResignFromReserves").removeAttribute("disabled"); 
+    } else { 
+        document.getElementById("btnResignFromReserves").setAttribute("disabled", ""); 
+    }
     //if(qual.fameBonus){ document.getElementById("btnFameMusterOutBonus").removeAttribute("disabled"); }else{document.getElementById("btnFameMusterOutBonus").setAttribute("disabled",""); }
 }
 
@@ -980,7 +1078,13 @@ function getCareerDescription(career, isSchool) {
             desc += "<ul><li>Begin: C1, C2, or C3</li><li>Retry: C5</li><li>Controlling Characteristics: C1, C2, C3</li><li>Continue: Int</li></ul>";
             break;
         case "Noble":
-            desc += "<ul><li>Begin: Automatic if Soc 11+</li><li>Controlling Characteristics: C2, C3, C4, C5</li><li>Continue: 7+</li></ul>";
+            desc += "<ul><li>Begin: Automatic if Soc 11+ (B+)</li><li>Controlling Characteristics: C2, C3, C4, C5</li><li>Intrigue & Return: Roll CC for Intrigue (or Return if in Exile)</li><li>Continue: 7+ (Cannot switch to other careers)</li></ul>";
+            break;
+        case "Functionary":
+            desc += "<ul><li>Pre Req: Prior Career (Non-Noble)</li><li>Begin: 2D &le; Total Terms &times; 3</li><li>Controlling Characteristics: C2, C3, C4, C5</li><li>Office Politics: Risk check against CC (Career Ends on failure) and Reward check against CC (Promotion F0&ndash;F8)</li><li>Continue: Office Politics</li></ul>";
+            break;
+        case "Rogue":
+            desc += "<ul><li>Begin: Check chosen CC (12 is auto failure)</li><li>Controlling Characteristic: Select 1 fixed CC (C1&ndash;C6) for entire career</li><li>Continue: Roll vs CC + Terms (12 is auto failure)</li></ul>";
             break;
         case "Apprenticeship": desc += "<ul><li>Begin: Automatic</li><li>Pass/Fail: Check Tra (or Edu/2)</li><li>Duration: Consumes no time (happens during youth)</li><li>Provides: Skill/Knowledge +4</li></ul>"; break;
         case "Trade School": desc += "<ul><li>Pre Req: Edu 5+</li><li>Begin: Int</li><li>Pass/Fail: Int or Edu, One check</li><li>Duration: 1 year</li><li>Provides: Major +2</li><li>Additional Major +1 with Honors</li></ul>"; break;
