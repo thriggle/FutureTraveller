@@ -262,6 +262,13 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
                 case ENUM_CAREERS.Functionary:
                     careerFame += (career.rank && career.rank.level > 0 ? career.rank.level : 0);
                     break;
+                case ENUM_CAREERS.Rogue:
+                    if (typeof career.successfulSchemes !== "undefined" || typeof career.failedSchemes !== "undefined") {
+                        careerFame += ((career.successfulSchemes || 0) * 2) + ((career.failedSchemes || 0) * 3) + ((career.prisonSentences || 0) * 1);
+                    } else if (career.fame) {
+                        careerFame += career.fame;
+                    }
+                    break;
             }
             if (careerFame > highestSourceOfFame) {
                 highestSourceOfFame = careerFame;
@@ -1622,21 +1629,25 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
                     "Tables": []
                 };
                 for (var i = 0, len = tableHeaders.length; i < len; i++) {
-                    tables.Tables.push(tableHeaders[i]);
-                    if (tableHeaders[i] == "MAJOR") {
+                    var header = tableHeaders[i];
+                    if (header === "Physical" && typeof CareerSkillTables[career]["Physical"] === "undefined" && typeof CareerSkillTables[career]["Personal"] !== "undefined") {
+                        header = "Personal";
+                    }
+                    tables.Tables.push(header);
+                    if (header == "MAJOR") {
                         var major = careers[careers.length - 1].major.label;
-                        tables[tableHeaders[i]] = [major, major, major, major, major, major];
-                    } else if (tableHeaders[i] == "MINOR") {
+                        tables[header] = [major, major, major, major, major, major];
+                    } else if (header == "MINOR") {
                         var minor = careers[careers.length - 1].minor.label;
-                        tables[tableHeaders[i]] = [minor, minor, minor, minor, minor, minor];
+                        tables[header] = [minor, minor, minor, minor, minor, minor];
                     } else {
-                        tables[tableHeaders[i]] = CareerSkillTables[career][tableHeaders[i]];
+                        tables[header] = CareerSkillTables[career][header];
                     }
                     if (typeof currentTablesObject.note !== "undefined" && currentTablesObject.note.length > 0 && (
-                        currentTablesObject.note.indexOf(tableHeaders[i]) == 0 ||
-                        tableHeaders[i].indexOf(currentTablesObject.note.split(" ")[0]) == 0
+                        currentTablesObject.note.indexOf(header) == 0 ||
+                        header.indexOf(currentTablesObject.note.split(" ")[0]) == 0
                     )) {
-                        defaultValue = tableHeaders[i];
+                        defaultValue = header;
                     }
                 }
             }
@@ -5993,10 +6004,8 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
                 advanceAge(pYears);
                 updateFunc();
                 
-                // In Prison: 2 term skills + 2 prison skills (from Column 1 Personal or Column 2 Academic)
+                // In Prison: 2 prison skills only (ONLY from Personal/Physical or Academic tables), no term/scheme skills
                 var prisonSkillTables = [
-                    { age: true, note: "Term Skill" },
-                    { age: true, note: "Term Skill" },
                     { age: false, table: ["Personal", "Academic"], note: "Prison Skill" },
                     { age: false, table: ["Personal", "Academic"], note: "Prison Skill" }
                 ];
@@ -6047,7 +6056,13 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
                             prisonYears = Math.max(0, Math.min(4, negMods + pFlux));
                             rogueCareer.prisonYears = prisonYears;
                             rogueCareer.infamy = (rogueCareer.infamy || 0) + 1;
-                            record("Caught by authorities! Sentenced to " + prisonYears + " year(s) in Prison at start of next term (Negative Mods " + negMods + " + Flux " + pFlux + "). Infamy increased (+1).");
+                            if(prisonYears > 0){
+                                rogueCareer.prisonSentences = (rogueCareer.prisonSentences || 0) + 1;
+                                rogueCareer.fame = (rogueCareer.fame || 0) + 1;
+                                record("Caught by authorities! Sentenced to " + prisonYears + " year(s) in Prison for next term (Negative Mods " + negMods + " + Flux " + pFlux + "). Infamy increased (+1), Fame increased (+1).");
+                            }else{
+                                record("Caught by authorities but avoided actual jail sentence (0 years in Prison)! Infamy increased (+1). Next term will be normal.");
+                            }
                             updateFunc();
                         }
                         
@@ -6085,15 +6100,28 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
                             }
                         }
                         
-                        // Skill Eligibility:
-                        // 2 base Term Skills + 4 for Successful Scheme (both Risk & Reward success) or + 1 for Failed Scheme
-                        var schemeBonusSkills = (riskSuccess && rewardSuccess) ? 4 : 1;
+                        // Fame & Skill Eligibility:
+                        // Successful scheme (Reward success): 2 Fame, 4 bonus skills
+                        // Failed scheme (Reward fail): 3 Fame, 1 bonus skill
+                        var isSchemeSuccess = rewardSuccess;
+                        if(isSchemeSuccess){
+                            rogueCareer.successfulSchemes = (rogueCareer.successfulSchemes || 0) + 1;
+                            rogueCareer.fame = (rogueCareer.fame || 0) + 2;
+                            record("Scheme Success: Gained 2 Fame.");
+                        }else{
+                            rogueCareer.failedSchemes = (rogueCareer.failedSchemes || 0) + 1;
+                            rogueCareer.fame = (rogueCareer.fame || 0) + 3;
+                            record("Scheme Failed: Gained 3 Fame.");
+                        }
+                        updateFunc();
+
+                        var schemeBonusSkills = isSchemeSuccess ? 4 : 1;
                         var termSkillTables = [
                             { age: true, note: "Term Skill" },
                             { age: true, note: "Term Skill" }
                         ];
                         for(var s = 0; s < schemeBonusSkills; s++){
-                            termSkillTables.push({ age: (s < 2 ? true : false), note: (riskSuccess && rewardSuccess) ? "Scheme Success Skill" : "Scheme Failed Skill" });
+                            termSkillTables.push({ age: (s < 2 ? true : false), note: isSchemeSuccess ? "Scheme Success Skill" : "Scheme Failed Skill" });
                         }
                         
                         gainTermSkills(termSkillTables, ENUM_CAREERS.Rogue, updateFunc, () => {
@@ -6194,7 +6222,11 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
                         controllingCharacteristic: selectedCC,
                         prisonYears: 0,
                         totalPayoff: 0,
-                        infamy: 0
+                        infamy: 0,
+                        successfulSchemes: 0,
+                        failedSchemes: 0,
+                        prisonSentences: 0,
+                        fame: 0
                     });
                     record("Joined Rogue with Controlling Characteristic " + selectedCC + " (" + characteristics[ccIndex].name + ").");
                     updateFunc();
