@@ -12,6 +12,7 @@ export function renderCharacter(character,element){
     injectHTML("[data-careers]",careers);
     injectHTML("[data-credits]",renderCredits);
     injectHTML("[data-gender]",renderGender);
+    injectHTML("[data-species]",renderSpecies);
     injectHTML("[data-score]",renderScore);
     function injectHTML(selector,htmlfunc){
         var elements = document.querySelectorAll(selector);
@@ -118,6 +119,11 @@ function renderCredits(character,element){
 }
 function renderGender(character,element){
     element.insertAdjacentHTML("beforeend","<span>"+ character.getGender() + "</span>");
+}
+function renderSpecies(character,element){
+    var sp = character.species;
+    var name = sp && sp.SpeciesName ? sp.SpeciesName : (sp && sp.name ? sp.name : "Humaniti");
+    element.insertAdjacentHTML("beforeend","<span>"+ name + "</span>");
 }
 function renderScore(character,element){
     var scores = character.getPlayabilityScore();
@@ -234,6 +240,9 @@ function statBlock(character,element){
     }else{
         statHTML += "<li>(CS) Sanity: "+character.getSanity()+"</li>";
     }
+    if(typeof character.getPsi() !== "undefined"){
+        statHTML += "<li>(CP) Psi: "+character.getPsi()+"</li>";
+    }
     statHTML += "</ul>";
     statHTML += "<hr/><span>Genetics: " + character.getGenetics().join(",")+"</span>";
     if(typeof character.getSanityGene() !== "undefined"){ statHTML += " <span>San-" + character.getSanityGene()+"</span>";}
@@ -243,6 +252,16 @@ function statBlock(character,element){
     var talent = character.getTalent();
     if(talent.value > 0){
         statHTML += "<hr/><span>Talent("+talent.name+")-"+talent.value+"</span>";
+    }
+    var sp = character.species;
+    if(sp && sp.BaseSenses && sp.BaseSenses.length > 0){
+        statHTML += "<hr/><span>Senses: " + sp.BaseSenses.join(", ") + "</span>";
+    }
+    if(sp && (sp.Height || sp.Weight)){
+        statHTML += "<hr/><span>Typical Height: " + (sp.Height || "n/a") + " | Typical Weight: " + (sp.Weight || "n/a") + "</span>";
+    }
+    if(sp && sp.Notes){
+        statHTML += "<hr/><span>Racial Traits: " + sp.Notes + "</span>";
     }
     element.insertAdjacentHTML("beforeend",statHTML);
 }

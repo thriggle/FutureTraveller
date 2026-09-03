@@ -1,5 +1,5 @@
 import { getRollerFromSeed } from "./rnd.js";
-import { human } from "./character/human.js";
+import { human, getSpecies } from "./character/races.js";
 import { ENUM_CHARACTERISTICS } from "./character/species.js";
 import {CLASS_SPECIES} from "./character/species.js";
 import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills, Knowledges as KnowledgeSpecialties, ArtSkills, TradeSkills } from "./character/skills.js";
@@ -68,6 +68,29 @@ export function createCharacter(roller, species, chosenGender){
     function getTalent(){
         return talent;
     }
+    function applyRacialTraits(){
+        if(species){
+            if(species.Notes && species.Notes.indexOf("Stealth") >= 0){
+                var stealthRoll = roller.d6(1).result;
+                skills[MasterSkills.Stealth] = {"Skill": stealthRoll, "Knowledge": {}};
+                record("Racial Trait: Gained Stealth-" + stealthRoll + ".");
+            }
+            if(species.Notes && species.Notes.indexOf("Rage") >= 0){
+                setTalentName("Rage");
+                setTalentValue(1);
+                record("Racial Trait: Gained Rage.");
+            }
+            if(species.Notes && species.Notes.indexOf("psionic") >= 0){
+                if(typeof psi === "undefined" || psi === null){
+                    var pGene = roller.d6(1).result;
+                    var pRoll = roller.d6(1).result;
+                    setPsiGene(pGene);
+                    setPsi(pGene + pRoll);
+                    record("Racial Trait: Naturally Psionic, Psi Strength is " + (pGene + pRoll) + " (Gene: " + pGene + ").");
+                }
+            }
+        }
+    }
     function resetVariables(){
         careers = [], CCs = []; edu_waivers = 0; 
         fame = 0, credits = 0; languageReceipts = 0;
@@ -80,6 +103,8 @@ export function createCharacter(roller, species, chosenGender){
         reserveYears = {army:0,marine:0,navy:0};
         successfulIntrigues = 0, timesExiled = 0, elevationFluxUsed = false, nobleRank = 0, proxies = 0;
         landGrants = [];
+        talent = {name:"undefined",value:0};
+        applyRacialTraits();
     }
     function addToReserves(service){
         var reserve = service + " Reserves";
@@ -108,8 +133,9 @@ export function createCharacter(roller, species, chosenGender){
             statRolls[2].rolls[0],
             statRolls[3].rolls[0],
         ];
-        sanityGene = undefined; psiGene = undefined;
-        sanity = undefined; //statRolls[6].result;
+        sanityGene = statRolls[6].rolls[0];
+        sanity = statRolls[6].result;
+        psiGene = undefined;
         if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.INS){ genetics.push(statRolls[4].rolls[0]);}
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         resetVariables();
@@ -251,7 +277,9 @@ export function createCharacter(roller, species, chosenGender){
             {name:species.Characteristics[4].name,value:stats[4]},
             {name:species.Characteristics[5].name,value:stats[5]}
         ];
-        sanity = undefined;// roller.d6(2).result;
+        var sRoll = roller.d6(2);
+        sanityGene = sRoll.rolls[0];
+        sanity = sRoll.result;
         genetics = geneticValues.slice(0,4);
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         if(species.Characteristics[4].name === ENUM_CHARACTERISTICS.INS){ genetics.push(geneticValues[4]);}
@@ -290,10 +318,17 @@ export function createCharacter(roller, species, chosenGender){
                 genetics.push(gene_statRolls[i].rolls[0])
             }
         }
-        sanity = undefined; //roller.d6(2).result;
-        sanityGene = undefined; psiGene = undefined;
         if(typeof geneticSanity === "undefined" || geneticSanity === "Random"){
-        }else{ sanityGene = +(geneticSanity);setSanityGene(sanityGene); }
+            var sRoll = roller.d6(2);
+            sanityGene = sRoll.rolls[0];
+            sanity = sRoll.result;
+        }else{
+            sanityGene = +(geneticSanity);
+            var sRoll = roller.d6(1);
+            sanity = sanityGene + sRoll.result;
+        }
+        setSanityGene(sanityGene);
+        setSanity(sanity);
         if(typeof geneticPsionics === "undefined" || geneticPsionics === "Random"){ }
         else{ psiGene = +(geneticPsionics); var psiRoll = roller.d6(1); psi = psiRoll.result + psiGene; setPsiGene(psiGene); setPsi(psi);}
        
@@ -751,8 +786,8 @@ export function createCharacter(roller, species, chosenGender){
     function TrainingCourse(MajorSkill,MajorKnowledge){
         var newLine = "_";
         var remarks = "Training Course: " + newLine;
-        var Int_nD = species.Characteristics[3].nD;
-        var nD = species.Characteristics[4].nD;
+        var Int_nD = 2;
+        var nD = 2;
         if(characteristics[4].name != ENUM_CHARACTERISTICS.INS){
             var tryTradeSchool = true;
             if((characteristics[4].value < 5 && characteristics[4].name === ENUM_CHARACTERISTICS.TRA) || 
@@ -2402,7 +2437,7 @@ export function createCharacter(roller, species, chosenGender){
                     "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
                     (selectedMod)=>{
                         var caution = +(selectedMod);
-                        var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                        var numDice = 2;
                         var riskResult = checkCharacteristic(selectedCC,numDice,caution,"Risk Roll");
                         record(riskResult.remarks);
                         updateFunc();
@@ -2470,7 +2505,7 @@ export function createCharacter(roller, species, chosenGender){
                             
                             
                             if(qualifiesForPromotion){
-                                var intDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
+                                var intDice = 2;
                                 var promoResult = checkCharacteristic(ENUM_CHARACTERISTICS.INT,intDice,careers[careers.length-1].publications+(2*careers[careers.length-1].majorpublications),"Scholar promotion vs INT");
                                 record(promoResult.remarks);
                                 if(!promoResult.success){
@@ -2707,7 +2742,7 @@ export function createCharacter(roller, species, chosenGender){
                             "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
                             (selectedMod)=>{
                                 var caution = +(selectedMod);
-                                var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                                var numDice = 2;
                                 var riskResult = checkCharacteristic(selectedCC,numDice,caution,"Risk Roll");
                                 record(riskResult.remarks);
                                 updateFunc();
@@ -2777,7 +2812,7 @@ export function createCharacter(roller, species, chosenGender){
         if(priorCareers == 0 || careers[priorCareers - 1].active == false){
             
             // apply for career
-            var numDice = species.Characteristics[2].nD + gender.Characteristics[2].nD + caste.Characteristics[2].nD;
+            var numDice = 2;
             var beginRoll = checkCharacteristic(characteristics[2].name,numDice,0,"Begin Agent vs "+(characteristics[2].name));
             record(beginRoll.remarks);
             updateFunc();
@@ -2941,8 +2976,8 @@ export function createCharacter(roller, species, chosenGender){
                     var availableStatNumDice = [];
                     for(var i = 0, len = availableStatIndices.length; i < len; i++){
                         availableStatNumDice.push(
-                            [   species.Characteristics[availableStatIndices[i][0]].nD + gender.Characteristics[availableStatIndices[i][0]].nD + caste.Characteristics[availableStatIndices[i][0]].nD,
-                                species.Characteristics[availableStatIndices[i][1]].nD + gender.Characteristics[availableStatIndices[i][1]].nD + caste.Characteristics[availableStatIndices[i][1]].nD
+                            [   2,
+                                2
                             ]
                         );
                     }
@@ -3022,7 +3057,7 @@ export function createCharacter(roller, species, chosenGender){
                 record("Chose " + selectedCC + " as controlling characteristic for Term #"+termNumber+". Choices remaining: " + CCs.join(","));
                 updateFunc();
                 var ccIndex = +(selectedCC.substring(1))-1;
-                var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                var numDice = 2;
                 var citLifeResult = checkCharacteristic(selectedCC,numDice,0,"Citizen Life vs "+selectedCC);
                 record(citLifeResult.remarks);
                 updateFunc();
@@ -3032,7 +3067,7 @@ export function createCharacter(roller, species, chosenGender){
                         if(majors.length > 0){
                             // chance to select job/hobby
                             var getDegreeLabel = (x,i,ar)=>{return x.label;};
-                            var chooseJobResult = checkCharacteristic(ENUM_CHARACTERISTICS.EDU,species.Characteristics[4].nD + gender.Characteristics[4].nD + caste.Characteristics[4].nD,0,"Select a job vs EDU");
+                            var chooseJobResult = checkCharacteristic(ENUM_CHARACTERISTICS.EDU,2,0,"Select a job vs EDU");
                             record(chooseJobResult.remarks); updateFunc();
                             if(chooseJobResult.success){
                                 var choices = removeDuplicates(majors.map(getDegreeLabel).concat(minors.map(getDegreeLabel)));
@@ -3248,7 +3283,7 @@ export function createCharacter(roller, species, chosenGender){
                     "<br/>Risk: Roll <= "+(ccValue-totalMod) + " + Mod<br/>Reward: Roll <= "+(ccValue+totalMod)+" - Mod",
                     (selectedMod)=>{
                         var caution = +(selectedMod);
-                        var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                        var numDice = 2;
                         var riskResult = checkCharacteristic(CC,numDice,-totalMod+caution,"Risk Roll");
                         record(riskResult.remarks);
                         updateFunc();
@@ -3591,7 +3626,7 @@ export function createCharacter(roller, species, chosenGender){
                                 attendingFlightSchool = promptEducationWaiver("Flight school requires an Honors BA");
                             }
                             if(attendingFlightSchool){
-                                var numDice = species.Characteristics[1].nD + gender.Characteristics[1].nD + caste.Characteristics[1].nD;
+                                var numDice = 2;
                                 var flightSchoolResult = checkCharacteristic("C2",numDice,0,"Flight School");
                                 record(flightSchoolResult.remarks);
                                 updateFunc();
@@ -3633,7 +3668,7 @@ export function createCharacter(roller, species, chosenGender){
                 },true,undefined,CCDescriptions);
             }else{
                 // roll to apply
-                var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
+                var numDice = 2;
                 var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,numDice,0,"Attempt to begin Spacer vs Intellect");
                 record(beginRoll.remarks);
                 updateFunc();
@@ -3659,7 +3694,7 @@ export function createCharacter(roller, species, chosenGender){
                     advanceAge(1);
                     pickOption(["Retry","Try something else"],"Failed to begin Spacer career. Do you wish to retry?",(retryOption)=>{
                         if(retryOption === "Retry"){
-                            var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
+                            var numDice = 2;
                             var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,numDice,0,"Retry attempt to begin Spacer vs Intellect");
                             record(beginRoll.remarks);
                             updateFunc();
@@ -3837,7 +3872,7 @@ export function createCharacter(roller, species, chosenGender){
                     "<br/>Risk: Roll <= "+(ccValue-totalMod) + " + Mod<br/>Reward: Roll <= "+(ccValue+totalMod)+" - Mod",
                     (selectedMod)=>{
                         var caution = +(selectedMod);
-                        var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                        var numDice = 2;
                         var riskResult = checkCharacteristic(CC,numDice,-totalMod+caution,"Risk Roll");
                         record(riskResult.remarks);
                         updateFunc();
@@ -4146,7 +4181,7 @@ export function createCharacter(roller, species, chosenGender){
                 },true,undefined,CCDescriptions);
             }else{
                 // roll to apply
-                var numDice = species.Characteristics[0].nD + gender.Characteristics[0].nD + caste.Characteristics[0].nD;
+                var numDice = 2;
                 var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.STR,numDice,0,"Attempt to begin Soldier vs Strength");
                 record(beginRoll.remarks);
                 updateFunc();
@@ -4171,7 +4206,7 @@ export function createCharacter(roller, species, chosenGender){
                     advanceAge(1);
                     pickOption(["Retry","Try something else"],"Failed to begin Soldier career. Do you wish to retry?",(retryOption)=>{
                         if(retryOption === "Retry"){
-                            var numDice = species.Characteristics[0].nD + gender.Characteristics[0].nD + caste.Characteristics[0].nD;
+                            var numDice = 2;
                             var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.STR,numDice,0,"Attempt to begin Soldier vs Strength");
                             record(beginRoll.remarks);
                             updateFunc();
@@ -4355,7 +4390,7 @@ export function createCharacter(roller, species, chosenGender){
                     "<br/>Risk: Roll <= "+(ccValue-totalMod) + " + Mod<br/>Reward: Roll <= "+(ccValue+totalMod)+" - Mod",
                     (selectedMod)=>{
                         var caution = +(selectedMod);
-                        var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                        var numDice = 2;
                         var riskResult = checkCharacteristic(CC,numDice,-totalMod+caution,"Risk Roll");
                         record(riskResult.remarks);
                         updateFunc();
@@ -4671,7 +4706,7 @@ export function createCharacter(roller, species, chosenGender){
                 },true,undefined,CCDescriptions);
             }else{
                 // roll to apply
-                var numDice = species.Characteristics[0].nD + gender.Characteristics[0].nD + caste.Characteristics[0].nD;
+                var numDice = 2;
                 var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.STR,numDice,0,"Attempt to begin Marine vs Strength");
                 record(beginRoll.remarks);
                 updateFunc();
@@ -4695,7 +4730,7 @@ export function createCharacter(roller, species, chosenGender){
                     advanceAge(1);
                     pickOption(["Retry","Try something else"],"Failed to begin Marine career. Do you wish to retry?",(retryOption)=>{
                         if(retryOption === "Retry"){
-                            var numDice = species.Characteristics[0].nD + gender.Characteristics[0].nD + caste.Characteristics[0].nD;
+                            var numDice = 2;
                             var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.STR,numDice,0,"Attempt to begin Marine vs Strength");
                             record(beginRoll.remarks);
                             updateFunc();
@@ -4777,7 +4812,7 @@ export function createCharacter(roller, species, chosenGender){
                 "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
                 (selectedMod)=>{
                     var caution = +(selectedMod);
-                    var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                    var numDice = 2;
                     var riskResult = checkCharacteristic(CC,numDice,caution,"Risk Roll");
                     record(riskResult.remarks);
                     updateFunc();
@@ -4938,7 +4973,7 @@ export function createCharacter(roller, species, chosenGender){
             var appliedSuccessfully = false;
             pickOption(["Begin as 4th Officer","Begin as Spacehand","Begin as Temp"],"Enlisting in merchant service...",function(enlistChoice){
                 if(enlistChoice === "Begin as 4th Officer"){
-                    var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
+                    var numDice = 2;
                     var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.INT,numDice,0,"Begin Merchant officer vs Int");
                     record(beginRoll.remarks);
                     updateFunc();
@@ -4952,7 +4987,7 @@ export function createCharacter(roller, species, chosenGender){
                     }
                     appliedSuccessfully = beginRoll.success;
                 }else if(enlistChoice === "Begin as Spacehand"){
-                    var numDice = species.Characteristics[1].nD + gender.Characteristics[1].nD + caste.Characteristics[1].nD;
+                    var numDice = 2;
                     var beginRoll = checkCharacteristic(ENUM_CHARACTERISTICS.DEX,numDice,0,"Begin Merchant spacehand vs Dex");
                     record(beginRoll.remarks);
                     updateFunc();
@@ -5035,7 +5070,7 @@ export function createCharacter(roller, species, chosenGender){
                     "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
                     (selectedMod)=>{
                         var caution = +(selectedMod);
-                        var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                        var numDice = 2;
                         var riskResult = checkCharacteristic(CC,numDice,caution,"Risk Roll");
                         tempRecord.push(riskResult.remarks);
                         updateFunc();
@@ -5085,7 +5120,7 @@ export function createCharacter(roller, species, chosenGender){
                                     promptContinue(ENUM_CAREERS.Scout,updateFunc);
                                 });
                             }else{
-                                var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
+                                var numDice = 2;
                                 var retryRoll = checkCharacteristic("C5",numDice,0,"Retry Risk & Reward vs C5");
                                 
                                 if(retryRoll.success){
@@ -5098,7 +5133,7 @@ export function createCharacter(roller, species, chosenGender){
                                         "<br/>Risk: Roll <= "+(ccValue) + " + Mod<br/>Reward: Roll <= "+(ccValue)+" - Mod",
                                         (selectedMod)=>{
                                             var caution = +(selectedMod);
-                                            var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                                            var numDice = 2;
                                             var riskResult = checkCharacteristic(CC,numDice,caution,"Risk Roll");
                                             record(riskResult.remarks);
                                             updateFunc();
@@ -5186,7 +5221,7 @@ export function createCharacter(roller, species, chosenGender){
                 }
             }
             // apply to join Scouts
-            var numDice = species.Characteristics[highestCharIndex].nD + gender.Characteristics[highestCharIndex].nD + caste.Characteristics[highestCharIndex].nD;
+            var numDice = 2;
             var beginRoll = checkCharacteristic(characteristics[highestCharIndex].name,numDice,0,"Begin Scouts vs "+(characteristics[highestCharIndex].name));
             record(beginRoll.remarks);
             updateFunc();
@@ -5215,7 +5250,7 @@ export function createCharacter(roller, species, chosenGender){
                 advanceAge(1);
                 pickOption(["Retry","Try something else"],"Failed aptitude test to join Scouts. You may appeal for a second chance if you pass a qualifying exam.",(choice)=>{
                     if(choice === "Retry"){
-                        var numDice = species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD;
+                        var numDice = 2;
                         var retryRoll = checkCharacteristic("C5",numDice,0,"Retry Join Scouts vs C5");
                         record(retryRoll.remarks);
                         updateFunc();
@@ -5522,7 +5557,7 @@ export function createCharacter(roller, species, chosenGender){
         var rollForElevation = function(mod){
             var wasElevated = false;
             // roll for elevation; if roll is greater than or equal to SOC, increase noble rank
-            var socDice = species.Characteristics[5].nD + gender.Characteristics[5].nD + caste.Characteristics[5].nD;
+            var socDice = 2;
             var roll = roller.d6(socDice);
             var result = roll.result;
             var rolls = roll.rolls;
@@ -5556,7 +5591,7 @@ export function createCharacter(roller, species, chosenGender){
                 if(isInExile){
                     var ccIndex = +(selectedCC.substring(1))-1;
                     var returnMod = -successfulIntrigues;
-                    var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                    var numDice = 2;
                     var returnResult = checkCharacteristic(selectedCC,numDice,returnMod,"Return from Exile Roll");
                     record(returnResult.remarks);
                     updateFunc(); 
@@ -5573,7 +5608,7 @@ export function createCharacter(roller, species, chosenGender){
                     // roll intrigue (to avoid exile and attempt elevation)
                     var ccIndex = +(selectedCC.substring(1))-1;
                     var intrigueMod = timesExiled;
-                    var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                    var numDice = 2;
                     var intrigueResult = checkCharacteristic(selectedCC,numDice,intrigueMod,"Intrigue Roll");
                     record(intrigueResult.remarks);
                     updateFunc();
@@ -5671,7 +5706,7 @@ export function createCharacter(roller, species, chosenGender){
                 record("Chose " + selectedCC + " as controlling characteristic for Term #" + termNumber + ". Choices remaining: " + CCs.join(","));
                 
                 var ccIndex = +(selectedCC.substring(1)) - 1;
-                var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+                var numDice = 2;
                 
                 // Risk Roll vs CC (no mods)
                 var riskResult = checkCharacteristic(selectedCC, numDice, 0, "Risk Roll (Office Politics)");
@@ -5828,7 +5863,7 @@ export function createCharacter(roller, species, chosenGender){
             var ccIndex = +(fixedCC.substring(1)) - 1;
             var ccName = characteristics[ccIndex].name;
             var ccVal = characteristics[ccIndex].value;
-            var numDice = species.Characteristics[ccIndex].nD + gender.Characteristics[ccIndex].nD + caste.Characteristics[ccIndex].nD;
+            var numDice = 2;
             var termNum = rogueCareer.terms;
             
             // If in prison from previous term
@@ -6210,7 +6245,7 @@ export function createCharacter(roller, species, chosenGender){
             }
         }
         if(typeof difficulty === "undefined"){ 
-            difficulty = species.Characteristics[index].nD + gender.Characteristics[index].nD + caste.Characteristics[index].nD;
+            difficulty = 2;
         }
         if(typeof remarks == "undefined"){
             remarks = difficulty + "D vs "+characteristic +" ("+target+")" + (mods > 0 ? ("+"+mods) : "");
@@ -6295,8 +6330,9 @@ export function createCharacter(roller, species, chosenGender){
             }
         }
         if(!special){
-            characteristicName = characteristics[index].name
-            var max = (species == human) ? 15 : species.Characteristics[index].nD*6+6;
+            characteristicName = characteristics[index].name;
+            var maxDiceRoll = (species.Characteristics[index].nD * 6) + (species.Characteristics[index].Mod || 0);
+            var max = Math.max(15, maxDiceRoll);
             if(characteristics[index].value < max){
                 characteristics[index].value += amount;
             }else{ amount = 0;}
@@ -6514,7 +6550,7 @@ export function createCharacter(roller, species, chosenGender){
                 remarks += characteristics[index].name + " OK. ";
             }
         }
-        var stage = CLASS_SPECIES.getLifeStageFromAge(age);
+        var stage = species.getLifeStageFromAge(age);
         var numReducedToZero = 0;
         var remarks = "Aging check at age " + age + " vs life stage " + stage+": ";
         if(stage >= 9 || (isForcedGrowthClone && stage >= 8)){
@@ -6799,7 +6835,7 @@ export function createCharacter(roller, species, chosenGender){
             psiGene:getPsiGene(),
             shipShares:getShipShares(),
             skills:skills,
-            species:species,
+            species: species.SpeciesName || species.name || "Humaniti",
             fameFlux:fameFlux,
             resignationDeclined:resignationDeclined,
             reserveYears:reserveYears,
@@ -6864,9 +6900,10 @@ export function createCharacter(roller, species, chosenGender){
         setSkills(characterJson.skills);
         resignationDeclined = typeof characterJson.resignationDeclined == "undefined" ? false : characterJson.resignationDeclined;
         reserveYears = typeof characterJson.reserveYears == "undefined" ? {army:0,marine:0,navy:0} : characterJson.reserveYears;
-        switch(characterJson.species){
-            case "human":species = human; break;
-            default: species = human;
+        if(characterJson.species){
+            species = getSpecies(characterJson.species);
+        }else{
+            species = human;
         }
         successfulIntrigues = typeof characterJson.successfulIntrigues == "undefined" ? 0 : characterJson.successfulIntrigues;
         timesExiled = typeof characterJson.timesExiled == "undefined" ? 0 : characterJson.timesExiled;
@@ -6892,7 +6929,8 @@ export function createCharacter(roller, species, chosenGender){
         setPsiGene,getPsiGene,setPsi,getPsi,
         isForcedGrowthClone:isForcedGrowthClone,
         gender:genderKey, getCharacteristics,
-        getSkills, getGenetics:getGenetics, species:species,
+        getSkills, getGenetics:getGenetics, get species(){ return species; },
+        getSpecies: function(){ return species; },
         setAge:setAge, getAge:getAge, getNativeLanguage:getNativeLanguage, setNativeLanguage:setNativeLanguage, getNativeLanguageLevel,
         setForcedGrowthClone:setForcedGrowthClone, rollStatsFromGenes:rollStatsFromGenes,
         getAwards:getAwards, getMajorsLabels:getMajorsLabels, getMinorsLabels:getMinorsLabels, getMajors:getMajors, getMinors:getMinors,

@@ -1,4 +1,4 @@
-import { human } from "./human.js";
+import { human, getSpecies, SpeciesList } from "./races.js";
 import { getRollerFromSeed } from "../rnd.js";
 import { createCharacter } from "../character.js";
 import { ENUM_SKILLS, Knowledges } from "./skills.js";
@@ -12,6 +12,23 @@ var nameGenerator;
 var roller = getRollerFromSeed(), person;
 NameGenerator(getNames(),(generator)=>{ nameGenerator = generator;},undefined,roller.random,true);
 //document.getElementById("txtHomeworldTradeCodes").value = getRandomTradeCodes();
+var defaultLanguages = {
+    aslan: "Trokh",
+    vargr: "Gvegh",
+    zhodani: "Zdetl",
+    bwap: "Anglic",
+    ursa: "Anglic",
+    human: "Anglic"
+};
+var slctSpeciesEl = document.getElementById("slctSpecies");
+if (slctSpeciesEl) {
+    slctSpeciesEl.addEventListener("change", () => {
+        var speciesKey = slctSpeciesEl.value.toLowerCase();
+        if (defaultLanguages[speciesKey]) {
+            document.getElementById("slctNativeLanguage").value = defaultLanguages[speciesKey];
+        }
+    });
+}
 newCharacter(); 
 var collapserHandles = document.querySelectorAll("fieldset legend");
 for (var i = 0, len = collapserHandles.length; i < len; i++) {
@@ -45,13 +62,65 @@ function onNavigate(e){
         document.querySelector("[data-nav='"+target+"']"+tierselector).style.display = "block";
     }
 }
+function getValidRandomName(generator, key){
+    if (!generator) return null;
+    if (generator.templates && !generator.templates[key]) {
+        return null;
+    }
+    var result = generator.getRandomName(key);
+    if (typeof result === "string" && result.startsWith("Invalid Key")) {
+        return null;
+    }
+    return result;
+}
+function getRandomNameForCharacter(speciesKey, gender){
+    var name = "";
+    try{
+        if(nameGenerator){
+            var key = (speciesKey || "human").toLowerCase();
+            if(gender === "M"){
+                var first = getValidRandomName(nameGenerator, key + ".malefirstname");
+                if(first){
+                    var last = getValidRandomName(nameGenerator, key + ".lastname") || "";
+                    var suf = getValidRandomName(nameGenerator, key + ".suffix") || "";
+                    name = (first + " " + last + suf).trim();
+                }
+            }else if(gender === "F"){
+                var first = getValidRandomName(nameGenerator, key + ".femalefirstname");
+                if(first){
+                    var last = getValidRandomName(nameGenerator, key + ".lastname") || "";
+                    var suf = getValidRandomName(nameGenerator, key + ".suffix") || "";
+                    name = (first + " " + last + suf).trim();
+                }
+            }
+            if(!name){
+                var spName = getValidRandomName(nameGenerator, key);
+                if(spName) name = spName.trim();
+            }
+            // Fall back to Humaniti if no species-specific template exists
+            if(!name){
+                if(gender === "M"){
+                    var hFirst = getValidRandomName(nameGenerator, "human.malefirstname") || "John";
+                    var hLast = getValidRandomName(nameGenerator, "human.lastname") || "Doe";
+                    var hSuf = getValidRandomName(nameGenerator, "human.suffix") || "";
+                    name = (hFirst + " " + hLast + hSuf).trim();
+                }else if(gender === "F"){
+                    var hFirst = getValidRandomName(nameGenerator, "human.femalefirstname") || "Jane";
+                    var hLast = getValidRandomName(nameGenerator, "human.lastname") || "Doe";
+                    var hSuf = getValidRandomName(nameGenerator, "human.suffix") || "";
+                    name = (hFirst + " " + hLast + hSuf).trim();
+                }else{
+                    name = getValidRandomName(nameGenerator, "human") || "J. Doe";
+                }
+            }
+        }
+    }catch(e){}
+    return name ? addCaps(name.trim()) : "J. Doe";
+}
 document.getElementById("btnRandomName").addEventListener("click",()=>{
     var chosenGender = document.getElementById("slctGender").value;
-    switch(chosenGender){
-        case "random": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human")); break;
-        case "M": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human.malefirstname") +" " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix") ); break;
-        case "F": document.getElementById("txtName").value = addCaps(nameGenerator.getRandomName("human.femalefirstname") +" " + nameGenerator.getRandomName("human.lastname") + nameGenerator.getRandomName("human.suffix") ); break;
-    }
+    var speciesKey = document.getElementById("slctSpecies").value;
+    document.getElementById("txtName").value = getRandomNameForCharacter(speciesKey, chosenGender);
     onNameFieldValueChange();
 });
 document.getElementById("btnApplyName").addEventListener("click",()=>{
@@ -562,7 +631,9 @@ document.getElementById("btnImportJSON").addEventListener("change", function () 
 function newCharacter(){
     clear();
     var chosenGender = document.getElementById("slctGender").value;
-    person = createCharacter(roller, human, chosenGender);
+    var speciesKey = document.getElementById("slctSpecies") ? document.getElementById("slctSpecies").value : "human";
+    var selectedSpecies = getSpecies(speciesKey);
+    person = createCharacter(roller, selectedSpecies, chosenGender);
     
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if(document.getElementById("rdoAttributesNatural").checked){
@@ -603,14 +674,7 @@ function newCharacter(){
     if(document.getElementById("txtName").value){
         person.setName(document.getElementById("txtName").value);
     }else{
-        
-        if(person.getGender() === "M"){
-            person.setName(addCaps(nameGenerator.getRandomName("human.malefirstname") + " " + nameGenerator.getRandomName("human.lastname")+nameGenerator.getRandomName("human.suffix")));
-        }else if(person.getGender() === "F"){
-            person.setName(addCaps(nameGenerator.getRandomName("human.femalefirstname") + " " + nameGenerator.getRandomName("human.lastname")+nameGenerator.getRandomName("human.suffix")));
-        }else{
-            person.setName(addCaps(nameGenerator.getRandomName("human")));
-        }
+        person.setName(getRandomNameForCharacter(speciesKey, person.getGender()));
     }
     //{human.firstname} {human.lastname}{human.suffix}
     if(isForcedGrowthClone) { person.setForcedGrowthClone(true);}
@@ -618,7 +682,7 @@ function newCharacter(){
     person.getCharacteristics()[3].value + "," + person.getCharacteristics()[4].value + "," + person.getCharacteristics()[5].value
     );
     log(person.setNativeLanguage(document.getElementById("slctNativeLanguage").value));
-    log(person.advanceAge(human.getFirstYearOfStage(3)));
+    log(person.advanceAge(selectedSpecies.getFirstYearOfStage(3)));
     log(person.gainSkillsFromHomeworldTradeCodes(document.getElementById("txtHomeworldTradeCodes").value, log, undefined,undefined, document.getElementById("chkLowTechHW").checked)());
     renderCharacter(person, document.body);
     enableControls();
