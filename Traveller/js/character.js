@@ -6,9 +6,13 @@ import { SoldierSkills, StarshipSkills, ENUM_SKILLS, ENUM_SKILLS as MasterSkills
 import { getDialog, dialogCallback, pickOption, pickSkill } from "./character/dialog.js";
 import { ENUM_CAREERS, getCCs, citizenLifeJob, CareerSkillTables, CareerBenefitTables, ServiceBranchMods } from "./character/careers.js";
 
-export function createCharacter(roller, species, chosenGender) {
+export function createCharacter(roller, species, chosenGender, shouldRollSanityImmediately) {
     if (typeof roller === "undefined") {
         roller = getRollerFromSeed();
+    }
+
+    if (typeof shouldRollSanityImmediately === "undefined") {
+        shouldRollSanityImmediately = false;
     }
 
     if (typeof species === "undefined") {
@@ -54,7 +58,7 @@ export function createCharacter(roller, species, chosenGender) {
     var fame = 0, credits = 0, fameFluxApplied = false, finalFameRoll = false, talent = { name: "undefined", value: 0 };
     var merchantShipShareReceiptLevel = 1, shipShares = 0, successfulIntrigues = 0, timesExiled = 0, nobleRank = 0;
     var job = { skill: undefined, knowledge: undefined }, hobby = { skill: undefined, knowledge: undefined }, lastCitLifeReceipt = undefined;
-    var statRollResults = rollStats();
+    var statRollResults = rollStats(shouldRollSanityImmediately);
     var characteristics = statRollResults.characteristics, genetics = statRollResults.genetics;
     var fameMusterOutBonus = false;
     var fameFlux = 0;
@@ -112,7 +116,10 @@ export function createCharacter(roller, species, chosenGender) {
         var reserve = service + " Reserves";
         if (awards.indexOf(reserve) === -1) { awards.push(reserve); }
     }
-    function rollStats() {
+    function rollStats(rollSanityImmediately) {
+        if (typeof rollSanityImmediately === "undefined") {
+            rollSanityImmediately = false;
+        }
         var statRolls = [
             roller.d6(species.Characteristics[0].nD + gender.Characteristics[0].nD + caste.Characteristics[0].nD),
             roller.d6(species.Characteristics[1].nD + gender.Characteristics[1].nD + caste.Characteristics[1].nD),
@@ -120,8 +127,10 @@ export function createCharacter(roller, species, chosenGender) {
             roller.d6(species.Characteristics[3].nD + gender.Characteristics[3].nD + caste.Characteristics[3].nD),
             roller.d6(species.Characteristics[4].nD + gender.Characteristics[4].nD + caste.Characteristics[4].nD),
             roller.d6(species.Characteristics[5].nD + gender.Characteristics[5].nD + caste.Characteristics[5].nD),
-            roller.d6(2) // sanity
         ];
+        if (rollSanityImmediately) {
+            statRolls.push(roller.d6(2));
+        }
         var characteristics = [
             { name: species.Characteristics[0].name, value: statRolls[0].result + gender.Characteristics[0].Mod + caste.Characteristics[0].Mod },
             { name: species.Characteristics[1].name, value: statRolls[1].result + gender.Characteristics[1].Mod + caste.Characteristics[1].Mod },
@@ -135,8 +144,12 @@ export function createCharacter(roller, species, chosenGender) {
             statRolls[2].rolls[0],
             statRolls[3].rolls[0],
         ];
-        sanityGene = statRolls[6].rolls[0];
-        sanity = statRolls[6].result;
+        sanityGene = undefined;
+        sanity = undefined;
+        if (rollSanityImmediately) {
+            sanityGene = statRolls[6].rolls[0];
+            sanity = statRolls[6].result;
+        }
         psiGene = undefined;
         if(species.Characteristics[4].name == ENUM_CHARACTERISTICS.INS){ genetics.push(statRolls[4].rolls[0]);}
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
@@ -279,9 +292,9 @@ export function createCharacter(roller, species, chosenGender) {
             { name: species.Characteristics[4].name, value: stats[4] },
             { name: species.Characteristics[5].name, value: stats[5] }
         ];
-        var sRoll = roller.d6(2);
-        sanityGene = sRoll.rolls[0];
-        sanity = sRoll.result;
+        //var sRoll = roller.d6(2);
+        sanityGene = undefined; //sRoll.rolls[0];
+        sanity = undefined; // sanity = sRoll.result;
         genetics = geneticValues.slice(0,4);
         skills[MasterSkills.Language].Knowledge[nativeLanguage] = 0;
         if (species.Characteristics[4].name === ENUM_CHARACTERISTICS.INS) { genetics.push(geneticValues[4]); }
@@ -296,8 +309,12 @@ export function createCharacter(roller, species, chosenGender) {
     function record(message) {
         history.push("Age " + age + ": " + message);
     }
-    function rollStatsFromGenes(genes, geneticSanity, geneticPsionics) {
+    function rollStatsFromGenes(genes, geneticSanity, geneticPsionics, rollSanityImmediately) {
+        if (typeof rollSanityImmediately === "undefined") {
+            rollSanityImmediately = false;
+        }
         sanity = undefined; psi = undefined;
+        sanityGene = undefined;
         var gene_statRolls = [];
         genetics = [];
         for (var i = 0, len = genes.length; i < len; i++) {
@@ -320,17 +337,19 @@ export function createCharacter(roller, species, chosenGender) {
                 genetics.push(gene_statRolls[i].rolls[0])
             }
         }
-        if(typeof geneticSanity === "undefined" || geneticSanity === "Random"){
-            var sRoll = roller.d6(2);
-            sanityGene = sRoll.rolls[0];
-            sanity = sRoll.result;
-        }else{
-            sanityGene = +(geneticSanity);
-            var sRoll = roller.d6(1);
-            sanity = sanityGene + sRoll.result;
+        if (rollSanityImmediately) {
+            if(typeof geneticSanity === "undefined" || geneticSanity === "Random"){
+                var sRoll = roller.d6(2);
+                sanityGene = sRoll.rolls[0];
+                sanity = sRoll.result;
+            }else{
+                sanityGene = +(geneticSanity);
+                var sRoll = roller.d6(1);
+                sanity = sanityGene + sRoll.result;
+            }
+            setSanityGene(sanityGene);
+            setSanity(sanity);
         }
-        setSanityGene(sanityGene);
-        setSanity(sanity);
         if(typeof geneticPsionics === "undefined" || geneticPsionics === "Random"){ }
         else{ psiGene = +(geneticPsionics); var psiRoll = roller.d6(1); psi = psiRoll.result + psiGene; setPsiGene(psiGene); setPsi(psi);}
        

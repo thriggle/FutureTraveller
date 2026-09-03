@@ -834,11 +834,12 @@ function newCharacter() {
     var chosenGender = document.getElementById("slctGender").value;
     var speciesKey = document.getElementById("slctSpecies") ? document.getElementById("slctSpecies").value : "human";
     var selectedSpecies = getSpecies(speciesKey);
-    person = createCharacter(roller, selectedSpecies, chosenGender);
+    var shouldRollSanityAtCreation = !!(document.getElementById("chkInitialSanity") && document.getElementById("chkInitialSanity").checked);
+    person = createCharacter(roller, selectedSpecies, chosenGender, shouldRollSanityAtCreation);
     
     var isForcedGrowthClone = document.getElementById("isForcedGrowthClone").checked;
     if (document.getElementById("rdoAttributesNatural").checked) {
-        person.rollStatsFromGenes(["Random", "Random", "Random", "Random"]);
+        person.rollStatsFromGenes(["Random", "Random", "Random", "Random"], undefined, undefined, shouldRollSanityAtCreation);
     } else if (document.getElementById("rdoAttributesClone").checked) {
         var genes = [
             document.getElementById("slctGeneticC1").value,
@@ -848,7 +849,7 @@ function newCharacter() {
             document.getElementById("slctGeneticC5").value,
             ,
         ];
-        person.rollStatsFromGenes(genes, document.getElementById("slctGeneticCS").value, document.getElementById("slctGeneticCP").value);
+        person.rollStatsFromGenes(genes, document.getElementById("slctGeneticCS").value, document.getElementById("slctGeneticCP").value, shouldRollSanityAtCreation);
         //person.characteristics = person.getCharacteristics();
     } else if (document.getElementById("rdoAttributesCustom").checked) {
         // TODO
@@ -869,6 +870,11 @@ function newCharacter() {
             +(document.getElementById("txtCustomC6").value),
         ];
         person.initStats(attributes, genetics);
+        if (shouldRollSanityAtCreation) {
+            var sanityRoll = roller.d6(2);
+            person.setSanityGene(sanityRoll.rolls[0]);
+            person.setSanity(sanityRoll.result);
+        }
         // person.getCharacteristics() = person.getCharacteristics();
     }
 
