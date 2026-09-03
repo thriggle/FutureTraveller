@@ -742,10 +742,15 @@ export function createCharacter(roller, species, chosenGender, shouldRollSanityI
         if (typeof note === "undefined") { note = ""; } else { note += " " }
         var remarks = "";
         var success = false;
-        if (characteristics[5].value - edu_waivers >= 2) {
-            var useWaiver = confirm(note + "Do you want to try to use an education waiver? (Current waiver value=" + (characteristics[5].value - edu_waivers) + ")");
+        var soc = characteristics[5].value;
+        if (characteristics[5].name === ENUM_CHARACTERISTICS.CHA) {
+            soc = Math.floor(characteristics[5].value / 2);
+        }
+        var waiverValue = soc - edu_waivers;
+        if (waiverValue >= 2) {
+            var useWaiver = confirm(note + "Do you want to try to use an education waiver? (Current waiver value=" + waiverValue + ")");
             if (useWaiver) {
-                var result = check(characteristics[5].value - edu_waivers, 2, 0, "Education Waiver vs " + (characteristics[5].value - edu_waivers))
+                var result = check(waiverValue, 2, 0, "Education Waiver vs " + waiverValue);
                 edu_waivers += 1;
                 success = result.success;
                 remarks += result.remarks;
