@@ -930,7 +930,7 @@ function newCharacter() {
         person.getCharacteristics()[3].value + "," + person.getCharacteristics()[4].value + "," + person.getCharacteristics()[5].value
     );
     log(person.setNativeLanguage(document.getElementById("slctNativeLanguage").value));
-    log(person.advanceAge(human.getFirstYearOfStage(3)));
+    log(person.advanceAge(selectedSpecies.getFirstYearOfStage(3)));
 
     // if homeworld radio button (name = 'homeworld' ) with value of 'choose' was selected instead of the one with 'specify', log the homeworld name
     if (document.querySelector("input[name='homeworld']:checked").value === "choose") {
