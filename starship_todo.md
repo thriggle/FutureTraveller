@@ -15,11 +15,14 @@ This document outlines the upgrade path and feature roadmap for the **T5 Ship He
 │  [07] Jump Fields & Astrogation      ──► ❌ Not yet implemented            │
 │  [08-09] Armor Layers & Coatings     ──► 🟡 Partial (Layers in place;       │
 │                                            Coatings/Anti-threats missing)   │
-│  [10-13] Drives, Power & Fuel        ──► ✅ Comprehensive (A-Z, Stages)    │
-│  [14-16] Sensors, Weapons, Defenses  ──► ❌ Not yet implemented            │
+│  [10-13] Drives, Power & Fuel        ──► ✅ Comprehensive (A-Z, Stages,     │
+│                                            Dynamic TL & Stage breakdown)    │
+│  [14-16] Sensors, Weapons, Defenses  ──► ✅ Fully implemented (Weapons2,   │
+│                                            Defenses2, Sensors2, Hardpoints, │
+│                                            Dynamic Staging & Range TL)      │
 │  [17, 21] Operations, Life Support   ──► ❌ Not yet implemented            │
-│  [18, 22] Controls, Consoles, Model/ ──► 🟡 Partial (CP counts tracked,    │
-│                                            Consoles & Computers missing)    │
+│  [18, 22] Controls, Consoles, Model/ ──► ✅ Fully implemented (CP counts,  │
+│                                            Consoles 14 roles, Model/0-33)   │
 │  [19, 23] Accommodations & Payload   ──► 🟡 Partial (Cargo in place;        │
 │                                            Staterooms/Berths missing)       │
 │  [20, 24-25] Crew Hierarchy & Roster ──► ❌ Not yet implemented            │
@@ -201,8 +204,8 @@ This document outlines the upgrade path and feature roadmap for the **T5 Ship He
 
 | Phase | Focus Area | Key Features & Deliverables |
 |---|---|---|
-| **Phase 1** | **Weapons, Defenses & Sensors** | • Hardpoint calculator (1 per 100t)<br>• Turret (T1-T4), Barbette, Bay, and Spinal Mount dialogs<br>• Weapons2 library (Lasers, Missiles, Sand, Particle, Meson)<br>• Defenses2 library (Screens, Dampers, PDL, Black Globe)<br>• Sensors2 library (Passive/Active arrays) |
-| **Phase 2** | **Controls, Consoles & Computers** | • Dynamic Control Panel (CP) accumulator<br>• Console dialog (Cramped, Standard, Master)<br>• Ship's Computer Model/0 through Model/33 selector<br>• Computer Cells vs. Console connection validator |
+| **Phase 1** | **Weapons, Defenses & Sensors** | ✅ **COMPLETED**<br>• Hardpoint calculator (1 per 100t)<br>• Turret (T1-T4), Barbette, Bay, and Spinal Mount dialogs<br>• Weapons2 library (Lasers, Missiles, Sand, Particle, Meson)<br>• Defenses2 library (Screens, Dampers, PDL, Black Globe)<br>• Sensors2 library (Passive/Active arrays)<br>• Dynamic Staging & Range TL calculations |
+| **Phase 2** | **Controls, Consoles & Computers** | ✅ **COMPLETED**<br>• Dynamic Control Panel (CP) accumulator<br>• Console dialog (14 functions/roles, Cramped, Standard, Master, Holo)<br>• Ship's Computer Model/0 through Model/33 (with bis, fib, backup, master)<br>• Processing Cells & Software Capacity tracking<br>• Dynamic Tech Level syncing across all components |
 | **Phase 3** | **Accommodations & Crew Engine** | • Accommodations catalog (Staterooms, Suites, Low Berths, Commons)<br>• Life Support & Person-Day tracker<br>• Automated Crew Hierarchy generator (Naval / Merchant / Scout) |
 | **Phase 4** | **Astrogation & Quality Metrics** | • Jump Field Type selector<br>• Safe Jump Distance ($D$) & Interference ($X$) calculators<br>• Demand ($D$), Comfort ($C$), and Ergonomics ($E$) evaluation panel<br>• Tension & Mishap warning indicators |
 | **Phase 5** | **Mission Header & Fillform Export** | • 6-Character T5 Mission Code builder<br>• Official 3-Page T5 Fillform (1, 2, 3) interactive viewer<br>• Printable / PDF / Markdown sheet exporter |

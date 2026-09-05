@@ -102,6 +102,439 @@ export const ENUM_HULL_ARMOR = {
     Organic: { type: "Organic", AV_Mult: 0.5, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined", "Airframe"] },
     FeN: { type: "FeN", AV_Mult: 0, ton_Mult: 1, AV_FlatBonus: 20, configurations: ["Planetoid", "Unstreamlined"] }
 };
+
+export const ENUM_STAGE_EFFECTS = {
+    Experimental: { code: 'Exp', stage: "Experimental", tlMod: -3, costMult: 10, mod: -3 },
+    Prototype: { code: 'Pro', stage: "Prototype", tlMod: -2, costMult: 5, mod: -2 },
+    Early: { code: 'Ear', stage: "Early", tlMod: -1, costMult: 2, mod: -1 },
+    Standard: { code: 'Std', stage: "Standard", tlMod: 0, costMult: 1, mod: 0 },
+    Basic: { code: 'Bas', stage: "Basic", tlMod: 0, costMult: 0.5, mod: 0 },
+    Alternate: { code: 'Alt', stage: "Alternate", tlMod: 0, costMult: 1, mod: 0 },
+    Improved: { code: 'Imp', stage: "Improved", tlMod: 1, costMult: 1, mod: 1 },
+    Generic: { code: 'Gen', stage: "Generic", tlMod: 1, costMult: 0.5, mod: 0 },
+    Modified: { code: 'Mod', stage: "Modified", tlMod: 2, costMult: 0.5, mod: 2 },
+    Advanced: { code: 'Adv', stage: "Advanced", tlMod: 3, costMult: 2, mod: 3 },
+    Ultimate: { code: 'Ult', stage: "Ultimate", tlMod: 4, costMult: 3, mod: 4 }
+};
+
+export const ENUM_SPACE_RANGES = {
+    BR: { code: 'BR', name: "Boarding Range (BR, 0)", s: 0, r: 5, tlMod: -3, tonsMult: 0.25, costMult: 0.25 },
+    FR: { code: 'FR', name: "Fighter Range (FR, 2)", s: 2, r: 6, tlMod: -2, tonsMult: 1 / 3, costMult: 1 / 3 },
+    SR: { code: 'SR', name: "Short Range (SR, 5)", s: 5, r: 7, tlMod: -1, tonsMult: 0.5, costMult: 0.5 },
+    AR: { code: 'AR', name: "Attack Range (AR, 7)", s: 7, r: 7, tlMod: 0, tonsMult: 1.0, costMult: 1.0 },
+    LR: { code: 'LR', name: "Long Range (LR, 9)", s: 9, r: 8, tlMod: 1, tonsMult: 2.0, costMult: 3.0 },
+    DS: { code: 'DS', name: "Deep Space (DS, 12)", s: 12, r: 9, tlMod: 2, tonsMult: 3.0, costMult: 5.0 }
+};
+
+export const ENUM_WEAPON_MOUNTS = {
+    Fix: { code: 'Fix', name: "Fixed Mount", tons: 0, mod: -2, hits: 1, cost: 0.1, hardpointReq: 1, firmpointReq: 1, cp: 1 },
+    T1: { code: 'T1', name: "Single Turret (T1)", tons: 1, mod: -2, hits: 1, cost: 0.2, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T2: { code: 'T2', name: "Dual Turret (T2)", tons: 1, mod: -1, hits: 2, cost: 0.5, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T3: { code: 'T3', name: "Triple Turret (T3)", tons: 1, mod: 0, hits: 3, cost: 1.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T4: { code: 'T4', name: "Quad Turret (T4)", tons: 1, mod: 1, hits: 4, cost: 1.5, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    B1: { code: 'B1', name: "Single Barbette (B1)", tons: 3, mod: 2, hits: 5, cost: 3.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    B2: { code: 'B2', name: "Dual Barbette (B2)", tons: 5, mod: 3, hits: 10, cost: 4.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    Bay: { code: 'Bay', name: "Small Bay (50t)", tons: 50, mod: 5, hits: 20, cost: 5.0, hardpointReq: 5, firmpointReq: 0, cp: 2 },
+    LBay: { code: 'LBay', name: "Large Bay (100t)", tons: 100, mod: 8, hits: 30, cost: 10.0, hardpointReq: 10, firmpointReq: 0, cp: 3 },
+    M: { code: 'M', name: "Main / Spinal (200t)", tons: 200, mod: 10, hits: 100, cost: 20.0, hardpointReq: 20, firmpointReq: 0, cp: 4 }
+};
+
+export const ENUM_DEFENSE_MOUNTS = {
+    Bo: { code: 'Bo', name: "Bolt-In Mount (3t)", tons: 3, mod: 3, cost: 3.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    Surf: { code: 'Surf', name: "Surface Mount", tons: 0, mod: 0, cost: 1.0, hardpointReq: 0, firmpointReq: 0, cp: 1 },
+    T1: { code: 'T1', name: "Single Turret (T1)", tons: 1, mod: 1, cost: 0.2, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T2: { code: 'T2', name: "Dual Turret (T2)", tons: 1, mod: 2, cost: 0.5, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T3: { code: 'T3', name: "Triple Turret (T3)", tons: 1, mod: 3, cost: 1.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T4: { code: 'T4', name: "Quad Turret (T4)", tons: 1, mod: 4, cost: 1.5, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    B1: { code: 'B1', name: "Single Barbette (B1)", tons: 3, mod: 1, cost: 3.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    B2: { code: 'B2', name: "Dual Barbette (B2)", tons: 5, mod: 2, cost: 4.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    Bay: { code: 'Bay', name: "Small Bay (50t)", tons: 50, mod: 1, cost: 5.0, hardpointReq: 5, firmpointReq: 0, cp: 2 },
+    LBay: { code: 'LBay', name: "Large Bay (100t)", tons: 100, mod: 1, cost: 10.0, hardpointReq: 10, firmpointReq: 0, cp: 3 },
+    M: { code: 'M', name: "Main / Spinal (200t)", tons: 200, mod: 1, cost: 20.0, hardpointReq: 20, firmpointReq: 0, cp: 4 }
+};
+
+export const ENUM_SENSOR_MOUNTS = {
+    Surf: { code: 'Surf', name: "Surface Mount", tons: 0, mod: 0, cost: 1.0, hardpointReq: 0, firmpointReq: 0, cp: 1 },
+    Ant: { code: 'Ant', name: "Antenna (1t)", tons: 1, mod: 1, cost: 0.5, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T1: { code: 'T1', name: "Single Turret (T1)", tons: 1, mod: -2, cost: 0.2, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T2: { code: 'T2', name: "Dual Turret (T2)", tons: 1, mod: -1, cost: 0.5, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T3: { code: 'T3', name: "Triple Turret (T3)", tons: 1, mod: 0, cost: 1.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    T4: { code: 'T4', name: "Quad Turret (T4)", tons: 1, mod: 1, cost: 1.5, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    B1: { code: 'B1', name: "Single Barbette (B1)", tons: 3, mod: 2, cost: 3.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    B2: { code: 'B2', name: "Dual Barbette (B2)", tons: 5, mod: 3, cost: 4.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    BAnt: { code: 'BAnt', name: "Big Antenna (10t)", tons: 10, mod: 5, cost: 2.0, hardpointReq: 1, firmpointReq: 0, cp: 1 },
+    Bay: { code: 'Bay', name: "Small Bay (50t)", tons: 50, mod: 5, cost: 5.0, hardpointReq: 5, firmpointReq: 0, cp: 2 },
+    LBay: { code: 'LBay', name: "Large Bay (100t)", tons: 100, mod: 8, cost: 10.0, hardpointReq: 10, firmpointReq: 0, cp: 3 },
+    M: { code: 'M', name: "Main Sensor Array (200t)", tons: 200, mod: 10, cost: 20.0, hardpointReq: 20, firmpointReq: 0, cp: 4 }
+};
+
+export const ENUM_WEAPONS2 = {
+    MiningLaser: { key: 'MiningLaser', code: 'J', name: 'Mining Laser', category: 'Beams', baseTL: 8, defaultMount: 'T1', defaultRange: 'AR', baseCost: 0.5, principle: 'Electronic. Turret. Bay. Main.', comment: 'Short pulsed industrial laser with high thermal output.' },
+    PulseLaser: { key: 'PulseLaser', code: 'K', name: 'Pulse Laser', category: 'Beams', baseTL: 9, defaultMount: 'T1', defaultRange: 'AR', baseCost: 0.3, principle: 'Electronic. Turret. Bay. Main.', comment: 'High-energy burst laser optimized for armor ablation.' },
+    BeamLaser: { key: 'BeamLaser', code: 'L', name: 'Beam Laser', category: 'Beams', baseTL: 10, defaultMount: 'T1', defaultRange: 'AR', baseCost: 0.5, principle: 'Electronic. Turret. Bay. Main.', comment: 'Continuous beam weapon offering high precision targeting.' },
+    PlasmaGun: { key: 'PlasmaGun', code: 'P', name: 'Plasma Gun', category: 'Beams', baseTL: 11, defaultMount: 'B1', defaultRange: 'AR', baseCost: 1.0, principle: 'Electronic. Gravitic. Turret. Bay. Main.', comment: 'Superheated magnetically-contained plasma packet projector.' },
+    FusionGun: { key: 'FusionGun', code: 'F', name: 'Fusion Gun', category: 'Beams', baseTL: 12, defaultMount: 'B1', defaultRange: 'AR', baseCost: 1.5, principle: 'Electronic. Gravitic. Turret. Bay. Main.', comment: 'High-yield thermonuclear fusion bolt projector.' },
+    SlugThrower: { key: 'SlugThrower', code: 'B', name: 'Slug Thrower', category: 'Kinetic', baseTL: 9, defaultMount: 'T1', defaultRange: 'AR', baseCost: 0.2, principle: 'Electronic. Turret. Bay. Main.', comment: 'High-velocity chemically propelled projectile weapon.' },
+    SalvoRack: { key: 'SalvoRack', code: 'V', name: 'Salvo Rack', category: 'Missiles', baseTL: 10, defaultMount: 'Bay', defaultRange: 'AR', baseCost: 10.0, principle: 'Electronic. Magnetic. Bay. Main.', comment: 'High-density multi-missile saturation battery.' },
+    RailGun: { key: 'RailGun', code: 'R', name: 'Rail Gun', category: 'Kinetic', baseTL: 12, defaultMount: 'Bay', defaultRange: 'AR', baseCost: 12.0, principle: 'Electronic. Magnetic. Ortillery.', comment: 'Linear electromagnetic mass accelerator with kinetic slugs.' },
+    Missile: { key: 'Missile', code: 'M', name: 'Missile Rack', category: 'Missiles', baseTL: 7, defaultMount: 'T1', defaultRange: 'AR', baseCost: 2.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Standard space-combat guided missile launcher.' },
+    KKMissile: { key: 'KKMissile', code: 'N', name: 'KK Missile Launcher', category: 'Missiles', baseTL: 10, defaultMount: 'Bay', defaultRange: 'AR', baseCost: 3.0, principle: 'Electronic. Bay. Main.', comment: 'Kinetic-kill relativistic warhead delivery system.' },
+    AMMissile: { key: 'AMMissile', code: 'X', name: 'Antimatter Missile Launcher', category: 'Missiles', baseTL: 20, defaultMount: 'B1', defaultRange: 'AR', baseCost: 5.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Annihilation warhead launcher for extreme destructive yield.' },
+    JumpDamper: { key: 'JumpDamper', code: 'T', name: 'Jump Damper', category: 'Exotics', baseTL: 14, defaultMount: 'B1', defaultRange: 'AR', baseCost: 15.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Projects jump-suppression field to inhibit nearby drives.' },
+    TractorPressor: { key: 'TractorPressor', code: 'U', name: 'Tractor / Pressor Beam', category: 'Exotics', baseTL: 16, defaultMount: 'B1', defaultRange: 'AR', baseCost: 5.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Gravitic manipulator for towing, pushing, and capture.' },
+    Inducer: { key: 'Inducer', code: 'H', name: 'Inducer', category: 'Exotics', baseTL: 17, defaultMount: 'T1', defaultRange: 'AR', baseCost: 1.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Exotic matter disruption emitter.' },
+    Disruptor: { key: 'Disruptor', code: 'W', name: 'Disruptor', category: 'Exotics', baseTL: 18, defaultMount: 'B1', defaultRange: 'AR', baseCost: 15.0, principle: 'Electronic. Gravitic. Turret. Bay. Main.', comment: 'Molecular bond destabilization field projector.' },
+    Stasis: { key: 'Stasis', code: 'E', name: 'Stasis Beam', category: 'Exotics', baseTL: 21, defaultMount: 'T1', defaultRange: 'AR', baseCost: 5.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Temporal velocity retardation beam.' },
+    DataCaster: { key: 'DataCaster', code: 'D', name: 'DataCaster', category: 'Special', baseTL: 10, defaultMount: 'T1', defaultRange: 'AR', baseCost: 1.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'High-bandwidth cyberwarfare & datalink projector.' },
+    SandCaster: { key: 'SandCaster', code: 'S', name: 'SandCaster', category: 'Special', baseTL: 9, defaultMount: 'T1', defaultRange: 'AR', baseCost: 0.1, principle: 'Electronic. Turret. Bay. Main.', comment: 'Ablative refractory sand canister launcher vs beam lasers.' },
+    Ortillery: { key: 'Ortillery', code: 'Q', name: 'Ortillery (Orbital Artillery)', category: 'Special', baseTL: 12, defaultMount: 'Bay', defaultRange: 'AR', baseCost: 15.0, principle: 'Electronic. Ortillery.', comment: 'Heavy planetary bombardment and siege weapon.' },
+    CommCaster: { key: 'CommCaster', code: 'C', name: 'CommCaster', category: 'Special', baseTL: 8, defaultMount: 'T1', defaultRange: 'AR', baseCost: 5.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Long-range tightbeam multi-channel communications broadcaster.' },
+    HybridSLM: { key: 'HybridSLM', code: 'Y', name: 'Hybrid Sand/Laser/Missile', category: 'Special', baseTL: 10, defaultMount: 'T1', defaultRange: 'AR', baseCost: 1.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Multi-role combination turret carrying sand, laser, and missile.' },
+    ParticleAccel: { key: 'ParticleAccel', code: 'A', name: 'Particle Accelerator (PA)', category: 'Heavy', baseTL: 11, defaultMount: 'B1', defaultRange: 'AR', baseCost: 2.5, principle: 'Electronic. Magnetic. Turret. Bay. Main.', comment: 'High-energy relativistic subatomic particle beam cannon.' },
+    MesonGun: { key: 'MesonGun', code: 'G', name: 'Meson Gun', category: 'Heavy', baseTL: 13, defaultMount: 'M', defaultRange: 'AR', baseCost: 5.0, principle: 'Electronic. Gravitic. Main.', comment: 'Decaying meson subatomic beam bypassing conventional hull armor.' }
+};
+
+export const ENUM_DEFENSES2 = {
+    NuclearDamper: { key: 'NuclearDamper', code: 'N', name: 'Nuclear Damper', category: 'Screens', baseTL: 12, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 1.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Suppresses strong nuclear force; neutralizes nuclear warheads.' },
+    MesonScreen: { key: 'MesonScreen', code: 'G', name: 'Meson Screen', category: 'Screens', baseTL: 13, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 3.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'Deflects and decays hostile meson particle beams.' },
+    ProtonScreen: { key: 'ProtonScreen', code: 'R', name: 'Proton Screen', category: 'Screens', baseTL: 19, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 1.0, principle: 'Electronic. Turret. Bay. Main.', comment: 'High-energy charged particle screen.' },
+    MagScrambler: { key: 'MagScrambler', code: 'Q', name: 'Magnetic Scrambler', category: 'Scramblers', baseTL: 14, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 1.0, principle: 'Magnetic Screens.', comment: 'Active magnetic pulse field distorting missile tracking.' },
+    GravScrambler: { key: 'GravScrambler', code: 'J', name: 'Gravitic Scrambler', category: 'Scramblers', baseTL: 17, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 2.0, principle: 'Gravitic. Screens.', comment: 'Gravitational ripple distortion screen.' },
+    ElecScrambler: { key: 'ElecScrambler', code: 'E', name: 'Electronic Scrambler', category: 'Scramblers', baseTL: 12, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 2.0, principle: 'Electronic. Screens.', comment: 'Broadband EW jamming screen.' },
+    BlackGlobe: { key: 'BlackGlobe', code: 'T', name: 'Black Globe Generator', category: 'Globes', baseTL: 16, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 10.0, principle: 'Electronic. Screens.', comment: 'Absorbs incoming energy and weapons fire into internal force field.' },
+    WhiteGlobe: { key: 'WhiteGlobe', code: 'U', name: 'White Globe Generator', category: 'Globes', baseTL: 20, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 10.0, principle: 'Electronic. Screens.', comment: 'Reflective high-density repulsion screen.' },
+    SilverGlobe: { key: 'SilverGlobe', code: 'V', name: 'Silver Globe Generator', category: 'Globes', baseTL: 22, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 10.0, principle: 'Electronic. Screens.', comment: 'Phase-shifting defense barrier.' },
+    StasisGlobe: { key: 'StasisGlobe', code: 'W', name: 'Stasis Globe Generator', category: 'Globes', baseTL: 24, defaultMount: 'Bo', defaultRange: 'AR', baseCost: 10.0, principle: 'Electronic. Screens.', comment: 'Total temporal barrier rendering ship invulnerable.' },
+    Jammer: { key: 'Jammer', code: 'J', name: 'EW Jammer', category: 'EW', baseTL: 8, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, principle: 'Electronic EW suite.', comment: 'Active radar and radio frequency barrage jammer.' },
+    StealthMask: { key: 'StealthMask', code: 'Q', name: 'Stealth Mask System', category: 'EW', baseTL: 12, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, principle: 'Signature reduction.', comment: 'Surface masking array reducing active and passive detectability.' },
+    SandCasterDef: { key: 'SandCasterDef', code: 'S', name: 'Point Defense SandCaster', category: 'Point Defense', baseTL: 9, defaultMount: 'T1', defaultRange: 'AR', baseCost: 0.1, principle: 'Defensive Laser Countermeasure.', comment: 'Canister dispenser creating laser-diffusing aerosol clouds.' },
+    PDLLaser: { key: 'PDLLaser', code: 'L', name: 'Point Defense Laser (PDL)', category: 'Point Defense', baseTL: 10, defaultMount: 'T1', defaultRange: 'AR', baseCost: 0.5, principle: 'Fast tracking point-defense.', comment: 'Rapid auto-targeting laser to intercept incoming missiles and torpedoes.' }
+};
+
+export const ENUM_SENSORS2 = {
+    Communicator: { key: 'Communicator', code: 'C', name: 'Communicator Array', category: 'Visual/Comms', baseTL: 8, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive/Active', principle: 'Electronics. Comms.', comment: 'Standard multi-band subspace and radio communications transceiver.' },
+    Holovisor: { key: 'Holovisor', code: 'H', name: 'Holovisor', category: 'Visual/Comms', baseTL: 18, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive', principle: 'Photonics.', comment: 'Full-spectrum holographic optical sensor.' },
+    Scope: { key: 'Scope', code: 'T', name: 'Optical Telescope / Scope', category: 'Visual/Comms', baseTL: 9, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive', principle: 'Photonics.', comment: 'Magnified optical and visual light telescope array.' },
+    Visor: { key: 'Visor', code: 'V', name: 'Wide-Spectrum Visor', category: 'Visual/Comms', baseTL: 14, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive', principle: 'Photonics.', comment: 'Enhanced multi-wavelength visual sensor.' },
+    HeatSensor: { key: 'HeatSensor', code: 'H', name: 'Thermal / Heat Sensor', category: 'Thermal/EM', baseTL: 10, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive', principle: 'Thermal IR.', comment: 'Infrared detector for drive flares and hull thermal emissions.' },
+    EMSensor: { key: 'EMSensor', code: 'E', name: 'EM / Radio Frequency Sensor', category: 'Thermal/EM', baseTL: 10, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive', principle: 'Electromagnetic.', comment: 'Passive antenna monitoring electromagnetic emanations.' },
+    Densitometer: { key: 'Densitometer', code: 'D', name: 'Densitometer', category: 'Gravitic', baseTL: 14, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive', principle: 'Gravitic.', comment: 'Measures density variations through solid structures and hulls.' },
+    Neutrino: { key: 'Neutrino', code: 'N', name: 'Neutrino Sensor', category: 'Nuclear', baseTL: 10, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive', principle: 'Nuclear.', comment: 'Detects fusion and fission power plant neutrino fluxes.' },
+    ActivitySensor: { key: 'ActivitySensor', code: 'A', name: 'Activity Detector', category: 'Special', baseTL: 13, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive', principle: 'Activity.', comment: 'Detects organic movement, biological signs, and interior operations.' },
+    Proximity: { key: 'Proximity', code: 'P', name: 'Proximity Sensor', category: 'Visual/Comms', baseTL: 9, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Passive', principle: 'Proximity.', comment: 'Short-range navigational collision warning sensors.' },
+    Radar: { key: 'Radar', code: 'R', name: 'Radar Suite', category: 'Active', baseTL: 9, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Active', principle: 'Radar.', comment: 'Active radio wave pulse reflection detection and tracking.' },
+    Lidar: { key: 'Lidar', code: 'L', name: 'Lidar Suite', category: 'Active', baseTL: 11, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Active', principle: 'Lidar.', comment: 'Active coherent light laser ranging and imaging array.' },
+    Scanner: { key: 'Scanner', code: 'S', name: 'Deep Scanner', category: 'Active', baseTL: 12, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Active', principle: 'Scanner.', comment: 'High-penetration active search scanner.' },
+    JammerSensor: { key: 'JammerSensor', code: 'J', name: 'Sensor Jammer', category: 'Special', baseTL: 8, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Active', principle: 'Jammer.', comment: 'Blinds hostile sensor receivers with active electronic noise.' },
+    Sonar: { key: 'Sonar', code: 'O', name: 'Active/Passive Sonar', category: 'Special', baseTL: 7, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Active', principle: 'Acoustic Sonar.', comment: 'Acoustic detection for submerged or oceanic operations.' },
+    Searchlight: { key: 'Searchlight', code: 'I', name: 'High-Power Searchlight', category: 'Visual/Comms', baseTL: 6, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Active', principle: 'Searchlight.', comment: 'Visible and UV high-candela optical illuminator.' },
+    StealthMaskSensor: { key: 'StealthMaskSensor', code: 'Q', name: 'Stealth Mask Suite', category: 'Special', baseTL: 12, defaultMount: 'Surf', defaultRange: 'AR', baseCost: 1.0, mode: 'Active', principle: 'Stealth Mask.', comment: 'Active counter-emission field neutralizing enemy sensor probes.' }
+};
+
+export function buildWeapon(weaponKey, mountKey = 'T1', stageKey = 'Standard', rangeKey = 'AR', count = 1, options = {}) {
+    const wDef = ENUM_WEAPONS2[weaponKey];
+    if (!wDef) throw new Error(`Unknown weapon key: ${weaponKey}`);
+    const mDef = ENUM_WEAPON_MOUNTS[mountKey] || ENUM_WEAPON_MOUNTS.T1;
+    const sDef = ENUM_STAGE_EFFECTS[stageKey] || ENUM_STAGE_EFFECTS.Standard;
+    const rDef = ENUM_SPACE_RANGES[rangeKey] || ENUM_SPACE_RANGES.AR;
+
+    const baseTL = options.tl !== undefined ? options.tl : Math.max(0, wDef.baseTL + sDef.tlMod + rDef.tlMod);
+    const deployable = options.deployable === true;
+    const extendable = options.extendable === true;
+    const importFee = options.importFee === true;
+
+    const singleWpnCost = wDef.baseCost * sDef.costMult * (importFee ? 1.1 : 1.0);
+    const singleMountCost = (mDef.cost * rDef.costMult + (deployable ? 3.0 : 0) + (extendable ? 1.0 : 0)) * (importFee ? 1.1 : 1.0);
+    const totalCost = (singleWpnCost + singleMountCost) * count;
+
+    const singleTons = (mDef.tons * rDef.tonsMult) + (deployable ? 2.0 : 0) + (extendable ? 2.0 : 0);
+    const totalTons = singleTons * count;
+
+    const hardpointsReq = (mDef.hardpointReq || 0) * count;
+    const firmpointsReq = (mDef.firmpointReq || 0) * count;
+    const totalCP = (mDef.cp || 1) * count;
+
+    return {
+        isWeapon: true,
+        weaponKey: weaponKey,
+        name: wDef.name,
+        code: wDef.code,
+        category: wDef.category,
+        mountKey: mountKey,
+        mountName: mDef.name,
+        mountCode: mDef.code,
+        stage: stageKey,
+        rangeKey: rangeKey,
+        rangeName: rDef.name,
+        spaceRange: rDef.s,
+        worldRange: rDef.r,
+        tl: baseTL,
+        count: count,
+        deployable: deployable,
+        extendable: extendable,
+        importFee: importFee,
+        hits: mDef.hits || 1,
+        mod: (mDef.mod || 0) + (sDef.mod || 0),
+        tons: Math.round(totalTons * 100) / 100,
+        cost: Math.round(totalCost * 1000) / 1000,
+        hardpointReq: hardpointsReq,
+        firmpointReq: firmpointsReq,
+        cp: totalCP,
+        comment: wDef.comment
+    };
+}
+
+export function buildDefense(defenseKey, mountKey = 'Bo', stageKey = 'Standard', rangeKey = 'AR', count = 1, options = {}) {
+    const dDef = ENUM_DEFENSES2[defenseKey];
+    if (!dDef) throw new Error(`Unknown defense key: ${defenseKey}`);
+    const mDef = ENUM_DEFENSE_MOUNTS[mountKey] || ENUM_DEFENSE_MOUNTS.Bo;
+    const sDef = ENUM_STAGE_EFFECTS[stageKey] || ENUM_STAGE_EFFECTS.Standard;
+    const rDef = ENUM_SPACE_RANGES[rangeKey] || ENUM_SPACE_RANGES.AR;
+
+    const baseTL = options.tl !== undefined ? options.tl : Math.max(0, dDef.baseTL + sDef.tlMod + rDef.tlMod);
+    const deployable = options.deployable === true;
+    const extendable = options.extendable === true;
+    const importFee = options.importFee === true;
+
+    const singleDefCost = dDef.baseCost * sDef.costMult * (importFee ? 1.1 : 1.0);
+    const singleMountCost = (mDef.cost * rDef.costMult + (deployable ? 3.0 : 0) + (extendable ? 1.0 : 0)) * (importFee ? 1.1 : 1.0);
+    const totalCost = (singleDefCost + singleMountCost) * count;
+
+    const singleTons = (mDef.tons * rDef.tonsMult) + (deployable ? 2.0 : 0) + (extendable ? 2.0 : 0);
+    const totalTons = singleTons * count;
+
+    const hardpointsReq = (mDef.hardpointReq || 0) * count;
+    const firmpointsReq = (mDef.firmpointReq || 0) * count;
+    const totalCP = (mDef.cp || 1) * count;
+
+    return {
+        isDefense: true,
+        defenseKey: defenseKey,
+        name: dDef.name,
+        code: dDef.code,
+        category: dDef.category,
+        mountKey: mountKey,
+        mountName: mDef.name,
+        mountCode: mDef.code,
+        stage: stageKey,
+        rangeKey: rangeKey,
+        rangeName: rDef.name,
+        spaceRange: rDef.s,
+        worldRange: rDef.r,
+        tl: baseTL,
+        count: count,
+        deployable: deployable,
+        extendable: extendable,
+        importFee: importFee,
+        mod: (mDef.mod || 0) + (sDef.mod || 0),
+        tons: Math.round(totalTons * 100) / 100,
+        cost: Math.round(totalCost * 1000) / 1000,
+        hardpointReq: hardpointsReq,
+        firmpointReq: firmpointsReq,
+        cp: totalCP,
+        comment: dDef.comment
+    };
+}
+
+export function buildSensor(sensorKey, mountKey = 'Surf', stageKey = 'Standard', rangeKey = 'AR', count = 1, options = {}) {
+    const sDef = ENUM_SENSORS2[sensorKey];
+    if (!sDef) throw new Error(`Unknown sensor key: ${sensorKey}`);
+    const mDef = ENUM_SENSOR_MOUNTS[mountKey] || ENUM_SENSOR_MOUNTS.Surf;
+    const stgDef = ENUM_STAGE_EFFECTS[stageKey] || ENUM_STAGE_EFFECTS.Standard;
+    const rDef = ENUM_SPACE_RANGES[rangeKey] || ENUM_SPACE_RANGES.AR;
+
+    const baseTL = options.tl !== undefined ? options.tl : Math.max(0, sDef.baseTL + stgDef.tlMod + rDef.tlMod);
+    const deployable = options.deployable === true;
+    const extendable = options.extendable === true;
+    const importFee = options.importFee === true;
+
+    const singleSensorCost = sDef.baseCost * stgDef.costMult * (importFee ? 1.1 : 1.0);
+    const singleMountCost = (mDef.cost * rDef.costMult + (deployable ? 3.0 : 0) + (extendable ? 1.0 : 0)) * (importFee ? 1.1 : 1.0);
+    const totalCost = (singleSensorCost + singleMountCost) * count;
+
+    const singleTons = (mDef.tons * rDef.tonsMult) + (deployable ? 2.0 : 0) + (extendable ? 2.0 : 0);
+    const totalTons = singleTons * count;
+
+    const hardpointsReq = (mDef.hardpointReq || 0) * count;
+    const firmpointsReq = (mDef.firmpointReq || 0) * count;
+    const totalCP = (mDef.cp || 1) * count;
+
+    return {
+        isSensor: true,
+        sensorKey: sensorKey,
+        name: sDef.name,
+        code: sDef.code,
+        category: sDef.category,
+        mode: sDef.mode,
+        mountKey: mountKey,
+        mountName: mDef.name,
+        mountCode: mDef.code,
+        stage: stageKey,
+        rangeKey: rangeKey,
+        rangeName: rDef.name,
+        spaceRange: rDef.s,
+        worldRange: rDef.r,
+        tl: baseTL,
+        count: count,
+        deployable: deployable,
+        extendable: extendable,
+        importFee: importFee,
+        mod: (mDef.mod || 0) + (stgDef.mod || 0),
+        tons: Math.round(totalTons * 100) / 100,
+        cost: Math.round(totalCost * 1000) / 1000,
+        hardpointReq: hardpointsReq,
+        firmpointReq: firmpointsReq,
+        cp: totalCP,
+        comment: sDef.comment
+    };
+}
+
+export const ENUM_CONSOLE_TYPES = {
+    Cramped: { key: 'Cramped', name: 'Cramped Console', tons: 0.5, sq: 1, baseCost: 0.2, comment: 'Compact 0.5-ton operator station (1 square).' },
+    Standard: { key: 'Standard', name: 'Standard Console', tons: 1.0, sq: 2, baseCost: 0.2, comment: 'Standard 1.0-ton ergonomic control station (2 squares).' },
+    Roomy: { key: 'Roomy', name: 'Roomy Console', tons: 1.5, sq: 3, baseCost: 0.2, comment: 'Spacious 1.5-ton station with auxiliary monitors (3 squares).' },
+    Spacious: { key: 'Spacious', name: 'Spacious / Master Console', tons: 2.0, sq: 4, baseCost: 0.5, comment: 'Executive 2.0-ton command console (4 squares).' },
+    Workstation: { key: 'Workstation', name: 'Workstation', tons: 0.5, sq: 1, baseCost: 0.05, comment: 'Basic clerical / diagnostic information terminal (1 square).' },
+    MedConsole: { key: 'MedConsole', name: 'Medical Console', tons: 0.5, sq: 1, baseCost: 0.5, comment: 'Dedicated surgical & patient monitoring console (1 square).' }
+};
+
+export const ENUM_CONSOLE_ROLES = {
+    Bridge: { key: 'Bridge', name: 'Bridge Command', type: 'CC', skill: 'Leadership', defaultType: 'Standard', comment: 'Central ship operations and executive overview.' },
+    Pilot: { key: 'Pilot', name: 'Pilot / Helm', type: 'CC', skill: 'Pilot', defaultType: 'Standard', comment: 'Maneuver and sublight flight controls with analog inputs.' },
+    Astrogation: { key: 'Astrogation', name: 'Astrogation / Nav', type: 'CC', skill: 'Astrogation', defaultType: 'Standard', comment: 'Course plotting, jump calculation, and spatial positioning.' },
+    Gunnery: { key: 'Gunnery', name: 'Fire Control / Gunnery', type: 'CC', skill: 'Gunner', defaultType: 'Standard', comment: 'Weapons coordination, targeting, and turret links.' },
+    Sensors: { key: 'Sensors', name: 'Sensor Suite Operator', type: 'CC', skill: 'Sensors', defaultType: 'Standard', comment: 'Active/passive scanner analysis and EW suite management.' },
+    Engineering: { key: 'Engineering', name: 'Engineering / Drives', type: 'CC', skill: 'Engineer', defaultType: 'Standard', comment: 'Power distribution, drive regulation, and fuel management.' },
+    Comms: { key: 'Comms', name: 'Communications & Datalink', type: 'OC', skill: 'Comms', defaultType: 'Standard', comment: 'Subspace radio, transponder, and comms routing.' },
+    DamageControl: { key: 'DamageControl', name: 'Damage Control', type: 'OC', skill: 'Mechanic', defaultType: 'Standard', comment: 'Hull integrity monitoring, fire suppression, and repairs.' },
+    LifeSupport: { key: 'LifeSupport', name: 'Life Support / Environmental', type: 'OC', skill: 'Steward', defaultType: 'Standard', comment: 'Atmosphere scrubbing, temperature, and grav control.' },
+    Cargo: { key: 'Cargo', name: 'Freight & Cargo Handling', type: 'OC', skill: 'Freight', defaultType: 'Standard', comment: 'Cargo lock operation, loading cranes, and mass balance.' },
+    Security: { key: 'Security', name: 'Security & Internal Defense', type: 'OC', skill: 'Security', defaultType: 'Standard', comment: 'Bulkhead locking, internal sensors, and armory access.' },
+    Medical: { key: 'Medical', name: 'Medical & Diagnostics', type: 'OC', skill: 'Medic', defaultType: 'MedConsole', comment: 'Patient diagnostics, trauma monitoring, and sickbay link.' },
+    Workstation: { key: 'Workstation', name: 'General Workstation', type: 'W', skill: 'Education', defaultType: 'Workstation', comment: 'Clerical, academic, counseling, or general ship administration.' },
+    General: { key: 'General', name: 'Multi-Purpose Console', type: 'CC', skill: 'Varies', defaultType: 'Standard', comment: 'Reconfigurable general purpose control station.' }
+};
+
+export const ENUM_COMPUTER_TABLE = {
+    0: { model: 0, tons: 0.5, sq: 1, baseTL: 8, costStd: 0.1, cellsStd: 0, costBis: 0.5, cellsBis: 1 },
+    1: { model: 1, tons: 1.0, sq: 2, baseTL: 9, costStd: 1.5, cellsStd: 1, costBis: 3.0, cellsBis: 2 },
+    2: { model: 2, tons: 2.0, sq: 4, baseTL: 10, costStd: 5.0, cellsStd: 2, costBis: 7.5, cellsBis: 3 },
+    3: { model: 3, tons: 3.0, sq: 6, baseTL: 11, costStd: 10.5, cellsStd: 3, costBis: 14.0, cellsBis: 4 },
+    4: { model: 4, tons: 4.0, sq: 8, baseTL: 12, costStd: 18.0, cellsStd: 4, costBis: 22.0, cellsBis: 5 },
+    5: { model: 5, tons: 5.0, sq: 10, baseTL: 13, costStd: 27.0, cellsStd: 5, costBis: 33.0, cellsBis: 6 },
+    6: { model: 6, tons: 6.0, sq: 12, baseTL: 14, costStd: 39.0, cellsStd: 6, costBis: 45.0, cellsBis: 7 },
+    7: { model: 7, tons: 7.0, sq: 14, baseTL: 15, costStd: 52.0, cellsStd: 7, costBis: 60.0, cellsBis: 8 },
+    8: { model: 8, tons: 8.0, sq: 16, baseTL: 16, costStd: 68.0, cellsStd: 8, costBis: 76.0, cellsBis: 9 },
+    9: { model: 9, tons: 9.0, sq: 18, baseTL: 17, costStd: 85.0, cellsStd: 9, costBis: 95.0, cellsBis: 10 }
+};
+
+export function getComputerSpecs(modelNumber, isBis = false) {
+    const m = Math.max(0, Math.min(33, parseInt(modelNumber, 10) || 0));
+    if (ENUM_COMPUTER_TABLE[m]) {
+        const row = ENUM_COMPUTER_TABLE[m];
+        return {
+            model: m,
+            isBis: isBis,
+            tons: row.tons,
+            sq: row.sq,
+            baseTL: row.baseTL,
+            cost: isBis ? row.costBis : row.costStd,
+            cells: isBis ? row.cellsBis : row.cellsStd
+        };
+    }
+    // Extended Models (10..33) calculated from T5 formulas
+    const tons = m;
+    const sq = m * 2;
+    const baseTL = m + 8;
+    const cells = isBis ? m + 1 : m;
+    const costStd = Math.round(m * (m + 0.5) * 10) / 10;
+    const costBis = Math.round((m + 0.5) * (m + 1.2) * 10) / 10;
+    return {
+        model: m,
+        isBis: isBis,
+        tons: tons,
+        sq: sq,
+        baseTL: baseTL,
+        cost: isBis ? costBis : costStd,
+        cells: cells
+    };
+}
+
+export function buildConsole(roleKey, typeKey = 'Standard', count = 1, options = {}) {
+    const rDef = ENUM_CONSOLE_ROLES[roleKey] || ENUM_CONSOLE_ROLES.General;
+    const tDef = ENUM_CONSOLE_TYPES[typeKey] || ENUM_CONSOLE_TYPES.Standard;
+    const cnt = Math.max(1, parseInt(count, 10) || 1);
+    const holographic = options.holographic === true;
+    const importFee = options.importFee === true;
+    const tlVal = options.tl !== undefined ? options.tl : (holographic ? 15 : (options.shipBaseTL || 12));
+
+    const singleTons = (tDef.tons * (holographic ? 0.5 : 1.0));
+    const singleCost = (tDef.baseCost * (holographic ? 1.5 : 1.0)) * (importFee ? 1.1 : 1.0);
+    const totalTons = singleTons * cnt;
+    const totalCost = singleCost * cnt;
+    const totalSq = (tDef.sq * (holographic ? 0.5 : 1.0)) * cnt;
+
+    return {
+        isConsole: true,
+        roleKey: roleKey,
+        roleName: rDef.name,
+        roleType: rDef.type,
+        typeKey: typeKey,
+        typeName: tDef.name,
+        name: `${rDef.name} Console`,
+        count: cnt,
+        tons: Math.round(totalTons * 100) / 100,
+        cost: Math.round(totalCost * 1000) / 1000,
+        sq: totalSq,
+        tl: tlVal,
+        holographic: holographic,
+        importFee: importFee,
+        skill: rDef.skill,
+        comment: rDef.comment
+    };
+}
+
+export function buildComputer(modelNumber, isBis = false, count = 1, options = {}) {
+    const specs = getComputerSpecs(modelNumber, isBis);
+    const cnt = Math.max(1, parseInt(count, 10) || 1);
+    const fiberOptic = options.fiberOptic === true;
+    const isBackup = options.isBackup === true;
+    const isMaster = options.isMaster === true;
+    const importFee = options.importFee === true;
+    const tlVal = options.tl !== undefined ? options.tl : specs.baseTL;
+
+    let singleCost = specs.cost * (fiberOptic ? 1.5 : 1.0) * (isBackup ? 0.5 : 1.0) * (importFee ? 1.1 : 1.0);
+    const totalCost = singleCost * cnt;
+    const totalTons = specs.tons * cnt;
+    const totalCells = specs.cells * cnt;
+    const totalSq = specs.sq * cnt;
+
+    const bisText = isBis ? ' bis' : '';
+    const fibText = fiberOptic ? '/fib' : '';
+    const roleText = isBackup ? ' (Backup)' : (isMaster ? ' (Master)' : '');
+
+    return {
+        isComputer: true,
+        model: specs.model,
+        isBis: isBis,
+        fiberOptic: fiberOptic,
+        isBackup: isBackup,
+        isMaster: isMaster,
+        name: `Ship's Computer Model/${specs.model}${bisText}${fibText}${roleText}`,
+        count: cnt,
+        tons: Math.round(totalTons * 100) / 100,
+        cost: Math.round(totalCost * 1000) / 1000,
+        cells: totalCells,
+        singleCells: specs.cells,
+        sq: totalSq,
+        baseTL: specs.baseTL,
+        tl: tlVal,
+        importFee: importFee,
+        softwareCapacity: `C+S = ${tlVal}`,
+        comment: `${specs.cells} Console-Equivalent Cells. Base TL ${specs.baseTL}. ${fiberOptic ? 'EMP/Radiation hardened (/fib). ' : ''}${isBackup ? 'Off-line Standby Backup. ' : ''}`
+    };
+}
+
 export function getAvailableTechStages(tl, tech) {
     /**
      * @param {number} tl - Tech level
@@ -278,6 +711,55 @@ export function getAvailableTechStages(tl, tech) {
         return max;
     }
 
+}
+
+export function getBaseDriveIntroTL(driveType, potential = 1) {
+    const p = Math.max(1, Math.min(9, Math.round(potential) || 1));
+    switch (driveType) {
+        case ENUM_DRIVE_TYPE.Jump:
+            return p === 1 ? 9 : (p === 2 ? 11 : p + 9);
+        case ENUM_DRIVE_TYPE.MDrive:
+            if (p === 1) return 9;
+            if (p <= 3) return 10;
+            if (p <= 5) return 11;
+            if (p <= 7) return 12;
+            return 13;
+        case ENUM_DRIVE_TYPE.GDrive:
+            if (p === 1) return 8;
+            if (p <= 4) return 9;
+            if (p <= 7) return 10;
+            return 11;
+        case ENUM_DRIVE_TYPE.PowerPlant:
+            return p + 7;
+        case ENUM_DRIVE_TYPE.Fission:
+            return p + 6;
+        case ENUM_DRIVE_TYPE.AntiMatter:
+            return p + 18;
+        case ENUM_DRIVE_TYPE.Collector:
+            return p + 13;
+        case ENUM_DRIVE_TYPE.Hop:
+            return p === 1 ? 17 : p + 17;
+        case ENUM_DRIVE_TYPE.Skip:
+            return p === 1 ? 20 : p + 20;
+        case ENUM_DRIVE_TYPE.Rocket:
+            if (p === 1) return 7;
+            if (p <= 4) return 8;
+            if (p <= 7) return 9;
+            return 10;
+        case ENUM_DRIVE_TYPE.NAFAL:
+            if (p === 1) return 9;
+            if (p <= 4) return 10;
+            if (p <= 7) return 11;
+            return 12;
+        case ENUM_DRIVE_TYPE.HEPlaR:
+            if (p === 1) return 8;
+            if (p <= 3) return 9;
+            if (p <= 5) return 10;
+            if (p <= 7) return 11;
+            return 12;
+        default:
+            return 9;
+    }
 }
 export function buildDrive(stage, nexus = 1, driveClass, driveType, tl, importFee = false) {
     /**
@@ -566,6 +1048,79 @@ export class Hull {
 
     get components() {
         return this.subhulls.flatMap(h => h.components || []);
+    }
+
+    get weapons() {
+        return this.components.filter(c => c.isWeapon);
+    }
+
+    get defenses() {
+        return this.components.filter(c => c.isDefense);
+    }
+
+    get sensors() {
+        return this.components.filter(c => c.isSensor);
+    }
+
+    get consoles() {
+        return this.components.filter(c => c.isConsole);
+    }
+
+    get computers() {
+        return this.components.filter(c => c.isComputer);
+    }
+
+    get totalConsoleCount() {
+        return this.consoles.reduce((sum, c) => sum + (c.count || 1), 0);
+    }
+
+    get totalConsoleTons() {
+        return this.consoles.reduce((sum, c) => sum + (c.tons || 0), 0);
+    }
+
+    get totalComputerCells() {
+        return this.computers.filter(c => !c.isBackup).reduce((sum, c) => sum + (c.cells || 0), 0);
+    }
+
+    get controlErgonomics() {
+        const cp = this.totalControlPanels;
+        if (cp <= 0) return 1;
+        return Math.ceil(this.totalConsoleTons / cp);
+    }
+
+    get controlErgonomicsRatio() {
+        const cp = this.totalControlPanels;
+        if (cp <= 0) return 1;
+        return Math.round((this.totalConsoleTons / cp) * 100) / 100;
+    }
+
+    get maxHardpoints() {
+        return Math.floor(this.tonnage / 100);
+    }
+
+    get maxFirmpoints() {
+        return Math.floor(this.tonnage / 35);
+    }
+
+    get hardpointsUsed() {
+        return this.components.reduce((sum, c) => sum + (c.hardpointReq || 0), 0);
+    }
+
+    get firmpointsUsed() {
+        return this.components.reduce((sum, c) => sum + (c.firmpointReq || 0), 0);
+    }
+
+    get totalControlPanels() {
+        let cp = this.subhulls.length;
+        this.drives.forEach(d => {
+            cp += Math.ceil(d.tons / 35);
+        });
+        this.components.forEach(c => {
+            if (c.cp !== undefined) cp += c.cp;
+            else if (c.isHullFitting) cp += Math.max(0, (c.mechanisms ?? 1));
+            else if (c.name === 'Grapple') cp += 1;
+        });
+        return cp;
     }
 
     _syncAutoFittings(hull) {

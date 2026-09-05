@@ -4,6 +4,24 @@ window.getDrivePerformance = ShipHelper.getDrivePerformance;
 window.buildDrive = ShipHelper.buildDrive;
 // ShipHelperView.js
 class ShipHelperView {
+    static formatTLStatus(itemTL, shipTL, formulaDetails = '') {
+        let badgeHtml = '';
+        if (itemTL < shipTL) {
+            badgeHtml = `<span class="tl-badge tl-badge-lower">Lower TL than Ship (Ship is TL ${shipTL})</span>`;
+        } else if (itemTL === shipTL) {
+            badgeHtml = `<span class="tl-badge tl-badge-match">Matches Ship TL (TL ${shipTL})</span>`;
+        } else {
+            badgeHtml = `<span class="tl-badge tl-badge-higher">Higher TL \u2014 Imported (+10% Surcharge, Ship is TL ${shipTL})</span>`;
+        }
+        return `
+            <div class="tl-breakdown">
+                <strong>Tech Level:</strong> TL ${itemTL}
+                ${formulaDetails ? `<span style="color: var(--text-muted); font-size: 0.9em;">(${formulaDetails})</span>` : ''}
+                ${badgeHtml}
+            </div>
+        `;
+    }
+
     constructor() {
         this.ship = new ShipHelper.Hull(
             parseInt(document.getElementById('base-tl').value, 10) || 12
@@ -96,6 +114,30 @@ class ShipHelperView {
             });
         });
 
+        // Setup weapon item clicks
+        document.querySelectorAll('.weapon-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const weaponKey = e.target.getAttribute('data-weapon-key');
+                this.openWeaponDialog(weaponKey);
+            });
+        });
+
+        // Setup defense item clicks
+        document.querySelectorAll('.defense-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const defenseKey = e.target.getAttribute('data-defense-key');
+                this.openDefenseDialog(defenseKey);
+            });
+        });
+
+        // Setup sensor item clicks
+        document.querySelectorAll('.sensor-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const sensorKey = e.target.getAttribute('data-sensor-key');
+                this.openSensorDialog(sensorKey);
+            });
+        });
+
         // Dynamically inject hull fitting items and attach click handlers
         const hullFittingsList = document.getElementById('hull-fittings-list');
         if (hullFittingsList) {
@@ -114,6 +156,578 @@ class ShipHelperView {
                 this.openHullFittingDialog(fittingKey);
             });
         });
+
+        // Setup console item clicks
+        document.querySelectorAll('.console-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const roleKey = e.target.getAttribute('data-console-role');
+                this.openConsoleDialog(roleKey);
+            });
+        });
+
+        // Setup computer item clicks
+        document.querySelectorAll('.computer-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const modelStr = e.target.getAttribute('data-computer-model');
+                const modelNum = modelStr === 'custom' ? 1 : parseInt(modelStr, 10);
+                this.openComputerDialog(modelNum);
+            });
+        });
+    }
+
+    openWeaponDialog(weaponKey, editIndex = -1) {
+        const selectedHull = this.ship.subhulls[this.ship.selectedSubhullIndex];
+        if (!selectedHull) {
+            alert('No hull selected. Please select a hull first.');
+            return;
+        }
+
+        let existingComp = null;
+        if (editIndex >= 0) {
+            const target = this.ship.getComponentByIdx(editIndex);
+            if (target && target.component) existingComp = target.component;
+        }
+
+        const currentKey = existingComp ? (existingComp.weaponKey || weaponKey) : weaponKey;
+        const currentMount = existingComp ? existingComp.mountKey : (ShipHelper.ENUM_WEAPONS2[currentKey]?.defaultMount || 'T1');
+        const currentStage = existingComp ? existingComp.stage : 'Standard';
+        const currentRange = existingComp ? existingComp.rangeKey : 'AR';
+        const currentCount = existingComp ? (existingComp.count || 1) : 1;
+        const currentTL = existingComp ? existingComp.tl : Math.max(0, (ShipHelper.ENUM_WEAPONS2[currentKey]?.baseTL || 10) + (ShipHelper.ENUM_STAGE_EFFECTS[currentStage]?.tlMod || 0) + (ShipHelper.ENUM_SPACE_RANGES[currentRange]?.tlMod || 0));
+        const currentDeployable = existingComp ? (existingComp.deployable || false) : false;
+        const currentExtendable = existingComp ? (existingComp.extendable || false) : false;
+        const currentImport = existingComp ? (existingComp.importFee || false) : false;
+
+        let weaponOptions = '';
+        for (const [k, w] of Object.entries(ShipHelper.ENUM_WEAPONS2)) {
+            const sel = (k === currentKey) ? 'selected' : '';
+            weaponOptions += `<option value="${k}" ${sel}>[${w.category}] ${w.name} (TL ${w.baseTL}, MCr${w.baseCost})</option>`;
+        }
+
+        let mountOptions = '';
+        for (const [k, m] of Object.entries(ShipHelper.ENUM_WEAPON_MOUNTS)) {
+            const sel = (k === currentMount) ? 'selected' : '';
+            mountOptions += `<option value="${k}" ${sel}>${m.name} (${m.tons}t, MCr${m.cost}, ${m.hardpointReq} HP, ${m.hits} Hits)</option>`;
+        }
+
+        let stageOptions = '';
+        for (const [k, s] of Object.entries(ShipHelper.ENUM_STAGE_EFFECTS)) {
+            const sel = (k === currentStage) ? 'selected' : '';
+            stageOptions += `<option value="${k}" ${sel}>${s.stage} (TL ${s.tlMod >= 0 ? '+' : ''}${s.tlMod}, Cost x${s.costMult})</option>`;
+        }
+
+        let rangeOptions = '';
+        for (const [k, r] of Object.entries(ShipHelper.ENUM_SPACE_RANGES)) {
+            const sel = (k === currentRange) ? 'selected' : '';
+            rangeOptions += `<option value="${k}" ${sel}>${r.name} (Tons x${r.tonsMult}, Cost x${r.costMult})</option>`;
+        }
+
+        const content = `
+            <div class="form-row">
+                <label for="weapon-select">Weapon Type:</label>
+                <select id="weapon-select">${weaponOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="weapon-mount-select">Mount Type:</label>
+                <select id="weapon-mount-select">${mountOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="weapon-stage-select">Tech Stage:</label>
+                <select id="weapon-stage-select">${stageOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="weapon-range-select">Space Range:</label>
+                <select id="weapon-range-select">${rangeOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="weapon-tl-input">Tech Level:</label>
+                <input type="number" id="weapon-tl-input" value="${currentTL}" min="0" max="33">
+            </div>
+            <div class="form-row">
+                <label for="weapon-count-input">Quantity:</label>
+                <input type="number" id="weapon-count-input" value="${currentCount}" min="1" max="100">
+            </div>
+            <div class="form-row" style="justify-content: flex-start; gap: 20px;">
+                <label><input type="checkbox" id="weapon-deployable" ${currentDeployable ? 'checked' : ''}> Deployable (+2t, +3 MCr)</label>
+                <label><input type="checkbox" id="weapon-extendable" ${currentExtendable ? 'checked' : ''}> Extendable (+2t, +1 MCr)</label>
+                <label><input type="checkbox" id="weapon-import" ${currentImport ? 'checked' : ''}> 10% Import Surcharge</label>
+            </div>
+            <div id="weapon-preview" class="drive-preview-box" style="margin-top: 15px;"></div>
+        `;
+
+        const updatePreview = () => {
+            const wKey = document.getElementById('weapon-select').value;
+            const mKey = document.getElementById('weapon-mount-select').value;
+            const stgKey = document.getElementById('weapon-stage-select').value;
+            const rngKey = document.getElementById('weapon-range-select').value;
+            const cnt = parseInt(document.getElementById('weapon-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('weapon-tl-input').value, 10);
+            const dep = document.getElementById('weapon-deployable').checked;
+            const ext = document.getElementById('weapon-extendable').checked;
+            const imp = document.getElementById('weapon-import').checked;
+
+            const wpnObj = ShipHelper.buildWeapon(wKey, mKey, stgKey, rngKey, cnt, {
+                tl: tlVal,
+                deployable: dep,
+                extendable: ext,
+                importFee: imp
+            });
+
+            const wDef = ShipHelper.ENUM_WEAPONS2[wKey];
+            const sDef = ShipHelper.ENUM_STAGE_EFFECTS[stgKey];
+            const rDef = ShipHelper.ENUM_SPACE_RANGES[rngKey];
+            const stageModStr = sDef ? ` + Stage: ${sDef.tlMod >= 0 ? '+' : ''}${sDef.tlMod} [${sDef.stage}]` : '';
+            const rangeModStr = rDef ? ` + Range: ${rDef.tlMod >= 0 ? '+' : ''}${rDef.tlMod} [${rDef.name.split(' ')[0]}]` : '';
+            const formulaStr = `Base TL ${wDef?.baseTL || 0} [${wDef?.name || ''}]${stageModStr}${rangeModStr}`;
+
+            const previewDiv = document.getElementById('weapon-preview');
+            if (previewDiv) {
+                previewDiv.innerHTML = `
+                    ${ShipHelperView.formatTLStatus(wpnObj.tl, this.ship.baseTL, formulaStr)}
+                    <div class="preview-stat">Cost: MCr${wpnObj.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</div>
+                    <div class="preview-stat">Tonnage: ${wpnObj.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>
+                    <div class="preview-stat">Control Panels: ${wpnObj.cp} CP</div>
+                    <div class="preview-stat">Hardpoints Required: ${wpnObj.hardpointReq} HP</div>
+                    <div class="preview-stat">Damage Potential: ${wpnObj.hits * wpnObj.count}D Hits (Mod: ${wpnObj.mod >= 0 ? '+' : ''}${wpnObj.mod})</div>
+                    <div class="preview-stat">Range: Space S=${wpnObj.spaceRange} / World R=${wpnObj.worldRange}</div>
+                    <div style="grid-column: 1 / -1; color: var(--text-muted); font-style: italic; font-size: 0.9em; margin-top: 4px;">${wpnObj.comment}</div>
+                `;
+            }
+        };
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} Weapon`, content, () => {
+            const wKey = document.getElementById('weapon-select').value;
+            const mKey = document.getElementById('weapon-mount-select').value;
+            const stgKey = document.getElementById('weapon-stage-select').value;
+            const rngKey = document.getElementById('weapon-range-select').value;
+            const cnt = parseInt(document.getElementById('weapon-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('weapon-tl-input').value, 10);
+            const dep = document.getElementById('weapon-deployable').checked;
+            const ext = document.getElementById('weapon-extendable').checked;
+            const imp = document.getElementById('weapon-import').checked;
+
+            const wpnComp = ShipHelper.buildWeapon(wKey, mKey, stgKey, rngKey, cnt, {
+                tl: tlVal,
+                deployable: dep,
+                extendable: ext,
+                importFee: imp
+            });
+
+            if (editIndex >= 0) {
+                this.ship.updateComponent(editIndex, wpnComp);
+            } else {
+                this.ship.addComponent(wpnComp);
+            }
+            this.render();
+        });
+
+        ['weapon-select', 'weapon-mount-select', 'weapon-stage-select', 'weapon-range-select', 'weapon-tl-input', 'weapon-count-input', 'weapon-deployable', 'weapon-extendable', 'weapon-import'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        const syncWeaponTL = () => {
+            const w = ShipHelper.ENUM_WEAPONS2[document.getElementById('weapon-select').value];
+            const s = ShipHelper.ENUM_STAGE_EFFECTS[document.getElementById('weapon-stage-select').value];
+            const r = ShipHelper.ENUM_SPACE_RANGES[document.getElementById('weapon-range-select').value];
+            if (w) {
+                const calcTL = Math.max(0, w.baseTL + (s?.tlMod || 0) + (r?.tlMod || 0));
+                document.getElementById('weapon-tl-input').value = calcTL;
+                document.getElementById('weapon-import').checked = (calcTL > this.ship.baseTL);
+            }
+            updatePreview();
+        };
+
+        document.getElementById('weapon-select').addEventListener('change', (e) => {
+            const w = ShipHelper.ENUM_WEAPONS2[e.target.value];
+            if (w && w.defaultMount && document.getElementById('weapon-mount-select')) {
+                document.getElementById('weapon-mount-select').value = w.defaultMount;
+            }
+            syncWeaponTL();
+        });
+        document.getElementById('weapon-stage-select').addEventListener('change', syncWeaponTL);
+        document.getElementById('weapon-range-select').addEventListener('change', syncWeaponTL);
+        document.getElementById('weapon-tl-input').addEventListener('input', () => {
+            const manualTL = parseInt(document.getElementById('weapon-tl-input').value, 10) || 0;
+            document.getElementById('weapon-import').checked = (manualTL > this.ship.baseTL);
+            updatePreview();
+        });
+
+        updatePreview();
+    }
+
+    openDefenseDialog(defenseKey, editIndex = -1) {
+        const selectedHull = this.ship.subhulls[this.ship.selectedSubhullIndex];
+        if (!selectedHull) {
+            alert('No hull selected. Please select a hull first.');
+            return;
+        }
+
+        let existingComp = null;
+        if (editIndex >= 0) {
+            const target = this.ship.getComponentByIdx(editIndex);
+            if (target && target.component) existingComp = target.component;
+        }
+
+        const currentKey = existingComp ? (existingComp.defenseKey || defenseKey) : defenseKey;
+        const currentMount = existingComp ? existingComp.mountKey : (ShipHelper.ENUM_DEFENSES2[currentKey]?.defaultMount || 'Bo');
+        const currentStage = existingComp ? existingComp.stage : 'Standard';
+        const currentRange = existingComp ? existingComp.rangeKey : 'AR';
+        const currentCount = existingComp ? (existingComp.count || 1) : 1;
+        const currentTL = existingComp ? existingComp.tl : Math.max(0, (ShipHelper.ENUM_DEFENSES2[currentKey]?.baseTL || 12) + (ShipHelper.ENUM_STAGE_EFFECTS[currentStage]?.tlMod || 0) + (ShipHelper.ENUM_SPACE_RANGES[currentRange]?.tlMod || 0));
+        const currentDeployable = existingComp ? (existingComp.deployable || false) : false;
+        const currentExtendable = existingComp ? (existingComp.extendable || false) : false;
+        const currentImport = existingComp ? (existingComp.importFee || false) : (currentTL > this.ship.baseTL);
+
+        let defenseOptions = '';
+        for (const [k, d] of Object.entries(ShipHelper.ENUM_DEFENSES2)) {
+            const sel = (k === currentKey) ? 'selected' : '';
+            defenseOptions += `<option value="${k}" ${sel}>[${d.category}] ${d.name} (TL ${d.baseTL}, MCr${d.baseCost})</option>`;
+        }
+
+        let mountOptions = '';
+        for (const [k, m] of Object.entries(ShipHelper.ENUM_DEFENSE_MOUNTS)) {
+            const sel = (k === currentMount) ? 'selected' : '';
+            mountOptions += `<option value="${k}" ${sel}>${m.name} (${m.tons}t, MCr${m.cost}, ${m.hardpointReq} HP)</option>`;
+        }
+
+        let stageOptions = '';
+        for (const [k, s] of Object.entries(ShipHelper.ENUM_STAGE_EFFECTS)) {
+            const sel = (k === currentStage) ? 'selected' : '';
+            stageOptions += `<option value="${k}" ${sel}>${s.stage} (TL ${s.tlMod >= 0 ? '+' : ''}${s.tlMod}, Cost x${s.costMult})</option>`;
+        }
+
+        let rangeOptions = '';
+        for (const [k, r] of Object.entries(ShipHelper.ENUM_SPACE_RANGES)) {
+            const sel = (k === currentRange) ? 'selected' : '';
+            rangeOptions += `<option value="${k}" ${sel}>${r.name} (Tons x${r.tonsMult}, Cost x${r.costMult})</option>`;
+        }
+
+        const content = `
+            <div class="form-row">
+                <label for="defense-select">Defense Type:</label>
+                <select id="defense-select">${defenseOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="defense-mount-select">Mount Type:</label>
+                <select id="defense-mount-select">${mountOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="defense-stage-select">Tech Stage:</label>
+                <select id="defense-stage-select">${stageOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="defense-range-select">Space Range:</label>
+                <select id="defense-range-select">${rangeOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="defense-tl-input">Tech Level:</label>
+                <input type="number" id="defense-tl-input" value="${currentTL}" min="0" max="33">
+            </div>
+            <div class="form-row">
+                <label for="defense-count-input">Quantity:</label>
+                <input type="number" id="defense-count-input" value="${currentCount}" min="1" max="100">
+            </div>
+            <div class="form-row" style="justify-content: flex-start; gap: 20px;">
+                <label><input type="checkbox" id="defense-deployable" ${currentDeployable ? 'checked' : ''}> Deployable (+2t, +3 MCr)</label>
+                <label><input type="checkbox" id="defense-extendable" ${currentExtendable ? 'checked' : ''}> Extendable (+2t, +1 MCr)</label>
+                <label><input type="checkbox" id="defense-import" ${currentImport ? 'checked' : ''}> 10% Import Surcharge</label>
+            </div>
+            <div id="defense-preview" class="drive-preview-box" style="margin-top: 15px;"></div>
+        `;
+
+        const updatePreview = () => {
+            const dKey = document.getElementById('defense-select').value;
+            const mKey = document.getElementById('defense-mount-select').value;
+            const stgKey = document.getElementById('defense-stage-select').value;
+            const rngKey = document.getElementById('defense-range-select').value;
+            const cnt = parseInt(document.getElementById('defense-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('defense-tl-input').value, 10);
+            const dep = document.getElementById('defense-deployable').checked;
+            const ext = document.getElementById('defense-extendable').checked;
+            const imp = document.getElementById('defense-import').checked;
+
+            const defObj = ShipHelper.buildDefense(dKey, mKey, stgKey, rngKey, cnt, {
+                tl: tlVal,
+                deployable: dep,
+                extendable: ext,
+                importFee: imp
+            });
+
+            const dDef = ShipHelper.ENUM_DEFENSES2[dKey];
+            const sDef = ShipHelper.ENUM_STAGE_EFFECTS[stgKey];
+            const rDef = ShipHelper.ENUM_SPACE_RANGES[rngKey];
+            const stageModStr = sDef ? ` + Stage: ${sDef.tlMod >= 0 ? '+' : ''}${sDef.tlMod} [${sDef.stage}]` : '';
+            const rangeModStr = rDef ? ` + Range: ${rDef.tlMod >= 0 ? '+' : ''}${rDef.tlMod} [${rDef.name.split(' ')[0]}]` : '';
+            const formulaStr = `Base TL ${dDef?.baseTL || 0} [${dDef?.name || ''}]${stageModStr}${rangeModStr}`;
+
+            const previewDiv = document.getElementById('defense-preview');
+            if (previewDiv) {
+                previewDiv.innerHTML = `
+                    ${ShipHelperView.formatTLStatus(defObj.tl, this.ship.baseTL, formulaStr)}
+                    <div class="preview-stat">Cost: MCr${defObj.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</div>
+                    <div class="preview-stat">Tonnage: ${defObj.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>
+                    <div class="preview-stat">Control Panels: ${defObj.cp} CP</div>
+                    <div class="preview-stat">Hardpoints Required: ${defObj.hardpointReq} HP</div>
+                    <div class="preview-stat">Modifier: ${defObj.mod >= 0 ? '+' : ''}${defObj.mod}</div>
+                    <div class="preview-stat">Range: Space S=${defObj.spaceRange} / World R=${defObj.worldRange}</div>
+                    <div style="grid-column: 1 / -1; color: var(--text-muted); font-style: italic; font-size: 0.9em; margin-top: 4px;">${defObj.comment}</div>
+                `;
+            }
+        };
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} Defense`, content, () => {
+            const dKey = document.getElementById('defense-select').value;
+            const mKey = document.getElementById('defense-mount-select').value;
+            const stgKey = document.getElementById('defense-stage-select').value;
+            const rngKey = document.getElementById('defense-range-select').value;
+            const cnt = parseInt(document.getElementById('defense-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('defense-tl-input').value, 10);
+            const dep = document.getElementById('defense-deployable').checked;
+            const ext = document.getElementById('defense-extendable').checked;
+            const imp = document.getElementById('defense-import').checked;
+
+            const defComp = ShipHelper.buildDefense(dKey, mKey, stgKey, rngKey, cnt, {
+                tl: tlVal,
+                deployable: dep,
+                extendable: ext,
+                importFee: imp
+            });
+
+            if (editIndex >= 0) {
+                this.ship.updateComponent(editIndex, defComp);
+            } else {
+                this.ship.addComponent(defComp);
+            }
+            this.render();
+        });
+
+        ['defense-select', 'defense-mount-select', 'defense-stage-select', 'defense-range-select', 'defense-tl-input', 'defense-count-input', 'defense-deployable', 'defense-extendable', 'defense-import'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        const syncDefenseTL = () => {
+            const d = ShipHelper.ENUM_DEFENSES2[document.getElementById('defense-select').value];
+            const s = ShipHelper.ENUM_STAGE_EFFECTS[document.getElementById('defense-stage-select').value];
+            const r = ShipHelper.ENUM_SPACE_RANGES[document.getElementById('defense-range-select').value];
+            if (d) {
+                const calcTL = Math.max(0, d.baseTL + (s?.tlMod || 0) + (r?.tlMod || 0));
+                document.getElementById('defense-tl-input').value = calcTL;
+                document.getElementById('defense-import').checked = (calcTL > this.ship.baseTL);
+            }
+            updatePreview();
+        };
+
+        document.getElementById('defense-select').addEventListener('change', (e) => {
+            const d = ShipHelper.ENUM_DEFENSES2[e.target.value];
+            if (d && d.defaultMount && document.getElementById('defense-mount-select')) {
+                document.getElementById('defense-mount-select').value = d.defaultMount;
+            }
+            syncDefenseTL();
+        });
+        document.getElementById('defense-stage-select').addEventListener('change', syncDefenseTL);
+        document.getElementById('defense-range-select').addEventListener('change', syncDefenseTL);
+        document.getElementById('defense-tl-input').addEventListener('input', () => {
+            const manualTL = parseInt(document.getElementById('defense-tl-input').value, 10) || 0;
+            document.getElementById('defense-import').checked = (manualTL > this.ship.baseTL);
+            updatePreview();
+        });
+
+        updatePreview();
+    }
+
+    openSensorDialog(sensorKey, editIndex = -1) {
+        const selectedHull = this.ship.subhulls[this.ship.selectedSubhullIndex];
+        if (!selectedHull) {
+            alert('No hull selected. Please select a hull first.');
+            return;
+        }
+
+        let existingComp = null;
+        if (editIndex >= 0) {
+            const target = this.ship.getComponentByIdx(editIndex);
+            if (target && target.component) existingComp = target.component;
+        }
+
+        const currentKey = existingComp ? (existingComp.sensorKey || sensorKey) : sensorKey;
+        const currentMount = existingComp ? existingComp.mountKey : (ShipHelper.ENUM_SENSORS2[currentKey]?.defaultMount || 'Surf');
+        const currentStage = existingComp ? existingComp.stage : 'Standard';
+        const currentRange = existingComp ? existingComp.rangeKey : 'AR';
+        const currentCount = existingComp ? (existingComp.count || 1) : 1;
+        const currentTL = existingComp ? existingComp.tl : Math.max(0, (ShipHelper.ENUM_SENSORS2[currentKey]?.baseTL || 9) + (ShipHelper.ENUM_STAGE_EFFECTS[currentStage]?.tlMod || 0) + (ShipHelper.ENUM_SPACE_RANGES[currentRange]?.tlMod || 0));
+        const currentDeployable = existingComp ? (existingComp.deployable || false) : false;
+        const currentExtendable = existingComp ? (existingComp.extendable || false) : false;
+        const currentImport = existingComp ? (existingComp.importFee || false) : (currentTL > this.ship.baseTL);
+
+        let sensorOptions = '';
+        for (const [k, se] of Object.entries(ShipHelper.ENUM_SENSORS2)) {
+            const sel = (k === currentKey) ? 'selected' : '';
+            sensorOptions += `<option value="${k}" ${sel}>[${se.category} - ${se.mode}] ${se.name} (TL ${se.baseTL}, MCr${se.baseCost})</option>`;
+        }
+
+        let mountOptions = '';
+        for (const [k, m] of Object.entries(ShipHelper.ENUM_SENSOR_MOUNTS)) {
+            const sel = (k === currentMount) ? 'selected' : '';
+            mountOptions += `<option value="${k}" ${sel}>${m.name} (${m.tons}t, MCr${m.cost}, ${m.hardpointReq} HP)</option>`;
+        }
+
+        let stageOptions = '';
+        for (const [k, s] of Object.entries(ShipHelper.ENUM_STAGE_EFFECTS)) {
+            const sel = (k === currentStage) ? 'selected' : '';
+            stageOptions += `<option value="${k}" ${sel}>${s.stage} (TL ${s.tlMod >= 0 ? '+' : ''}${s.tlMod}, Cost x${s.costMult})</option>`;
+        }
+
+        let rangeOptions = '';
+        for (const [k, r] of Object.entries(ShipHelper.ENUM_SPACE_RANGES)) {
+            const sel = (k === currentRange) ? 'selected' : '';
+            rangeOptions += `<option value="${k}" ${sel}>${r.name} (Tons x${r.tonsMult}, Cost x${r.costMult})</option>`;
+        }
+
+        const content = `
+            <div class="form-row">
+                <label for="sensor-select">Sensor Type:</label>
+                <select id="sensor-select">${sensorOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="sensor-mount-select">Mount Type:</label>
+                <select id="sensor-mount-select">${mountOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="sensor-stage-select">Tech Stage:</label>
+                <select id="sensor-stage-select">${stageOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="sensor-range-select">Space Range:</label>
+                <select id="sensor-range-select">${rangeOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="sensor-tl-input">Tech Level:</label>
+                <input type="number" id="sensor-tl-input" value="${currentTL}" min="0" max="33">
+            </div>
+            <div class="form-row">
+                <label for="sensor-count-input">Quantity:</label>
+                <input type="number" id="sensor-count-input" value="${currentCount}" min="1" max="100">
+            </div>
+            <div class="form-row" style="justify-content: flex-start; gap: 20px;">
+                <label><input type="checkbox" id="sensor-deployable" ${currentDeployable ? 'checked' : ''}> Deployable (+2t, +3 MCr)</label>
+                <label><input type="checkbox" id="sensor-extendable" ${currentExtendable ? 'checked' : ''}> Extendable (+2t, +1 MCr)</label>
+                <label><input type="checkbox" id="sensor-import" ${currentImport ? 'checked' : ''}> 10% Import Surcharge</label>
+            </div>
+            <div id="sensor-preview" class="drive-preview-box" style="margin-top: 15px;"></div>
+        `;
+
+        const updatePreview = () => {
+            const sKey = document.getElementById('sensor-select').value;
+            const mKey = document.getElementById('sensor-mount-select').value;
+            const stgKey = document.getElementById('sensor-stage-select').value;
+            const rngKey = document.getElementById('sensor-range-select').value;
+            const cnt = parseInt(document.getElementById('sensor-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('sensor-tl-input').value, 10);
+            const dep = document.getElementById('sensor-deployable').checked;
+            const ext = document.getElementById('sensor-extendable').checked;
+            const imp = document.getElementById('sensor-import').checked;
+
+            const sensorObj = ShipHelper.buildSensor(sKey, mKey, stgKey, rngKey, cnt, {
+                tl: tlVal,
+                deployable: dep,
+                extendable: ext,
+                importFee: imp
+            });
+
+            const sDef = ShipHelper.ENUM_SENSORS2[sKey];
+            const stgDef = ShipHelper.ENUM_STAGE_EFFECTS[stgKey];
+            const rDef = ShipHelper.ENUM_SPACE_RANGES[rngKey];
+            const stageModStr = stgDef ? ` + Stage: ${stgDef.tlMod >= 0 ? '+' : ''}${stgDef.tlMod} [${stgDef.stage}]` : '';
+            const rangeModStr = rDef ? ` + Range: ${rDef.tlMod >= 0 ? '+' : ''}${rDef.tlMod} [${rDef.name.split(' ')[0]}]` : '';
+            const formulaStr = `Base TL ${sDef?.baseTL || 0} [${sDef?.name || ''}]${stageModStr}${rangeModStr}`;
+
+            const previewDiv = document.getElementById('sensor-preview');
+            if (previewDiv) {
+                previewDiv.innerHTML = `
+                    ${ShipHelperView.formatTLStatus(sensorObj.tl, this.ship.baseTL, formulaStr)}
+                    <div class="preview-stat">Cost: MCr${sensorObj.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</div>
+                    <div class="preview-stat">Tonnage: ${sensorObj.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>
+                    <div class="preview-stat">Control Panels: ${sensorObj.cp} CP</div>
+                    <div class="preview-stat">Hardpoints Required: ${sensorObj.hardpointReq} HP</div>
+                    <div class="preview-stat">Sensor Mode: ${sensorObj.mode} (Mod: ${sensorObj.mod >= 0 ? '+' : ''}${sensorObj.mod})</div>
+                    <div class="preview-stat">Range: Space S=${sensorObj.spaceRange} / World R=${sensorObj.worldRange}</div>
+                    <div style="grid-column: 1 / -1; color: var(--text-muted); font-style: italic; font-size: 0.9em; margin-top: 4px;">${sensorObj.comment}</div>
+                `;
+            }
+        };
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} Sensor Suite`, content, () => {
+            const sKey = document.getElementById('sensor-select').value;
+            const mKey = document.getElementById('sensor-mount-select').value;
+            const stgKey = document.getElementById('sensor-stage-select').value;
+            const rngKey = document.getElementById('sensor-range-select').value;
+            const cnt = parseInt(document.getElementById('sensor-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('sensor-tl-input').value, 10);
+            const dep = document.getElementById('sensor-deployable').checked;
+            const ext = document.getElementById('sensor-extendable').checked;
+            const imp = document.getElementById('sensor-import').checked;
+
+            const sensorComp = ShipHelper.buildSensor(sKey, mKey, stgKey, rngKey, cnt, {
+                tl: tlVal,
+                deployable: dep,
+                extendable: ext,
+                importFee: imp
+            });
+
+            if (editIndex >= 0) {
+                this.ship.updateComponent(editIndex, sensorComp);
+            } else {
+                this.ship.addComponent(sensorComp);
+            }
+            this.render();
+        });
+
+        ['sensor-select', 'sensor-mount-select', 'sensor-stage-select', 'sensor-range-select', 'sensor-tl-input', 'sensor-count-input', 'sensor-deployable', 'sensor-extendable', 'sensor-import'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        const syncSensorTL = () => {
+            const se = ShipHelper.ENUM_SENSORS2[document.getElementById('sensor-select').value];
+            const s = ShipHelper.ENUM_STAGE_EFFECTS[document.getElementById('sensor-stage-select').value];
+            const r = ShipHelper.ENUM_SPACE_RANGES[document.getElementById('sensor-range-select').value];
+            if (se) {
+                const calcTL = Math.max(0, se.baseTL + (s?.tlMod || 0) + (r?.tlMod || 0));
+                document.getElementById('sensor-tl-input').value = calcTL;
+                document.getElementById('sensor-import').checked = (calcTL > this.ship.baseTL);
+            }
+            updatePreview();
+        };
+
+        document.getElementById('sensor-select').addEventListener('change', (e) => {
+            const se = ShipHelper.ENUM_SENSORS2[e.target.value];
+            if (se && se.defaultMount && document.getElementById('sensor-mount-select')) {
+                document.getElementById('sensor-mount-select').value = se.defaultMount;
+            }
+            syncSensorTL();
+        });
+        document.getElementById('sensor-stage-select').addEventListener('change', syncSensorTL);
+        document.getElementById('sensor-range-select').addEventListener('change', syncSensorTL);
+        document.getElementById('sensor-tl-input').addEventListener('input', () => {
+            const manualTL = parseInt(document.getElementById('sensor-tl-input').value, 10) || 0;
+            document.getElementById('sensor-import').checked = (manualTL > this.ship.baseTL);
+            updatePreview();
+        });
+
+        updatePreview();
     }
 
     openHullFittingDialog(fittingKey, editIndex = -1) {
@@ -146,16 +760,16 @@ class ShipHelperView {
         const deployedTonsHtml = fDef.deployedTons !== undefined
             ? `<div class="preview-stat">Deployed Tonnage: ${(fDef.deployedTons * selectedHull.tons / 100).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>`
             : '';
-        const costSign = calcCost < 0 ? '' : '';
         const costClass = calcCost < 0 ? 'style="color:var(--accent-cyan)"' : '';
 
         const content = `
             <div style="margin-bottom: 10px; color: var(--text-muted); font-style: italic; font-size:0.95em;">${fDef.comment}</div>
             <div class="drive-preview-box">
+                ${ShipHelperView.formatTLStatus(fDef.baseTL, this.ship.baseTL, 'Hull Engineering Standard')}
                 <div class="preview-stat" ${costClass}>Cost: MCr${calcCost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</div>
                 <div class="preview-stat">Tonnage: ${calcTons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })} tons</div>
                 ${deployedTonsHtml}
-                <div class="preview-stat">Base TL: ${fDef.baseTL}</div>
+                <div class="preview-stat">Mechanisms: ${fDef.mechanisms ?? 1}</div>
             </div>
         `;
 
@@ -179,6 +793,286 @@ class ShipHelperView {
             }
             this.render();
         });
+    }
+
+    openConsoleDialog(roleKey = 'Bridge', editIndex = -1) {
+        const selectedHull = this.ship.subhulls[this.ship.selectedSubhullIndex];
+        if (!selectedHull) {
+            alert('No hull selected. Please select a hull first.');
+            return;
+        }
+
+        let existingComp = null;
+        if (editIndex >= 0) {
+            const target = this.ship.getComponentByIdx(editIndex);
+            if (target && target.component) existingComp = target.component;
+        }
+
+        const currentRole = existingComp ? (existingComp.roleKey || roleKey) : roleKey;
+        const currentType = existingComp ? (existingComp.typeKey || 'Standard') : (ShipHelper.ENUM_CONSOLE_ROLES[currentRole]?.defaultType || 'Standard');
+        const currentCount = existingComp ? (existingComp.count || 1) : 1;
+        const currentHolo = existingComp ? (existingComp.holographic || false) : false;
+        const currentTL = existingComp ? existingComp.tl : (currentHolo ? Math.max(15, this.ship.baseTL || 12) : (this.ship.baseTL || 12));
+        const currentImport = existingComp ? (existingComp.importFee || false) : (currentTL > this.ship.baseTL);
+
+        let roleOptions = '';
+        for (const [k, r] of Object.entries(ShipHelper.ENUM_CONSOLE_ROLES)) {
+            const sel = (k === currentRole) ? 'selected' : '';
+            roleOptions += `<option value="${k}" ${sel}>[${r.type}] ${r.name} (${r.skill})</option>`;
+        }
+
+        let typeOptions = '';
+        for (const [k, t] of Object.entries(ShipHelper.ENUM_CONSOLE_TYPES)) {
+            const sel = (k === currentType) ? 'selected' : '';
+            typeOptions += `<option value="${k}" ${sel}>${t.name} (MCr${t.baseCost}, ${t.sq} Sq)</option>`;
+        }
+
+        const content = `
+            <div class="form-row">
+                <label for="console-role-select">Console Function / Role:</label>
+                <select id="console-role-select">${roleOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="console-type-select">Console Format / Size:</label>
+                <select id="console-type-select">${typeOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="console-count-input">Quantity:</label>
+                <input type="number" id="console-count-input" value="${currentCount}" min="1" max="100">
+            </div>
+            <div class="form-row">
+                <label for="console-tl-input">Tech Level:</label>
+                <input type="number" id="console-tl-input" value="${currentTL}" min="0" max="33">
+            </div>
+            <div class="form-row" style="justify-content: flex-start; gap: 20px; flex-wrap: wrap;">
+                <label><input type="checkbox" id="console-holo" ${currentHolo ? 'checked' : ''}> Virtual / Holographic (TL 15+, 0.5x tons, 1.5x MCr)</label>
+                <label><input type="checkbox" id="console-import" ${currentImport ? 'checked' : ''}> 10% Import Surcharge</label>
+            </div>
+            <div id="console-preview" class="drive-preview-box" style="margin-top: 15px;"></div>
+        `;
+
+        const updatePreview = () => {
+            const rKey = document.getElementById('console-role-select').value;
+            const tKey = document.getElementById('console-type-select').value;
+            const cnt = parseInt(document.getElementById('console-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('console-tl-input').value, 10);
+            const holo = document.getElementById('console-holo').checked;
+            const imp = document.getElementById('console-import').checked;
+
+            const cObj = ShipHelper.buildConsole(rKey, tKey, cnt, {
+                tl: tlVal,
+                holographic: holo,
+                importFee: imp,
+                shipBaseTL: this.ship.baseTL
+            });
+
+            const formulaStr = holo ? 'Holographic Virtual Interface (Requires TL 15+)' : 'Standard Control Electronics';
+
+            const previewDiv = document.getElementById('console-preview');
+            if (previewDiv) {
+                previewDiv.innerHTML = `
+                    ${ShipHelperView.formatTLStatus(cObj.tl, this.ship.baseTL, formulaStr)}
+                    <div class="preview-stat">Cost: MCr${cObj.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</div>
+                    <div class="preview-stat">Tonnage: ${cObj.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>
+                    <div class="preview-stat">Deck Space: ${cObj.sq} Squares (${cObj.sq * 2} Cubes)</div>
+                    <div class="preview-stat">Primary Skill: ${cObj.skill}</div>
+                    <div class="preview-stat">Console Type: ${cObj.roleType} (${cObj.typeName})</div>
+                    <div style="grid-column: 1 / -1; color: var(--text-muted); font-style: italic; font-size: 0.9em; margin-top: 4px;">${cObj.comment}</div>
+                `;
+            }
+        };
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} Control Console`, content, () => {
+            const rKey = document.getElementById('console-role-select').value;
+            const tKey = document.getElementById('console-type-select').value;
+            const cnt = parseInt(document.getElementById('console-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('console-tl-input').value, 10);
+            const holo = document.getElementById('console-holo').checked;
+            const imp = document.getElementById('console-import').checked;
+
+            const cComp = ShipHelper.buildConsole(rKey, tKey, cnt, {
+                tl: tlVal,
+                holographic: holo,
+                importFee: imp,
+                shipBaseTL: this.ship.baseTL
+            });
+
+            if (editIndex >= 0) {
+                this.ship.updateComponent(editIndex, cComp);
+            } else {
+                this.ship.addComponent(cComp);
+            }
+            this.render();
+        });
+
+        ['console-role-select', 'console-type-select', 'console-count-input', 'console-tl-input', 'console-holo', 'console-import'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        document.getElementById('console-holo').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                document.getElementById('console-tl-input').value = Math.max(15, this.ship.baseTL || 12);
+            } else {
+                document.getElementById('console-tl-input').value = this.ship.baseTL || 12;
+            }
+            const tlVal = parseInt(document.getElementById('console-tl-input').value, 10) || 0;
+            document.getElementById('console-import').checked = (tlVal > this.ship.baseTL);
+            updatePreview();
+        });
+
+        document.getElementById('console-tl-input').addEventListener('input', () => {
+            const tlVal = parseInt(document.getElementById('console-tl-input').value, 10) || 0;
+            document.getElementById('console-import').checked = (tlVal > this.ship.baseTL);
+            updatePreview();
+        });
+
+        updatePreview();
+    }
+
+    openComputerDialog(modelNumber = 0, editIndex = -1) {
+        const selectedHull = this.ship.subhulls[this.ship.selectedSubhullIndex];
+        if (!selectedHull) {
+            alert('No hull selected. Please select a hull first.');
+            return;
+        }
+
+        let existingComp = null;
+        if (editIndex >= 0) {
+            const target = this.ship.getComponentByIdx(editIndex);
+            if (target && target.component) existingComp = target.component;
+        }
+
+        const currentModel = existingComp ? existingComp.model : modelNumber;
+        const currentBis = existingComp ? (existingComp.isBis || false) : false;
+        const currentFib = existingComp ? (existingComp.fiberOptic || false) : false;
+        const currentBackup = existingComp ? (existingComp.isBackup || false) : false;
+        const currentMaster = existingComp ? (existingComp.isMaster || false) : false;
+        const currentCount = existingComp ? (existingComp.count || 1) : 1;
+        const currentTL = existingComp ? existingComp.tl : (ShipHelper.getComputerSpecs(currentModel, currentBis).baseTL);
+        const currentImport = existingComp ? (existingComp.importFee || false) : (currentTL > this.ship.baseTL);
+
+        let modelOptions = '';
+        for (let m = 0; m <= 33; m++) {
+            const specs = ShipHelper.getComputerSpecs(m, false);
+            const sel = (m === currentModel) ? 'selected' : '';
+            modelOptions += `<option value="${m}" ${sel}>Model/${m} (TL ${specs.baseTL}, ${specs.cells} Cells, ${specs.tons}t, MCr${specs.cost})</option>`;
+        }
+
+        const content = `
+            <div class="form-row">
+                <label for="computer-model-select">Computer Model:</label>
+                <select id="computer-model-select">${modelOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="computer-count-input">Quantity:</label>
+                <input type="number" id="computer-count-input" value="${currentCount}" min="1" max="10">
+            </div>
+            <div class="form-row">
+                <label for="computer-tl-input">Tech Level:</label>
+                <input type="number" id="computer-tl-input" value="${currentTL}" min="0" max="33">
+            </div>
+            <div class="form-row" style="justify-content: flex-start; gap: 20px; flex-wrap: wrap;">
+                <label><input type="checkbox" id="computer-bis" ${currentBis ? 'checked' : ''}> 'bis' Architecture (+1 Cell, enhanced processing)</label>
+                <label><input type="checkbox" id="computer-fib" ${currentFib ? 'checked' : ''}> Fiber-Optic / Hardened (/fib, +50% MCr)</label>
+                <label><input type="checkbox" id="computer-backup" ${currentBackup ? 'checked' : ''}> Off-line Standby Backup (50% MCr)</label>
+                <label><input type="checkbox" id="computer-master" ${currentMaster ? 'checked' : ''}> Master Computer</label>
+                <label><input type="checkbox" id="computer-import" ${currentImport ? 'checked' : ''}> 10% Import Surcharge</label>
+            </div>
+            <div id="computer-preview" class="drive-preview-box" style="margin-top: 15px;"></div>
+        `;
+
+        const updatePreview = () => {
+            const mVal = parseInt(document.getElementById('computer-model-select').value, 10) || 0;
+            const cnt = parseInt(document.getElementById('computer-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('computer-tl-input').value, 10);
+            const isBis = document.getElementById('computer-bis').checked;
+            const isFib = document.getElementById('computer-fib').checked;
+            const isBak = document.getElementById('computer-backup').checked;
+            const isMst = document.getElementById('computer-master').checked;
+            const isImp = document.getElementById('computer-import').checked;
+
+            const compObj = ShipHelper.buildComputer(mVal, isBis, cnt, {
+                tl: tlVal,
+                fiberOptic: isFib,
+                isBackup: isBak,
+                isMaster: isMst,
+                importFee: isImp
+            });
+
+            const formulaStr = `Model/${compObj.model}${compObj.isBis ? ' bis' : ''} Base TL ${compObj.baseTL} (C+S = ${compObj.tl})`;
+
+            const previewDiv = document.getElementById('computer-preview');
+            if (previewDiv) {
+                previewDiv.innerHTML = `
+                    ${ShipHelperView.formatTLStatus(compObj.tl, this.ship.baseTL, formulaStr)}
+                    <div class="preview-stat">Cost: MCr${compObj.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</div>
+                    <div class="preview-stat">Tonnage: ${compObj.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>
+                    <div class="preview-stat">Processing Cells: ${compObj.cells} Console-Equivalents</div>
+                    <div class="preview-stat">Software Capacity: ${compObj.softwareCapacity}</div>
+                    <div class="preview-stat">Deck Space: ${compObj.sq} Squares (${compObj.sq * 2} Cubes)</div>
+                    <div style="grid-column: 1 / -1; color: var(--text-muted); font-style: italic; font-size: 0.9em; margin-top: 4px;">${compObj.comment}</div>
+                `;
+            }
+        };
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} Ship's Computer`, content, () => {
+            const mVal = parseInt(document.getElementById('computer-model-select').value, 10) || 0;
+            const cnt = parseInt(document.getElementById('computer-count-input').value, 10) || 1;
+            const tlVal = parseInt(document.getElementById('computer-tl-input').value, 10);
+            const isBis = document.getElementById('computer-bis').checked;
+            const isFib = document.getElementById('computer-fib').checked;
+            const isBak = document.getElementById('computer-backup').checked;
+            const isMst = document.getElementById('computer-master').checked;
+            const isImp = document.getElementById('computer-import').checked;
+
+            const compObj = ShipHelper.buildComputer(mVal, isBis, cnt, {
+                tl: tlVal,
+                fiberOptic: isFib,
+                isBackup: isBak,
+                isMaster: isMst,
+                importFee: isImp
+            });
+
+            if (editIndex >= 0) {
+                this.ship.updateComponent(editIndex, compObj);
+            } else {
+                this.ship.addComponent(compObj);
+            }
+            this.render();
+        });
+
+        ['computer-model-select', 'computer-count-input', 'computer-tl-input', 'computer-bis', 'computer-fib', 'computer-backup', 'computer-master', 'computer-import'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        const syncComputerTL = () => {
+            const m = parseInt(document.getElementById('computer-model-select').value, 10) || 0;
+            const isBis = document.getElementById('computer-bis').checked;
+            const specs = ShipHelper.getComputerSpecs(m, isBis);
+            document.getElementById('computer-tl-input').value = specs.baseTL;
+            document.getElementById('computer-import').checked = (specs.baseTL > this.ship.baseTL);
+            updatePreview();
+        };
+
+        document.getElementById('computer-model-select').addEventListener('change', syncComputerTL);
+        document.getElementById('computer-bis').addEventListener('change', syncComputerTL);
+        document.getElementById('computer-tl-input').addEventListener('input', () => {
+            const manualTL = parseInt(document.getElementById('computer-tl-input').value, 10) || 0;
+            document.getElementById('computer-import').checked = (manualTL > this.ship.baseTL);
+            updatePreview();
+        });
+
+        updatePreview();
     }
 
     openDriveDialog(driveType, editIndex = -1) {
@@ -434,8 +1328,14 @@ class ShipHelperView {
                 const perf = ShipHelper.getDrivePerformance(drivePreview, this.ship.tonnage);
                 const mechanisms = Math.ceil(drivePreview.tons / 35);
 
+                const baseIntroTL = ShipHelper.getBaseDriveIntroTL(driveType, perf.potential);
+                const stageDef = ShipHelper.ENUM_DRIVE_STAGE[techStage];
+                const stageMod = stageDef ? stageDef.mod : 0;
+                const formulaStr = `${driveType}-${perf.potential} Base Intro TL ${baseIntroTL} + ${techStage} Stage [${stageMod >= 0 ? '+' : ''}${stageMod}]`;
+
                 document.getElementById('drive-preview').innerHTML = `
                     <div class="preview-title">Preview:</div>
+                    ${ShipHelperView.formatTLStatus(drivePreview.tl, this.ship.baseTL, formulaStr)}
                     <div class="preview-stat">Cost: MCr${drivePreview.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
                     <div class="preview-stat">Tonnage: ${drivePreview.tons.toLocaleString()} tons</div>
                     <div class="preview-stat">Mechanisms: ${mechanisms}</div>
@@ -447,20 +1347,30 @@ class ShipHelperView {
             }
         };
 
-        document.getElementById('dialog-drive-class').addEventListener('change', updatePreview);
-        document.getElementById('dialog-tech-stage').addEventListener('change', updatePreview);
+        const syncDriveTL = () => {
+            const driveClass = document.getElementById('dialog-drive-class').value;
+            const techStage = document.getElementById('dialog-tech-stage').value;
+            const nexus = parseInt(document.getElementById('dialog-nexus').value, 10) || 1;
+            try {
+                const stageDef = ShipHelper.ENUM_DRIVE_STAGE[techStage];
+                const stageMod = stageDef ? stageDef.mod : 0;
+                const tempDrive = ShipHelper.buildDrive(techStage, nexus, driveClass, driveType, parseInt(document.getElementById('dialog-tl').value, 10) || this.ship.baseTL);
+                const rawPerf = ShipHelper.getDrivePerformance(tempDrive, this.ship.tonnage);
+                const baseIntroTL = ShipHelper.getBaseDriveIntroTL(driveType, rawPerf.potential);
+                const calcTL = Math.max(0, baseIntroTL + stageMod);
+                document.getElementById('dialog-tl').value = calcTL;
+                document.getElementById('dialog-import-fee').checked = (calcTL > this.ship.baseTL);
+            } catch (e) { }
+            updatePreview();
+        };
+
+        document.getElementById('dialog-drive-class').addEventListener('change', syncDriveTL);
+        document.getElementById('dialog-tech-stage').addEventListener('change', syncDriveTL);
         document.getElementById('dialog-perf-limit').addEventListener('input', updatePreview);
         document.getElementById('dialog-import-fee').addEventListener('change', updatePreview);
-        document.getElementById('dialog-tl').addEventListener('change', () => {
-            const tl = parseInt(document.getElementById('dialog-tl').value, 10);
-
-            // Auto check import fee if TL is different from ship's base TL
-            const importFeeCb = document.getElementById('dialog-import-fee');
-            if (tl !== this.ship.baseTL) {
-                importFeeCb.checked = true;
-            } else {
-                importFeeCb.checked = false;
-            }
+        document.getElementById('dialog-tl').addEventListener('input', () => {
+            const tl = parseInt(document.getElementById('dialog-tl').value, 10) || 0;
+            document.getElementById('dialog-import-fee').checked = (tl > this.ship.baseTL);
 
             const availableStages = ShipHelper.getAvailableTechStages(tl, driveType);
             const stageSelect = document.getElementById('dialog-tech-stage');
@@ -487,7 +1397,7 @@ class ShipHelperView {
 
             updatePreview();
         });
-        document.getElementById('dialog-nexus').addEventListener('change', updatePreview);
+        document.getElementById('dialog-nexus').addEventListener('change', syncDriveTL);
 
         updatePreview();
     }
@@ -937,7 +1847,7 @@ class ShipHelperView {
             const constrainedList = constrainedSection.querySelector('.constrained-list');
 
             // Collect all items in this category (both regular and already constrained)
-            const allItems = category.querySelectorAll('.drive-item, .generic-item, .fitting-item');
+            const allItems = category.querySelectorAll('.drive-item, .generic-item, .fitting-item, .weapon-item, .defense-item, .sensor-item, .console-item, .computer-item');
 
             let hasConstrained = false;
 
@@ -962,6 +1872,15 @@ class ShipHelperView {
                         const selectedHull = this.ship.subhulls[this.ship.selectedSubhullIndex];
                         const config = selectedHull ? selectedHull.config : null;
                         if (config && !fDef.installable.includes(config) && !fDef.automatic.includes(config)) {
+                            isConstrained = true;
+                        }
+                    }
+                } else if (item.classList.contains('computer-item')) {
+                    const modelStr = item.getAttribute('data-computer-model');
+                    if (modelStr !== 'custom') {
+                        const m = parseInt(modelStr, 10);
+                        const reqTL = ShipHelper.getComputerSpecs(m, false).baseTL;
+                        if (this.ship.baseTL < reqTL) {
                             isConstrained = true;
                         }
                     }
@@ -1134,6 +2053,101 @@ class ShipHelperView {
                     ul.appendChild(li);
                 };
 
+                const renderWeaponCard = (comp, currentCompIdx) => {
+                    const li = document.createElement('div');
+                    li.className = 'component-card weapon-card';
+                    const costStr = comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                    const countStr = comp.count > 1 ? ` (x${comp.count})` : '';
+                    const hitsStr = comp.hits ? `<span class="badge badge-hits">${comp.hits * (comp.count || 1)}D Hits</span>` : '';
+                    const hpStr = comp.hardpointReq > 0 ? `<span class="badge badge-hp">${comp.hardpointReq} HP</span>` : (comp.firmpointReq > 0 ? `<span class="badge badge-fp">${comp.firmpointReq} FP</span>` : '');
+                    const stageStr = `<span class="badge badge-stage">${comp.stage}</span>`;
+                    const rangeStr = `<span class="badge badge-range">${comp.rangeKey || 'AR'}</span>`;
+                    const tlStr = `<span class="badge badge-tl">TL ${comp.tl}</span>`;
+
+                    li.innerHTML = `
+                        <div class="component-info">
+                            <div class="component-title">
+                                ${comp.name}${countStr}
+                                ${hpStr} ${stageStr} ${rangeStr} ${tlStr} ${hitsStr}
+                            </div>
+                            <div class="component-details">
+                                ${comp.mountName} \u2014 MCr${costStr} \u2014 ${comp.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons \u2014 ${comp.cp} CP
+                            </div>
+                            ${comp.comment ? `<div class="component-perf" style="color:var(--text-muted); font-style:italic">${comp.comment}</div>` : ''}
+                        </div>
+                    `;
+                    li.addEventListener('click', () => { this.openWeaponDialog(comp.weaponKey, currentCompIdx); });
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = (e) => { e.stopPropagation(); this.ship.removeComponentAtIndex(currentCompIdx); this.render(); };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                };
+
+                const renderDefenseCard = (comp, currentCompIdx) => {
+                    const li = document.createElement('div');
+                    li.className = 'component-card defense-card';
+                    const costStr = comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                    const countStr = comp.count > 1 ? ` (x${comp.count})` : '';
+                    const hpStr = comp.hardpointReq > 0 ? `<span class="badge badge-hp">${comp.hardpointReq} HP</span>` : (comp.firmpointReq > 0 ? `<span class="badge badge-fp">${comp.firmpointReq} FP</span>` : '');
+                    const stageStr = `<span class="badge badge-stage">${comp.stage}</span>`;
+                    const rangeStr = `<span class="badge badge-range">${comp.rangeKey || 'AR'}</span>`;
+                    const tlStr = `<span class="badge badge-tl">TL ${comp.tl}</span>`;
+
+                    li.innerHTML = `
+                        <div class="component-info">
+                            <div class="component-title">
+                                ${comp.name}${countStr}
+                                ${hpStr} ${stageStr} ${rangeStr} ${tlStr}
+                            </div>
+                            <div class="component-details">
+                                ${comp.mountName} \u2014 MCr${costStr} \u2014 ${comp.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons \u2014 ${comp.cp} CP
+                            </div>
+                            ${comp.comment ? `<div class="component-perf" style="color:var(--text-muted); font-style:italic">${comp.comment}</div>` : ''}
+                        </div>
+                    `;
+                    li.addEventListener('click', () => { this.openDefenseDialog(comp.defenseKey, currentCompIdx); });
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = (e) => { e.stopPropagation(); this.ship.removeComponentAtIndex(currentCompIdx); this.render(); };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                };
+
+                const renderSensorCard = (comp, currentCompIdx) => {
+                    const li = document.createElement('div');
+                    li.className = 'component-card sensor-card';
+                    const costStr = comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                    const countStr = comp.count > 1 ? ` (x${comp.count})` : '';
+                    const hpStr = comp.hardpointReq > 0 ? `<span class="badge badge-hp">${comp.hardpointReq} HP</span>` : '';
+                    const modeStr = comp.mode ? `<span class="badge badge-mode">${comp.mode}</span>` : '';
+                    const stageStr = `<span class="badge badge-stage">${comp.stage}</span>`;
+                    const rangeStr = `<span class="badge badge-range">${comp.rangeKey || 'AR'}</span>`;
+                    const tlStr = `<span class="badge badge-tl">TL ${comp.tl}</span>`;
+
+                    li.innerHTML = `
+                        <div class="component-info">
+                            <div class="component-title">
+                                ${comp.name}${countStr}
+                                ${hpStr} ${modeStr} ${stageStr} ${rangeStr} ${tlStr}
+                            </div>
+                            <div class="component-details">
+                                ${comp.mountName} \u2014 MCr${costStr} \u2014 ${comp.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons \u2014 ${comp.cp} CP
+                            </div>
+                            ${comp.comment ? `<div class="component-perf" style="color:var(--text-muted); font-style:italic">${comp.comment}</div>` : ''}
+                        </div>
+                    `;
+                    li.addEventListener('click', () => { this.openSensorDialog(comp.sensorKey, currentCompIdx); });
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = (e) => { e.stopPropagation(); this.ship.removeComponentAtIndex(currentCompIdx); this.render(); };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                };
+
                 const renderGenericCard = (comp, currentCompIdx) => {
                     const li = document.createElement('div');
                     li.className = 'component-card';
@@ -1178,13 +2192,79 @@ class ShipHelperView {
                     ul.appendChild(li);
                 };
 
+                const renderConsoleCard = (comp, currentCompIdx) => {
+                    const li = document.createElement('div');
+                    li.className = 'component-card console-card';
+                    const costStr = comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                    const countStr = comp.count > 1 ? ` (x${comp.count})` : '';
+                    const roleBadge = `<span class="badge badge-role">${comp.roleType || 'CC'}</span>`;
+                    const holoBadge = comp.holographic ? `<span class="badge badge-holo">Holo</span>` : '';
+                    const tlStr = `<span class="badge badge-tl">TL ${comp.tl}</span>`;
+
+                    li.innerHTML = `
+                        <div class="component-info">
+                            <div class="component-title">
+                                ${comp.name}${countStr}
+                                ${roleBadge} ${holoBadge} ${tlStr}
+                            </div>
+                            <div class="component-details">
+                                ${comp.typeName} \u2014 MCr${costStr} \u2014 ${comp.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons \u2014 ${comp.sq} Sq \u2014 Skill: ${comp.skill}
+                            </div>
+                            ${comp.comment ? `<div class="component-perf" style="color:var(--text-muted); font-style:italic">${comp.comment}</div>` : ''}
+                        </div>
+                    `;
+                    li.addEventListener('click', () => { this.openConsoleDialog(comp.roleKey, currentCompIdx); });
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = (e) => { e.stopPropagation(); this.ship.removeComponentAtIndex(currentCompIdx); this.render(); };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                };
+
+                const renderComputerCard = (comp, currentCompIdx) => {
+                    const li = document.createElement('div');
+                    li.className = 'component-card computer-card';
+                    const costStr = comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                    const countStr = comp.count > 1 ? ` (x${comp.count})` : '';
+                    const cellsBadge = `<span class="badge badge-cells">${comp.cells} Cells</span>`;
+                    const masterBadge = comp.isMaster ? `<span class="badge badge-master">Master</span>` : '';
+                    const backupBadge = comp.isBackup ? `<span class="badge badge-backup">Backup</span>` : '';
+                    const tlStr = `<span class="badge badge-tl">TL ${comp.tl}</span>`;
+
+                    li.innerHTML = `
+                        <div class="component-info">
+                            <div class="component-title">
+                                ${comp.name}${countStr}
+                                ${cellsBadge} ${masterBadge} ${backupBadge} ${tlStr}
+                            </div>
+                            <div class="component-details">
+                                MCr${costStr} \u2014 ${comp.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons \u2014 ${comp.sq} Sq \u2014 ${comp.softwareCapacity}
+                            </div>
+                            ${comp.comment ? `<div class="component-perf" style="color:var(--text-muted); font-style:italic">${comp.comment}</div>` : ''}
+                        </div>
+                    `;
+                    li.addEventListener('click', () => { this.openComputerDialog(comp.model, currentCompIdx); });
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = (e) => { e.stopPropagation(); this.ship.removeComponentAtIndex(currentCompIdx); this.render(); };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                };
+
                 // Pre-map components with their global indices before grouping
                 const hullComps = hull.components || [];
                 const compEntries = hullComps.map((c, i) => ({ comp: c, idx: globalCompIdx + i }));
                 globalCompIdx += hullComps.length;
 
+                const weaponEntries   = compEntries.filter(e => e.comp.isWeapon);
+                const defenseEntries  = compEntries.filter(e => e.comp.isDefense);
+                const sensorEntries   = compEntries.filter(e => e.comp.isSensor);
+                const consoleEntries  = compEntries.filter(e => e.comp.isConsole);
+                const computerEntries = compEntries.filter(e => e.comp.isComputer);
                 const fittingEntries  = compEntries.filter(e => e.comp.isHullFitting || e.comp.name === 'Grapple');
-                const fuelPayEntries  = compEntries.filter(e => !e.comp.isHullFitting && e.comp.name !== 'Grapple');
+                const fuelPayEntries  = compEntries.filter(e => !e.comp.isHullFitting && e.comp.name !== 'Grapple' && !e.comp.isWeapon && !e.comp.isDefense && !e.comp.isSensor && !e.comp.isConsole && !e.comp.isComputer);
 
                 // Drives group
                 if ((hull.drives || []).length > 0) {
@@ -1192,6 +2272,36 @@ class ShipHelperView {
                     (hull.drives || []).forEach(comp => {
                         renderDriveCard(comp, globalDriveIdx++);
                     });
+                }
+
+                // Controls & Consoles group
+                if (consoleEntries.length > 0) {
+                    addGroupHeader('Controls & Consoles');
+                    consoleEntries.forEach(({ comp, idx }) => renderConsoleCard(comp, idx));
+                }
+
+                // Computers group
+                if (computerEntries.length > 0) {
+                    addGroupHeader("Ship's Computers");
+                    computerEntries.forEach(({ comp, idx }) => renderComputerCard(comp, idx));
+                }
+
+                // Weapons group
+                if (weaponEntries.length > 0) {
+                    addGroupHeader('Weapons');
+                    weaponEntries.forEach(({ comp, idx }) => renderWeaponCard(comp, idx));
+                }
+
+                // Defenses group
+                if (defenseEntries.length > 0) {
+                    addGroupHeader('Defenses');
+                    defenseEntries.forEach(({ comp, idx }) => renderDefenseCard(comp, idx));
+                }
+
+                // Sensors group
+                if (sensorEntries.length > 0) {
+                    addGroupHeader('Sensors');
+                    sensorEntries.forEach(({ comp, idx }) => renderSensorCard(comp, idx));
                 }
 
                 // Fuel / Payload group
@@ -1221,6 +2331,50 @@ class ShipHelperView {
         // Update top bar display elements
         const displayTonnage = document.getElementById('display-tonnage');
         if (displayTonnage) displayTonnage.textContent = this.ship.tonnage.toLocaleString();
+
+        const displayHardpoints = document.getElementById('display-hardpoints');
+        if (displayHardpoints) {
+            const hpUsed = this.ship.hardpointsUsed;
+            const hpMax = this.ship.maxHardpoints;
+            displayHardpoints.textContent = `${hpUsed} / ${hpMax}`;
+            if (hpUsed > hpMax) {
+                displayHardpoints.style.color = 'var(--accent-red)';
+            } else {
+                displayHardpoints.style.color = 'var(--accent-cyan)';
+            }
+        }
+
+        const displayCP = document.getElementById('display-cp');
+        if (displayCP) {
+            displayCP.textContent = `${this.ship.totalControlPanels} CP`;
+        }
+
+        const displayErgo = document.getElementById('display-ergonomics');
+        if (displayErgo) {
+            const consCount = this.ship.totalConsoleCount;
+            const ergo = this.ship.controlErgonomics;
+            const ergoRatio = this.ship.controlErgonomicsRatio;
+            displayErgo.textContent = `${consCount} Consoles (E: ${ergo}, ${ergoRatio} t/CP)`;
+            if (this.ship.totalControlPanels > 0 && consCount === 0) {
+                displayErgo.style.color = 'var(--accent-red)';
+            } else {
+                displayErgo.style.color = 'var(--accent-cyan)';
+            }
+        }
+
+        const displayComputer = document.getElementById('display-computer');
+        if (displayComputer) {
+            const compCells = this.ship.totalComputerCells;
+            const comps = this.ship.computers;
+            const masterComp = comps.find(c => c.isMaster) || comps[0];
+            const modelName = masterComp ? `Model/${masterComp.model}${masterComp.isBis ? ' bis' : ''}` : 'None';
+            displayComputer.textContent = `${modelName} (${compCells} Cells)`;
+            if (this.ship.totalConsoleCount > 0 && compCells < this.ship.totalConsoleCount) {
+                displayComputer.style.color = 'var(--accent-red)';
+            } else {
+                displayComputer.style.color = 'var(--accent-cyan)';
+            }
+        }
 
         const displayConfig = document.getElementById('display-config');
         if (displayConfig) displayConfig.textContent = this.ship.configurationType;
@@ -1355,6 +2509,22 @@ class ShipHelperView {
             `;
         }
 
+        const weaponsCount = this.ship.weapons.reduce((sum, w) => sum + (w.count || 1), 0);
+        const defensesCount = this.ship.defenses.reduce((sum, d) => sum + (d.count || 1), 0);
+        const sensorsCount = this.ship.sensors.reduce((sum, s) => sum + (s.count || 1), 0);
+
+        let armamentHtml = '';
+        if (weaponsCount > 0 || defensesCount > 0 || sensorsCount > 0) {
+            armamentHtml = `
+            <div class="stat-section">
+                <div class="stat-header">Armament & Electronics:</div>
+                ${weaponsCount > 0 ? `<div class="stat-row"><span class="stat-label">Weapons Installed:</span> <span class="stat-value">${weaponsCount} (${this.ship.weapons.reduce((s, w) => s + w.tons, 0).toFixed(1)}t, MCr${this.ship.weapons.reduce((s, w) => s + w.cost, 0).toFixed(1)})</span></div>` : ''}
+                ${defensesCount > 0 ? `<div class="stat-row"><span class="stat-label">Defenses Installed:</span> <span class="stat-value">${defensesCount} (${this.ship.defenses.reduce((s, d) => s + d.tons, 0).toFixed(1)}t, MCr${this.ship.defenses.reduce((s, d) => s + d.cost, 0).toFixed(1)})</span></div>` : ''}
+                ${sensorsCount > 0 ? `<div class="stat-row"><span class="stat-label">Sensors Installed:</span> <span class="stat-value">${sensorsCount} (${this.ship.sensors.reduce((s, se) => s + se.tons, 0).toFixed(1)}t, MCr${this.ship.sensors.reduce((s, se) => s + se.cost, 0).toFixed(1)})</span></div>` : ''}
+            </div>
+            `;
+        }
+
         stats.innerHTML = `
             <div class="stat-section">
                 <div class="stat-header">Hull Configurations:</div>
@@ -1364,8 +2534,15 @@ class ShipHelperView {
             </div>
             
             <div class="stat-section">
-                <div class="stat-header">Controls & Mechanisms:</div>
+                <div class="stat-header">Controls & Computers (Sec 18/22):</div>
                 <div class="stat-row"><span class="stat-label">Total Mechanisms:</span> <span class="stat-value">${totalMechanisms}</span></div>
+                <div class="stat-row"><span class="stat-label">Control Panels (P):</span> <span class="stat-value">${this.ship.totalControlPanels} CP</span></div>
+                <div class="stat-row"><span class="stat-label">Consoles Installed:</span> <span class="stat-value">${this.ship.totalConsoleCount} (${this.ship.totalConsoleTons.toFixed(1)} tons)</span></div>
+                <div class="stat-row"><span class="stat-label">Control Ergonomics (E):</span> <span class="stat-value ${this.ship.controlErgonomics >= 1 ? 'good' : 'warning'}">E = ${this.ship.controlErgonomics} (${this.ship.controlErgonomicsRatio} t/CP)</span></div>
+                <div class="stat-row"><span class="stat-label">Computer Cells (C):</span> <span class="stat-value ${this.ship.totalComputerCells >= this.ship.totalConsoleCount ? 'good' : 'warning'}">${this.ship.totalComputerCells} Cells / ${this.ship.totalConsoleCount} Consoles ${this.ship.totalComputerCells < this.ship.totalConsoleCount ? '(Deficit)' : '(Supported)'}</span></div>
+                ${this.ship.computers.length > 0 ? `<div class="stat-row"><span class="stat-label">Computers Installed:</span> <span class="stat-value">${this.ship.computers.length} unit${this.ship.computers.length > 1 ? 's' : ''} (${this.ship.computers.reduce((s, c) => s + c.tons, 0).toFixed(1)}t, MCr${this.ship.computers.reduce((s, c) => s + c.cost, 0).toFixed(1)})</span></div>` : ''}
+                <div class="stat-row"><span class="stat-label">Hardpoints:</span> <span class="stat-value ${this.ship.hardpointsUsed > this.ship.maxHardpoints ? 'warning' : 'good'}">${this.ship.hardpointsUsed} / ${this.ship.maxHardpoints} Used</span></div>
+                ${this.ship.maxFirmpoints > 0 && this.ship.tonnage < 100 ? `<div class="stat-row"><span class="stat-label">Firmpoints:</span> <span class="stat-value ${this.ship.firmpointsUsed > this.ship.maxFirmpoints ? 'warning' : 'good'}">${this.ship.firmpointsUsed} / ${this.ship.maxFirmpoints} Used</span></div>` : ''}
             </div>
 
             <div class="stat-section">
@@ -1376,6 +2553,7 @@ class ShipHelperView {
                 <div class="stat-row"><span class="stat-label">Tonnage Available:</span> <span class="stat-value ${tonnageRemaining < 0 ? 'warning' : 'good'}">${tonnageRemaining.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</span></div>
                 <div class="stat-row"><span class="stat-label">Average AV:</span> <span class="stat-value">${Math.max(0, Math.floor(this.ship.subhulls.reduce((sum, h) => sum + (this.ship.getSubhullAV(h) * h.tons), 0) / Math.max(1, this.ship.tonnage)))}</span></div>
             </div>
+            ${armamentHtml}
             ${drivePerfHtml}
             ${deployedPerfHtml}
         `;

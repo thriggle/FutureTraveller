@@ -25,9 +25,21 @@
             <input type="file" id="import-file" style="display:none" accept=".json">
 
             <label>Total Tonnage:</label>
-            <span id="display-tonnage" style="font-weight: bold; margin-right: 20px;">0</span>
+            <span id="display-tonnage" style="font-weight: bold; margin-right: 15px;">0</span>
 
-            <label>Overall Configuration:</label>
+            <label>Hardpoints:</label>
+            <span id="display-hardpoints" style="font-weight: bold; margin-right: 15px;">0 / 0</span>
+
+            <label>Control Panels:</label>
+            <span id="display-cp" style="font-weight: bold; margin-right: 15px;" title="Total Control Panels (P)">0</span>
+
+            <label>Consoles / Ergonomics:</label>
+            <span id="display-ergonomics" style="font-weight: bold; margin-right: 15px;" title="Consoles and Control Ergonomics (E)">0 (E: 0)</span>
+
+            <label>Computer Cells:</label>
+            <span id="display-computer" style="font-weight: bold; margin-right: 15px;" title="Ship Computer Cells">None (0 Cells)</span>
+
+            <label>Configuration:</label>
             <span id="display-config" style="font-weight: bold;">Unstreamlined</span>
         </div>
     </div>
@@ -59,6 +71,110 @@
                         <li class="drive-item" data-drive-type="NAFAL">NAFAL Drive</li>
                         <li class="drive-item" data-drive-type="HEPlaR">HEPlaR Drive</li>
                         <li class="drive-item" data-drive-type="Collector">Collector</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Weapons</strong>
+                    <ul class="content">
+                        <li class="weapon-item" data-weapon-key="BeamLaser">Beam Laser</li>
+                        <li class="weapon-item" data-weapon-key="PulseLaser">Pulse Laser</li>
+                        <li class="weapon-item" data-weapon-key="MiningLaser">Mining Laser</li>
+                        <li class="weapon-item" data-weapon-key="PlasmaGun">Plasma Gun</li>
+                        <li class="weapon-item" data-weapon-key="FusionGun">Fusion Gun</li>
+                        <li class="weapon-item" data-weapon-key="SlugThrower">Slug Thrower</li>
+                        <li class="weapon-item" data-weapon-key="SalvoRack">Salvo Rack</li>
+                        <li class="weapon-item" data-weapon-key="RailGun">Rail Gun</li>
+                        <li class="weapon-item" data-weapon-key="Missile">Missile Rack</li>
+                        <li class="weapon-item" data-weapon-key="KKMissile">KK Missile Launcher</li>
+                        <li class="weapon-item" data-weapon-key="AMMissile">Antimatter Missile</li>
+                        <li class="weapon-item" data-weapon-key="JumpDamper">Jump Damper</li>
+                        <li class="weapon-item" data-weapon-key="TractorPressor">Tractor / Pressor</li>
+                        <li class="weapon-item" data-weapon-key="Inducer">Inducer</li>
+                        <li class="weapon-item" data-weapon-key="Disruptor">Disruptor</li>
+                        <li class="weapon-item" data-weapon-key="Stasis">Stasis Beam</li>
+                        <li class="weapon-item" data-weapon-key="DataCaster">DataCaster</li>
+                        <li class="weapon-item" data-weapon-key="SandCaster">SandCaster</li>
+                        <li class="weapon-item" data-weapon-key="Ortillery">Ortillery</li>
+                        <li class="weapon-item" data-weapon-key="CommCaster">CommCaster</li>
+                        <li class="weapon-item" data-weapon-key="HybridSLM">Hybrid Sand/Laser/Missile</li>
+                        <li class="weapon-item" data-weapon-key="ParticleAccel">Particle Accelerator (PA)</li>
+                        <li class="weapon-item" data-weapon-key="MesonGun">Meson Gun</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Defenses</strong>
+                    <ul class="content">
+                        <li class="defense-item" data-defense-key="NuclearDamper">Nuclear Damper</li>
+                        <li class="defense-item" data-defense-key="MesonScreen">Meson Screen</li>
+                        <li class="defense-item" data-defense-key="ProtonScreen">Proton Screen</li>
+                        <li class="defense-item" data-defense-key="MagScrambler">Magnetic Scrambler</li>
+                        <li class="defense-item" data-defense-key="GravScrambler">Gravitic Scrambler</li>
+                        <li class="defense-item" data-defense-key="ElecScrambler">Electronic Scrambler</li>
+                        <li class="defense-item" data-defense-key="BlackGlobe">Black Globe Generator</li>
+                        <li class="defense-item" data-defense-key="WhiteGlobe">White Globe Generator</li>
+                        <li class="defense-item" data-defense-key="SilverGlobe">Silver Globe Generator</li>
+                        <li class="defense-item" data-defense-key="StasisGlobe">Stasis Globe Generator</li>
+                        <li class="defense-item" data-defense-key="Jammer">EW Jammer</li>
+                        <li class="defense-item" data-defense-key="StealthMask">Stealth Mask System</li>
+                        <li class="defense-item" data-defense-key="SandCasterDef">Point Defense SandCaster</li>
+                        <li class="defense-item" data-defense-key="PDLLaser">Point Defense Laser (PDL)</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Sensors</strong>
+                    <ul class="content">
+                        <li class="sensor-item" data-sensor-key="Communicator">Communicator Array</li>
+                        <li class="sensor-item" data-sensor-key="Holovisor">Holovisor</li>
+                        <li class="sensor-item" data-sensor-key="Scope">Optical Telescope / Scope</li>
+                        <li class="sensor-item" data-sensor-key="Visor">Wide-Spectrum Visor</li>
+                        <li class="sensor-item" data-sensor-key="HeatSensor">Thermal / Heat Sensor</li>
+                        <li class="sensor-item" data-sensor-key="EMSensor">EM / Radio Sensor</li>
+                        <li class="sensor-item" data-sensor-key="Densitometer">Densitometer</li>
+                        <li class="sensor-item" data-sensor-key="Neutrino">Neutrino Sensor</li>
+                        <li class="sensor-item" data-sensor-key="ActivitySensor">Activity Detector</li>
+                        <li class="sensor-item" data-sensor-key="Proximity">Proximity Sensor</li>
+                        <li class="sensor-item" data-sensor-key="Radar">Radar Suite</li>
+                        <li class="sensor-item" data-sensor-key="Lidar">Lidar Suite</li>
+                        <li class="sensor-item" data-sensor-key="Scanner">Deep Scanner</li>
+                        <li class="sensor-item" data-sensor-key="JammerSensor">Sensor Jammer</li>
+                        <li class="sensor-item" data-sensor-key="Sonar">Active/Passive Sonar</li>
+                        <li class="sensor-item" data-sensor-key="Searchlight">High-Power Searchlight</li>
+                        <li class="sensor-item" data-sensor-key="StealthMaskSensor">Stealth Mask Suite</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Controls & Consoles</strong>
+                    <ul class="content">
+                        <li class="console-item" data-console-role="Bridge">Bridge Command Console</li>
+                        <li class="console-item" data-console-role="Pilot">Pilot / Helm Console</li>
+                        <li class="console-item" data-console-role="Astrogation">Astrogation / Nav Console</li>
+                        <li class="console-item" data-console-role="Gunnery">Gunnery / Fire Control</li>
+                        <li class="console-item" data-console-role="Sensors">Sensor Suite Console</li>
+                        <li class="console-item" data-console-role="Engineering">Engineering / Drive Console</li>
+                        <li class="console-item" data-console-role="Comms">Communications Console</li>
+                        <li class="console-item" data-console-role="DamageControl">Damage Control Console</li>
+                        <li class="console-item" data-console-role="LifeSupport">Life Support Console</li>
+                        <li class="console-item" data-console-role="Cargo">Cargo / Freight Console</li>
+                        <li class="console-item" data-console-role="Security">Security Console</li>
+                        <li class="console-item" data-console-role="Medical">Medical / Trauma Console</li>
+                        <li class="console-item" data-console-role="Workstation">Administrative Workstation</li>
+                        <li class="console-item" data-console-role="General">Multi-Purpose Console</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Ship's Computers</strong>
+                    <ul class="content">
+                        <li class="computer-item" data-computer-model="0">Ship's Computer Model/0</li>
+                        <li class="computer-item" data-computer-model="1">Ship's Computer Model/1</li>
+                        <li class="computer-item" data-computer-model="2">Ship's Computer Model/2</li>
+                        <li class="computer-item" data-computer-model="3">Ship's Computer Model/3</li>
+                        <li class="computer-item" data-computer-model="4">Ship's Computer Model/4</li>
+                        <li class="computer-item" data-computer-model="5">Ship's Computer Model/5</li>
+                        <li class="computer-item" data-computer-model="6">Ship's Computer Model/6</li>
+                        <li class="computer-item" data-computer-model="7">Ship's Computer Model/7</li>
+                        <li class="computer-item" data-computer-model="8">Ship's Computer Model/8</li>
+                        <li class="computer-item" data-computer-model="9">Ship's Computer Model/9</li>
+                        <li class="computer-item" data-computer-model="custom">Custom Model (Model/0 - 33)...</li>
                     </ul>
                 </li>
                 <li class="categorynode">
