@@ -38,10 +38,48 @@ class ShipHelperView {
             this.render();
         });
 
+        // Mission & Jump Fields & Fillform buttons
+        document.getElementById('btn-mission-code')?.addEventListener('click', () => {
+            this.openMissionCodeDialog();
+        });
+
+        const handleJumpFieldsClick = () => {
+            if (!this.ship.hasJumpDrive) {
+                this.showNotificationBanner("⚠️ Jump Fields cannot be configured until a Jump, Hop, or Skip Drive is installed on the vessel.");
+            } else {
+                this.openJumpFieldsDialog();
+            }
+        };
+
+        document.getElementById('btn-astrogation')?.addEventListener('click', handleJumpFieldsClick);
+        document.getElementById('btn-jump-fields')?.addEventListener('click', handleJumpFieldsClick);
+
+        document.getElementById('btn-fillform')?.addEventListener('click', () => {
+            this.openFillformModal();
+        });
+
         // Add export/import functionality
         document.getElementById('export-json').addEventListener('click', () => {
             const data = {
-                version: 1,
+                version: 2,
+                shipName: this.ship.shipName,
+                registration: this.ship.registration,
+                missionId: this.ship.missionId,
+                missionService: this.ship.missionService,
+                missionActivity: this.ship.missionActivity,
+                missionType: this.ship.missionType,
+                missionQualifier: this.ship.missionQualifier,
+                missionName: this.ship.missionName,
+                missionCodeKey: this.ship.missionCodeKey,
+                modifier1Word: this.ship.modifier1Word,
+                modifier1Code: this.ship.modifier1Code,
+                modifier2Word: this.ship.modifier2Word,
+                modifier2Code: this.ship.modifier2Code,
+                jumpFieldKey: this.ship.jumpFieldKey,
+                engineerSkill: this.ship.engineerSkill,
+                jumpDriveSpecialty: this.ship.jumpDriveSpecialty,
+                jumpDiameters: this.ship.jumpDiameters,
+                astrogatorSkill: this.ship.engineerSkill, // legacy
                 baseTL: this.ship.baseTL,
                 subhulls: this.ship.subhulls
             };
@@ -50,7 +88,7 @@ class ShipHelperView {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            const shipName = this.ship.subhulls.length > 0 ? this.ship.subhulls[0].name.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'ship';
+            const shipName = (this.ship.shipName || (this.ship.subhulls.length > 0 ? this.ship.subhulls[0].name : 'ship')).replace(/[^a-z0-9]/gi, '_').toLowerCase();
             a.download = `${shipName}_data.json`;
             a.click();
             URL.revokeObjectURL(url);
@@ -68,9 +106,28 @@ class ShipHelperView {
             reader.onload = (event) => {
                 try {
                     const data = JSON.parse(event.target.result);
-                    if (data.subhulls) {
+                    if (data && data.subhulls) {
                         this.ship.setBaseTL(data.baseTL || 12);
                         document.getElementById('base-tl').value = this.ship.baseTL;
+                        if (data.shipName) this.ship.shipName = data.shipName;
+                        if (data.registration) this.ship.registration = data.registration;
+                        if (data.missionId) this.ship.missionId = data.missionId;
+                        if (data.missionService) this.ship.missionService = data.missionService;
+                        if (data.missionActivity !== undefined) this.ship.missionActivity = data.missionActivity;
+                        if (data.missionType !== undefined) this.ship.missionType = data.missionType;
+                        if (data.missionQualifier !== undefined) this.ship.missionQualifier = data.missionQualifier;
+                        if (data.missionName) this.ship.missionName = data.missionName;
+                        if (data.missionCodeKey) this.ship.missionCodeKey = data.missionCodeKey;
+                        if (data.modifier1Word !== undefined) this.ship.modifier1Word = data.modifier1Word;
+                        if (data.modifier1Code !== undefined) this.ship.modifier1Code = data.modifier1Code;
+                        if (data.modifier2Word !== undefined) this.ship.modifier2Word = data.modifier2Word;
+                        if (data.modifier2Code !== undefined) this.ship.modifier2Code = data.modifier2Code;
+                        if (data.jumpFieldKey) this.ship.jumpFieldKey = data.jumpFieldKey;
+                        if (data.engineerSkill !== undefined) this.ship.engineerSkill = data.engineerSkill;
+                        else if (data.astrogatorSkill !== undefined) this.ship.engineerSkill = data.astrogatorSkill;
+                        if (data.jumpDriveSpecialty !== undefined) this.ship.jumpDriveSpecialty = data.jumpDriveSpecialty;
+                        if (data.jumpDiameters !== undefined) this.ship.jumpDiameters = data.jumpDiameters;
+
                         this.ship.subhulls = data.subhulls;
                         // Migrate old format: unified components[] → split drives[]/components[]
                         this.ship.subhulls.forEach(h => {
@@ -171,6 +228,30 @@ class ShipHelperView {
                 const modelStr = e.target.getAttribute('data-computer-model');
                 const modelNum = modelStr === 'custom' ? 1 : parseInt(modelStr, 10);
                 this.openComputerDialog(modelNum);
+            });
+        });
+
+        // Setup accommodation item clicks
+        document.querySelectorAll('.accommodation-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const typeKey = e.target.getAttribute('data-accommodation-type');
+                this.openAccommodationDialog(typeKey);
+            });
+        });
+
+        // Setup facility item clicks
+        document.querySelectorAll('.facility-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const facilityKey = e.target.getAttribute('data-facility-type');
+                this.openFacilityDialog(facilityKey);
+            });
+        });
+
+        // Setup life support item clicks
+        document.querySelectorAll('.lifesupport-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const lsKey = e.target.getAttribute('data-lifesupport-type');
+                this.openLifeSupportDialog(lsKey);
             });
         });
     }
@@ -1075,6 +1156,502 @@ class ShipHelperView {
         updatePreview();
     }
 
+    openAccommodationDialog(typeKey = 'StandardStateroom', editIndex = -1) {
+        const selectedHull = this.ship.subhulls[this.ship.selectedSubhullIndex];
+        if (!selectedHull) {
+            alert('No hull selected. Please select a hull first.');
+            return;
+        }
+
+        let existingComp = null;
+        if (editIndex >= 0) {
+            const target = this.ship.getComponentByIdx(editIndex);
+            if (target && target.component) existingComp = target.component;
+        }
+
+        const currentKey = existingComp ? (existingComp.accommodationKey || typeKey) : typeKey;
+        const currentCount = existingComp ? (existingComp.count || 1) : 1;
+        const currentAssignment = existingComp ? existingComp.assignment : (ShipHelper.ENUM_ACCOMMODATION_TYPES[currentKey]?.defaultRole || 'Crew');
+        const currentTL = existingComp ? existingComp.tl : (this.ship.baseTL || 12);
+        const currentImport = existingComp ? (existingComp.importFee || false) : (currentTL > this.ship.baseTL);
+        const currentTons = existingComp ? existingComp.tons : (ShipHelper.ENUM_ACCOMMODATION_TYPES[currentKey]?.tons || 2.0);
+
+        let typeOptions = '';
+        for (const [k, a] of Object.entries(ShipHelper.ENUM_ACCOMMODATION_TYPES)) {
+            const sel = (k === currentKey) ? 'selected' : '';
+            typeOptions += `<option value="${k}" ${sel}>${a.name} (${a.tons}t, MCr${a.cost}, ${a.occupants} Occ)</option>`;
+        }
+
+        const assignmentOptions = `
+            <option value="Crew" ${currentAssignment === 'Crew' ? 'selected' : ''}>Crew Quarters</option>
+            <option value="HighPax" ${currentAssignment === 'HighPax' ? 'selected' : ''}>High / Luxury Passenger</option>
+            <option value="MidPax" ${currentAssignment === 'MidPax' ? 'selected' : ''}>Middle Passenger / Bunk</option>
+            <option value="Cryo" ${currentAssignment === 'Cryo' ? 'selected' : ''}>Cryogenic Low Passenger</option>
+            <option value="Commons" ${currentAssignment === 'Commons' ? 'selected' : ''}>Passenger Commons / Recreation</option>
+        `;
+
+        const isCommons = currentKey === 'PassengerCommons';
+
+        const content = `
+            <div class="form-row">
+                <label for="accom-type-select">Accommodation Type:</label>
+                <select id="accom-type-select">${typeOptions}</select>
+            </div>
+            <div class="form-row">
+                <label for="accom-assignment-select">Berth Assignment:</label>
+                <select id="accom-assignment-select">${assignmentOptions}</select>
+            </div>
+            <div class="form-row" id="accom-count-row">
+                <label for="accom-count-input">Quantity / Staterooms:</label>
+                <input type="number" id="accom-count-input" value="${currentCount}" min="1" max="500">
+            </div>
+            <div class="form-row" id="accom-tons-row" style="${isCommons ? '' : 'display:none;'}">
+                <label for="accom-tons-input">Custom Commons Tonnage:</label>
+                <input type="number" id="accom-tons-input" value="${currentTons}" min="1" max="10000">
+            </div>
+            <div class="form-row">
+                <label for="accom-tl-input">Tech Level:</label>
+                <input type="number" id="accom-tl-input" value="${currentTL}" min="0" max="33">
+            </div>
+            <div class="form-row" style="justify-content: flex-start; gap: 20px;">
+                <label><input type="checkbox" id="accom-import" ${currentImport ? 'checked' : ''}> 10% Import Surcharge</label>
+            </div>
+            <div id="accom-preview" class="drive-preview-box" style="margin-top: 15px;"></div>
+        `;
+
+        const updatePreview = () => {
+            const tKey = document.getElementById('accom-type-select').value;
+            const assign = document.getElementById('accom-assignment-select').value;
+            const cnt = parseInt(document.getElementById('accom-count-input').value, 10) || 1;
+            const tonsVal = parseFloat(document.getElementById('accom-tons-input').value) || 1;
+            const tlVal = parseInt(document.getElementById('accom-tl-input').value, 10);
+            const imp = document.getElementById('accom-import').checked;
+
+            const isComm = tKey === 'PassengerCommons';
+            const tonsRow = document.getElementById('accom-tons-row');
+            if (tonsRow) tonsRow.style.display = isComm ? 'flex' : 'none';
+
+            const aObj = ShipHelper.buildAccommodation(tKey, cnt, {
+                assignment: assign,
+                tons: isComm ? tonsVal : undefined,
+                tl: tlVal,
+                importFee: imp,
+                shipBaseTL: this.ship.baseTL
+            });
+
+            const formulaStr = aObj.isCommons ? 'Passenger Commons (1 ton/pax standard)' : `${aObj.singleOccupants} occupant(s) per cabin \u2014 ${aObj.assignment}`;
+
+            const previewDiv = document.getElementById('accom-preview');
+            if (previewDiv) {
+                previewDiv.innerHTML = `
+                    ${ShipHelperView.formatTLStatus(aObj.tl, this.ship.baseTL, formulaStr)}
+                    <div class="preview-stat">Cost: MCr${aObj.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</div>
+                    <div class="preview-stat">Tonnage: ${aObj.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>
+                    <div class="preview-stat">Total Occupants: ${aObj.occupants} (${aObj.assignment})</div>
+                    <div class="preview-stat">Fresher: ${aObj.fresher}</div>
+                    <div class="preview-stat">Comfort Score: ${aObj.comfort}</div>
+                    <div style="grid-column: 1 / -1; color: var(--text-muted); font-style: italic; font-size: 0.9em; margin-top: 4px;">${aObj.comment}</div>
+                `;
+            }
+        };
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} Accommodations`, content, () => {
+            const tKey = document.getElementById('accom-type-select').value;
+            const assign = document.getElementById('accom-assignment-select').value;
+            const cnt = parseInt(document.getElementById('accom-count-input').value, 10) || 1;
+            const tonsVal = parseFloat(document.getElementById('accom-tons-input').value) || 1;
+            const tlVal = parseInt(document.getElementById('accom-tl-input').value, 10);
+            const imp = document.getElementById('accom-import').checked;
+
+            const aObj = ShipHelper.buildAccommodation(tKey, cnt, {
+                assignment: assign,
+                tons: tKey === 'PassengerCommons' ? tonsVal : undefined,
+                tl: tlVal,
+                importFee: imp,
+                shipBaseTL: this.ship.baseTL
+            });
+
+            if (editIndex >= 0) {
+                this.ship.updateComponent(editIndex, aObj);
+            } else {
+                this.ship.addComponent(aObj);
+            }
+            this.render();
+        });
+
+        ['accom-type-select', 'accom-assignment-select', 'accom-count-input', 'accom-tons-input', 'accom-tl-input', 'accom-import'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        document.getElementById('accom-type-select').addEventListener('change', (e) => {
+            const def = ShipHelper.ENUM_ACCOMMODATION_TYPES[e.target.value];
+            if (def && def.defaultRole) {
+                document.getElementById('accom-assignment-select').value = def.defaultRole;
+            }
+            updatePreview();
+        });
+
+        updatePreview();
+    }
+
+    openFacilityDialog(facilityKey = 'StandardCargo', editIndex = -1) {
+        const selectedHull = this.ship.subhulls[this.ship.selectedSubhullIndex];
+        if (!selectedHull) {
+            alert('No hull selected. Please select a hull first.');
+            return;
+        }
+
+        let existingComp = null;
+        if (editIndex >= 0) {
+            const target = this.ship.getComponentByIdx(editIndex);
+            if (target && target.component) existingComp = target.component;
+        }
+
+        const currentKey = existingComp ? (existingComp.facilityKey || facilityKey) : facilityKey;
+        const currentDef = ShipHelper.ENUM_FACILITY_TYPES[currentKey] || ShipHelper.ENUM_FACILITY_TYPES.StandardCargo;
+        const currentAmount = existingComp ? (currentDef.fixedSize ? existingComp.count : existingComp.tons) : (currentDef.fixedSize ? 1 : 10);
+        const currentTL = existingComp ? existingComp.tl : (this.ship.baseTL || 12);
+        const currentImport = existingComp ? (existingComp.importFee || false) : (currentTL > this.ship.baseTL);
+
+        let typeOptions = '';
+        for (const [k, f] of Object.entries(ShipHelper.ENUM_FACILITY_TYPES)) {
+            const sel = (k === currentKey) ? 'selected' : '';
+            typeOptions += `<option value="${k}" ${sel}>${f.name} (MCr${f.unitCost}${f.fixedSize ? '/unit' : '/t'})</option>`;
+        }
+
+        const isFixed = !!currentDef.fixedSize;
+        const amountLabel = isFixed ? 'Quantity (4-ton units):' : 'Tonnage (tons):';
+
+        const content = `
+            <div class="form-row">
+                <label for="facility-type-select">Facility / Payload Type:</label>
+                <select id="facility-type-select">${typeOptions}</select>
+            </div>
+            <div class="form-row">
+                <label id="facility-amt-label" for="facility-amt-input">${amountLabel}</label>
+                <div style="flex:2; display:flex; align-items:center; gap:5px;">
+                    <button type="button" class="tons-btn" id="fac-step-m10">-10</button>
+                    <input type="number" id="facility-amt-input" value="${currentAmount}" min="1" max="100000" style="flex:1;">
+                    <button type="button" class="tons-btn" id="fac-step-p10">+10</button>
+                    <button type="button" class="tons-btn" id="fac-step-p50">+50</button>
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="facility-tl-input">Tech Level:</label>
+                <input type="number" id="facility-tl-input" value="${currentTL}" min="0" max="33">
+            </div>
+            <div class="form-row" style="justify-content: flex-start; gap: 20px;">
+                <label><input type="checkbox" id="facility-import" ${currentImport ? 'checked' : ''}> 10% Import Surcharge</label>
+            </div>
+            <div id="facility-preview" class="drive-preview-box" style="margin-top: 15px;"></div>
+        `;
+
+        const updatePreview = () => {
+            const fKey = document.getElementById('facility-type-select').value;
+            const amt = parseFloat(document.getElementById('facility-amt-input').value) || 1;
+            const tlVal = parseInt(document.getElementById('facility-tl-input').value, 10);
+            const imp = document.getElementById('facility-import').checked;
+            const fDef = ShipHelper.ENUM_FACILITY_TYPES[fKey] || ShipHelper.ENUM_FACILITY_TYPES.StandardCargo;
+
+            const lbl = document.getElementById('facility-amt-label');
+            if (lbl) lbl.textContent = fDef.fixedSize ? 'Quantity (4-ton units):' : 'Tonnage (tons):';
+
+            const fObj = ShipHelper.buildFacility(fKey, amt, {
+                tl: tlVal,
+                importFee: imp,
+                shipBaseTL: this.ship.baseTL
+            });
+
+            const formulaStr = `${fObj.category} Payload / Facility (TL ${fObj.tl})`;
+
+            const previewDiv = document.getElementById('facility-preview');
+            if (previewDiv) {
+                previewDiv.innerHTML = `
+                    ${ShipHelperView.formatTLStatus(fObj.tl, this.ship.baseTL, formulaStr)}
+                    <div class="preview-stat">Cost: MCr${fObj.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</div>
+                    <div class="preview-stat">Tonnage: ${fObj.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>
+                    <div class="preview-stat">Category: ${fObj.category}</div>
+                    <div style="grid-column: 1 / -1; color: var(--text-muted); font-style: italic; font-size: 0.9em; margin-top: 4px;">${fObj.comment}</div>
+                `;
+            }
+        };
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} Facility / Payload`, content, () => {
+            const fKey = document.getElementById('facility-type-select').value;
+            const amt = parseFloat(document.getElementById('facility-amt-input').value) || 1;
+            const tlVal = parseInt(document.getElementById('facility-tl-input').value, 10);
+            const imp = document.getElementById('facility-import').checked;
+
+            const fObj = ShipHelper.buildFacility(fKey, amt, {
+                tl: tlVal,
+                importFee: imp,
+                shipBaseTL: this.ship.baseTL
+            });
+
+            if (editIndex >= 0) {
+                this.ship.updateComponent(editIndex, fObj);
+            } else {
+                this.ship.addComponent(fObj);
+            }
+            this.render();
+        });
+
+        ['facility-type-select', 'facility-amt-input', 'facility-tl-input', 'facility-import'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        const amtInput = document.getElementById('facility-amt-input');
+        document.getElementById('fac-step-m10')?.addEventListener('click', () => {
+            amtInput.value = Math.max(1, (parseFloat(amtInput.value) || 0) - 10);
+            updatePreview();
+        });
+        document.getElementById('fac-step-p10')?.addEventListener('click', () => {
+            amtInput.value = (parseFloat(amtInput.value) || 0) + 10;
+            updatePreview();
+        });
+        document.getElementById('fac-step-p50')?.addEventListener('click', () => {
+            amtInput.value = (parseFloat(amtInput.value) || 0) + 50;
+            updatePreview();
+        });
+
+        updatePreview();
+    }
+
+    openLifeSupportDialog(lsKey = 'ExtendedLifeSupport', editIndex = -1) {
+        const selectedHull = this.ship.subhulls[this.ship.selectedSubhullIndex];
+        if (!selectedHull) {
+            alert('No hull selected. Please select a hull first.');
+            return;
+        }
+
+        let existingComp = null;
+        if (editIndex >= 0) {
+            const target = this.ship.getComponentByIdx(editIndex);
+            if (target && target.component) existingComp = target.component;
+        }
+
+        const currentKey = existingComp ? (existingComp.lifeSupportKey || lsKey) : lsKey;
+        const currentAmount = existingComp ? (currentKey === 'RecyclerUnit' ? existingComp.count : existingComp.tons) : (currentKey === 'RecyclerUnit' ? 1 : 5);
+        const currentTL = existingComp ? existingComp.tl : (this.ship.baseTL || 12);
+        const currentImport = existingComp ? (existingComp.importFee || false) : (currentTL > this.ship.baseTL);
+
+        let typeOptions = '';
+        for (const [k, ls] of Object.entries(ShipHelper.ENUM_LIFE_SUPPORT_TYPES)) {
+            const sel = (k === currentKey) ? 'selected' : '';
+            typeOptions += `<option value="${k}" ${sel}>${ls.name}</option>`;
+        }
+
+        const isRecycler = currentKey === 'RecyclerUnit';
+        const amountLabel = isRecycler ? 'Units (2 tons each):' : 'Stores Tonnage (100 person-days/ton):';
+
+        const content = `
+            <div class="form-row">
+                <label for="ls-type-select">Life Support System:</label>
+                <select id="ls-type-select">${typeOptions}</select>
+            </div>
+            <div class="form-row">
+                <label id="ls-amt-label" for="ls-amt-input">${amountLabel}</label>
+                <input type="number" id="ls-amt-input" value="${currentAmount}" min="1" max="1000">
+            </div>
+            <div class="form-row">
+                <label for="ls-tl-input">Tech Level:</label>
+                <input type="number" id="ls-tl-input" value="${currentTL}" min="0" max="33">
+            </div>
+            <div class="form-row" style="justify-content: flex-start; gap: 20px;">
+                <label><input type="checkbox" id="ls-import" ${currentImport ? 'checked' : ''}> 10% Import Surcharge</label>
+            </div>
+            <div id="ls-preview" class="drive-preview-box" style="margin-top: 15px;"></div>
+        `;
+
+        const updatePreview = () => {
+            const kVal = document.getElementById('ls-type-select').value;
+            const amt = parseFloat(document.getElementById('ls-amt-input').value) || 1;
+            const tlVal = parseInt(document.getElementById('ls-tl-input').value, 10);
+            const imp = document.getElementById('ls-import').checked;
+
+            const isRec = kVal === 'RecyclerUnit';
+            const lbl = document.getElementById('ls-amt-label');
+            if (lbl) lbl.textContent = isRec ? 'Units (2 tons each):' : 'Stores Tonnage (100 person-days/ton):';
+
+            const lsObj = ShipHelper.buildLifeSupport(kVal, amt, {
+                tl: tlVal,
+                importFee: imp,
+                shipBaseTL: this.ship.baseTL
+            });
+
+            const formulaStr = isRec ? 'Atmospheric & Water Recycling (+50% mission endurance)' : `${lsObj.personDays} Person-Days of Consumables`;
+
+            const previewDiv = document.getElementById('ls-preview');
+            if (previewDiv) {
+                previewDiv.innerHTML = `
+                    ${ShipHelperView.formatTLStatus(lsObj.tl, this.ship.baseTL, formulaStr)}
+                    <div class="preview-stat">Cost: MCr${lsObj.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</div>
+                    <div class="preview-stat">Tonnage: ${lsObj.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons</div>
+                    ${lsObj.personDays > 0 ? `<div class="preview-stat">Capacity: ${lsObj.personDays.toLocaleString()} Person-Days</div>` : ''}
+                    ${lsObj.efficiencyBonus > 0 ? `<div class="preview-stat">Recycling Bonus: +${Math.round(lsObj.efficiencyBonus * 100 * lsObj.count)}% Endurance</div>` : ''}
+                    <div style="grid-column: 1 / -1; color: var(--text-muted); font-style: italic; font-size: 0.9em; margin-top: 4px;">${lsObj.comment}</div>
+                `;
+            }
+        };
+
+        const titlePrefix = editIndex >= 0 ? 'Edit' : 'Add';
+        this.showDialog(`${titlePrefix} Life Support`, content, () => {
+            const kVal = document.getElementById('ls-type-select').value;
+            const amt = parseFloat(document.getElementById('ls-amt-input').value) || 1;
+            const tlVal = parseInt(document.getElementById('ls-tl-input').value, 10);
+            const imp = document.getElementById('ls-import').checked;
+
+            const lsObj = ShipHelper.buildLifeSupport(kVal, amt, {
+                tl: tlVal,
+                importFee: imp,
+                shipBaseTL: this.ship.baseTL
+            });
+
+            if (editIndex >= 0) {
+                this.ship.updateComponent(editIndex, lsObj);
+            } else {
+                this.ship.addComponent(lsObj);
+            }
+            this.render();
+        });
+
+        ['ls-type-select', 'ls-amt-input', 'ls-tl-input', 'ls-import'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        updatePreview();
+    }
+
+    openCrewRosterModal(defaultModel = null) {
+        if (defaultModel) this.currentStaffingModel = defaultModel;
+        const currentModel = this.currentStaffingModel || 'Merchant';
+        const crewData = this.ship.getCrewRequirements(currentModel);
+        const lsStatus = this.ship.getLifeSupportStatus();
+
+        let rowsHtml = '';
+        let currentDept = '';
+
+        crewData.roster.forEach(r => {
+            if (r.department !== currentDept) {
+                currentDept = r.department;
+                rowsHtml += `
+                    <tr class="crew-dept-header">
+                        <td colspan="5">${currentDept.toUpperCase()} DEPARTMENT</td>
+                    </tr>
+                `;
+            }
+            rowsHtml += `
+                <tr>
+                    <td style="font-weight:bold; color:var(--text-main);">${r.role}</td>
+                    <td style="color:var(--accent-cyan);">${r.title} <span style="font-size:0.8em; color:var(--text-muted);">(${r.rank})</span></td>
+                    <td style="text-align:center; font-weight:bold;">${r.count}</td>
+                    <td>${r.skill}</td>
+                    <td style="color:var(--text-muted); font-size:0.85em; font-style:italic;">${r.comment}</td>
+                </tr>
+            `;
+        });
+
+        const berthWarning = this.ship.totalCrewBerths < crewData.totalCrew
+            ? `<span style="color:var(--accent-red); font-weight:bold;">Deficit: ${crewData.totalCrew - this.ship.totalCrewBerths} Berths Missing</span>`
+            : `<span style="color:#00e676; font-weight:bold;">Adequate (${this.ship.totalCrewBerths} Berths Available)</span>`;
+
+        const content = `
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:15px; border-bottom:1px solid rgba(0,229,255,0.2); padding-bottom:10px;">
+                <div class="staffing-toggle">
+                    <span style="font-weight:bold; color:var(--text-muted); margin-right:5px;">Hierarchy Model:</span>
+                    <button type="button" class="staffing-btn ${currentModel === 'Merchant' ? 'active' : ''}" data-model="Merchant">Merchant / Commercial</button>
+                    <button type="button" class="staffing-btn ${currentModel === 'Naval' ? 'active' : ''}" data-model="Naval">Naval / Military</button>
+                    <button type="button" class="staffing-btn ${currentModel === 'Scout' ? 'active' : ''}" data-model="Scout">Scout / Survey</button>
+                </div>
+                <div style="font-size:0.9em; color:var(--text-muted);">
+                    Ship: <strong>${this.ship.tonnage.toLocaleString()} tons</strong> \u2014 TL ${this.ship.baseTL}
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:15px;">
+                <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:4px; border-left:3px solid var(--accent-cyan);">
+                    <div style="color:var(--text-muted); font-size:0.8em; text-transform:uppercase;">Total Crew</div>
+                    <div style="font-size:1.4em; font-weight:bold; color:var(--accent-cyan);">${crewData.totalCrew} Personnel</div>
+                    <div style="font-size:0.8em; color:var(--text-muted);">${crewData.totalOfficers} Officers, ${crewData.totalEnlisted} Enlisted</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:4px; border-left:3px solid #1abc9c;">
+                    <div style="color:var(--text-muted); font-size:0.8em; text-transform:uppercase;">Crew Berthing</div>
+                    <div style="font-size:1.4em; font-weight:bold; color:#1abc9c;">${this.ship.totalCrewBerths} Berths</div>
+                    <div style="font-size:0.8em;">${berthWarning}</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:4px; border-left:3px solid #3498db;">
+                    <div style="color:var(--text-muted); font-size:0.8em; text-transform:uppercase;">Passengers & Cryo</div>
+                    <div style="font-size:1.4em; font-weight:bold; color:#3498db;">${crewData.totalPassengers} Pax (${crewData.lowPassengers} Low)</div>
+                    <div style="font-size:0.8em; color:var(--text-muted);">${crewData.highPassengers} High, ${crewData.middlePassengers} Mid</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:4px; border-left:3px solid #16a085;">
+                    <div style="color:var(--text-muted); font-size:0.8em; text-transform:uppercase;">Life Support Endurance</div>
+                    <div style="font-size:1.4em; font-weight:bold; color:#16a085;">${lsStatus.daysEndurance} Days (${lsStatus.monthsEndurance} Mo)</div>
+                    <div style="font-size:0.8em; color:var(--text-muted);">${lsStatus.totalPersonDays} Person-Days total</div>
+                </div>
+            </div>
+
+            <table class="crew-table">
+                <thead>
+                    <tr>
+                        <th style="width:25%;">Role / Assignment</th>
+                        <th style="width:20%;">Official Title & Rank</th>
+                        <th style="width:8%; text-align:center;">Count</th>
+                        <th style="width:22%;">Primary Skillsets</th>
+                        <th style="width:25%;">Duties / Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+        `;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'dialog-overlay';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'dialog crew-modal';
+        dialog.innerHTML = `
+            <h2>Ship's Crew Hierarchy & Staffing Engine</h2>
+            <div class="dialog-content">${content}</div>
+            <div class="dialog-buttons" style="justify-content:flex-end;">
+                <button id="crew-modal-close" class="confirm-btn">Close</button>
+            </div>
+        `;
+
+        overlay.appendChild(dialog);
+        document.body.appendChild(overlay);
+
+        dialog.querySelectorAll('.staffing-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const newModel = e.target.getAttribute('data-model');
+                this.currentStaffingModel = newModel;
+                overlay.remove();
+                this.openCrewRosterModal(newModel);
+                this.renderRightPanel();
+            });
+        });
+
+        document.getElementById('crew-modal-close').addEventListener('click', () => {
+            overlay.remove();
+        });
+    }
+
     openDriveDialog(driveType, editIndex = -1) {
         let classOptions = '';
         let defaultTL = this.ship.baseTL;
@@ -1811,6 +2388,622 @@ class ShipHelperView {
         }, 10);
     }
 
+    openMissionCodeDialog() {
+        const missionList = ShipHelper.ENUM_MISSION_LIST || [];
+        const modifierOptions = ShipHelper.ENUM_MODIFIER_WORD_OPTIONS || [];
+        const modifierList = ShipHelper.ENUM_MODIFIERS_LIST || [];
+
+        const currentService = this.ship.missionService || "Commerce";
+        const currentActivity = this.ship.missionActivity !== undefined ? this.ship.missionActivity : "Merchant";
+        const currentType = this.ship.missionType !== undefined ? this.ship.missionType : "UnScheduled";
+        const currentQualifier = this.ship.missionQualifier !== undefined ? this.ship.missionQualifier : "Cargo";
+        const currentMissionId = this.ship.missionId || 23;
+        const currentMod1 = this.ship.modifier1Word || "Far";
+        const currentMod2 = this.ship.modifier2Word || "";
+
+        const services = [...new Set(missionList.map(m => m.service))];
+
+        const content = `
+            <div class="dialog-field">
+                <label>Vessel Name:</label>
+                <input type="text" id="mission-ship-name" value="${this.ship.shipName || 'Starship'}" style="width: 100%;">
+            </div>
+            <div class="dialog-field">
+                <label>Registration Number:</label>
+                <input type="text" id="mission-registration" value="${this.ship.registration || 'REG-0101'}" style="width: 100%;">
+            </div>
+
+            <div style="margin-top: 14px; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 4px;">
+                <div style="font-weight: bold; color: var(--accent-cyan); margin-bottom: 8px; font-size: 0.95em;">1. Primary Mission Hierarchy (Narrowing Selection):</div>
+                <div class="dialog-row-split" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="dialog-field">
+                        <label>A. Service:</label>
+                        <select id="mission-service" style="width: 100%;">
+                            ${services.map(s => `<option value="${s}" ${s === currentService ? 'selected' : ''}>${s}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="dialog-field">
+                        <label>B. Activity:</label>
+                        <select id="mission-activity" style="width: 100%;"></select>
+                    </div>
+                </div>
+
+                <div class="dialog-row-split" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
+                    <div class="dialog-field">
+                        <label>C. Type:</label>
+                        <select id="mission-type" style="width: 100%;"></select>
+                    </div>
+                    <div class="dialog-field">
+                        <label>D. Qualifier:</label>
+                        <select id="mission-qualifier" style="width: 100%;"></select>
+                    </div>
+                </div>
+
+                <div class="dialog-field" style="margin-top: 8px;">
+                    <label>E. Mission & Classification Code:</label>
+                    <select id="mission-entry" style="width: 100%; font-weight: bold; color: var(--accent-cyan);"></select>
+                </div>
+            </div>
+
+            <div style="margin-top: 12px; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 4px;">
+                <div style="font-weight: bold; color: var(--accent-cyan); margin-bottom: 8px; font-size: 0.95em;">2. Mission Modifiers (Up to Two):</div>
+                <div class="dialog-row-split" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="dialog-field">
+                        <label>Modifier 1:</label>
+                        <select id="mission-mod1" style="width: 100%;">
+                            <option value="">(None)</option>
+                            ${modifierOptions.map(opt => `<option value="${opt.word}" data-code="${opt.code}" ${opt.word === currentMod1 ? 'selected' : ''}>${opt.label}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="dialog-field">
+                        <label>Modifier 2:</label>
+                        <select id="mission-mod2" style="width: 100%;">
+                            <option value="">(None)</option>
+                            ${modifierOptions.map(opt => `<option value="${opt.word}" data-code="${opt.code}" ${opt.word === currentMod2 ? 'selected' : ''}>${opt.label}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialog-preview-box" id="mission-preview-box" style="margin-top: 15px; padding: 12px; background: rgba(0, 229, 255, 0.08); border: 1px solid var(--accent-cyan); border-radius: 4px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-weight: bold; color: var(--accent-cyan); font-size: 1.15em;" id="mission-preview-code">Code: ${this.ship.missionCode}</div>
+                    <div style="font-weight: bold; color: var(--text-main); font-size: 1.05em;" id="mission-preview-title">${this.ship.missionFullTitle}</div>
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.85em; margin-top: 6px;" id="mission-preview-desc">Hierarchy: ${this.ship.missionService} > ${this.ship.missionActivity || 'None'} > ${this.ship.missionType || 'None'} > ${this.ship.missionName}</div>
+            </div>
+        `;
+
+        this.showDialog("Configure Mission Classification & Modifiers", content, () => {
+            const shipName = document.getElementById('mission-ship-name').value.trim() || 'Starship';
+            const registration = document.getElementById('mission-registration').value.trim() || 'REG-0101';
+            const missionId = parseInt(document.getElementById('mission-entry').value, 10);
+            const mObj = missionList.find(m => m.id === missionId) || missionList[22];
+
+            const mod1Select = document.getElementById('mission-mod1');
+            const mod2Select = document.getElementById('mission-mod2');
+            const mod1Word = mod1Select.value;
+            const mod1Code = mod1Select.selectedOptions[0]?.getAttribute('data-code') || (mod1Word ? (modifierList.find(m => m.words.includes(mod1Word))?.code || '') : '');
+            const mod2Word = mod2Select.value;
+            const mod2Code = mod2Select.selectedOptions[0]?.getAttribute('data-code') || (mod2Word ? (modifierList.find(m => m.words.includes(mod2Word))?.code || '') : '');
+
+            this.ship.shipName = shipName;
+            this.ship.registration = registration;
+            this.ship.missionId = mObj.id;
+            this.ship.missionService = mObj.service;
+            this.ship.missionActivity = mObj.activity;
+            this.ship.missionType = mObj.type;
+            this.ship.missionQualifier = mObj.qualifier;
+            this.ship.missionName = mObj.mission;
+            this.ship.missionCodeKey = mObj.code;
+            this.ship.modifier1Word = mod1Word;
+            this.ship.modifier1Code = mod1Code;
+            this.ship.modifier2Word = mod2Word;
+            this.ship.modifier2Code = mod2Code;
+
+            this.render();
+        });
+
+        setTimeout(() => {
+            const elService = document.getElementById('mission-service');
+            const elActivity = document.getElementById('mission-activity');
+            const elType = document.getElementById('mission-type');
+            const elQualifier = document.getElementById('mission-qualifier');
+            const elEntry = document.getElementById('mission-entry');
+            const elMod1 = document.getElementById('mission-mod1');
+            const elMod2 = document.getElementById('mission-mod2');
+
+            const populateActivities = (preserveVal) => {
+                const s = elService.value;
+                const matches = missionList.filter(m => m.service === s);
+                const acts = [...new Set(matches.map(m => m.activity))];
+                elActivity.innerHTML = acts.map(a => `<option value="${a}" ${a === preserveVal ? 'selected' : ''}>${a === '' ? '(Direct / None)' : a}</option>`).join('');
+                if (!acts.includes(elActivity.value)) elActivity.value = acts[0];
+                populateTypes(preserveVal === currentActivity ? currentType : undefined);
+            };
+
+            const populateTypes = (preserveVal) => {
+                const s = elService.value;
+                const a = elActivity.value;
+                const matches = missionList.filter(m => m.service === s && m.activity === a);
+                const types = [...new Set(matches.map(m => m.type))];
+                elType.innerHTML = types.map(t => `<option value="${t}" ${t === preserveVal ? 'selected' : ''}>${t === '' ? '(Direct / None)' : t}</option>`).join('');
+                if (!types.includes(elType.value)) elType.value = types[0];
+                populateQualifiers(preserveVal === currentType ? currentQualifier : undefined);
+            };
+
+            const populateQualifiers = (preserveVal) => {
+                const s = elService.value;
+                const a = elActivity.value;
+                const t = elType.value;
+                const matches = missionList.filter(m => m.service === s && m.activity === a && m.type === t);
+                const quals = [...new Set(matches.map(m => m.qualifier))];
+                elQualifier.innerHTML = quals.map(q => `<option value="${q}" ${q === preserveVal ? 'selected' : ''}>${q === '' ? '(Direct / None)' : q}</option>`).join('');
+                if (!quals.includes(elQualifier.value)) elQualifier.value = quals[0];
+                populateEntries(preserveVal === currentQualifier ? currentMissionId : undefined);
+            };
+
+            const populateEntries = (preserveId) => {
+                const s = elService.value;
+                const a = elActivity.value;
+                const t = elType.value;
+                const q = elQualifier.value;
+                const matches = missionList.filter(m => m.service === s && m.activity === a && m.type === t && m.qualifier === q);
+                elEntry.innerHTML = matches.map(m => `<option value="${m.id}" ${m.id === preserveId ? 'selected' : ''}>${m.mission} [Code: ${m.code}]</option>`).join('');
+                if (preserveId && matches.some(m => m.id === preserveId)) {
+                    elEntry.value = preserveId;
+                } else if (matches.length > 0) {
+                    elEntry.value = matches[0].id;
+                }
+                updatePreview();
+            };
+
+            const updatePreview = () => {
+                const mId = parseInt(elEntry.value, 10);
+                const mObj = missionList.find(m => m.id === mId) || missionList[22];
+
+                const mod1Word = elMod1.value;
+                const mod1Code = elMod1.selectedOptions[0]?.getAttribute('data-code') || (mod1Word ? (modifierList.find(m => m.words.includes(mod1Word))?.code || '') : '');
+                const mod2Word = elMod2.value;
+                const mod2Code = elMod2.selectedOptions[0]?.getAttribute('data-code') || (mod2Word ? (modifierList.find(m => m.words.includes(mod2Word))?.code || '') : '');
+
+                const code = `${mObj.code}${mod1Code}${mod2Code}`;
+                const titleWords = [];
+                if (mod1Word) titleWords.push(mod1Word);
+                if (mod2Word && mod2Word !== mod1Word) titleWords.push(mod2Word);
+                titleWords.push(mObj.mission);
+                const title = titleWords.join(' ');
+
+                const pCode = document.getElementById('mission-preview-code');
+                const pTitle = document.getElementById('mission-preview-title');
+                const pDesc = document.getElementById('mission-preview-desc');
+
+                if (pCode) pCode.textContent = `Classification Code: ${code}`;
+                if (pTitle) pTitle.textContent = title;
+                if (pDesc) {
+                    const actStr = mObj.activity ? ` > ${mObj.activity}` : '';
+                    const typeStr = mObj.type ? ` > ${mObj.type}` : '';
+                    const qualStr = mObj.qualifier ? ` > ${mObj.qualifier}` : '';
+                    pDesc.textContent = `Hierarchy: ${mObj.service}${actStr}${typeStr}${qualStr} > ${mObj.mission} [${mObj.code}]`;
+                }
+            };
+
+            elService.addEventListener('change', () => populateActivities());
+            elActivity.addEventListener('change', () => populateTypes());
+            elType.addEventListener('change', () => populateQualifiers());
+            elQualifier.addEventListener('change', () => populateEntries());
+            elEntry.addEventListener('change', updatePreview);
+            elMod1.addEventListener('change', updatePreview);
+            elMod2.addEventListener('change', updatePreview);
+
+            // Initialize cascading state with current ship selection
+            populateActivities(currentActivity);
+            if (currentMissionId) {
+                elEntry.value = currentMissionId;
+            }
+            updatePreview();
+        }, 10);
+    }
+
+    openAstrogationDialog() {
+        this.openJumpFieldsDialog();
+    }
+
+    openJumpFieldsDialog() {
+        if (!this.ship.hasJumpDrive) {
+            this.showNotificationBanner("⚠️ A Jump, Hop, or Skip Drive must be installed on the vessel before Jump Fields can be configured.");
+            return;
+        }
+
+        const fields = ShipHelper.ENUM_JUMP_FIELDS;
+        const currentField = this.ship.jumpFieldKey || 'Bubble';
+        const currentEng = this.ship.engineerSkill !== undefined ? this.ship.engineerSkill : 0;
+        const currentJD = this.ship.jumpDriveSpecialty !== undefined ? this.ship.jumpDriveSpecialty : 0;
+        const currentDist = (this.ship.jumpDiameters !== null && this.ship.jumpDiameters !== undefined) ? this.ship.jumpDiameters : '';
+
+        const jDrive = this.ship.drives.find(d => ['Jump', 'Hop', 'Skip'].includes(d.driveType));
+        const jEff = jDrive ? (ShipHelper.ENUM_DRIVE_STAGE[jDrive.stage]?.eff || 1.0) : 1.0;
+        const jEffPct = Math.round(jEff * 100);
+
+        const content = `
+            <div style="margin-bottom:12px; padding:8px 12px; background:rgba(0, 229, 255, 0.08); border:1px solid var(--accent-cyan); border-radius:4px; font-size:0.9em;">
+                <strong>Installed Drive:</strong> ${jDrive ? `${jDrive.driveType} (${jDrive.stage || 'Standard'} Stage — Tech Efficiency: ${jEffPct}%)` : 'None'}
+            </div>
+
+            <div class="dialog-field">
+                <label>Jump Field Type (Section 07 / Table 07G):</label>
+                <select id="astro-jump-field" style="width: 100%;">
+                    ${Object.keys(fields).map(k => `<option value="${k}" ${currentField === k ? 'selected' : ''}>${fields[k].name} — Strength: ${fields[k].strength}, Armor Mod: ${fields[k].armorMod}, Flash: ${fields[k].flash}</option>`).join('')}
+                </select>
+                <div style="font-size:0.85em; color:var(--text-muted); margin-top:4px;" id="astro-field-desc">${fields[currentField]?.comment || ''}</div>
+            </div>
+
+            <div class="dialog-row-split" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <div class="dialog-field">
+                    <label>Engineer Skill Rank (0–15):</label>
+                    <input type="number" id="astro-eng-skill" value="${currentEng}" min="0" max="15" style="width: 100%;">
+                </div>
+                <div class="dialog-field">
+                    <label>Jump Drives Specialty Rank (0–6):</label>
+                    <input type="number" id="astro-jd-skill" value="${currentJD}" min="0" max="6" style="width: 100%;">
+                </div>
+            </div>
+
+            <div class="dialog-row-split" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <div class="dialog-field">
+                    <label>Initiation Distance (Diameters):</label>
+                    <input type="number" id="astro-init-dist" value="${currentDist}" placeholder="Auto (Safe Distance D)" min="0" step="0.1" style="width: 100%;">
+                    <div style="font-size:0.78em; color:var(--text-muted); margin-top:2px;">Leave blank to jump at Safe Distance (D).</div>
+                </div>
+                <div class="dialog-field">
+                    <label>Gravity Well Flux (Mass Variance):</label>
+                    <input type="number" id="astro-flux" value="0" min="0" max="10" step="0.5" style="width: 100%;">
+                </div>
+            </div>
+
+            <div class="astrogation-card" style="margin-top: 15px;">
+                <div style="font-weight: bold; color: var(--accent-cyan); font-size: 1.05em; margin-bottom: 6px;">Jump Field & Interference Simulation:</div>
+                <div class="stat-row" style="display:flex; justify-content:space-between; font-size:0.9em; padding:3px 0;"><span class="stat-label">Field Strength:</span> <span class="stat-value" id="astro-s">100</span></div>
+                <div class="stat-row" style="display:flex; justify-content:space-between; font-size:0.9em; padding:3px 0;"><span class="stat-label">Drive Efficiency (E):</span> <span class="stat-value" id="astro-e">1.0 (100%)</span></div>
+                <div class="stat-row" style="display:flex; justify-content:space-between; font-size:0.9em; padding:3px 0;"><span class="stat-label">Total Engineer Skill:</span> <span class="stat-value" id="astro-total-skill">Skill 0</span></div>
+                <div class="stat-row" style="display:flex; justify-content:space-between; font-size:0.9em; padding:3px 0;"><span class="stat-label">Safe Jump Distance (D):</span> <span class="stat-value good" id="astro-d">0 Diameters</span></div>
+                <div class="stat-row" style="display:flex; justify-content:space-between; font-size:0.9em; padding:3px 0;"><span class="stat-label">Initiation Distance:</span> <span class="stat-value" id="astro-actual-dist">0 Diameters</span></div>
+                <div class="stat-row" style="display:flex; justify-content:space-between; font-size:0.9em; padding:3px 0;"><span class="stat-label">Armor Modifier / Flash:</span> <span class="stat-value" id="astro-armor-flash">std / std</span></div>
+                <div class="stat-row" style="display:flex; justify-content:space-between; font-size:0.9em; padding:3px 0;"><span class="stat-label">Interference & Misjump Risk (X):</span> <span class="stat-value good" id="astro-x">Nominal</span></div>
+            </div>
+        `;
+
+        this.showDialog("Jump Fields & Physics (Table 07G)", content, () => {
+            this.ship.jumpFieldKey = document.getElementById('astro-jump-field').value;
+            this.ship.engineerSkill = parseInt(document.getElementById('astro-eng-skill').value, 10) || 0;
+            this.ship.jumpDriveSpecialty = parseInt(document.getElementById('astro-jd-skill').value, 10) || 0;
+            const distVal = document.getElementById('astro-init-dist').value;
+            this.ship.jumpDiameters = distVal !== '' && !isNaN(parseFloat(distVal)) ? parseFloat(distVal) : null;
+            this.render();
+        });
+
+        setTimeout(() => {
+            const updateCalc = () => {
+                const fieldKey = document.getElementById('astro-jump-field')?.value || 'Bubble';
+                const engSkill = parseInt(document.getElementById('astro-eng-skill')?.value, 10) || 0;
+                const jdSkill = parseInt(document.getElementById('astro-jd-skill')?.value, 10) || 0;
+                const distVal = document.getElementById('astro-init-dist')?.value;
+                const actualDist = (distVal !== '' && !isNaN(parseFloat(distVal))) ? parseFloat(distVal) : null;
+                const flux = parseFloat(document.getElementById('astro-flux')?.value) || 0;
+
+                const fDef = fields[fieldKey] || fields.Bubble;
+                const fDesc = document.getElementById('astro-field-desc');
+                if (fDesc) fDesc.textContent = fDef.comment;
+
+                const oldField = this.ship.jumpFieldKey;
+                this.ship.jumpFieldKey = fieldKey;
+                const safe = this.ship.safeJumpDistance(engSkill, jdSkill);
+                const intf = this.ship.jumpInterference(engSkill, jdSkill, actualDist, flux);
+                this.ship.jumpFieldKey = oldField;
+
+                const elS = document.getElementById('astro-s');
+                if (elS) elS.textContent = `${safe.strength}`;
+                const elE = document.getElementById('astro-e');
+                if (elE) elE.textContent = `E = ${safe.E} (${Math.round(safe.E * 100)}%)`;
+                const elTotalSkill = document.getElementById('astro-total-skill');
+                if (elTotalSkill) elTotalSkill.textContent = `Engineer ${safe.engineerRank} + Jump Drives ${safe.jumpDriveSpecialty} = Skill ${safe.totalEngineerSkill}`;
+                const elD = document.getElementById('astro-d');
+                if (elD) elD.textContent = `D = ${safe.D} Planetary Diameters`;
+                const elActualDist = document.getElementById('astro-actual-dist');
+                if (elActualDist) elActualDist.textContent = `${intf.jumpDistance} Planetary Diameters`;
+                const elArmorFlash = document.getElementById('astro-armor-flash');
+                if (elArmorFlash) elArmorFlash.textContent = `Armor: ${safe.armorMod} | Flash: ${safe.flash}`;
+                const elX = document.getElementById('astro-x');
+                if (elX) {
+                    elX.textContent = `X = ${intf.X} (${intf.misjumpRisk})`;
+                    elX.className = `stat-value ${intf.riskClass}`;
+                }
+            };
+
+            ['astro-jump-field', 'astro-eng-skill', 'astro-jd-skill', 'astro-init-dist', 'astro-flux'].forEach(id => {
+                document.getElementById(id)?.addEventListener('input', updateCalc);
+                document.getElementById(id)?.addEventListener('change', updateCalc);
+            });
+            updateCalc();
+        }, 10);
+    }
+
+    openFillformModal() {
+        const existing = document.getElementById('t5-fillform-modal');
+        if (existing) existing.remove();
+
+        const f1 = this.ship.getFillform1Data();
+        const f2 = this.ship.getFillform2Data();
+        const f3 = this.ship.getFillform3Data(this.currentStaffingModel || 'Merchant');
+        const jf = f3.jumpFields;
+        const mdText = this.ship.exportMarkdownFillform(this.currentStaffingModel || 'Merchant');
+
+        const modal = document.createElement('div');
+        modal.id = 't5-fillform-modal';
+        modal.className = 'fillform-modal';
+        modal.innerHTML = `
+            <div class="fillform-dialog">
+                <div class="fillform-header">
+                    <div class="fillform-tabs">
+                        <button type="button" class="fillform-tab-btn active" data-tab="tab-f1">Fillform 1: Overview & Drives</button>
+                        <button type="button" class="fillform-tab-btn" data-tab="tab-f2">Fillform 2: Weapons & Systems</button>
+                        <button type="button" class="fillform-tab-btn" data-tab="tab-f3">Fillform 3: Crew & Jump Fields</button>
+                        <button type="button" class="fillform-tab-btn" data-tab="tab-md">Markdown Export</button>
+                    </div>
+                    <div class="fillform-toolbar-right">
+                        <button type="button" class="cyan-btn" id="btn-print-sheet">🖨️ Print Sheets</button>
+                        <button type="button" class="cyan-btn" id="btn-close-fillform">✕ Close</button>
+                    </div>
+                </div>
+                <div class="fillform-body">
+                    <!-- Page 1 -->
+                    <div id="tab-f1" class="fillform-page active">
+                        <div class="t5-sheet">
+                            <div class="t5-sheet-header">
+                                <div>
+                                    <div class="t5-sheet-title">T5 Starship Construction Fillform 1</div>
+                                    <div class="t5-sheet-subtitle">General Overview, Mission, Structure & Performance</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: bold; color: var(--accent-cyan); font-size: 1.1em;">${f1.shipName} (${f1.registration})</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85em;">Mission: ${f1.missionCode} | TL-${f1.baseTL}</div>
+                                </div>
+                            </div>
+
+                            <div class="t5-sheet-grid">
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Vessel Identification</div>
+                                    <div class="t5-sheet-row"><span>Ship Name:</span> <strong>${f1.shipName}</strong></div>
+                                    <div class="t5-sheet-row"><span>Registration:</span> <strong>${f1.registration}</strong></div>
+                                    <div class="t5-sheet-row"><span>Mission Code:</span> <strong>${f1.missionCode}</strong></div>
+                                    <div class="t5-sheet-row"><span>Hull Class:</span> <strong>${f1.hullClassification}</strong></div>
+                                    <div class="t5-sheet-row"><span>Tech Level:</span> <strong>TL-${f1.baseTL}</strong></div>
+                                    <div class="t5-sheet-row"><span>Displacement:</span> <strong>${f1.tonnage.toLocaleString()} tons</strong></div>
+                                    <div class="t5-sheet-row"><span>Total Cost:</span> <strong>MCr${f1.totalCostMCr}</strong></div>
+                                </div>
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Quick Ship Profile (QSP)</div>
+                                    <div style="background: rgba(0,0,0,0.5); padding: 8px; border-radius: 4px; font-family: monospace; font-size: 1.05em; color: var(--accent-cyan); margin-bottom: 8px;">
+                                        ${f1.qsp}
+                                    </div>
+                                    <div class="t5-sheet-row"><span>Hull Configuration:</span> <strong>${f1.configuration}</strong></div>
+                                    <div class="t5-sheet-row"><span>Fuel Capacity:</span> <strong>${f1.drives.fuelTons} tons</strong></div>
+                                    <div class="t5-sheet-row"><span>Cargo Payload:</span> <strong>${f1.accommodations.cargoTons} tons</strong></div>
+                                    <div class="t5-sheet-row"><span>Life Support:</span> <strong>${f1.lifeSupport.daysEndurance} Days (${f1.lifeSupport.monthsEndurance} Mo)</strong></div>
+                                </div>
+                            </div>
+
+                            <div class="t5-sheet-block" style="margin-bottom: 15px;">
+                                <div class="t5-sheet-block-title">Subhulls, Pods & Armor Protection</div>
+                                <table class="t5-sheet-table">
+                                    <thead>
+                                        <tr><th>#</th><th>Subhull Name</th><th>Tons</th><th>Config</th><th>TL</th><th>Armor Type</th><th>Layers</th><th>AV Rating</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        ${f1.subhulls.map(h => `<tr><td>${h.index}</td><td>${h.name}</td><td>${h.tons}t</td><td>${h.config}</td><td>TL-${h.tl}</td><td>${h.armorType}</td><td>${h.armorLayers}</td><td><strong>AV-${h.av}</strong></td></tr>`).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="t5-sheet-grid">
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Drives & Power Plant</div>
+                                    <div class="t5-sheet-row"><span>Jump Drive:</span> <strong>${f1.drives.jump ? `${f1.drives.jump.name} (J-${f1.drives.jump.rating}, ${f1.drives.jump.tons}t, MCr${f1.drives.jump.cost})` : 'None'}</strong></div>
+                                    <div class="t5-sheet-row"><span>Maneuver Drive:</span> <strong>${f1.drives.maneuver ? `${f1.drives.maneuver.name} (M-${f1.drives.maneuver.rating}, ${f1.drives.maneuver.tons}t, MCr${f1.drives.maneuver.cost})` : 'None'}</strong></div>
+                                    <div class="t5-sheet-row"><span>Power Plant:</span> <strong>${f1.drives.power ? `${f1.drives.power.name} (${f1.drives.power.ep} EP, ${f1.drives.power.tons}t, MCr${f1.drives.power.cost})` : 'None'}</strong></div>
+                                </div>
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Accommodations Summary</div>
+                                    <div class="t5-sheet-row"><span>Crew Berths:</span> <strong>${f1.accommodations.crewBerths} Berths (${f1.accommodations.crewQuartersTons}t)</strong></div>
+                                    <div class="t5-sheet-row"><span>Passenger Berths:</span> <strong>${f1.accommodations.passengerBerths} Pax (${f1.accommodations.highPaxBerths} High, ${f1.accommodations.midPaxBerths} Mid)</strong></div>
+                                    <div class="t5-sheet-row"><span>Cryogenic Low Berths:</span> <strong>${f1.accommodations.lowBerths} Berths</strong></div>
+                                    <div class="t5-sheet-row"><span>Passenger Commons:</span> <strong>${f1.accommodations.commonsTons} tons</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Page 2 -->
+                    <div id="tab-f2" class="fillform-page" style="display:none;">
+                        <div class="t5-sheet">
+                            <div class="t5-sheet-header">
+                                <div>
+                                    <div class="t5-sheet-title">T5 Starship Construction Fillform 2</div>
+                                    <div class="t5-sheet-subtitle">Armament, Defenses, Sensor Suites & Computing</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: bold; color: var(--accent-cyan); font-size: 1.1em;">${f2.shipName}</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85em;">Hardpoints: ${f2.hardpoints.used} / ${f2.hardpoints.max}</div>
+                                </div>
+                            </div>
+
+                            <div class="t5-sheet-block" style="margin-bottom: 15px;">
+                                <div class="t5-sheet-block-title">Weapons & Offensive Battery</div>
+                                ${f2.weapons.length > 0 ? `
+                                <table class="t5-sheet-table">
+                                    <thead><tr><th>Weapon System</th><th>Mount</th><th>Range</th><th>Damage</th><th>Qty</th><th>Tons</th><th>MCr</th></tr></thead>
+                                    <tbody>
+                                        ${f2.weapons.map(w => `<tr><td>${w.name}</td><td>${w.mount}</td><td>${w.range}</td><td>${w.damage}</td><td>${w.count}</td><td>${w.tons}t</td><td>MCr${w.cost}</td></tr>`).join('')}
+                                    </tbody>
+                                </table>` : '<p style="color:var(--text-muted); font-size:0.9em; margin:6px 0;">No offensive weapon batteries installed.</p>'}
+                            </div>
+
+                            <div class="t5-sheet-grid">
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Active Defenses & Screens</div>
+                                    ${f2.defenses.length > 0 ? `
+                                    <table class="t5-sheet-table">
+                                        <thead><tr><th>Screen / Defense</th><th>Mount</th><th>Rating</th><th>Tons</th></tr></thead>
+                                        <tbody>
+                                            ${f2.defenses.map(d => `<tr><td>${d.name}</td><td>${d.mount}</td><td>${d.defenseValue}</td><td>${d.tons}t</td></tr>`).join('')}
+                                        </tbody>
+                                    </table>` : '<p style="color:var(--text-muted); font-size:0.9em; margin:6px 0;">No active defense screens installed.</p>'}
+                                </div>
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Sensor Arrays</div>
+                                    ${f2.sensors.length > 0 ? `
+                                    <table class="t5-sheet-table">
+                                        <thead><tr><th>Sensor Suite</th><th>Mount</th><th>Range</th><th>Tons</th></tr></thead>
+                                        <tbody>
+                                            ${f2.sensors.map(s => `<tr><td>${s.name}</td><td>${s.mount}</td><td>${s.range}</td><td>${s.tons}t</td></tr>`).join('')}
+                                        </tbody>
+                                    </table>` : '<p style="color:var(--text-muted); font-size:0.9em; margin:6px 0;">Standard bridge sensors only.</p>'}
+                                </div>
+                            </div>
+
+                            <div class="t5-sheet-grid">
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Control Consoles & Footprint</div>
+                                    <div class="t5-sheet-row"><span>Total Mechanisms:</span> <strong>${f2.consoles.totalCP} CP</strong></div>
+                                    <div class="t5-sheet-row"><span>Consoles Installed:</span> <strong>${f2.consoles.totalCount} (${f2.consoles.totalTons}t)</strong></div>
+                                    <div class="t5-sheet-row"><span>Ergonomics (E):</span> <strong>E = ${f2.consoles.ergonomics}</strong></div>
+                                </div>
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Ship's Computers</div>
+                                    <div class="t5-sheet-row"><span>Total Cells:</span> <strong>${f2.computers.totalCells} Cells</strong></div>
+                                    <div class="t5-sheet-row"><span>Installed Units:</span> <strong>${f2.computers.items.map(c => c.model).join(', ') || 'None'}</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Page 3 -->
+                    <div id="tab-f3" class="fillform-page" style="display:none;">
+                        <div class="t5-sheet">
+                            <div class="t5-sheet-header">
+                                <div>
+                                    <div class="t5-sheet-title">T5 Starship Construction Fillform 3</div>
+                                    <div class="t5-sheet-subtitle">Crew Hierarchy, Livability Evaluations & Jump Fields</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: bold; color: var(--accent-cyan); font-size: 1.1em;">Staffing: ${f3.staffingModel}</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85em;">Total Souls: ${f3.crewSummary.totalSouls}</div>
+                                </div>
+                            </div>
+
+                            <div class="t5-sheet-block" style="margin-bottom: 15px;">
+                                <div class="t5-sheet-block-title">Department Crew Roster (${f3.crewSummary.totalCrew} Personnel)</div>
+                                <table class="t5-sheet-table">
+                                    <thead><tr><th>Department</th><th>Rank</th><th>Role / Title</th><th>Qty</th><th>Duty Assignment / Skills</th></tr></thead>
+                                    <tbody>
+                                        ${f3.roster.map(r => `<tr><td><strong>${r.department}</strong></td><td>${r.rank || '—'}</td><td>${r.role}</td><td>${r.count}</td><td>${r.skill} — ${r.comment}</td></tr>`).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="t5-sheet-grid">
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Quality & Livability (Section 26)</div>
+                                    <div class="t5-sheet-row"><span>Passenger Demand (D):</span> <strong class="${f3.quality.demandClass}">D = ${f3.quality.demand >= 0 ? '+' : ''}${f3.quality.demand} (${f3.quality.demandRating})</strong></div>
+                                    <div class="t5-sheet-row"><span>Ticket Modifier:</span> <strong>${f3.quality.demandModifier}</strong></div>
+                                    <div class="t5-sheet-row"><span>Crew Comfort (C):</span> <strong class="${f3.quality.comfortClass}">C = ${f3.quality.comfort} (${f3.quality.comfortRating})</strong></div>
+                                    <div class="t5-sheet-row"><span>Tension Checks:</span> <strong>${f3.quality.tensionCheck}</strong></div>
+                                    <div class="t5-sheet-row"><span>Control Ergonomics (E):</span> <strong class="${f3.quality.ergoClass}">E = ${f3.quality.ergonomics} (${f3.quality.ergoRating})</strong></div>
+                                    <div class="t5-sheet-row"><span>Mishap Risk:</span> <strong>${f3.quality.mishapRisk}</strong></div>
+                                </div>
+                                <div class="t5-sheet-block">
+                                    <div class="t5-sheet-block-title">Jump Fields (Section 07 / Table 07G)</div>
+                                    ${jf.hasJumpDrive ? `
+                                    <div class="t5-sheet-row"><span>Jump Field Type:</span> <strong>${jf.jumpField} (Strength: ${jf.strength})</strong></div>
+                                    <div class="t5-sheet-row"><span>Drive Tech Stage:</span> <strong>${jf.driveStage} (E = ${jf.efficiencyE})</strong></div>
+                                    <div class="t5-sheet-row"><span>Engineer Qualifications:</span> <strong>Rank ${jf.engineerRank} + JD ${jf.jumpDriveSpecialty} = Skill ${jf.totalEngineerSkill}</strong></div>
+                                    <div class="t5-sheet-row"><span>Safe Jump Distance (D):</span> <strong class="good">D = ${jf.safeDistanceD} (${jf.safeDiameters} Diameters)</strong></div>
+                                    <div class="t5-sheet-row"><span>Armor Mod / Flash:</span> <strong>${jf.armorMod} / ${jf.flashSize}</strong></div>
+                                    <div class="t5-sheet-row"><span>Interference (X):</span> <strong class="good">X = ${jf.interferenceX} (${jf.misjumpRisk})</strong></div>
+                                    ` : '<div style="color:var(--text-muted); font-size:0.9em; padding:8px 0;">No Jump, Hop, or Skip Drive installed.</div>'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Markdown View -->
+                    <div id="tab-md" class="fillform-page" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="color:var(--accent-cyan); font-weight:bold;">T5 Fillform Markdown Export</span>
+                            <div>
+                                <button type="button" class="cyan-btn" id="btn-copy-md" style="margin-right:8px;">📋 Copy Markdown</button>
+                                <button type="button" class="cyan-btn" id="btn-dl-md">💾 Download .MD</button>
+                            </div>
+                        </div>
+                        <textarea class="markdown-export-area" readonly id="fillform-md-text">${mdText}</textarea>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Tab Switching
+        modal.querySelectorAll('.fillform-tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                modal.querySelectorAll('.fillform-tab-btn').forEach(b => b.classList.remove('active'));
+                modal.querySelectorAll('.fillform-page').forEach(p => p.style.display = 'none');
+                btn.classList.add('active');
+                const targetId = btn.getAttribute('data-tab');
+                const targetPage = modal.querySelector(`#${targetId}`);
+                if (targetPage) targetPage.style.display = 'block';
+            });
+        });
+
+        // Close
+        modal.querySelector('#btn-close-fillform').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // Print
+        modal.querySelector('#btn-print-sheet').addEventListener('click', () => {
+            // Show all fillform pages before printing
+            modal.querySelectorAll('.fillform-page').forEach(p => p.style.display = 'block');
+            window.print();
+        });
+
+        // Copy Markdown
+        modal.querySelector('#btn-copy-md')?.addEventListener('click', () => {
+            const ta = modal.querySelector('#fillform-md-text');
+            if (ta) {
+                ta.select();
+                navigator.clipboard.writeText(ta.value).then(() => {
+                    alert("Fillforms Markdown copied to clipboard!");
+                });
+            }
+        });
+
+        // Download Markdown
+        modal.querySelector('#btn-dl-md')?.addEventListener('click', () => {
+            const ta = modal.querySelector('#fillform-md-text');
+            if (ta) {
+                const blob = new Blob([ta.value], { type: "text/markdown" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const sName = (this.ship.shipName || 'starship').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                a.download = `${sName}_T5_Fillforms.md`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        });
+    }
+
     render() {
         this.updateAvailableComponents();
         this.renderCenterPanel();
@@ -1847,7 +3040,7 @@ class ShipHelperView {
             const constrainedList = constrainedSection.querySelector('.constrained-list');
 
             // Collect all items in this category (both regular and already constrained)
-            const allItems = category.querySelectorAll('.drive-item, .generic-item, .fitting-item, .weapon-item, .defense-item, .sensor-item, .console-item, .computer-item');
+            const allItems = category.querySelectorAll('.drive-item, .generic-item, .fitting-item, .weapon-item, .defense-item, .sensor-item, .console-item, .computer-item, .accommodation-item, .facility-item, .lifesupport-item');
 
             let hasConstrained = false;
 
@@ -2253,18 +3446,122 @@ class ShipHelperView {
                     ul.appendChild(li);
                 };
 
+                const renderAccommodationCard = (comp, currentCompIdx) => {
+                    const li = document.createElement('div');
+                    li.className = 'component-card accommodation-card';
+                    const costStr = comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                    const countStr = comp.count > 1 ? ` (x${comp.count})` : '';
+                    let assignBadgeClass = 'badge-pax';
+                    if (comp.assignment === 'Crew') assignBadgeClass = 'badge-crew';
+                    else if (comp.assignment === 'HighPax') assignBadgeClass = 'badge-highpax';
+                    else if (comp.assignment === 'Cryo') assignBadgeClass = 'badge-cryo';
+                    else if (comp.assignment === 'Commons') assignBadgeClass = 'badge-commons';
+
+                    const assignBadge = `<span class="badge ${assignBadgeClass}">${comp.assignment}</span>`;
+                    const occBadge = comp.occupants > 0 ? `<span class="badge badge-cells">${comp.occupants} Occ</span>` : '';
+                    const tlStr = `<span class="badge badge-tl">TL ${comp.tl}</span>`;
+
+                    li.innerHTML = `
+                        <div class="component-info">
+                            <div class="component-title">
+                                ${comp.name}${countStr}
+                                ${assignBadge} ${occBadge} ${tlStr}
+                            </div>
+                            <div class="component-details">
+                                MCr${costStr} \u2014 ${comp.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons \u2014 Fresher: ${comp.fresher} \u2014 Comfort: ${comp.comfort}
+                            </div>
+                            ${comp.comment ? `<div class="component-perf" style="color:var(--text-muted); font-style:italic">${comp.comment}</div>` : ''}
+                        </div>
+                    `;
+                    li.addEventListener('click', () => { this.openAccommodationDialog(comp.accommodationKey, currentCompIdx); });
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = (e) => { e.stopPropagation(); this.ship.removeComponentAtIndex(currentCompIdx); this.render(); };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                };
+
+                const renderFacilityCard = (comp, currentCompIdx) => {
+                    const li = document.createElement('div');
+                    li.className = 'component-card facility-card';
+                    const costStr = comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                    const countStr = comp.count > 1 ? ` (x${comp.count})` : '';
+                    let catBadgeClass = 'badge-shop';
+                    if (comp.isMedical) catBadgeClass = 'badge-med';
+                    else if (comp.isLab) catBadgeClass = 'badge-lab';
+                    else if (comp.isArmory) catBadgeClass = 'badge-vault';
+                    else if (comp.isCargo) catBadgeClass = 'badge-role';
+
+                    const catBadge = `<span class="badge ${catBadgeClass}">${comp.category}</span>`;
+                    const tlStr = `<span class="badge badge-tl">TL ${comp.tl}</span>`;
+
+                    li.innerHTML = `
+                        <div class="component-info">
+                            <div class="component-title">
+                                ${comp.name}${countStr}
+                                ${catBadge} ${tlStr}
+                            </div>
+                            <div class="component-details">
+                                MCr${costStr} \u2014 ${comp.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons
+                            </div>
+                            ${comp.comment ? `<div class="component-perf" style="color:var(--text-muted); font-style:italic">${comp.comment}</div>` : ''}
+                        </div>
+                    `;
+                    li.addEventListener('click', () => { this.openFacilityDialog(comp.facilityKey, currentCompIdx); });
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = (e) => { e.stopPropagation(); this.ship.removeComponentAtIndex(currentCompIdx); this.render(); };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                };
+
+                const renderLifeSupportCard = (comp, currentCompIdx) => {
+                    const li = document.createElement('div');
+                    li.className = 'component-card lifesupport-card';
+                    const costStr = comp.cost.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                    const countStr = comp.count > 1 ? ` (x${comp.count})` : '';
+                    const capBadge = comp.personDays > 0 ? `<span class="badge badge-mode">${comp.personDays.toLocaleString()} p-days</span>` : (comp.efficiencyBonus > 0 ? `<span class="badge badge-mode">+${Math.round(comp.efficiencyBonus * 100 * comp.count)}% Eff</span>` : '');
+                    const tlStr = `<span class="badge badge-tl">TL ${comp.tl}</span>`;
+
+                    li.innerHTML = `
+                        <div class="component-info">
+                            <div class="component-title">
+                                ${comp.name}${countStr}
+                                ${capBadge} ${tlStr}
+                            </div>
+                            <div class="component-details">
+                                MCr${costStr} \u2014 ${comp.tons.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} tons
+                            </div>
+                            ${comp.comment ? `<div class="component-perf" style="color:var(--text-muted); font-style:italic">${comp.comment}</div>` : ''}
+                        </div>
+                    `;
+                    li.addEventListener('click', () => { this.openLifeSupportDialog(comp.lifeSupportKey, currentCompIdx); });
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = (e) => { e.stopPropagation(); this.ship.removeComponentAtIndex(currentCompIdx); this.render(); };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                };
+
                 // Pre-map components with their global indices before grouping
                 const hullComps = hull.components || [];
                 const compEntries = hullComps.map((c, i) => ({ comp: c, idx: globalCompIdx + i }));
                 globalCompIdx += hullComps.length;
 
+                const accomEntries    = compEntries.filter(e => e.comp.isAccommodation);
+                const facilityEntries = compEntries.filter(e => e.comp.isFacility);
+                const lsEntries       = compEntries.filter(e => e.comp.isLifeSupport);
+                const consoleEntries  = compEntries.filter(e => e.comp.isConsole);
+                const computerEntries = compEntries.filter(e => e.comp.isComputer);
                 const weaponEntries   = compEntries.filter(e => e.comp.isWeapon);
                 const defenseEntries  = compEntries.filter(e => e.comp.isDefense);
                 const sensorEntries   = compEntries.filter(e => e.comp.isSensor);
-                const consoleEntries  = compEntries.filter(e => e.comp.isConsole);
-                const computerEntries = compEntries.filter(e => e.comp.isComputer);
+                const fuelEntries     = compEntries.filter(e => e.comp.name === 'Fuel Tank' || e.comp.name === 'Fuel Rods');
                 const fittingEntries  = compEntries.filter(e => e.comp.isHullFitting || e.comp.name === 'Grapple');
-                const fuelPayEntries  = compEntries.filter(e => !e.comp.isHullFitting && e.comp.name !== 'Grapple' && !e.comp.isWeapon && !e.comp.isDefense && !e.comp.isSensor && !e.comp.isConsole && !e.comp.isComputer);
+                const genericEntries  = compEntries.filter(e => !e.comp.isAccommodation && !e.comp.isFacility && !e.comp.isLifeSupport && !e.comp.isConsole && !e.comp.isComputer && !e.comp.isWeapon && !e.comp.isDefense && !e.comp.isSensor && !e.comp.isHullFitting && e.comp.name !== 'Grapple' && e.comp.name !== 'Fuel Tank' && e.comp.name !== 'Fuel Rods');
 
                 // Drives group
                 if ((hull.drives || []).length > 0) {
@@ -2272,6 +3569,24 @@ class ShipHelperView {
                     (hull.drives || []).forEach(comp => {
                         renderDriveCard(comp, globalDriveIdx++);
                     });
+                }
+
+                // Accommodations group
+                if (accomEntries.length > 0) {
+                    addGroupHeader('Accommodations & Staterooms');
+                    accomEntries.forEach(({ comp, idx }) => renderAccommodationCard(comp, idx));
+                }
+
+                // Facilities & Payload group
+                if (facilityEntries.length > 0) {
+                    addGroupHeader('Facilities & Payload');
+                    facilityEntries.forEach(({ comp, idx }) => renderFacilityCard(comp, idx));
+                }
+
+                // Life Support group
+                if (lsEntries.length > 0) {
+                    addGroupHeader('Life Support Systems');
+                    lsEntries.forEach(({ comp, idx }) => renderLifeSupportCard(comp, idx));
                 }
 
                 // Controls & Consoles group
@@ -2304,15 +3619,21 @@ class ShipHelperView {
                     sensorEntries.forEach(({ comp, idx }) => renderSensorCard(comp, idx));
                 }
 
-                // Fuel / Payload group
-                if (fuelPayEntries.length > 0) {
-                    addGroupHeader('Fuel / Payload');
-                    fuelPayEntries.forEach(({ comp, idx }) => renderGenericCard(comp, idx));
+                // Fuel group
+                if (fuelEntries.length > 0) {
+                    addGroupHeader('Fuel Systems');
+                    fuelEntries.forEach(({ comp, idx }) => renderGenericCard(comp, idx));
+                }
+
+                // Other Generic Payload group
+                if (genericEntries.length > 0) {
+                    addGroupHeader('Other Payload');
+                    genericEntries.forEach(({ comp, idx }) => renderGenericCard(comp, idx));
                 }
 
                 // Fittings group (hull fittings + grapples)
                 if (fittingEntries.length > 0) {
-                    addGroupHeader('Fittings');
+                    addGroupHeader('Hull Fittings & Grapples');
                     fittingEntries.forEach(({ comp, idx }) => {
                         if (comp.isHullFitting) renderFittingCard(comp, idx);
                         else renderGenericCard(comp, idx); // Grapple
@@ -2327,6 +3648,12 @@ class ShipHelperView {
 
     renderRightPanel() {
         const stats = document.getElementById('ship-stats');
+        const staffingModel = this.currentStaffingModel || 'Merchant';
+        const crewReq = this.ship.getCrewRequirements(staffingModel);
+        const lsStatus = this.ship.getLifeSupportStatus();
+        const safeJump = this.ship.safeJumpDistance();
+        const jumpIntf = this.ship.jumpInterference();
+        const quality = this.ship.qualityEvaluations;
 
         // Update top bar display elements
         const displayTonnage = document.getElementById('display-tonnage');
@@ -2376,65 +3703,107 @@ class ShipHelperView {
             }
         }
 
+        const displayCrew = document.getElementById('display-crew');
+        if (displayCrew) {
+            const req = crewReq.totalCrew;
+            const berths = this.ship.totalCrewBerths;
+            displayCrew.textContent = `${req} Req / ${berths} Berths`;
+            if (berths < req) {
+                displayCrew.style.color = 'var(--accent-red)';
+            } else {
+                displayCrew.style.color = 'var(--accent-cyan)';
+            }
+        }
+
+        const displayPax = document.getElementById('display-passengers');
+        if (displayPax) {
+            displayPax.textContent = `${this.ship.totalPassengerBerths} Pax (${this.ship.totalLowBerths} Low)`;
+            displayPax.style.color = 'var(--accent-cyan)';
+        }
+
+        const displayLS = document.getElementById('display-lifesupport');
+        if (displayLS) {
+            displayLS.textContent = `${lsStatus.daysEndurance} Days (${lsStatus.monthsEndurance} Mo)`;
+            if (lsStatus.daysEndurance < 30 && lsStatus.totalSouls > 0) {
+                displayLS.style.color = 'var(--accent-red)';
+            } else {
+                displayLS.style.color = 'var(--accent-cyan)';
+            }
+        }
+
+        const displaySafeJump = document.getElementById('display-safejump');
+        if (displaySafeJump) {
+            if (this.ship.hasJumpDrive) {
+                displaySafeJump.textContent = `${safeJump.D}D`;
+                displaySafeJump.style.color = 'var(--accent-cyan)';
+            } else {
+                displaySafeJump.textContent = `No Jump`;
+                displaySafeJump.style.color = 'var(--text-muted)';
+            }
+        }
+
         const displayConfig = document.getElementById('display-config');
         if (displayConfig) displayConfig.textContent = this.ship.configurationType;
+        const displayMission = document.getElementById('display-mission');
+        if (displayMission) {
+            displayMission.textContent = `${this.ship.missionCode} (${this.ship.missionFullTitle})`;
+        }
 
         // Calculate totals
         let totalCost = this.ship.baseCost;
         let totalTonnageUsed = 0;
-
-        this.ship.subhulls.forEach(h => {
-            totalTonnageUsed += this.ship.getSubhullArmorTons(h);
-        });
-
-        this.ship.subhulls.forEach(h => {
-            (h.drives || []).forEach(d => { totalCost += d.cost; totalTonnageUsed += d.tons; });
-            (h.components || []).forEach(c => { totalCost += c.cost; totalTonnageUsed += c.tons; });
-        });
-
-        const tonnageRemaining = this.ship.tonnage - totalTonnageUsed;
-
-        // Every hull contributes 1 mechanism for its built-in (hidden) lifters
-        let totalMechanisms = this.ship.subhulls.length;
-        let maxPower = 0;
-        let maxJumpPower = 0;
+        let totalMechanisms = this.ship.subhulls.length; // Built-in lifters
         let mdrivePotential = 0;
         let jumpPotential = 0;
         let hopPotential = 0;
         let skipPotential = 0;
         let nafalPotential = 0;
+        let maxPower = 0;
+        let maxJumpPower = 0;
         let totalDriveTonnage = 0;
-        this.ship.drives.forEach(d => {
-            // this.ship.drives now contains ONLY real drives — no guards needed
-            totalMechanisms += Math.ceil(d.tons / 35);
-            totalDriveTonnage += d.tons;
-            const perf = ShipHelper.getDrivePerformance(d, this.ship.tonnage);
-            const pot = perf.potential || 0;
-            if (d.driveType === 'Power Plant' || d.driveType === 'Fission' || d.driveType === 'Anti-Matter') {
-                if (pot > maxPower) maxPower = pot;
-                if (pot > maxJumpPower) maxJumpPower = pot;
-            } else if (d.driveType === 'Collector') {
-                if (pot > maxJumpPower) maxJumpPower = pot;
-            } else if (d.driveType === 'M-Drive' || d.driveType === 'G-Drive') {
-                if (pot > mdrivePotential) mdrivePotential = pot;
-            } else if (d.driveType === 'NAFAL') {
-                if (pot > nafalPotential) nafalPotential = pot;
-            } else if (d.driveType === 'Jump') {
-                if (pot > jumpPotential) jumpPotential = pot;
-            } else if (d.driveType === 'Hop') {
-                if (pot > hopPotential) hopPotential = pot;
-            } else if (d.driveType === 'Skip') {
-                if (pot > skipPotential) skipPotential = pot;
-            }
-        });
-        // Hull fittings contribute their own mechanisms value (may be negative, e.g. RemoveLifters)
-        // Grapples add 1 each; generic components (fuel, cargo) add 0
-        this.ship.subhulls.forEach(h => {
-            (h.components || []).forEach(c => {
-                if (c.isHullFitting) totalMechanisms += (c.mechanisms ?? 1);
-                else if (c.name === 'Grapple') totalMechanisms += 1;
+
+        this.ship.subhulls.forEach(hull => {
+            totalTonnageUsed += this.ship.getSubhullArmorTons(hull);
+            totalCost += (hull.cost || 0);
+            (hull.drives || []).forEach(drive => {
+                totalCost += (drive.cost || 0);
+                totalTonnageUsed += (drive.tons || 0);
+                totalDriveTonnage += (drive.tons || 0);
+                totalMechanisms += Math.ceil(drive.tons / 35);
+                if (!drive.isGeneric) {
+                    const perf = ShipHelper.getDrivePerformance(drive, this.ship.tonnage);
+                    if (drive.driveType === 'M-Drive' || drive.driveType === 'G-Drive') {
+                        if (perf.potential > mdrivePotential) mdrivePotential = perf.potential;
+                    } else if (drive.driveType === 'Jump') {
+                        if (perf.potential > jumpPotential) jumpPotential = perf.potential;
+                    } else if (drive.driveType === 'Hop') {
+                        if (perf.potential > hopPotential) hopPotential = perf.potential;
+                    } else if (drive.driveType === 'Skip') {
+                        if (perf.potential > skipPotential) skipPotential = perf.potential;
+                    } else if (drive.driveType === 'NAFAL') {
+                        if (perf.potential > nafalPotential) nafalPotential = perf.potential;
+                    } else if (drive.driveType === 'Power Plant' || drive.driveType === 'Fission' || drive.driveType === 'Anti-Matter') {
+                        if (perf.potential > maxPower) maxPower = perf.potential;
+                        if (perf.potential > maxJumpPower) maxJumpPower = perf.potential;
+                    } else if (drive.driveType === 'Collector') {
+                        if (perf.potential > maxJumpPower) maxJumpPower = perf.potential;
+                    }
+                }
+            });
+            (hull.components || []).forEach(comp => {
+                totalCost += (comp.cost || 0);
+                totalTonnageUsed += (comp.tons || 0);
+                if (comp.isHullFitting) {
+                    totalMechanisms += (comp.mechanisms !== undefined ? comp.mechanisms : 1);
+                } else if (comp.name === 'Grapple') {
+                    totalMechanisms += 1;
+                } else if (comp.mechanisms) {
+                    totalMechanisms += comp.mechanisms;
+                }
             });
         });
+
+        const tonnageRemaining = this.ship.tonnage - totalTonnageUsed;
 
         const hullMaxG = this.ship.configuration.maxG;
         const effectiveMDrive = Math.min(mdrivePotential, maxPower, hullMaxG);
@@ -2525,12 +3894,88 @@ class ShipHelperView {
             `;
         }
 
+        const mObj = this.ship.missionObject;
+        const mHierarchyStr = `${mObj?.service || 'Commerce'}${mObj?.activity ? ` > ${mObj.activity}` : ''}${mObj?.type ? ` > ${mObj.type}` : ''} > ${mObj?.mission || 'Trader'} [${mObj?.code || 'A'}]`;
+
         stats.innerHTML = `
+            <div class="stat-section">
+                <div class="stat-header">Mission Classification (Sec 02):</div>
+                <div class="stat-row"><span class="stat-label">Vessel:</span> <span class="stat-value">${this.ship.shipName || 'Starship'} (${this.ship.registration || 'REG-0101'})</span></div>
+                <div class="stat-row"><span class="stat-label">Classification Code:</span> <span class="stat-value good">${this.ship.missionCode}</span></div>
+                <div class="stat-row"><span class="stat-label">Full Designation:</span> <span class="stat-value">${this.ship.missionFullTitle}</span></div>
+                <div class="stat-row"><span class="stat-label">Hierarchy:</span> <span class="stat-value" style="font-size:0.82em; color:var(--text-muted);">${mHierarchyStr}</span></div>
+                <button type="button" class="roster-view-btn" id="btn-quick-mission">Configure Mission & Modifiers</button>
+            </div>
+
             <div class="stat-section">
                 <div class="stat-header">Hull Configurations:</div>
                 <div class="stat-row"><span class="stat-label">Type:</span> <span class="stat-value">${this.ship.configurationType}</span></div>
                 <div class="stat-row"><span class="stat-label">Friction:</span> <span class="stat-value">${this.ship.configuration.friction}</span></div>
                 <div class="stat-row"><span class="stat-label">Agility:</span> <span class="stat-value">${this.ship.configuration.agility}</span></div>
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">Accommodations & Berthing (Sec 19/23):</div>
+                <div class="stat-row"><span class="stat-label">Crew Berths:</span> <span class="stat-value ${this.ship.totalCrewBerths >= crewReq.totalCrew ? 'good' : 'warning'}">${this.ship.totalCrewBerths} Berths (${this.ship.totalCrewQuartersTons}t)</span></div>
+                <div class="stat-row"><span class="stat-label">Passenger Berths:</span> <span class="stat-value">${this.ship.totalPassengerBerths} Pax (${this.ship.totalHighPaxBerths} High, ${this.ship.totalMidPaxBerths} Mid)</span></div>
+                <div class="stat-row"><span class="stat-label">Cryo Low Berths:</span> <span class="stat-value">${this.ship.totalLowBerths} Low (${(this.ship.totalLowBerths * 0.5).toFixed(1)} tons)</span></div>
+                <div class="stat-row"><span class="stat-label">Passenger Commons:</span> <span class="stat-value">${this.ship.totalCommonsTons} tons</span></div>
+                <div class="stat-row"><span class="stat-label">Total Cargo Space:</span> <span class="stat-value">${this.ship.totalCargoTons} tons</span></div>
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">Quality & Livability (Sec 26):</div>
+                <div class="stat-row"><span class="stat-label">Passenger Demand (D):</span> <span class="stat-value ${quality.demandClass}">D = ${quality.demand >= 0 ? '+' : ''}${quality.demand} (${quality.demandRating})</span></div>
+                <div class="stat-row"><span class="stat-label">Ticket Modifier:</span> <span class="stat-value">${quality.demandModifier}</span></div>
+                <div class="stat-row"><span class="stat-label">Crew Comfort (C):</span> <span class="stat-value ${quality.comfortClass}">C = ${quality.comfort} (${quality.comfortRating})</span></div>
+                <div class="stat-row"><span class="stat-label">Tension Checks:</span> <span class="stat-value">${quality.tensionCheck}</span></div>
+                <div class="stat-row"><span class="stat-label">Control Ergonomics (E):</span> <span class="stat-value ${quality.ergoClass}">E = ${quality.ergonomics} (${quality.ergoRating})</span></div>
+                <div class="stat-row"><span class="stat-label">Mishap Hazard:</span> <span class="stat-value">${quality.mishapRisk}</span></div>
+                ${quality.risks.length > 0 ? `<div style="margin-top:8px; font-size:0.82em; color:var(--accent-red);">${quality.risks.map(r => `<div>⚠️ ${r}</div>`).join('')}</div>` : ''}
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">Jump Fields (Sec 07):</div>
+                ${this.ship.hasJumpDrive ? `
+                <div class="stat-row"><span class="stat-label">Jump Field:</span> <span class="stat-value">${safeJump.fieldName}</span></div>
+                <div class="stat-row"><span class="stat-label">Drive Tech Stage:</span> <span class="stat-value">${safeJump.driveStage} (E = ${safeJump.E})</span></div>
+                <div class="stat-row"><span class="stat-label">Engineer Qualifications:</span> <span class="stat-value">Rank ${this.ship.engineerSkill || 0} + JD ${this.ship.jumpDriveSpecialty || 0} (Skill ${safeJump.totalEngineerSkill})</span></div>
+                <div class="stat-row"><span class="stat-label">Safe Distance (D):</span> <span class="stat-value good">${safeJump.safeDiameters} Diameters</span></div>
+                <div class="stat-row"><span class="stat-label">Armor Mod / Flash:</span> <span class="stat-value">${safeJump.armorMod} / ${safeJump.flash}</span></div>
+                <div class="stat-row"><span class="stat-label">Misjump Risk (X):</span> <span class="stat-value ${jumpIntf.riskClass}">X = ${jumpIntf.X} (${jumpIntf.misjumpRisk})</span></div>
+                <button type="button" class="roster-view-btn" id="btn-quick-astrogation">Configure Jump Fields</button>
+                ` : `
+                <div class="stat-row"><span class="stat-label">Jump Status:</span> <span class="stat-value warning">No Jump Drive Fitted</span></div>
+                <div style="font-size:0.82em; color:var(--text-muted); margin: 4px 0 8px 0;">Install a Jump, Hop, or Skip Drive to configure Jump Fields.</div>
+                <button type="button" class="roster-view-btn" id="btn-quick-astrogation" disabled style="opacity:0.5; cursor:not-allowed;" title="Requires Jump Drive">Configure Jump Fields (Drive Required)</button>
+                `}
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">Automated Crew Engine (Sec 20/24/25):</div>
+                <div class="stat-row">
+                    <span class="stat-label">Staffing Model:</span>
+                    <span class="stat-value">
+                        <select id="stats-staffing-model" style="background:var(--bg-input); color:var(--text-main); border:1px solid var(--border-color); border-radius:3px; padding:2px 6px;">
+                            <option value="Merchant" ${staffingModel === 'Merchant' ? 'selected' : ''}>Merchant / Commercial</option>
+                            <option value="Naval" ${staffingModel === 'Naval' ? 'selected' : ''}>Naval / Military</option>
+                            <option value="Scout" ${staffingModel === 'Scout' ? 'selected' : ''}>Scout / Survey</option>
+                        </select>
+                    </span>
+                </div>
+                <div class="stat-row"><span class="stat-label">Total Crew Required:</span> <span class="stat-value ${this.ship.totalCrewBerths >= crewReq.totalCrew ? 'good' : 'warning'}">${crewReq.totalCrew} Personnel (${crewReq.totalOfficers} Officers, ${crewReq.totalEnlisted} Enlisted)</span></div>
+                ${crewReq.totalStewards > 0 ? `<div class="stat-row"><span class="stat-label">Stewards Required:</span> <span class="stat-value">${crewReq.totalStewards} Stewards</span></div>` : ''}
+                ${crewReq.totalTroops > 0 ? `<div class="stat-row"><span class="stat-label">Marine Detachment:</span> <span class="stat-value">${crewReq.totalTroops} Troopers</span></div>` : ''}
+                <div class="stat-row"><span class="stat-label">Berthing Status:</span> <span class="stat-value ${this.ship.totalCrewBerths >= crewReq.totalCrew ? 'good' : 'warning'}">${this.ship.totalCrewBerths >= crewReq.totalCrew ? 'Adequate' : `Deficit (-${crewReq.totalCrew - this.ship.totalCrewBerths} Berths)`}</span></div>
+                <button type="button" class="roster-view-btn" id="btn-view-roster">View Full Crew Hierarchy Roster</button>
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">Life Support & Endurance (Sec 17/21):</div>
+                <div class="stat-row"><span class="stat-label">Total Souls on Board:</span> <span class="stat-value">${lsStatus.totalSouls} souls (${lsStatus.activeOccupants} Active, ${lsStatus.cryoOccupants} Cryo)</span></div>
+                <div class="stat-row"><span class="stat-label">Mission Endurance:</span> <span class="stat-value ${lsStatus.daysEndurance >= 30 ? 'good' : 'warning'}">${lsStatus.daysEndurance} Days (${lsStatus.monthsEndurance} Months)</span></div>
+                <div class="stat-row"><span class="stat-label">Effective Person-Days:</span> <span class="stat-value">${lsStatus.totalPersonDays.toLocaleString()} p-days</span></div>
+                ${lsStatus.recyclerCount > 0 ? `<div class="stat-row"><span class="stat-label">Closed-Loop Recycling:</span> <span class="stat-value good">${lsStatus.recyclerCount} Unit(s) (+${Math.round((lsStatus.recyclerMultiplier - 1) * 100)}% Eff)</span></div>` : ''}
             </div>
             
             <div class="stat-section">
@@ -2557,6 +4002,34 @@ class ShipHelperView {
             ${drivePerfHtml}
             ${deployedPerfHtml}
         `;
+
+        document.getElementById('stats-staffing-model')?.addEventListener('change', (e) => {
+            this.currentStaffingModel = e.target.value;
+            this.renderRightPanel();
+        });
+
+        document.getElementById('btn-view-roster')?.addEventListener('click', () => {
+            this.openCrewRosterModal();
+        });
+
+        document.getElementById('btn-quick-mission')?.addEventListener('click', () => {
+            this.openMissionCodeDialog();
+        });
+
+        document.getElementById('btn-quick-astrogation')?.addEventListener('click', () => {
+            if (!this.ship.hasJumpDrive) {
+                this.showNotificationBanner("⚠️ A Jump, Hop, or Skip Drive must be installed on the vessel before Jump Fields can be configured.");
+                return;
+            }
+            this.openJumpFieldsDialog();
+        });
+        document.getElementById('btn-quick-jumpfields')?.addEventListener('click', () => {
+            if (!this.ship.hasJumpDrive) {
+                this.showNotificationBanner("⚠️ A Jump, Hop, or Skip Drive must be installed on the vessel before Jump Fields can be configured.");
+                return;
+            }
+            this.openJumpFieldsDialog();
+        });
     }
 
     showNotificationBanner(message, duration = 6000) {

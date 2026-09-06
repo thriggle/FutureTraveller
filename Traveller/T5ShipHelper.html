@@ -15,32 +15,66 @@
         <h1>Traveller T5 Ship Helper</h1>
     </div>
     <div class="controls-bar">
-        <div>
-            <label for="base-tl">Base Tech Level:</label>
-            <input type="number" id="base-tl" value="13" min="0" max="33" style="width: 50px;">
+        <div class="controls-group-actions">
+            <div class="tl-control-pill">
+                <label for="base-tl">Base Tech Level:</label>
+                <input type="number" id="base-tl" value="13" min="0" max="33">
+            </div>
+            <div class="button-group">
+                <button id="btn-mission-code" class="cyan-btn" title="Configure 6-Character Mission Code & Classification">Mission Code</button>
+                <button id="btn-astrogation" class="cyan-btn" title="Configure Jump Fields & Safe Jump Distance (D, X)">Jump Fields</button>
+                <button id="btn-fillform" class="cyan-btn gold-btn" title="View Official 3-Page T5 Fillform & Print/Export Sheets">Fillform Sheets</button>
+                <button id="export-json" class="cyan-btn">Export Ship</button>
+                <button id="import-json" class="cyan-btn">Import Ship</button>
+                <input type="file" id="import-file" style="display:none" accept=".json">
+            </div>
         </div>
-        <div>
-            <button id="export-json" class="cyan-btn" style="margin-right: 10px;">Export Ship</button>
-            <button id="import-json" class="cyan-btn" style="margin-right: 20px;">Import Ship</button>
-            <input type="file" id="import-file" style="display:none" accept=".json">
 
-            <label>Total Tonnage:</label>
-            <span id="display-tonnage" style="font-weight: bold; margin-right: 15px;">0</span>
-
-            <label>Hardpoints:</label>
-            <span id="display-hardpoints" style="font-weight: bold; margin-right: 15px;">0 / 0</span>
-
-            <label>Control Panels:</label>
-            <span id="display-cp" style="font-weight: bold; margin-right: 15px;" title="Total Control Panels (P)">0</span>
-
-            <label>Consoles / Ergonomics:</label>
-            <span id="display-ergonomics" style="font-weight: bold; margin-right: 15px;" title="Consoles and Control Ergonomics (E)">0 (E: 0)</span>
-
-            <label>Computer Cells:</label>
-            <span id="display-computer" style="font-weight: bold; margin-right: 15px;" title="Ship Computer Cells">None (0 Cells)</span>
-
-            <label>Configuration:</label>
-            <span id="display-config" style="font-weight: bold;">Unstreamlined</span>
+        <div class="ship-summary-ribbon">
+            <div class="summary-chip" id="chip-mission" title="Mission Classification Code">
+                <span class="chip-label">Mission:</span>
+                <span class="chip-val" id="display-mission">MT-A-I-T (A)</span>
+            </div>
+            <div class="summary-chip" id="chip-tonnage" title="Total Ship Tonnage">
+                <span class="chip-label">Tonnage:</span>
+                <span class="chip-val" id="display-tonnage">0</span>
+            </div>
+            <div class="summary-chip" id="chip-config" title="Hull Configuration">
+                <span class="chip-label">Config:</span>
+                <span class="chip-val" id="display-config">Unstreamlined</span>
+            </div>
+            <div class="summary-chip" id="chip-hardpoints" title="Hardpoints Used / Max">
+                <span class="chip-label">Hardpoints:</span>
+                <span class="chip-val" id="display-hardpoints">0 / 0</span>
+            </div>
+            <div class="summary-chip" id="chip-safejump" title="Safe Jump Distance (Planetary Diameters)">
+                <span class="chip-label">Jump Dist:</span>
+                <span class="chip-val" id="display-safejump">100D</span>
+            </div>
+            <div class="summary-chip" id="chip-cp" title="Total Control Panels (P)">
+                <span class="chip-label">Panels:</span>
+                <span class="chip-val" id="display-cp">0 CP</span>
+            </div>
+            <div class="summary-chip" id="chip-ergo" title="Consoles and Control Ergonomics (E)">
+                <span class="chip-label">Ergonomics:</span>
+                <span class="chip-val" id="display-ergonomics">0 (E: 0)</span>
+            </div>
+            <div class="summary-chip" id="chip-computer" title="Ship Computer Cells">
+                <span class="chip-label">Computers:</span>
+                <span class="chip-val" id="display-computer">None (0 Cells)</span>
+            </div>
+            <div class="summary-chip" id="chip-crew" title="Crew Required vs Crew Berths Allocated">
+                <span class="chip-label">Crew / Berths:</span>
+                <span class="chip-val" id="display-crew">0 / 0</span>
+            </div>
+            <div class="summary-chip" id="chip-passengers" title="Passenger Berths (High / Mid / Low)">
+                <span class="chip-label">Passengers:</span>
+                <span class="chip-val" id="display-passengers">0 Pax (0 Low)</span>
+            </div>
+            <div class="summary-chip" id="chip-lifesupport" title="Life Support Mission Endurance">
+                <span class="chip-label">Life Support:</span>
+                <span class="chip-val" id="display-lifesupport">30 Days</span>
+            </div>
         </div>
     </div>
     <div class="container">
@@ -54,6 +88,40 @@
                     <ul class="content">
                         <li class="generic-item" data-component-type="Subhull">Subhull</li>
                         <li class="generic-item" data-component-type="Pod">Pod</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Accommodations</strong>
+                    <ul class="content">
+                        <li class="accommodation-item" data-accommodation-type="StandardStateroom">Standard Stateroom (2t, 1 Occupant)</li>
+                        <li class="accommodation-item" data-accommodation-type="StandardSuite">Standard Suite (4t, 2 Occupants)</li>
+                        <li class="accommodation-item" data-accommodation-type="DoubleStateroom">Double Stateroom (2t, 2 Occupants)</li>
+                        <li class="accommodation-item" data-accommodation-type="TripleStateroom">Triple Stateroom (2t, 3 Occupants)</li>
+                        <li class="accommodation-item" data-accommodation-type="CrampedStateroom">Cramped Stateroom (2t, 4 Occupants)</li>
+                        <li class="accommodation-item" data-accommodation-type="LuxuryStateroom">Luxury Stateroom (6t, 1 Occupant)</li>
+                        <li class="accommodation-item" data-accommodation-type="Steerage">Steerage / Space Bunks (0.5t, 2 Occupants)</li>
+                        <li class="accommodation-item" data-accommodation-type="LowBerth">Low Berth (Cryogenic) (0.5t, 1 Cryo)</li>
+                        <li class="accommodation-item" data-accommodation-type="SpacerNiche">Spacer Niche (1.0t, 1 Crew)</li>
+                        <li class="accommodation-item" data-accommodation-type="PassengerCommons">Passenger Commons (1t/Pax)</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Facilities & Payload</strong>
+                    <ul class="content">
+                        <li class="facility-item" data-facility-type="MedicalBay">Medical Bay / Sickbay (4t)</li>
+                        <li class="facility-item" data-facility-type="ScienceLab">Science Laboratory (4t)</li>
+                        <li class="facility-item" data-facility-type="Workshop">Machine Workshop / Repair Bay (4t)</li>
+                        <li class="facility-item" data-facility-type="ArmoryVault">Secure Armory / Vault</li>
+                        <li class="facility-item" data-facility-type="ColdStorage">Refrigerated / Cold Storage Cargo</li>
+                        <li class="facility-item" data-facility-type="HazardousContainment">Hazardous Cargo Containment</li>
+                        <li class="facility-item" data-facility-type="StandardCargo">Standard Cargo Hold</li>
+                    </ul>
+                </li>
+                <li class="categorynode">
+                    <strong class="collapsible">Life Support</strong>
+                    <ul class="content">
+                        <li class="lifesupport-item" data-lifesupport-type="ExtendedLifeSupport">Extended Life Support Stores (100 p-days/t)</li>
+                        <li class="lifesupport-item" data-lifesupport-type="RecyclerUnit">Atmospheric Recycler / Water Recovery (2t)</li>
                     </ul>
                 </li>
                 <li class="categorynode">
@@ -182,12 +250,6 @@
                     <ul class="content">
                         <li class="generic-item" data-component-type="Fuel Tank">Fuel Tank</li>
                         <li class="generic-item" data-component-type="Fuel Rods">Fuel Rods</li>
-                    </ul>
-                </li>
-                <li class="categorynode">
-                    <strong class="collapsible">Payload</strong>
-                    <ul class="content">
-                        <li class="generic-item" data-component-type="Cargo Space">Cargo Space</li>
                     </ul>
                 </li>
                 <li class="categorynode">
