@@ -878,29 +878,31 @@ export function getDrivePerformance(drive, shipTonnage) {
     if (drive.performanceLimit !== undefined) {
         potential = Math.min(potential, drive.performanceLimit);
     }
+    const stageFuelMod = (ENUM_DRIVE_STAGE[drive.stage] && ENUM_DRIVE_STAGE[drive.stage].fuel !== undefined) ? ENUM_DRIVE_STAGE[drive.stage].fuel : 1;
+
     switch (drive.driveType) {
         case ENUM_DRIVE_TYPE.Jump:
-            fuelConsumption = potential * shipTonnage / 10 * ENUM_DRIVE_STAGE[drive.stage].fuel;
+            fuelConsumption = Math.round((potential * shipTonnage / 10 * stageFuelMod) * 100) / 100;
             if (potential > 1) {
-                minConsumption = shipTonnage / 10 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-                minNote = minConsumption.toString() + " tons per Jump-1";
+                minConsumption = Math.round((shipTonnage / 10 * stageFuelMod) * 100) / 100;
+                minNote = minConsumption + " tons per Jump-1";
             }
-            note = fuelConsumption.toString() + " tons per Jump-" + potential.toString();
+            note = fuelConsumption + " tons per Jump-" + potential;
             break;
         case ENUM_DRIVE_TYPE.Hop:
-            fuelConsumption = potential * shipTonnage / 10 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-            note = fuelConsumption.toString() + " tons per Hop-" + potential.toString();
+            fuelConsumption = Math.round((potential * shipTonnage / 10 * stageFuelMod) * 100) / 100;
+            note = fuelConsumption + " tons per Hop-" + potential;
             if (potential > 1) {
-                minConsumption = shipTonnage / 10 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-                minNote = minConsumption.toString() + " tons per Hop-1";
+                minConsumption = Math.round((shipTonnage / 10 * stageFuelMod) * 100) / 100;
+                minNote = minConsumption + " tons per Hop-1";
             }
             break;
         case ENUM_DRIVE_TYPE.Skip:
-            fuelConsumption = potential * shipTonnage / 10 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-            note = fuelConsumption.toString() + " tons per Skip-" + potential.toString();
+            fuelConsumption = Math.round((potential * shipTonnage / 10 * stageFuelMod) * 100) / 100;
+            note = fuelConsumption + " tons per Skip-" + potential;
             if (potential > 1) {
-                minConsumption = shipTonnage / 10 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-                minNote = minConsumption.toString() + " tons per Skip-1";
+                minConsumption = Math.round((shipTonnage / 10 * stageFuelMod) * 100) / 100;
+                minNote = minConsumption + " tons per Skip-1";
             }
             break;
         case ENUM_DRIVE_TYPE.NAFAL:
@@ -912,27 +914,27 @@ export function getDrivePerformance(drive, shipTonnage) {
             minNote = note;
             break;
         case ENUM_DRIVE_TYPE.PowerPlant:
-            fuelConsumption = potential * shipTonnage / 100 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-            note = fuelConsumption.toString() + " tons per month for P=" + potential.toString();
+            fuelConsumption = Math.round((potential * shipTonnage / 100 * stageFuelMod) * 100) / 100;
+            note = fuelConsumption + " tons per month for P=" + potential;
             if (potential > 1) {
-                minConsumption = shipTonnage / 100 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-                minNote = minConsumption.toString() + " tons per Power Output Level";
+                minConsumption = Math.round((shipTonnage / 100 * stageFuelMod) * 100) / 100;
+                minNote = minConsumption + " tons per Power Output Level";
             }
             break;
         case ENUM_DRIVE_TYPE.Fission:
-            fuelConsumption = potential * shipTonnage / 100 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-            note = fuelConsumption.toString() + " rods per 10 years";
+            fuelConsumption = Math.round((potential * shipTonnage / 100 * stageFuelMod) * 100) / 100;
+            note = fuelConsumption + " rods per 10 years";
             if (potential > 1) {
-                minConsumption = shipTonnage / 100 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-                minNote = minConsumption.toString() + " rods per 10 years per Power Output Level";
+                minConsumption = Math.round((shipTonnage / 100 * stageFuelMod) * 100) / 100;
+                minNote = minConsumption + " rods per 10 years per Power Output Level";
             }
             break;
         case ENUM_DRIVE_TYPE.AntiMatter:
-            fuelConsumption = potential * shipTonnage / 100 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-            note = fuelConsumption.toString() + " slugs per year";
+            fuelConsumption = Math.round((potential * shipTonnage / 100 * stageFuelMod) * 100) / 100;
+            note = fuelConsumption + " slugs per year";
             if (potential > 1) {
-                minConsumption = shipTonnage / 100 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-                minNote = minConsumption.toString() + " slugs per year per Power Output Level";
+                minConsumption = Math.round((shipTonnage / 100 * stageFuelMod) * 100) / 100;
+                minNote = minConsumption + " slugs per year per Power Output Level";
             }
             break;
         case ENUM_DRIVE_TYPE.Rocket:
@@ -942,8 +944,8 @@ export function getDrivePerformance(drive, shipTonnage) {
             minNote = note;
             break;
         case ENUM_DRIVE_TYPE.HEPlaR:
-            fuelConsumption = potential * shipTonnage / 100 * ENUM_DRIVE_STAGE[drive.stage].fuel;
-            note = fuelConsumption.toString() + " tons per burn in addition to Rocket Fuel";
+            fuelConsumption = Math.round((potential * shipTonnage / 100 * stageFuelMod) * 100) / 100;
+            note = fuelConsumption + " tons per burn in addition to Rocket Fuel";
             minConsumption = fuelConsumption;
             minNote = note;
             break;
@@ -958,6 +960,8 @@ export function getDrivePerformance(drive, shipTonnage) {
         minConsumption = fuelConsumption;
         minNote = note;
     }
+    minConsumption = Math.round(minConsumption * 100) / 100;
+    fuelConsumption = Math.round(fuelConsumption * 100) / 100;
     return {
         potential: potential,
         fuelConsumption: fuelConsumption,
