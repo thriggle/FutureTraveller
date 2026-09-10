@@ -1,0 +1,167 @@
+{
+  "id": "zhodani",
+  "speciesName": "Zhodani",
+  "nativeLanguage": "Zdetl",
+  "statProfile": "SDEIES",
+  "height": "2m",
+  "weight": "90kg",
+  "notes": "naturally psionic",
+  "baseSenses": [
+    "V-16-RGB",
+    "H-16-9382",
+    "S-10-02",
+    "T-06-02"
+  ],
+  "characteristics": [
+    {
+      "name": "Strength",
+      "nD": 2
+    },
+    {
+      "name": "Dexterity",
+      "nD": 2
+    },
+    {
+      "name": "Endurance",
+      "nD": 2
+    },
+    {
+      "name": "Intellect",
+      "nD": 2
+    },
+    {
+      "name": "Education",
+      "nD": 2
+    },
+    {
+      "name": "Social Standing",
+      "nD": 2
+    }
+  ],
+  "genders": {
+    "F": {
+      "Characteristics": [
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        }
+      ]
+    },
+    "M": {
+      "Characteristics": [
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        }
+      ]
+    }
+  },
+  "castes": {
+    "N/A": {
+      "Characteristics": [
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        }
+      ]
+    }
+  },
+  "genderTable": [
+    "F",
+    "M",
+    "F",
+    "F",
+    "M",
+    "M",
+    "F",
+    "F",
+    "M",
+    "F",
+    "M"
+  ],
+  "casteTable": [
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A"
+  ],
+  "lifeStageTerms": [
+    0.5,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ]
+}

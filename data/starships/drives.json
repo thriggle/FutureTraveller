@@ -1,0 +1,210 @@
+{
+  "driveClasses": {
+    "A": {
+      "name": "A",
+      "ep": 100
+    },
+    "B": {
+      "name": "B",
+      "ep": 200
+    },
+    "C": {
+      "name": "C",
+      "ep": 300
+    },
+    "D": {
+      "name": "D",
+      "ep": 400
+    },
+    "E": {
+      "name": "E",
+      "ep": 500
+    },
+    "F": {
+      "name": "F",
+      "ep": 600
+    },
+    "G": {
+      "name": "G",
+      "ep": 700
+    },
+    "H": {
+      "name": "H",
+      "ep": 800
+    },
+    "J": {
+      "name": "I",
+      "ep": 900
+    },
+    "K": {
+      "name": "J",
+      "ep": 1000
+    },
+    "L": {
+      "name": "K",
+      "ep": 1100
+    },
+    "M": {
+      "name": "L",
+      "ep": 1200
+    },
+    "N": {
+      "name": "M",
+      "ep": 1300
+    },
+    "P": {
+      "name": "N",
+      "ep": 1400
+    },
+    "Q": {
+      "name": "O",
+      "ep": 1500
+    },
+    "R": {
+      "name": "P",
+      "ep": 1600
+    },
+    "S": {
+      "name": "Q",
+      "ep": 1700
+    },
+    "T": {
+      "name": "R",
+      "ep": 1800
+    },
+    "U": {
+      "name": "S",
+      "ep": 1900
+    },
+    "V": {
+      "name": "T",
+      "ep": 2000
+    },
+    "W": {
+      "name": "U",
+      "ep": 2100
+    },
+    "X": {
+      "name": "V",
+      "ep": 2200
+    },
+    "Y": {
+      "name": "W",
+      "ep": 2300
+    },
+    "Z": {
+      "name": "X",
+      "ep": 2400
+    }
+  },
+  "driveTypes": [
+    "Jump",
+    "M-Drive",
+    "G-Drive",
+    "Power Plant",
+    "Fission",
+    "Anti-Matter",
+    "Hop",
+    "Skip",
+    "Rocket",
+    "NAFAL",
+    "HEPlaR",
+    "Collector"
+  ],
+  "driveTypeMap": {
+    "Jump": "Jump",
+    "MDrive": "M-Drive",
+    "GDrive": "G-Drive",
+    "PowerPlant": "Power Plant",
+    "Fission": "Fission",
+    "AntiMatter": "Anti-Matter",
+    "Hop": "Hop",
+    "Skip": "Skip",
+    "Rocket": "Rocket",
+    "NAFAL": "NAFAL",
+    "HEPlaR": "HEPlaR",
+    "Collector": "Collector"
+  },
+  "driveStages": {
+    "Ultimate": {
+      "stage": "Ultimate",
+      "mod": 4,
+      "eff": 1.3,
+      "fuel": 0.7,
+      "tons": 0.25,
+      "cost": 3
+    },
+    "Advanced": {
+      "stage": "Advanced",
+      "mod": 3,
+      "eff": 1.2,
+      "fuel": 0.8,
+      "tons": 0.3333333333333333,
+      "cost": 2
+    },
+    "Modified": {
+      "stage": "Modified",
+      "mod": 2,
+      "eff": 1.1,
+      "fuel": 0.9,
+      "tons": 0.5,
+      "cost": 0.5
+    },
+    "Generic": {
+      "stage": "Generic",
+      "mod": 1,
+      "eff": 0.9,
+      "fuel": 1.1,
+      "tons": 1,
+      "cost": 0.5
+    },
+    "Improved": {
+      "stage": "Improved",
+      "mod": 1,
+      "eff": 1.1,
+      "fuel": 0.9,
+      "tons": 1,
+      "cost": 1
+    },
+    "Standard": {
+      "stage": "Standard",
+      "mod": 0,
+      "eff": 1,
+      "fuel": 1,
+      "tons": 1,
+      "cost": 1
+    },
+    "Basic": {
+      "stage": "Basic",
+      "mod": 0,
+      "eff": 0.9,
+      "fuel": 1.1,
+      "tons": 1,
+      "cost": 0.5
+    },
+    "Early": {
+      "stage": "Early",
+      "mod": -1,
+      "eff": 0.9,
+      "fuel": 1.1,
+      "tons": 1,
+      "cost": 2
+    },
+    "Prototype": {
+      "stage": "Prototype",
+      "mod": -2,
+      "eff": 0.8,
+      "fuel": 1.2,
+      "tons": 2,
+      "cost": 5
+    },
+    "Experimental": {
+      "stage": "Experimental",
+      "mod": -3,
+      "eff": 0.5,
+      "fuel": 2,
+      "tons": 3,
+      "cost": 10
+    }
+  }
+}

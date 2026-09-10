@@ -1,3 +1,8 @@
+import { loadStarshipDrives, loadStarshipHulls } from "./DataLoader.js";
+
+const _drivesData = await loadStarshipDrives();
+const _hullsData = await loadStarshipHulls();
+
 export class ENUM_TECH_STAGE {
     static get Ultimate() { return "Ultimate"; }
     static get Advanced() { return "Advanced"; }
@@ -10,121 +15,61 @@ export class ENUM_TECH_STAGE {
     static get Prototype() { return "Prototype"; }
     static get Experimental() { return "Experimental"; }
 }
-export class ENUM_DRIVE_CLASS {
-    static get "A"() { return { name: "A", ep: 100 }; }
-    static get "B"() { return { name: "B", ep: 200 }; }
-    static get "C"() { return { name: "C", ep: 300 }; }
-    static get "D"() { return { name: "D", ep: 400 }; }
-    static get "E"() { return { name: "E", ep: 500 }; }
-    static get "F"() { return { name: "F", ep: 600 }; }
-    static get "G"() { return { name: "G", ep: 700 }; }
-    static get "H"() { return { name: "H", ep: 800 }; }
-    static get "J"() { return { name: "I", ep: 900 }; }
-    static get "K"() { return { name: "J", ep: 1000 }; }
-    static get "L"() { return { name: "K", ep: 1100 }; }
-    static get "M"() { return { name: "L", ep: 1200 }; }
-    static get "N"() { return { name: "M", ep: 1300 }; }
-    static get "P"() { return { name: "N", ep: 1400 }; }
-    static get "Q"() { return { name: "O", ep: 1500 }; }
-    static get "R"() { return { name: "P", ep: 1600 }; }
-    static get "S"() { return { name: "Q", ep: 1700 }; }
-    static get "T"() { return { name: "R", ep: 1800 }; }
-    static get "U"() { return { name: "S", ep: 1900 }; }
-    static get "V"() { return { name: "T", ep: 2000 }; }
-    static get "W"() { return { name: "U", ep: 2100 }; }
-    static get "X"() { return { name: "V", ep: 2200 }; }
-    static get "Y"() { return { name: "W", ep: 2300 }; }
-    static get "Z"() { return { name: "X", ep: 2400 }; }
+
+export class ENUM_DRIVE_CLASS {}
+for (const [key, val] of Object.entries(_drivesData.driveClasses)) {
+    Object.defineProperty(ENUM_DRIVE_CLASS, key, { get: () => val, enumerable: true });
 }
-export class ENUM_DRIVE_TYPE {
-    static get Jump() { return "Jump"; }
-    static get MDrive() { return "M-Drive"; }
-    static get GDrive() { return "G-Drive"; }
-    static get PowerPlant() { return "Power Plant"; }
-    static get Fission() { return "Fission"; }
-    static get AntiMatter() { return "Anti-Matter"; }
-    static get Hop() { return "Hop"; }
-    static get Skip() { return "Skip"; }
-    static get Rocket() { return "Rocket"; }
-    static get NAFAL() { return "NAFAL"; }
-    static get HEPlaR() { return "HEPlaR"; }
-    static get Collector() { return "Collector"; }
+
+export class ENUM_DRIVE_TYPE {}
+if (_drivesData.driveTypeMap) {
+    for (const [key, val] of Object.entries(_drivesData.driveTypeMap)) {
+        Object.defineProperty(ENUM_DRIVE_TYPE, key, { get: () => val, enumerable: true });
+    }
+} else {
+    for (const type of _drivesData.driveTypes) {
+        const key = type.replace(/[^a-zA-Z0-9]/g, "");
+        Object.defineProperty(ENUM_DRIVE_TYPE, key, { get: () => type, enumerable: true });
+    }
 }
-export class ENUM_DRIVE_STAGE {
-    static get Ultimate() { return { stage: "Ultimate", mod: 4, eff: 1.3, fuel: 0.7, tons: 1 / 4, cost: 3 } }
-    static get Advanced() { return { stage: "Advanced", mod: 3, eff: 1.2, fuel: 0.8, tons: 1 / 3, cost: 2 } }
-    static get Modified() { return { stage: "Modified", mod: 2, eff: 1.1, fuel: 0.9, tons: 1 / 2, cost: 1 / 2 } }
-    static get Generic() { return { stage: "Generic", mod: 1, eff: 0.9, fuel: 1.1, tons: 1, cost: 1 / 2 } }
-    static get Improved() { return { stage: "Improved", mod: 1, eff: 1.1, fuel: 0.9, tons: 1, cost: 1 }; }
-    static get Standard() { return { stage: "Standard", mod: 0, eff: 1.0, fuel: 1.0, tons: 1, cost: 1 }; }
-    static get Basic() { return { stage: "Basic", mod: 0, eff: 0.9, fuel: 1.1, tons: 1, cost: 1 / 2 }; }
-    static get Early() { return { stage: "Early", mod: -1, eff: 0.9, fuel: 1.1, tons: 1, cost: 2 }; }
-    static get Prototype() { return { stage: "Prototype", mod: -2, eff: 0.8, fuel: 1.2, tons: 2, cost: 5 }; }
-    static get Experimental() { return { stage: "Experimental", mod: -3, eff: 0.5, fuel: 2, tons: 3, cost: 10 }; }
+
+export class ENUM_DRIVE_STAGE {}
+for (const [key, val] of Object.entries(_drivesData.driveStages)) {
+    Object.defineProperty(ENUM_DRIVE_STAGE, key, { get: () => val, enumerable: true });
 }
-export class ENUM_HULL_TYPE {
-    static get Cluster() { return "Cluster"; }
-    static get Braced() { return "Braced"; }
-    static get Planetoid() { return "Planetoid"; }
-    static get Unstreamlined() { return "Unstreamlined"; }
-    static get Streamlined() { return "Streamlined"; }
-    static get Airframe() { return "Airframe"; }
-    static get LiftingBody() { return "Lifting Body"; }
+
+export class ENUM_HULL_TYPE {}
+if (_hullsData.hullTypeMap) {
+    for (const [key, val] of Object.entries(_hullsData.hullTypeMap)) {
+        Object.defineProperty(ENUM_HULL_TYPE, key, { get: () => val, enumerable: true });
+    }
+} else {
+    for (const type of _hullsData.hullTypes) {
+        const key = type.replace(/[^a-zA-Z0-9]/g, "");
+        Object.defineProperty(ENUM_HULL_TYPE, key, { get: () => type, enumerable: true });
+    }
 }
-export class ENUM_HULL_CONFIG {
-    static get Cluster() { return { type: "Cluster", friction: 2, agility: -5, accel: 0, maxG: 1, stability: -3, land: false, cost: 2 / 100, flatcost: 0, podflatcost: 0 } }
-    static get Braced() { return { type: "Braced", friction: 2, agility: -4, accel: 0, maxG: 3, stability: -2, land: false, cost: 3 / 100, flatcost: 0, podflatcost: 0 } }
-    static get Planetoid() { return { type: "Planetoid", friction: 1, agility: -2, accel: 0, maxG: 9, stability: -1, land: false, cost: 1 / 100, flatcost: 0, podflatcost: 0 } }
-    static get Unstreamlined() { return { type: "Unstreamlined", friction: 0.5, agility: -1, accel: 0, maxG: 9, stability: 0, land: true, cost: 3 / 100, flatcost: 2, podflatcost: 0.5 } }
-    static get Streamlined() { return { type: "Streamlined", friction: 1 / 3, agility: 0, accel: 0, maxG: 9, stability: 1, land: true, cost: 6 / 100, flatcost: 2, podflatcost: 0.8 } }
-    static get Airframe() { return { type: "Airframe", friction: 0.25, agility: 1, accel: 1, maxG: 9, stability: 2, land: true, cost: 7 / 100, flatcost: 2, podflatcost: 0.8 } }
-    static get LiftingBody() { return { type: "Lifting Body", friction: 0.2, agility: 1, accel: 1, maxG: 9, stability: 3, land: true, cost: 12 / 100, flatcost: 4, podflatcost: 1.6 } }
-    static get "Lifting Body"() { return this.LiftingBody; }
+
+export class ENUM_HULL_CONFIG {}
+for (const [key, val] of Object.entries(_hullsData.hullConfigs)) {
+    Object.defineProperty(ENUM_HULL_CONFIG, key, { get: () => val, enumerable: true });
 }
+if (_hullsData.hullConfigs["Lifting Body"]) {
+    Object.defineProperty(ENUM_HULL_CONFIG, "Lifting Body", { get: () => _hullsData.hullConfigs["Lifting Body"], enumerable: true });
+} else if (_hullsData.hullConfigs.LiftingBody) {
+    Object.defineProperty(ENUM_HULL_CONFIG, "Lifting Body", { get: () => _hullsData.hullConfigs.LiftingBody, enumerable: true });
+}
+
 export class ENUM_HULL_FITTINGS {
-    static get keys() { return ['FlotationHull', 'SubmergenceHull', 'Fins', 'FoldingFins', 'Wings', 'FoldingWings', 'LandingSkids', 'LandingLegsWithPads', 'LandingWheels', 'RemoveLifters']; }
-    static get FlotationHull() { return { mechanisms: 1, name: "Flotation Hull", baseTL: 5, cost: 1, tons: 1, tonnageCanBeUsedForFuel: false, installable: ["Planetoid", "Unstreamlined", "Streamlined", "Airframe"], automatic: ["Lifting Body"], removableFromAutoInstall: false, comment: "Sealed against prolonged fluid exposure, the flotation hull permits water landing and takeoff." } }
-    static get SubmergenceHull() { return { mechanisms: 1, name: "Submergence Hull", baseTL: 6, cost: 2, tons: 2, tonnageCanBeUsedForFuel: false, installable: ["Planetoid", "Unstreamlined", "Streamlined", "Airframe", "Lifting Body"], automatic: [], removableFromAutoInstall: false, comment: "Sealed against prolonged fluid exposure, the submergence hull gives the ability to submerge and resurface in addition to permitting water landing and takeoff. Doubles the effectiveness of hull armor vs pressure." } }
-    static get Fins() { return { mechanisms: 1, name: "Fins", baseTL: 5, cost: 0.5, tons: 2, tonnageCanBeUsedForFuel: true, installable: ["Unstreamlined", "Streamlined", "Lifting Body"], automatic: ["Airframe"], removableFromAutoInstall: false, comment: "Fins increase Agility +1 in worlds with Atmo 2+." } }
-    static get FoldingFins() { return { mechanisms: 1, name: "Folding Fins", baseTL: 8, deployedTons: 2, cost: 0.5, tons: 0, tonnageCanBeUsedForFuel: false, installable: ["Unstreamlined", "Streamlined"], automatic: [], removableFromAutoInstall: false, comment: "Fins increase Agility +1 in worlds with Atmo 2+. Folding fins only contribute to displacement tonnage when deployed." } }
-    static get Wings() { return { mechanisms: 1, name: "Wings", baseTL: 7, cost: 1, tons: 5, tonnageCanBeUsedForFuel: true, installable: ["Unstreamlined", "Streamlined"], automatic: ["Airframe", "Lifting Body"], removableFromAutoInstall: false, comment: "Wings increase Speed by 1G in worlds with Atmo 2+." } }
-    static get FoldingWings() { return { mechanisms: 1, name: "Folding Wings", baseTL: 9, deployedTons: 5, cost: 2, tons: 1, tonnageCanBeUsedForFuel: false, installable: ["Unstreamlined", "Streamlined"], automatic: [], removableFromAutoInstall: false, comment: "Wings increase Speed by 1G in worlds with Atmo 2+. Folding wings consume significantly less displacement tonnage when retracted." } }
-    static get LandingSkids() { return { mechanisms: 1, name: "Landing Skids", baseTL: 7, cost: 0, tons: 0, tonnageCanBeUsedForFuel: false, installable: ["Cluster", "Braced", "Planetoid", "Unstreamlined", "Airframe"], automatic: ["Streamlined", "Lifting Body"], removableFromAutoInstall: false, comment: "Default landing skids are weight-bearing horizontal bars, retractable, which require a solid tarmac or bedrock landing site." } }
-    static get LandingLegsWithPads() { return { mechanisms: 1, name: "Landing Legs with Pads", baseTL: 8, cost: 1, tons: 1, tonnageCanBeUsedForFuel: false, installable: ["Cluster", "Braced", "Planetoid", "Unstreamlined", "Streamlined", "Airframe", "Lifting Body"], automatic: [], removableFromAutoInstall: false, comment: "Landing legs with pads permit wilderness landings on uneven terrain." } }
-    static get LandingWheels() { return { mechanisms: 1, name: "Landing Wheels", baseTL: 5, cost: 1.5, tons: 3, tonnageCanBeUsedForFuel: false, installable: ["Cluster", "Braced", "Planetoid", "Unstreamlined", "Streamlined", "Lifting Body"], automatic: ["Airframe"], removableFromAutoInstall: false, comment: "Retractable landing wheels permit glide landing/takeoff from solid airstrips. Required when using wings for liftoff or landing." } }
-    static get RemoveLifters() { return { mechanisms: -1, name: "Remove Lifters", baseTL: 8, cost: -0.5, tons: 0, tonnageCanBeUsedForFuel: false, installable: ["Cluster", "Braced", "Planetoid", "Unstreamlined", "Streamlined", "Airframe", "Lifting Body"], automatic: [], removableFromAutoInstall: false, comment: "Opt out of auto-installed Lifters. Deducts their cost from the hull." } }
+    static get keys() { return Object.keys(_hullsData.hullFittings); }
 }
-export const ENUM_HULL_ARMOR = {
-    Plate: { type: "Plate", AV_Mult: 1, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined"] },
-    Charged: { type: "Charged", AV_Mult: 2, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined"] },
-    Shell: { type: "Shell", AV_Mult: 0.5, ton_Mult: 0.5, AV_FlatBonus: 0, configurations: ["Streamlined", "Airframe", "Lifting Body"] },
-    Polymer: { type: "Polymer", AV_Mult: 0.5, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined", "Airframe"] },
-    Organic: { type: "Organic", AV_Mult: 0.5, ton_Mult: 1, AV_FlatBonus: 0, configurations: ["Cluster", "Braced", "Unstreamlined", "Streamlined", "Airframe"] },
-    FeN: { type: "FeN", AV_Mult: 0, ton_Mult: 1, AV_FlatBonus: 20, configurations: ["Planetoid", "Unstreamlined"] }
-};
+for (const [key, val] of Object.entries(_hullsData.hullFittings)) {
+    Object.defineProperty(ENUM_HULL_FITTINGS, key, { get: () => val, enumerable: true });
+}
 
-export const ENUM_STAGE_EFFECTS = {
-    Experimental: { code: 'Exp', stage: "Experimental", tlMod: -3, costMult: 10, mod: -3 },
-    Prototype: { code: 'Pro', stage: "Prototype", tlMod: -2, costMult: 5, mod: -2 },
-    Early: { code: 'Ear', stage: "Early", tlMod: -1, costMult: 2, mod: -1 },
-    Standard: { code: 'Std', stage: "Standard", tlMod: 0, costMult: 1, mod: 0 },
-    Basic: { code: 'Bas', stage: "Basic", tlMod: 0, costMult: 0.5, mod: 0 },
-    Alternate: { code: 'Alt', stage: "Alternate", tlMod: 0, costMult: 1, mod: 0 },
-    Improved: { code: 'Imp', stage: "Improved", tlMod: 1, costMult: 1, mod: 1 },
-    Generic: { code: 'Gen', stage: "Generic", tlMod: 1, costMult: 0.5, mod: 0 },
-    Modified: { code: 'Mod', stage: "Modified", tlMod: 2, costMult: 0.5, mod: 2 },
-    Advanced: { code: 'Adv', stage: "Advanced", tlMod: 3, costMult: 2, mod: 3 },
-    Ultimate: { code: 'Ult', stage: "Ultimate", tlMod: 4, costMult: 3, mod: 4 }
-};
-
-export const ENUM_SPACE_RANGES = {
-    BR: { code: 'BR', name: "Boarding Range (BR, 0)", s: 0, r: 5, tlMod: -3, tonsMult: 0.25, costMult: 0.25 },
-    FR: { code: 'FR', name: "Fighter Range (FR, 2)", s: 2, r: 6, tlMod: -2, tonsMult: 1 / 3, costMult: 1 / 3 },
-    SR: { code: 'SR', name: "Short Range (SR, 5)", s: 5, r: 7, tlMod: -1, tonsMult: 0.5, costMult: 0.5 },
-    AR: { code: 'AR', name: "Attack Range (AR, 7)", s: 7, r: 7, tlMod: 0, tonsMult: 1.0, costMult: 1.0 },
-    LR: { code: 'LR', name: "Long Range (LR, 9)", s: 9, r: 8, tlMod: 1, tonsMult: 2.0, costMult: 3.0 },
-    DS: { code: 'DS', name: "Deep Space (DS, 12)", s: 12, r: 9, tlMod: 2, tonsMult: 3.0, costMult: 5.0 }
-};
+export const ENUM_HULL_ARMOR = _hullsData.hullArmor;
+export const ENUM_STAGE_EFFECTS = _hullsData.stageEffects;
+export const ENUM_SPACE_RANGES = _hullsData.spaceRanges;
 
 export const ENUM_WEAPON_MOUNTS = {
     Fix: { code: 'Fix', name: "Fixed Mount", tons: 0, mod: -2, hits: 1, cost: 0.1, hardpointReq: 1, firmpointReq: 1, cp: 1 },

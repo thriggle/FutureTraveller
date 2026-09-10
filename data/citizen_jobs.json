@@ -1,0 +1,406 @@
+[
+  [
+    [
+      {
+        "skill": "Driver",
+        "knowledge": "ACV"
+      },
+      {
+        "skill": "JOT"
+      },
+      {
+        "skill": "Flyer",
+        "knowledge": "LTA"
+      },
+      {
+        "skill": "Heavy Weapons",
+        "knowledge": "WMD"
+      },
+      {
+        "skill": "Chef"
+      },
+      {
+        "skill": "Driver",
+        "knowledge": "Mole"
+      }
+    ],
+    [
+      {
+        "skill": "Comms"
+      },
+      {
+        "skill": "Animals",
+        "knowledge": "Rider"
+      },
+      {
+        "skill": "Gunner",
+        "knowledge": "Spines"
+      },
+      {
+        "skill": "Leader"
+      },
+      {
+        "skill": "Survey"
+      },
+      {
+        "skill": "Dancer"
+      }
+    ],
+    [
+      {
+        "skill": "High-G"
+      },
+      {
+        "skill": "Sensors"
+      },
+      {
+        "skill": "Flyer",
+        "knowledge": "Flapper"
+      },
+      {
+        "skill": "Driver",
+        "knowledge": "Tracked"
+      },
+      {
+        "skill": "Animals"
+      },
+      {
+        "skill": "Tactics"
+      }
+    ],
+    [
+      {
+        "skill": "Steward"
+      },
+      {
+        "skill": "Forward Observer"
+      },
+      {
+        "skill": "Seafarer"
+      },
+      {
+        "skill": "Engineer"
+      },
+      {
+        "skill": "Fluidics"
+      },
+      {
+        "skill": "Heavy Weapons",
+        "knowledge": "Launcher"
+      }
+    ],
+    [
+      {
+        "skill": "Heavy Weapons",
+        "knowledge": "Ordnance"
+      },
+      {
+        "skill": "Survival"
+      },
+      {},
+      {
+        "skill": "Computer"
+      },
+      {
+        "skill": "Gunner",
+        "knowledge": "Bay Weapons"
+      },
+      {
+        "skill": "Magnetics"
+      }
+    ],
+    [
+      {
+        "skill": "Naval Architect"
+      },
+      {
+        "skill": "Streetwise"
+      },
+      {
+        "skill": "Astrogator"
+      },
+      {
+        "skill": "Navigator"
+      },
+      {
+        "skill": "Explosives"
+      },
+      {
+        "skill": "Engineer",
+        "knowledge": "Jump Drives"
+      }
+    ]
+  ],
+  [
+    [
+      {
+        "skill": "Driver",
+        "knowledge": "Grav"
+      },
+      {
+        "skill": "Seafarer",
+        "knowledge": "Boat"
+      },
+      {
+        "skill": "Seafarer",
+        "knowledge": "Ship"
+      },
+      {
+        "skill": "Flyer",
+        "knowledge": "Winged"
+      },
+      {
+        "skill": "Recon"
+      },
+      {
+        "skill": "Actor"
+      }
+    ],
+    [
+      {
+        "skill": "Artist"
+      },
+      {
+        "skill": "Driver",
+        "knowledge": "Legged"
+      },
+      {
+        "skill": "Sapper"
+      },
+      {
+        "skill": "Driver"
+      },
+      {
+        "skill": "Gunner"
+      },
+      {
+        "skill": "Fighter",
+        "knowledge": "Blades"
+      }
+    ],
+    [
+      {
+        "skill": "Gunner",
+        "knowledge": "Turrets"
+      },
+      {
+        "skill": "Teacher"
+      },
+      {
+        "skill": "Fighter",
+        "knowledge": "Unarmed"
+      },
+      {
+        "skill": "Fighter",
+        "knowledge": "Exotics"
+      },
+      {
+        "skill": "Stealth"
+      },
+      {
+        "skill": "Animals",
+        "knowledge": "Trainer"
+      }
+    ],
+    [
+      {
+        "skill": "Animals",
+        "knowledge": "Teamster"
+      },
+      {
+        "skill": "Designer"
+      },
+      {
+        "skill": "Engineer"
+      },
+      {
+        "skill": "Language"
+      },
+      {
+        "skill": "Musician"
+      },
+      {
+        "skill": "Strategy"
+      }
+    ],
+    [
+      {
+        "skill": "Photonics"
+      },
+      {
+        "skill": "Vacc Suit"
+      },
+      {
+        "skill": "Heavy Weapons",
+        "knowledge": "Artillery"
+      },
+      {
+        "skill": "Craftsman"
+      },
+      {
+        "skill": "Gravitics"
+      },
+      {
+        "skill": "Forensics"
+      }
+    ],
+    [
+      {
+        "skill": "Counsellor"
+      },
+      {
+        "skill": "Seafarer",
+        "knowledge": "Sub"
+      },
+      {
+        "skill": "Flyer",
+        "knowledge": "Aeronautics"
+      },
+      {
+        "skill": "Seafarer",
+        "knowledge": "Aquanautics"
+      },
+      {
+        "skill": "Fighter",
+        "knowledge": "Battle Dress"
+      },
+      {
+        "skill": "Electronics"
+      }
+    ]
+  ],
+  [
+    [
+      {
+        "skill": "Flyer"
+      },
+      {
+        "skill": "Pilot"
+      },
+      {
+        "skill": "Flyer",
+        "knowledge": "Rotor"
+      },
+      {
+        "skill": "Admin"
+      },
+      {
+        "skill": "Fighter",
+        "knowledge": "Beams"
+      },
+      {
+        "skill": "Medic"
+      }
+    ],
+    [
+      {
+        "skill": "Zero-G"
+      },
+      {
+        "skill": "Author"
+      },
+      {
+        "skill": "Broker"
+      },
+      {
+        "skill": "Trader"
+      },
+      {
+        "skill": "Fighter",
+        "knowledge": "Sprays"
+      },
+      {
+        "skill": "Gambler"
+      }
+    ],
+    [
+      {
+        "skill": "Animals"
+      },
+      {
+        "skill": "Liaison"
+      },
+      {
+        "skill": "Athlete"
+      },
+      {
+        "skill": "Fighter"
+      },
+      {
+        "skill": "Driver",
+        "knowledge": "Wheeled"
+      },
+      {
+        "skill": "Gunner",
+        "knowledge": "Screens"
+      }
+    ],
+    [
+      {
+        "skill": "Engineer",
+        "knowledge": "Maneuver Drive"
+      },
+      {
+        "skill": "Polymers"
+      },
+      {
+        "skill": "Advocate"
+      },
+      {
+        "skill": "Computer"
+      },
+      {
+        "skill": "Diplomat"
+      },
+      {
+        "skill": "Mechanic"
+      }
+    ],
+    [
+      {
+        "skill": "Biologics"
+      },
+      {
+        "skill": "Gunner",
+        "knowledge": "Ortillery"
+      },
+      {
+        "skill": "Driver",
+        "knowledge": "Automotive"
+      },
+      {
+        "skill": "Bureaucrat"
+      },
+      {
+        "skill": "Heavy Weapons"
+      },
+      {
+        "skill": "Programmer"
+      }
+    ],
+    [
+      {
+        "skill": "Hostile Environ"
+      },
+      {
+        "skill": "Engineer",
+        "knowledge": "Power Systems"
+      },
+      {
+        "skill": "Engineer",
+        "knowledge": "Life Support"
+      },
+      {
+        "skill": "Fighter",
+        "knowledge": "Slug Throwers"
+      },
+      {
+        "skill": "Fleet Tactics"
+      },
+      {
+        "skill": "Pilot",
+        "knowledge": "ACS"
+      }
+    ]
+  ]
+]

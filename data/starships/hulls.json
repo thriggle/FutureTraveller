@@ -1,0 +1,503 @@
+{
+  "hullTypes": [
+    "Cluster",
+    "Braced",
+    "Planetoid",
+    "Unstreamlined",
+    "Streamlined",
+    "Airframe",
+    "Lifting Body"
+  ],
+  "hullTypeMap": {
+    "Cluster": "Cluster",
+    "Braced": "Braced",
+    "Planetoid": "Planetoid",
+    "Unstreamlined": "Unstreamlined",
+    "Streamlined": "Streamlined",
+    "Airframe": "Airframe",
+    "LiftingBody": "Lifting Body"
+  },
+  "hullConfigs": {
+    "Cluster": {
+      "type": "Cluster",
+      "friction": 2,
+      "agility": -5,
+      "accel": 0,
+      "maxG": 1,
+      "stability": -3,
+      "land": false,
+      "cost": 0.02,
+      "flatcost": 0,
+      "podflatcost": 0
+    },
+    "Braced": {
+      "type": "Braced",
+      "friction": 2,
+      "agility": -4,
+      "accel": 0,
+      "maxG": 3,
+      "stability": -2,
+      "land": false,
+      "cost": 0.03,
+      "flatcost": 0,
+      "podflatcost": 0
+    },
+    "Planetoid": {
+      "type": "Planetoid",
+      "friction": 1,
+      "agility": -2,
+      "accel": 0,
+      "maxG": 9,
+      "stability": -1,
+      "land": false,
+      "cost": 0.01,
+      "flatcost": 0,
+      "podflatcost": 0
+    },
+    "Unstreamlined": {
+      "type": "Unstreamlined",
+      "friction": 0.5,
+      "agility": -1,
+      "accel": 0,
+      "maxG": 9,
+      "stability": 0,
+      "land": true,
+      "cost": 0.03,
+      "flatcost": 2,
+      "podflatcost": 0.5
+    },
+    "Streamlined": {
+      "type": "Streamlined",
+      "friction": 0.3333333333333333,
+      "agility": 0,
+      "accel": 0,
+      "maxG": 9,
+      "stability": 1,
+      "land": true,
+      "cost": 0.06,
+      "flatcost": 2,
+      "podflatcost": 0.8
+    },
+    "Airframe": {
+      "type": "Airframe",
+      "friction": 0.25,
+      "agility": 1,
+      "accel": 1,
+      "maxG": 9,
+      "stability": 2,
+      "land": true,
+      "cost": 0.07,
+      "flatcost": 2,
+      "podflatcost": 0.8
+    },
+    "LiftingBody": {
+      "type": "Lifting Body",
+      "friction": 0.2,
+      "agility": 1,
+      "accel": 1,
+      "maxG": 9,
+      "stability": 3,
+      "land": true,
+      "cost": 0.12,
+      "flatcost": 4,
+      "podflatcost": 1.6
+    }
+  },
+  "hullFittings": {
+    "FlotationHull": {
+      "mechanisms": 1,
+      "name": "Flotation Hull",
+      "baseTL": 5,
+      "cost": 1,
+      "tons": 1,
+      "tonnageCanBeUsedForFuel": false,
+      "installable": [
+        "Planetoid",
+        "Unstreamlined",
+        "Streamlined",
+        "Airframe"
+      ],
+      "automatic": [
+        "Lifting Body"
+      ],
+      "removableFromAutoInstall": false,
+      "comment": "Sealed against prolonged fluid exposure, the flotation hull permits water landing and takeoff."
+    },
+    "SubmergenceHull": {
+      "mechanisms": 1,
+      "name": "Submergence Hull",
+      "baseTL": 6,
+      "cost": 2,
+      "tons": 2,
+      "tonnageCanBeUsedForFuel": false,
+      "installable": [
+        "Planetoid",
+        "Unstreamlined",
+        "Streamlined",
+        "Airframe",
+        "Lifting Body"
+      ],
+      "automatic": [],
+      "removableFromAutoInstall": false,
+      "comment": "Sealed against prolonged fluid exposure, the submergence hull gives the ability to submerge and resurface in addition to permitting water landing and takeoff. Doubles the effectiveness of hull armor vs pressure."
+    },
+    "Fins": {
+      "mechanisms": 1,
+      "name": "Fins",
+      "baseTL": 5,
+      "cost": 0.5,
+      "tons": 2,
+      "tonnageCanBeUsedForFuel": true,
+      "installable": [
+        "Unstreamlined",
+        "Streamlined",
+        "Lifting Body"
+      ],
+      "automatic": [
+        "Airframe"
+      ],
+      "removableFromAutoInstall": false,
+      "comment": "Fins increase Agility +1 in worlds with Atmo 2+."
+    },
+    "FoldingFins": {
+      "mechanisms": 1,
+      "name": "Folding Fins",
+      "baseTL": 8,
+      "deployedTons": 2,
+      "cost": 0.5,
+      "tons": 0,
+      "tonnageCanBeUsedForFuel": false,
+      "installable": [
+        "Unstreamlined",
+        "Streamlined"
+      ],
+      "automatic": [],
+      "removableFromAutoInstall": false,
+      "comment": "Fins increase Agility +1 in worlds with Atmo 2+. Folding fins only contribute to displacement tonnage when deployed."
+    },
+    "Wings": {
+      "mechanisms": 1,
+      "name": "Wings",
+      "baseTL": 7,
+      "cost": 1,
+      "tons": 5,
+      "tonnageCanBeUsedForFuel": true,
+      "installable": [
+        "Unstreamlined",
+        "Streamlined"
+      ],
+      "automatic": [
+        "Airframe",
+        "Lifting Body"
+      ],
+      "removableFromAutoInstall": false,
+      "comment": "Wings increase Speed by 1G in worlds with Atmo 2+."
+    },
+    "FoldingWings": {
+      "mechanisms": 1,
+      "name": "Folding Wings",
+      "baseTL": 9,
+      "deployedTons": 5,
+      "cost": 2,
+      "tons": 1,
+      "tonnageCanBeUsedForFuel": false,
+      "installable": [
+        "Unstreamlined",
+        "Streamlined"
+      ],
+      "automatic": [],
+      "removableFromAutoInstall": false,
+      "comment": "Wings increase Speed by 1G in worlds with Atmo 2+. Folding wings consume significantly less displacement tonnage when retracted."
+    },
+    "LandingSkids": {
+      "mechanisms": 1,
+      "name": "Landing Skids",
+      "baseTL": 7,
+      "cost": 0,
+      "tons": 0,
+      "tonnageCanBeUsedForFuel": false,
+      "installable": [
+        "Cluster",
+        "Braced",
+        "Planetoid",
+        "Unstreamlined",
+        "Airframe"
+      ],
+      "automatic": [
+        "Streamlined",
+        "Lifting Body"
+      ],
+      "removableFromAutoInstall": false,
+      "comment": "Default landing skids are weight-bearing horizontal bars, retractable, which require a solid tarmac or bedrock landing site."
+    },
+    "LandingLegsWithPads": {
+      "mechanisms": 1,
+      "name": "Landing Legs with Pads",
+      "baseTL": 8,
+      "cost": 1,
+      "tons": 1,
+      "tonnageCanBeUsedForFuel": false,
+      "installable": [
+        "Cluster",
+        "Braced",
+        "Planetoid",
+        "Unstreamlined",
+        "Streamlined",
+        "Airframe",
+        "Lifting Body"
+      ],
+      "automatic": [],
+      "removableFromAutoInstall": false,
+      "comment": "Landing legs with pads permit wilderness landings on uneven terrain."
+    },
+    "LandingWheels": {
+      "mechanisms": 1,
+      "name": "Landing Wheels",
+      "baseTL": 5,
+      "cost": 1.5,
+      "tons": 3,
+      "tonnageCanBeUsedForFuel": false,
+      "installable": [
+        "Cluster",
+        "Braced",
+        "Planetoid",
+        "Unstreamlined",
+        "Streamlined",
+        "Lifting Body"
+      ],
+      "automatic": [
+        "Airframe"
+      ],
+      "removableFromAutoInstall": false,
+      "comment": "Retractable landing wheels permit glide landing/takeoff from solid airstrips. Required when using wings for liftoff or landing."
+    },
+    "RemoveLifters": {
+      "mechanisms": -1,
+      "name": "Remove Lifters",
+      "baseTL": 8,
+      "cost": -0.5,
+      "tons": 0,
+      "tonnageCanBeUsedForFuel": false,
+      "installable": [
+        "Cluster",
+        "Braced",
+        "Planetoid",
+        "Unstreamlined",
+        "Streamlined",
+        "Airframe",
+        "Lifting Body"
+      ],
+      "automatic": [],
+      "removableFromAutoInstall": false,
+      "comment": "Opt out of auto-installed Lifters. Deducts their cost from the hull."
+    }
+  },
+  "hullArmor": {
+    "Plate": {
+      "type": "Plate",
+      "AV_Mult": 1,
+      "ton_Mult": 1,
+      "AV_FlatBonus": 0,
+      "configurations": [
+        "Cluster",
+        "Braced",
+        "Unstreamlined",
+        "Streamlined"
+      ]
+    },
+    "Charged": {
+      "type": "Charged",
+      "AV_Mult": 2,
+      "ton_Mult": 1,
+      "AV_FlatBonus": 0,
+      "configurations": [
+        "Cluster",
+        "Braced",
+        "Unstreamlined",
+        "Streamlined"
+      ]
+    },
+    "Shell": {
+      "type": "Shell",
+      "AV_Mult": 0.5,
+      "ton_Mult": 0.5,
+      "AV_FlatBonus": 0,
+      "configurations": [
+        "Streamlined",
+        "Airframe",
+        "Lifting Body"
+      ]
+    },
+    "Polymer": {
+      "type": "Polymer",
+      "AV_Mult": 0.5,
+      "ton_Mult": 1,
+      "AV_FlatBonus": 0,
+      "configurations": [
+        "Cluster",
+        "Braced",
+        "Unstreamlined",
+        "Streamlined",
+        "Airframe"
+      ]
+    },
+    "Organic": {
+      "type": "Organic",
+      "AV_Mult": 0.5,
+      "ton_Mult": 1,
+      "AV_FlatBonus": 0,
+      "configurations": [
+        "Cluster",
+        "Braced",
+        "Unstreamlined",
+        "Streamlined",
+        "Airframe"
+      ]
+    },
+    "FeN": {
+      "type": "FeN",
+      "AV_Mult": 0,
+      "ton_Mult": 1,
+      "AV_FlatBonus": 20,
+      "configurations": [
+        "Planetoid",
+        "Unstreamlined"
+      ]
+    }
+  },
+  "stageEffects": {
+    "Experimental": {
+      "code": "Exp",
+      "stage": "Experimental",
+      "tlMod": -3,
+      "costMult": 10,
+      "mod": -3
+    },
+    "Prototype": {
+      "code": "Pro",
+      "stage": "Prototype",
+      "tlMod": -2,
+      "costMult": 5,
+      "mod": -2
+    },
+    "Early": {
+      "code": "Ear",
+      "stage": "Early",
+      "tlMod": -1,
+      "costMult": 2,
+      "mod": -1
+    },
+    "Standard": {
+      "code": "Std",
+      "stage": "Standard",
+      "tlMod": 0,
+      "costMult": 1,
+      "mod": 0
+    },
+    "Basic": {
+      "code": "Bas",
+      "stage": "Basic",
+      "tlMod": 0,
+      "costMult": 0.5,
+      "mod": 0
+    },
+    "Alternate": {
+      "code": "Alt",
+      "stage": "Alternate",
+      "tlMod": 0,
+      "costMult": 1,
+      "mod": 0
+    },
+    "Improved": {
+      "code": "Imp",
+      "stage": "Improved",
+      "tlMod": 1,
+      "costMult": 1,
+      "mod": 1
+    },
+    "Generic": {
+      "code": "Gen",
+      "stage": "Generic",
+      "tlMod": 1,
+      "costMult": 0.5,
+      "mod": 0
+    },
+    "Modified": {
+      "code": "Mod",
+      "stage": "Modified",
+      "tlMod": 2,
+      "costMult": 0.5,
+      "mod": 2
+    },
+    "Advanced": {
+      "code": "Adv",
+      "stage": "Advanced",
+      "tlMod": 3,
+      "costMult": 2,
+      "mod": 3
+    },
+    "Ultimate": {
+      "code": "Ult",
+      "stage": "Ultimate",
+      "tlMod": 4,
+      "costMult": 3,
+      "mod": 4
+    }
+  },
+  "spaceRanges": {
+    "BR": {
+      "code": "BR",
+      "name": "Boarding Range (BR, 0)",
+      "s": 0,
+      "r": 5,
+      "tlMod": -3,
+      "tonsMult": 0.25,
+      "costMult": 0.25
+    },
+    "FR": {
+      "code": "FR",
+      "name": "Fighter Range (FR, 2)",
+      "s": 2,
+      "r": 6,
+      "tlMod": -2,
+      "tonsMult": 0.3333333333333333,
+      "costMult": 0.3333333333333333
+    },
+    "SR": {
+      "code": "SR",
+      "name": "Short Range (SR, 5)",
+      "s": 5,
+      "r": 7,
+      "tlMod": -1,
+      "tonsMult": 0.5,
+      "costMult": 0.5
+    },
+    "AR": {
+      "code": "AR",
+      "name": "Attack Range (AR, 7)",
+      "s": 7,
+      "r": 7,
+      "tlMod": 0,
+      "tonsMult": 1,
+      "costMult": 1
+    },
+    "LR": {
+      "code": "LR",
+      "name": "Long Range (LR, 9)",
+      "s": 9,
+      "r": 8,
+      "tlMod": 1,
+      "tonsMult": 2,
+      "costMult": 3
+    },
+    "DS": {
+      "code": "DS",
+      "name": "Deep Space (DS, 12)",
+      "s": 12,
+      "r": 9,
+      "tlMod": 2,
+      "tonsMult": 3,
+      "costMult": 5
+    }
+  }
+}

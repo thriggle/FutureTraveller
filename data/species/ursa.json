@@ -1,0 +1,168 @@
+{
+  "id": "ursa",
+  "speciesName": "Ursa",
+  "nativeLanguage": "Anglic",
+  "statProfile": "SDEITS",
+  "height": "2m",
+  "weight": "350kg",
+  "notes": "Rage",
+  "baseSenses": [
+    "V-18-RGB",
+    "H-18-9382",
+    "S-22-04",
+    "T-06-02"
+  ],
+  "characteristics": [
+    {
+      "name": "Strength",
+      "nD": 3,
+      "Mod": 2
+    },
+    {
+      "name": "Dexterity",
+      "nD": 2
+    },
+    {
+      "name": "Endurance",
+      "nD": 2
+    },
+    {
+      "name": "Intellect",
+      "nD": 2
+    },
+    {
+      "name": "Training",
+      "nD": 2
+    },
+    {
+      "name": "Social Standing",
+      "nD": 1
+    }
+  ],
+  "genders": {
+    "F": {
+      "Characteristics": [
+        {
+          "nD": 0,
+          "Mod": 2
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        }
+      ]
+    },
+    "M": {
+      "Characteristics": [
+        {
+          "nD": 0,
+          "Mod": 2
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        }
+      ]
+    }
+  },
+  "castes": {
+    "N/A": {
+      "Characteristics": [
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        }
+      ]
+    }
+  },
+  "genderTable": [
+    "F",
+    "M",
+    "F",
+    "F",
+    "M",
+    "M",
+    "F",
+    "F",
+    "M",
+    "F",
+    "M"
+  ],
+  "casteTable": [
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A"
+  ],
+  "lifeStageTerms": [
+    0.5,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ]
+}

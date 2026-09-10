@@ -1,0 +1,167 @@
+{
+  "id": "bwap",
+  "speciesName": "Bwap",
+  "nativeLanguage": "Anglic",
+  "statProfile": "SAVIES",
+  "height": "1.4m",
+  "weight": "45kg",
+  "notes": "1d6 Stealth",
+  "baseSenses": [
+    "V-16-RGB",
+    "H-14-7573",
+    "S-14-04",
+    "T-20-03"
+  ],
+  "characteristics": [
+    {
+      "name": "Strength",
+      "nD": 1
+    },
+    {
+      "name": "Agility",
+      "nD": 3
+    },
+    {
+      "name": "Vigor",
+      "nD": 3
+    },
+    {
+      "name": "Intellect",
+      "nD": 2
+    },
+    {
+      "name": "Education",
+      "nD": 2
+    },
+    {
+      "name": "Social Standing",
+      "nD": 2
+    }
+  ],
+  "genders": {
+    "F": {
+      "Characteristics": [
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        }
+      ]
+    },
+    "M": {
+      "Characteristics": [
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 2
+        },
+        {
+          "nD": 0,
+          "Mod": -2
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        }
+      ]
+    }
+  },
+  "castes": {
+    "N/A": {
+      "Characteristics": [
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        },
+        {
+          "nD": 0,
+          "Mod": 0
+        }
+      ]
+    }
+  },
+  "genderTable": [
+    "F",
+    "F",
+    "M",
+    "M",
+    "M",
+    "M",
+    "M",
+    "M",
+    "M",
+    "M",
+    "M"
+  ],
+  "casteTable": [
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A",
+    "N/A"
+  ],
+  "lifeStageTerms": [
+    0.5,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    2,
+    2,
+    2,
+    2,
+    2
+  ]
+}

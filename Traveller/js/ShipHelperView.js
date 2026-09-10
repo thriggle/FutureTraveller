@@ -4085,20 +4085,29 @@ class ShipHelperView {
         });
     }
 }
-document.querySelectorAll('.collapsible').forEach(function (collapsible) {
-    collapsible.addEventListener('click', function () {
-        this.classList.toggle('active');
-        const content = this.parentElement.querySelector('.content');
-        if (content.style.display === 'block') {
-            content.style.display = 'none';
-        } else {
-            content.style.display = 'block';
+
+function initShipHelperApp() {
+    document.querySelectorAll('.collapsible').forEach(function (collapsible) {
+        if (!collapsible._hasCollapsibleListener) {
+            collapsible._hasCollapsibleListener = true;
+            collapsible.addEventListener('click', function () {
+                this.classList.toggle('active');
+                const content = this.parentElement.querySelector('.content');
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                } else {
+                    content.style.display = 'block';
+                }
+            });
         }
     });
-});
-// Initialize the view when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
     new ShipHelperView();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initShipHelperApp);
+} else {
+    initShipHelperApp();
+}
 
 export default ShipHelperView;

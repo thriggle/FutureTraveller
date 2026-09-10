@@ -1,0 +1,56 @@
+[
+  {
+    "id": "human",
+    "name": "Humaniti",
+    "statProfile": "SDEIES",
+    "height": "1.8m",
+    "weight": "100kg",
+    "notes": "",
+    "nativeLanguage": "Anglic"
+  },
+  {
+    "id": "aslan",
+    "name": "Aslan",
+    "statProfile": "SDSIES",
+    "height": "2m",
+    "weight": "100kg",
+    "notes": "",
+    "nativeLanguage": "Trokh"
+  },
+  {
+    "id": "bwap",
+    "name": "Bwap",
+    "statProfile": "SAVIES",
+    "height": "1.4m",
+    "weight": "45kg",
+    "notes": "1d6 Stealth",
+    "nativeLanguage": "Anglic"
+  },
+  {
+    "id": "ursa",
+    "name": "Ursa",
+    "statProfile": "SDEITS",
+    "height": "2m",
+    "weight": "350kg",
+    "notes": "Rage",
+    "nativeLanguage": "Anglic"
+  },
+  {
+    "id": "vargr",
+    "name": "Vargr",
+    "statProfile": "SDVIEC",
+    "height": "1.6m",
+    "weight": "66kg",
+    "notes": "",
+    "nativeLanguage": "Gvegh"
+  },
+  {
+    "id": "zhodani",
+    "name": "Zhodani",
+    "statProfile": "SDEIES",
+    "height": "2m",
+    "weight": "90kg",
+    "notes": "naturally psionic",
+    "nativeLanguage": "Zdetl"
+  }
+]
