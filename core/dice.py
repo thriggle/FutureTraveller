@@ -14,6 +14,55 @@ class RollResult:
     result: int
     rolls: List[int]
 
+    def __int__(self) -> int:
+        return self.result
+
+    def __index__(self) -> int:
+        return self.result
+
+    def __add__(self, other):
+        return self.result + int(other)
+
+    def __radd__(self, other):
+        return int(other) + self.result
+
+    def __sub__(self, other):
+        return self.result - int(other)
+
+    def __rsub__(self, other):
+        return int(other) - self.result
+
+    def __lt__(self, other):
+        return self.result < int(other)
+
+    def __le__(self, other):
+        return self.result <= int(other)
+
+    def __gt__(self, other):
+        return self.result > int(other)
+
+    def __ge__(self, other):
+        return self.result >= int(other)
+
+    def __eq__(self, other):
+        if isinstance(other, (int, float)):
+            return self.result == int(other)
+        if isinstance(other, RollResult):
+            return self.result == other.result
+        return False
+
+    def __hash__(self) -> int:
+        return hash(self.result)
+
+    def __mod__(self, other):
+        return self.result % int(other)
+
+    def __rmod__(self, other):
+        return int(other) % self.result
+
+    def __str__(self) -> str:
+        return str(self.result)
+
 class DiceRoller:
     def __init__(self, seed: Optional[str] = None):
         if seed is None:

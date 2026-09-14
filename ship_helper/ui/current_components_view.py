@@ -254,8 +254,14 @@ class CurrentComponentsView(QWidget):
             self.ship_modified.emit()
 
     def _remove_hull(self, idx: int):
-        if len(self.ship.subhulls) <= 1:
-            QMessageBox.warning(self, "Cannot Remove", "Starship must have at least one subhull.")
+        sub_name = self.ship.subhulls[idx].name
+        reply = QMessageBox.question(
+            self,
+            "Remove Subhull",
+            f"Are you sure you want to remove '{sub_name}' and all its installed systems?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        if reply != QMessageBox.Yes:
             return
         del self.ship.subhulls[idx]
         if self.selected_hull_idx >= len(self.ship.subhulls):

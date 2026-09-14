@@ -249,6 +249,13 @@
       "Trokh",
       "Zdetl"
     ],
+    "Craftsman": [
+      "Metal",
+      "Wood",
+      "Leather",
+      "Synthetics",
+      "Masonry"
+    ],
     "Science": [
       "Archeology",
       "Biology",

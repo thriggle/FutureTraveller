@@ -101,6 +101,8 @@ class FillformViewer(QDialog):
                 <td>AV {av} ({a_tons:.1f}t)</td>
             </tr>
             """
+        if not subhull_rows:
+            subhull_rows = "<tr><td colspan='6' style='text-align:center; color:#8b949e; font-style:italic;'>No subhulls installed</td></tr>"
 
         return f"""
         <html><head>{self._get_css()}</head><body>

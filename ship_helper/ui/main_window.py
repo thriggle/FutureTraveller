@@ -37,24 +37,15 @@ class ShipHelperMainWindow(QMainWindow):
         self.setWindowTitle("Traveller T5 Ship Helper")
         self.resize(1340, 880)
         self.current_filepath: str = ""
-        self.ship = self._create_default_ship()
+        self.ship = self._create_blank_ship()
         self.init_ui()
 
-    def _create_default_ship(self) -> ShipDesign:
-        main_json = os.path.join(os.path.dirname(__file__), "..", "..", "data", "main_hull_data.json")
-        if os.path.exists(main_json):
-            try:
-                with open(main_json, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    return ShipDesign.from_dict(data)
-            except Exception as e:
-                print(f"Warning loading default main_hull_data.json: {e}")
-        
-        # Fallback default 400t Merchant Trader
-        ship = ShipDesign(
-            baseTL=13,
-            shipName="Far Trader",
-            registration="FT-400-A",
+    def _create_blank_ship(self) -> ShipDesign:
+        """Creates a new blank starship design with no installed subhulls or components."""
+        return ShipDesign(
+            baseTL=12,
+            shipName="New Starship",
+            registration="REG-0001",
             missionId=23,
             missionService="Commerce",
             missionActivity="Merchant",
@@ -62,30 +53,16 @@ class ShipHelperMainWindow(QMainWindow):
             missionQualifier="Cargo",
             missionName="Trader",
             missionCodeKey="A",
-            modifier1Word="Far",
-            modifier1Code="F",
+            modifier1Word="",
+            modifier1Code="",
             modifier2Word="",
-            modifier2Code=""
+            modifier2Code="",
+            jumpFieldKey="Bubble",
+            engineerSkill=0,
+            jumpDriveSpecialty=0,
+            jumpDiameters=None,
+            subhulls=[]
         )
-        hull = SubhullItem(
-            name="Main Hull",
-            tons=400.0,
-            tl=13,
-            config="Airframe",
-            armorType="Polymer",
-            armorLayers=2
-        )
-        hull.drives.append(build_drive("Standard", 1, "F", "Jump", 13))
-        hull.drives.append(build_drive("Standard", 1, "F", "M-Drive", 13))
-        hull.drives.append(build_drive("Standard", 1, "F", "Power Plant", 13))
-        hull.components.append(build_accommodation("StandardStateroom", 6, 13, "Crew"))
-        hull.components.append(build_accommodation("StandardStateroom", 4, 13, "Passenger"))
-        hull.components.append(build_accommodation("LowBerth", 4, 13, "LowPax"))
-        hull.components.append(build_console("Bridge Command Console", 2.0, 0.5, 13, cp=2))
-        hull.components.append(build_computer("Model/3bis", 3, 3.0, 6.0, 13))
-        hull.components.append(build_facility("StandardCargo", 150.0, 13))
-        ship.subhulls.append(hull)
-        return ship
 
     def init_ui(self):
         central = QWidget()
@@ -177,13 +154,6 @@ class ShipHelperMainWindow(QMainWindow):
         self._on_ship_modified()
 
     def _on_component_requested_from_palette(self, category: str, item_key: str, data: dict):
-        s_idx = self.current_view.get_selected_subhull_index()
-        if s_idx < 0 or s_idx >= len(self.ship.subhulls):
-            if not self.ship.subhulls:
-                self.ship.subhulls.append(SubhullItem(name="Main Hull", tons=400.0, tl=self.ship.baseTL, config="Streamlined"))
-            s_idx = 0
-
-        sub = self.ship.subhulls[s_idx]
         tl = self.ship.baseTL
 
         if category == "hull":
@@ -193,7 +163,19 @@ class ShipHelperMainWindow(QMainWindow):
                 self.ship.subhulls.append(dlg.result_subhull)
                 self._on_ship_modified()
             return
-        elif category == "drive":
+
+        s_idx = self.current_view.get_selected_subhull_index()
+        if not self.ship.subhulls or s_idx < 0 or s_idx >= len(self.ship.subhulls):
+            QMessageBox.warning(
+                self,
+                "No Subhull Selected",
+                "Please add a Subhull or Pod first before installing drives or components."
+            )
+            return
+
+        sub = self.ship.subhulls[s_idx]
+
+        if category == "drive":
             dlg = DriveDialog(drive_type=item_key, base_tl=tl, parent=self)
             if dlg.exec() and dlg.result_drive:
                 sub.drives.append(dlg.result_drive)
@@ -235,9 +217,10 @@ class ShipHelperMainWindow(QMainWindow):
         dlg.exec()
 
     def _on_new_ship(self):
-        reply = QMessageBox.question(self, "New Starship", "Create a new default starship design?", QMessageBox.Yes | QMessageBox.No)
+        reply = QMessageBox.question(self, "New Starship", "Create a new blank starship design?", QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.ship = self._create_default_ship()
+            self.ship = self._create_blank_ship()
+            self.current_filepath = ""
             self.tl_spin.setValue(self.ship.baseTL)
             self.current_view.set_ship(self.ship)
             self.stats_panel.set_ship(self.ship)

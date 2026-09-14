@@ -23,8 +23,8 @@ class TestShipUI(unittest.TestCase):
         self.assertIsNotNone(win.current_view)
         self.assertIsNotNone(win.stats_panel)
 
-        # Test selecting subhull
-        self.assertGreaterEqual(len(win.ship.subhulls), 1)
+        # Starts with a blank ship (no subhulls)
+        self.assertEqual(len(win.ship.subhulls), 0)
         win._refresh_all()
 
     def test_dialogs_instantiation(self):
@@ -34,11 +34,6 @@ class TestShipUI(unittest.TestCase):
 
         dlg_jump = JumpFieldDialog(win.ship)
         self.assertIsNotNone(dlg_jump)
-
-        # Test ship without jump drive
-        win.ship.subhulls[0].drives.clear()
-        dlg_jump_noj = JumpFieldDialog(win.ship)
-        self.assertIsNotNone(dlg_jump_noj)
 
         # Test component dialogs
         dlg_hull = HullDialog(base_tl=13)

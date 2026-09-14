@@ -210,3 +210,68 @@ class NameGenerator:
             return self.get_random_name(key, banned_words, top_level=True)
 
         return add_caps(re.sub(r"\s+", " ", result_str).strip())
+
+    def get_valid_random_name(self, key: str) -> Optional[str]:
+        """Fetch name from key if key exists and does not return Invalid Key."""
+        if not key or key not in self.templates:
+            return None
+        res = self.get_random_name(key)
+        if isinstance(res, str) and (res.startswith("Invalid Key") or not res.strip()):
+            return None
+        return res.strip()
+
+    def get_random_name_for_character(self, species_key: str = "human", gender: str = "M") -> str:
+        """Generate full character name matching CharacterView.js logic."""
+        key = (species_key or "human").lower()
+        if key in ["humaniti", "human"]:
+            key = "human"
+        g = (gender or "M").upper()
+
+        name = ""
+        try:
+            if g == "M":
+                first = self.get_valid_random_name(f"{key}.malefirstname")
+                if first:
+                    last = self.get_valid_random_name(f"{key}.lastname") or ""
+                    suf = self.get_valid_random_name(f"{key}.suffix") or ""
+                    name = f"{first} {last}{suf}".strip()
+            elif g == "F":
+                first = self.get_valid_random_name(f"{key}.femalefirstname")
+                if first:
+                    last = self.get_valid_random_name(f"{key}.lastname") or ""
+                    suf = self.get_valid_random_name(f"{key}.suffix") or ""
+                    name = f"{first} {last}{suf}".strip()
+
+            if not name:
+                sp_name = self.get_valid_random_name(key)
+                if sp_name:
+                    name = sp_name.strip()
+
+            # Fall back to Humaniti if no species-specific template exists
+            if not name:
+                if g == "M":
+                    h_first = self.get_valid_random_name("human.malefirstname") or "John"
+                    h_last = self.get_valid_random_name("human.lastname") or "Doe"
+                    h_suf = self.get_valid_random_name("human.suffix") or ""
+                    name = f"{h_first} {h_last}{h_suf}".strip()
+                elif g == "F":
+                    h_first = self.get_valid_random_name("human.femalefirstname") or "Jane"
+                    h_last = self.get_valid_random_name("human.lastname") or "Doe"
+                    h_suf = self.get_valid_random_name("human.suffix") or ""
+                    name = f"{h_first} {h_last}{h_suf}".strip()
+                else:
+                    name = self.get_valid_random_name("human") or "J. Doe"
+        except Exception:
+            pass
+
+        return add_caps(name.strip()) if name and not name.startswith("Invalid Key") else "J. Doe"
+
+
+_global_name_generator: Optional[NameGenerator] = None
+
+def get_name_generator() -> NameGenerator:
+    global _global_name_generator
+    if _global_name_generator is None:
+        _global_name_generator = NameGenerator()
+    return _global_name_generator
+
